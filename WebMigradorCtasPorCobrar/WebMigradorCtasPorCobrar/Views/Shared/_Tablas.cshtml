@@ -1,0 +1,24 @@
+﻿
+<div class="row">
+    <div class="col-md-3 text-center"></div>
+    <div class="col-md-3 text-center"></div>
+    <div class="col-md-3 text-center"></div>
+    <div class="col-md-3 text-center"></div>
+</div>
+<h1 class="page-header">@ViewBag.Title</h1>
+
+
+<ul class="list-group">
+    <li class="list-group-item">
+        <a class="btn btn-default" href="@Url.Action("CuotaPago", ViewBag.OrigenPago)">Cuota de pago</a>
+    </li>
+    <li class="list-group-item">
+        <a class="btn btn-default" href="@Url.Action("ConceptoPago", ViewBag.OrigenPago)">Conceptos de pago</a>
+    </li>
+    <li class="list-group-item">
+        <a class="btn btn-default" href="@Url.Action("Obligaciones", ViewBag.OrigenPago)">Obligaciones</a>
+    </li>
+    <li class="list-group-item">
+        <a class="btn btn-default" href="@Url.Action("Pagos", ViewBag.OrigenPago)">Pagos</a>
+    </li>
+</ul>
