@@ -55,6 +55,12 @@
           <AssociatedConnUserName />
           <FullPath>4. BD_OCEF_MigracionTP - Procedures y Funciones.sql</FullPath>
         </FileNode>
+        <FileNode Name="SQLQuery1_.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnUserName />
+          <FullPath>SQLQuery1_.sql</FullPath>
+        </FileNode>
       </Items>
     </LogicalFolder>
     <LogicalFolder Name="Miscellaneous" Type="3" Sorted="true">

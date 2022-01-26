@@ -11,7 +11,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         // GET: Pregrado
         public ActionResult Index()
         {
-            ViewBag.OrigenPago = "Pregrado";
             ViewBag.Title = "Pregrado";
 
             return View();

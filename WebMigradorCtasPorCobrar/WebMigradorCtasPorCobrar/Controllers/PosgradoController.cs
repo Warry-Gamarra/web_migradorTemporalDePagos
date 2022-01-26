@@ -11,7 +11,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         // GET: Posgrado
         public ActionResult Index()
         {
-            ViewBag.OrigenPago = "Posgrado";
             ViewBag.Title = "Posgrado";
             return View();
         }

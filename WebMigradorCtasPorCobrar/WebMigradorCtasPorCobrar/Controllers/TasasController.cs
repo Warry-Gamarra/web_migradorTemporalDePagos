@@ -11,7 +11,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         // GET: Tasas
         public ActionResult Index()
         {
-            ViewBag.OrigenPago = "Tasas";
             ViewBag.Title = "Tasas";
 
             return View();

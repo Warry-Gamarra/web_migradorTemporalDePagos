@@ -21,17 +21,56 @@
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav pull-right">
-                    <li>@Html.ActionLink("PREGRADO", "Index", "Pregrado")</li>
-                    <li>@Html.ActionLink("POSGRADO", "Index", "Posgrado")</li>
-                    <li>@Html.ActionLink("EUDED", "Index", "Euded")</li>
-                    <li>@Html.ActionLink("TASAS", "Index", "Tasas")</li>
-                    <li>@Html.ActionLink("CAJA PERIFERICA", "Index", "CajaPeriferica")</li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">PREGRADO <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@Url.Action("CuotaPago", "Pregrado")">Cuota de pago</a></li>
+                            <li><a href="@Url.Action("ConceptoPago", "Pregrado")">Conceptos de pago</a></li>
+                            <li><a href="@Url.Action("Obligaciones", "Pregrado")">Obligaciones</a></li>
+                            <li><a href="@Url.Action("Pagos", "Pregrado")">Pagos</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">POSGRADO <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@Url.Action("CuotaPago", "Posgrado")">Cuota de pago</a></li>
+                            <li><a href="@Url.Action("ConceptoPago", "Posgrado")">Conceptos de pago</a></li>
+                            <li><a href="@Url.Action("Obligaciones", "Posgrado")">Obligaciones</a></li>
+                            <li><a href="@Url.Action("Pagos", "Posgrado")">Pagos</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">EUDED <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@Url.Action("CuotaPago", "Euded")">Cuota de pago</a></li>
+                            <li><a href="@Url.Action("ConceptoPago", "Euded")">Conceptos de pago</a></li>
+                            <li><a href="@Url.Action("Obligaciones", "Euded")">Obligaciones</a></li>
+                            <li><a href="@Url.Action("Pagos", "Euded")">Pagos</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">TASAS <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@Url.Action("CuotaPago", "Tasas")">Cuota de pago</a></li>
+                            <li><a href="@Url.Action("ConceptoPago", "Tasas")">Conceptos de pago</a></li>
+                            <li><a href="@Url.Action("Obligaciones", "Tasas")">Obligaciones</a></li>
+                            <li><a href="@Url.Action("Pagos", "Tasas")">Pagos</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">CAJA PERIFERICA <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="@Url.Action("CuotaPago", "CajaPeriferica")">Cuota de pago</a></li>
+                            <li><a href="@Url.Action("ConceptoPago", "CajaPeriferica")">Conceptos de pago</a></li>
+                            <li><a href="@Url.Action("Obligaciones", "CajaPeriferica")">Obligaciones</a></li>
+                            <li><a href="@Url.Action("Pagos", "CajaPeriferica")">Pagos</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
     </div>
     <div class="container-fluid body-content" style="padding-top: 50px;">
-        @Html.Partial("_Tablas")
         @RenderBody()
         <hr />
         <footer>

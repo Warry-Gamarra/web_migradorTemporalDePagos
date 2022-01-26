@@ -11,7 +11,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         // GET: CajaPerifedica
         public ActionResult Index()
         {
-            ViewBag.OrigenPago = "CajaPeriferica";
             ViewBag.Title = "Caja Periferica";
 
             return View();

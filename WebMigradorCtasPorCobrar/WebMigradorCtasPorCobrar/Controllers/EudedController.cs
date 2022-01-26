@@ -11,7 +11,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         // GET: Euded
         public ActionResult Index()
         {
-            ViewBag.OrigenPago = "Euded";
             ViewBag.Title = "Euded";
             return View();
         }
