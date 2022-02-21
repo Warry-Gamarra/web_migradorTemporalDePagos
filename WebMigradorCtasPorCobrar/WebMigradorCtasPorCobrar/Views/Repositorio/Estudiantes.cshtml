@@ -1,5 +1,5 @@
 ﻿
-@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Alumno>
+@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.AlumnoTP>
 @using GridMvc.Html
 
 <div class="container-fluid">
@@ -18,29 +18,23 @@
     <br />
 
     <div class="col-12">
-        <a href="@Url.Action("Create", "Correo")" class="btn btn-primary pull-right modal-link">
-            <i class="fa fa-envelope"></i> Agregar Correo
-        </a>
-
-        <p class="h3"><small>ALUMNOS</small></p>
-        <br />
 
         <br />
         <div class="table-responsive" style="min-height:300px">
             @Html.Grid(Model).Columns(columns =>
                             {
-                                columns.Add(c => c.MailAddress).Titled("Dirección").Filterable(true);
-                                columns.Add(c => c.HostName).Titled("Host").Filterable(true);
-                                columns.Add(c => c.SecurityType).Titled("Seguridad").Filterable(true);
-                                columns.Add(c => c.PortNumber).Css("text-center").Titled("Puerto").Filterable(true);
-                                columns.Add(c => c.Enabled).SetWidth(100).Css("text-center").Encoded(false).Sanitized(false)
-                                       .RenderValueAs(model => model.Enabled.Value ?
-                                                                                @Html.Raw("<span id=\"td" + @model.MailId + "\"><button type=\"submit\" class=\"btn btn-xs btn-success\" onclick=\"ChangeStateReloadPage(" + @model.MailId + ", " + @model.Enabled.ToString().ToLower() + ", '" + @Url.Action("ChangeState", "Correo") + "');\"><i class=\"fa fa-check-circle-o\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Habilitado</span></button></span>")
-                                                                                : @Html.Raw("<span id=\"td" + @model.MailId + "\"><button type=\"submit\" class=\"btn btn-xs btn-secondary\" onclick=\"ChangeStateReloadPage(" + @model.MailId + ", " + @model.Enabled.ToString().ToLower() + ", '" + @Url.Action("ChangeState", "Correo") + "');\"><i class=\"fa fa-minus-circle\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Deshabilitado</span></button></span>"))
-                                       .Filterable(true).SetWidth(160).Titled("Estado");
-                                columns.Add().SetWidth(200).Css("text-right").Encoded(false).Sanitized(false).RenderValueAs(model => @<a href="@Url.Action("Edit", "Correo", new { id = model.MailId, area = "" })" class="modal-link"><i class="fa fa-pencil-square-o" aria-hidden="true">&nbsp;</i><span class="d-none d-md-inline-block">Editar</span></a>);
-                                 }
-                            ).WithPaging(10).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+                                columns.Add(c => c.C_CodAlu).Titled("Codigo").Filterable(true);
+                                columns.Add(c => c.T_ApePater).Titled("Ape. Paterno").Filterable(true);
+                                columns.Add(c => c.T_ApeMater).Titled("Ape. Materno").Filterable(true);
+                                columns.Add(c => c.T_Nombre).Titled("Nombre").Filterable(true);
+                                columns.Add(c => c.C_CodTipDo).Titled("Tipo Doc.").Filterable(true);
+                                columns.Add(c => c.C_NumDNI).Titled("Nro DNI.").Filterable(true);
+                                columns.Add(c => c.C_Sexo).Titled("Sexo").Filterable(true);
+                                columns.Add(c => c.C_RcCod).Titled("Cod RC").Filterable(true);
+                                columns.Add(c => c.C_AnioIngr).Titled("Año Ingr.").Filterable(true);
+                                columns.Add(c => c.C_CodModIn).Titled("Mod Ing").Filterable(true);
+                             }
+                            ).WithPaging(30).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
         </div>
 
     </div>

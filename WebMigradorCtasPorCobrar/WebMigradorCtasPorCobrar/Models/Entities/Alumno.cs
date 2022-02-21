@@ -5,7 +5,22 @@ using System.Web;
 
 namespace WebMigradorCtasPorCobrar.Models.Entities
 {
-    public class Alumno
+    public class AlumnoTP
+    {
+        public string C_RcCod { get; set; }
+        public string C_CodAlu { get; set; }
+        public string C_NumDNI { get; set; }
+        public string C_CodTipDo { get; set; }
+        public string T_ApePater { get; set; }
+        public string T_ApeMater { get; set; }
+        public string T_Nombre { get; set; }
+        public string C_Sexo { get; set; }
+        public string D_FecNac { get; set; }
+        public string C_CodModIn { get; set; }
+        public string C_AnioIngr { get; set; }
+    }
+
+    public class AlumnoMG
     {
         public string C_RcCod { get; set; }
         public string C_CodAlu { get; set; }
@@ -29,4 +44,5 @@ namespace WebMigradorCtasPorCobrar.Models.Entities
         public DateTime D_FecRemovido { get; set; }
 
     }
+
 }
