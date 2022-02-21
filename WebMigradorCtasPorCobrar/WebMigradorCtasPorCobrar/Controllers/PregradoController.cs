@@ -15,5 +15,36 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             return View();
         }
+
+        public ActionResult CuotaPago()
+        {
+            ViewBag.Title = "Cuotas de pago";
+
+            return View();
+        }
+
+
+        public ActionResult ConceptoPago()
+        {
+            ViewBag.Title = "Conceptos de pago";
+
+            return View();
+        }
+
+
+        public ActionResult Obligaciones()
+        {
+            ViewBag.Title = "Obligaciones";
+
+            return View();
+        }
+
+        public ActionResult Pagos()
+        {
+            ViewBag.Title = "Pagos de Obligaciones";
+
+            return View();
+        }
+
     }
 }
