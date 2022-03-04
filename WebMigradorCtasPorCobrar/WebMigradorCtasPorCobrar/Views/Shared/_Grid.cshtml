@@ -9,9 +9,9 @@ else
 {
     <div class="grid-mvc" data-lang="@Model.Language" data-gridname="@Model.RenderOptions.GridName" data-selectable="@Model.RenderOptions.Selectable.ToString().ToLower()" data-multiplefilters="@Model.RenderOptions.AllowMultipleFilters.ToString().ToLower()">
         <div class="grid-wrap">
-            <table class="table table-striped grid-table">
+            <table class="table table-hover table-sm grid-table">
                 @* Draw grid header *@
-                <thead>
+                <thead class="bg-light-gray">
                     @RenderGridHeader()
                 </thead>
                 <tbody>
@@ -26,28 +26,38 @@ else
 {
     if (!Model.ItemsToDisplay.Any())
     {
+        int columns = @Model.Columns.Count() + 1;
         <tr class="grid-empty-text">
-            <td colspan="@Model.Columns.Count()">
+            <td colspan="@columns">
                 @Model.EmptyGridText
             </td>
         </tr>
     }
     else
     {
+        int row = 1;
+        if (Model.Pager.CurrentPage > 0)
+        {
+            row = Model.Pager.PageSize * (Model.Pager.CurrentPage - 1) + 1;
+        }
+
         foreach (object item in Model.ItemsToDisplay)
         {
             <tr class="grid-row @Model.GetRowCssClasses(item)">
+                <td style="width:20px; text-align:right;">@row.</td>
                 @foreach (IGridColumn column in Model.Columns)
                 {
                     @column.CellRenderer.Render(column, column.GetCell(item))
                 }
             </tr>
+            row++;
         }
     }
 }
 @helper RenderGridHeader()
 {
     <tr>
+        <th style="width:20px; text-align:center" class="text-primary">N°</th>
         @foreach (IGridColumn column in Model.Columns)
         {
             @column.HeaderRenderer.Render(column)

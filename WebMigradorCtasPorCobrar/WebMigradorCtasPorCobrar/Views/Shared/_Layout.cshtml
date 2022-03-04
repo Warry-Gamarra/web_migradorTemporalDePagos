@@ -1,82 +1,82 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewBag.Title - Migrador Temporal de pagos</title>
-    @Styles.Render("~/Content/css")
-    @Scripts.Render("~/bundles/modernizr")
+    @Styles.Render("~/content/css")
+    @Styles.Render("~/content/datetime")
+    @Styles.Render("~/content/select")
+    @Styles.Render("~/content/fonts")
+
+    @Scripts.Render("~/bundles/jquery")
+    <script src="@Url.Content("~/Assets/jquery/jquery.unobtrusive-ajax.js")"></script>
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
                 @Html.ActionLink("UNFV - Migrador Temporal de pagos", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav pull-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">REPOSITORIO <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@Url.Action("Estudiantes", "Repositorio")">Estudiantes</a></li>
-                        </ul>
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">REPOSITORIO <span class="caret"></span></a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="@Url.Action("Estudiantes", "Repositorio")">Estudiantes</a>
+                        </div>
                     </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">PREGRADO <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@Url.Action("CuotaPago", "Pregrado")">Cuota de pago</a></li>
-                            <li><a href="@Url.Action("ConceptoPago", "Pregrado")">Conceptos de pago</a></li>
-                            <li><a href="@Url.Action("Obligaciones", "Pregrado")">Obligaciones</a></li>
-                            <li><a href="@Url.Action("Pagos", "Pregrado")">Pagos</a></li>
-                        </ul>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">PREGRADO <span class="caret"></span></a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="@Url.Action("CuotaPago", "Pregrado")">Cuota de pago</a>
+                            <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Pregrado")">Conceptos de pago</a>
+                            <a class="dropdown-item" href="@Url.Action("Obligaciones", "Pregrado")">Obligaciones</a>
+                            <a class="dropdown-item" href="@Url.Action("Pagos", "Pregrado")">Pagos</a>
+                        </div>
                     </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">POSGRADO <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@Url.Action("CuotaPago", "Posgrado")">Cuota de pago</a></li>
-                            <li><a href="@Url.Action("ConceptoPago", "Posgrado")">Conceptos de pago</a></li>
-                            <li><a href="@Url.Action("Obligaciones", "Posgrado")">Obligaciones</a></li>
-                            <li><a href="@Url.Action("Pagos", "Posgrado")">Pagos</a></li>
-                        </ul>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">POSGRADO <span class="caret"></span></a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="@Url.Action("CuotaPago", "Posgrado")">Cuota de pago</a>
+                            <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Posgrado")">Conceptos de pago</a>
+                            <a class="dropdown-item" href="@Url.Action("Obligaciones", "Posgrado")">Obligaciones</a>
+                            <a class="dropdown-item" href="@Url.Action("Pagos", "Posgrado")">Pagos</a>
+                        </div>
                     </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">EUDED <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@Url.Action("CuotaPago", "Euded")">Cuota de pago</a></li>
-                            <li><a href="@Url.Action("ConceptoPago", "Euded")">Conceptos de pago</a></li>
-                            <li><a href="@Url.Action("Obligaciones", "Euded")">Obligaciones</a></li>
-                            <li><a href="@Url.Action("Pagos", "Euded")">Pagos</a></li>
-                        </ul>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">EUDED <span class="caret"></span></a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="@Url.Action("CuotaPago", "Euded")">Cuota de pago</a>
+                            <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Euded")">Conceptos de pago</a>
+                            <a class="dropdown-item" href="@Url.Action("Obligaciones", "Euded")">Obligaciones</a>
+                            <a class="dropdown-item" href="@Url.Action("Pagos", "Euded")">Pagos</a>
+                        </div>
                     </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">TASAS <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@Url.Action("CuotaPago", "Tasas")">Cuota de pago</a></li>
-                            <li><a href="@Url.Action("ConceptoPago", "Tasas")">Conceptos de pago</a></li>
-                            <li><a href="@Url.Action("Obligaciones", "Tasas")">Obligaciones</a></li>
-                            <li><a href="@Url.Action("Pagos", "Tasas")">Pagos</a></li>
-                        </ul>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">TASAS <span class="caret"></span></a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="@Url.Action("CuotaPago", "Tasas")">Cuota de pago</a>
+                            <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Tasas")">Conceptos de pago</a>
+                            <a class="dropdown-item" href="@Url.Action("Obligaciones", "Tasas")">Obligaciones</a>
+                            <a class="dropdown-item" href="@Url.Action("Pagos", "Tasas")">Pagos</a>
+                        </div>
                     </li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">CAJA PERIFERICA <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="@Url.Action("CuotaPago", "CajaPeriferica")">Cuota de pago</a></li>
-                            <li><a href="@Url.Action("ConceptoPago", "CajaPeriferica")">Conceptos de pago</a></li>
-                            <li><a href="@Url.Action("Obligaciones", "CajaPeriferica")">Obligaciones</a></li>
-                            <li><a href="@Url.Action("Pagos", "CajaPeriferica")">Pagos</a></li>
-                        </ul>
+                    <li class="nav-item dropdown">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">CAJA PERIFERICA <span class="caret"></span></a>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" href="@Url.Action("CuotaPago", "CajaPeriferica")">Cuota de pago</a>
+                            <a class="dropdown-item" href="@Url.Action("ConceptoPago", "CajaPeriferica")">Conceptos de pago</a>
+                            <a class="dropdown-item" href="@Url.Action("Obligaciones", "CajaPeriferica")">Obligaciones</a>
+                            <a class="dropdown-item" href="@Url.Action("Pagos", "CajaPeriferica")">Pagos</a>
+                        </div>
                     </li>
                 </ul>
             </div>
         </div>
     </div>
-    <div class="container-fluid body-content" style="padding-top: 50px;">
+    <div class="container-fluid body-content" style="padding-top: 100px;">
         @RenderBody()
         <hr />
         <footer>
@@ -84,8 +84,79 @@
         </footer>
     </div>
 
-    @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/datetime")
+    @Scripts.Render("~/bundles/select")
+    @Scripts.Render("~/bundles/app")
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
     @RenderSection("scripts", required: false)
+
+    <script type="text/javascript">
+        $(function () {
+            $('body').on('click', '.modal-link', function (e) {
+                e.preventDefault();
+                $(this).attr('data-target', '#modal-container');
+                $(this).attr('data-toggle', 'modal');
+            });
+
+            $('body').on('click', '.modal-link-lg', function (e) {
+                e.preventDefault();
+                $(this).attr('data-target', '#modal-container-lg');
+                $(this).attr('data-toggle', 'modal');
+            });
+
+            $('body').on('click', '.modal-link-xl', function (e) {
+                e.preventDefault();
+                $(this).attr('data-target', '#modal-container-xl');
+                $(this).attr('data-toggle', 'modal');
+            });
+
+            $('#modal-container-lg').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var url = button.attr("href");
+                var modal = $(this);
+                modal.find('.modal-content').load(url);
+            });
+
+            $('#modal-container-xl').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var url = button.attr("href");
+                var modal = $(this);
+                modal.find('.modal-content').load(url);
+            });
+
+            $('#modal-container').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var url = button.attr("href");
+                var modal = $(this);
+                modal.find('.modal-content').load(url);
+            });
+
+            $('#modal-container').on('hide.bs.modal', function () {
+                $(this).removeData('bs.modal');
+                $('#modal-container .modal-dialog').removeClass('modal-lg')
+                $('#modal-container .modal-content').html('<p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>');
+            });
+
+            $('#modal-container-lg').on('hide.bs.modal', function () {
+                $(this).removeData('bs.modal');
+                $('#modal-container-lg .modal-content').html('<p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>');
+            });
+
+            $('#modal-container-xl').on('hide.bs.modal', function () {
+                $(this).removeData('bs.modal');
+                $('#modal-container-xl .modal-content').html('<p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>');
+            });
+
+            $('.select-filter').select2({
+                theme: 'bootstrap4',
+                placeholder: 'SELECCIONAR',
+                allowClear: true
+            });
+
+            $('[data-toggle="tooltip"]').tooltip()
+        });
+    </script>
 </body>
 </html>
