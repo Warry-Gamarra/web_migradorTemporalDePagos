@@ -1,0 +1,40 @@
+﻿
+
+@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.CuotaPagoTP>
+@using GridMvc.Html
+
+<div class="container-fluid">
+    <div class="col-12">
+        <section class="content-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb float-right small d-none d-sm-inline-flex">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")"><i class="fa fa-home">&nbsp;</i>Inicio</a></li>
+                    <li class="breadcrumb-item"><span><i class="fa bi-tools">&nbsp;</i>@ViewBag.Group </span></li>
+                    <li class="breadcrumb-item active"><span><i class="fa fa-envelope">&nbsp;</i>@ViewBag.Title </span></li>
+                </ol>
+            </nav>
+            <h1 class="">@ViewBag.Title <small></small></h1>
+        </section>
+    </div>
+    <br />
+
+    <div class="col-12">
+
+        <br />
+        <div class="table-responsive" style="min-height:300px">
+            @Html.Grid(Model).Columns(columns =>
+            {
+                columns.Add(c => c.Cuota_pago).Titled("Codigo").Filterable(true);
+                columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
+                columns.Add(c => c.N_cta_cte).Titled("Nro. Cuenta").Filterable(true);
+                columns.Add(c => c.Eliminado).Titled("Eliminado").Filterable(true);
+                columns.Add(c => c.Codigo_bnc).Titled("Codigo BNC").Filterable(true);
+                columns.Add(c => c.Fch_venc).Titled("Fec. Venc").Filterable(true);
+                columns.Add(c => c.Prioridad).Titled("Prioridad").Filterable(true);
+                columns.Add(c => c.C_mora).Titled("Mora").Filterable(true);
+                }
+            ).WithPaging(30).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+        </div>
+
+    </div>
+</div>

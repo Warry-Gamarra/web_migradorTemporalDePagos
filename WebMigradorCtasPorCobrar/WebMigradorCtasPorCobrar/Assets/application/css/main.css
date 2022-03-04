@@ -1,0 +1,319 @@
+:root {
+    --cs-blue: #3498db;
+    --cs-blue-dark: #195386;
+    --cs-blue-dark2: #363f4a;
+    --cs-blue-sky: #50c1cf;
+    --cs-purple: #9b59b6;
+    --cs-green: #1abb9c;
+    --cs-aero: #9cc2cb;
+    --cs-red: #e74c3c;
+    --cs-red-dark: #96180c;
+    --cs-dark: #363f4a;
+    --cs-yellow: #dc9338;
+    --cs-orange: #ff8330;
+    --cs-orange-hover: #ff8a3b;
+    --cs-orange-border: #ff6a007e;
+}
+
+html {
+  min-height: 100%;
+  position: relative;
+  font-size: 14px;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin-bottom: 60px !important;
+  /*background-color: #fff;*/
+  background-color: #fdfbfb;
+  overflow-x: hidden;
+  min-height: 100%;
+  font-size: 14px;
+}
+
+/**  -------------colores -------------------  **/
+.text-yellow {
+  color: var(--cs-yellow);
+}
+
+.blue {
+  color: var(--cs-blue);
+}
+
+.purple {
+  color: var(--cs-purple);
+}
+
+.green {
+  color: var(--cs-green);
+}
+
+.aero {
+  color: var(--cs-aero);
+}
+
+.red {
+  color: var(--cs-red);
+}
+
+.orange {
+  color: var(--cs-orange);
+}
+
+.dark {
+  color: var(--cs-dark);
+}
+
+.border-blue {
+  border-color: var(--cs-blue) !important;
+}
+
+.border-purple {
+  border-color: var(--cs-purple) !important;
+}
+
+.border-green {
+  border-color: var(--cs-green) !important;
+}
+
+.border-aero {
+  border-color: var(--cs-aero) !important;
+}
+
+.border-red {
+  border-color: var(--cs-red) !important;
+}
+
+.border-dark {
+  border-color: var(--cs-dark) !important;
+}
+
+.border-yellow {
+    border-color: var(--cs-yellow) !important;
+}
+
+.bg-white {
+  background: #fff !important;
+  border: 1px solid #fff !important;
+  color: #73879c;
+}
+
+.bg-green {
+  background: var(--cs-green) !important;
+  border: 1px solid var(--cs-green) !important;
+  color: #fff;
+}
+
+.bg-red {
+  background: var(--cs-red) !important;
+  border: 1px solid var(--cs-red) !important;
+  color: #fff;
+}
+
+.bg-dark-red {
+  background: var(--cs-red-dark) !important;
+  border: 1px solid var(--cs-red-dark) !important;
+  color: #fff;
+}
+
+.bg-blue {
+  background: var(--cs-blue) !important;
+  border: 1px solid var(--cs-blue) !important;
+  color: #fff;
+}
+
+.bg-yellow {
+  background: var(--cs-yellow) !important;
+  border: 1px solid var(--cs-yellow) !important;
+  color: #fff;
+}
+
+.bg-orange {
+  background: var(--cs-orange) !important;
+  border: 1px solid var(--cs-orange) !important;
+  color: #fff;
+}
+
+.bg-purple {
+  background: var(--cs-purple) !important;
+  border: 1px solid var(--cs-purple) !important;
+  color: #fff;
+}
+
+.bg-dark-primary {
+  background: var(--cs-blue-dark) !important;
+  border: 1px solid var(--cs-blue-dark) !important;
+  color: #fff;
+}
+
+.bg-dark-primary-2 {
+  background: var(--cs-blue-dark-2) !important;
+  border: 1px solid var(--cs-blue-dark-2) !important;
+  color: #fff;
+}
+
+.bg-blue-sky {
+  background: var(--cs-blue-sky) !important;
+  border: 1px solid var(--cs-blue-sky) !important;
+  color: #fff;
+}
+
+.bg-dark-gray {
+  background: var(--cs-dark) !important;
+  border: 1px solid var(--cs-dark) !important;
+  color: #fff;
+}
+
+.bg-light-gray {
+  background: #b7bfca2e !important;
+}
+
+.btn-outline-yellow {
+    color: var(--cs-yellow);
+    border-color: var(--cs-yellow);
+}
+
+.btn-outline-yellow:hover {
+    color: #fff;
+    background-color: var(--cs-yellow);
+    border-color: var(--cs-yellow);
+}
+
+/* Main content*/
+.navbar {
+  padding: 0 0.5rem;
+  height: 58px;
+  /*border-bottom: 0.5px solid var(--cs-orange-border);*/
+  border-bottom: 0.5px solid #a7a29f7e;
+}
+
+.navbar > a,
+.navbar > div,
+.navbar ul.navbar-nav,
+.navbar ul.navbar-nav > .nav-item,
+.navbar ul.navbar-nav > .nav-item .nav-link {
+  height: 100%;
+}
+
+.navbar .navbar-title {
+  padding: 13px;
+}
+
+.navbar ul.navbar-nav > .nav-item.active,
+.navbar ul.navbar-nav > .nav-item:active,
+.navbar ul.navbar-nav > .nav-item:hover {
+  background-color: var(--cs-orange) !important;
+  transition: .4s;
+}
+
+.navbar ul.navbar-nav > .nav-item .nav-link{
+    padding: 1.1rem;
+}
+
+.navbar ul.navbar-nav > .nav-item.active .nav-link,
+.navbar ul.navbar-nav > .nav-item:active .nav-link,
+.navbar ul.navbar-nav > .nav-item:hover .nav-link {
+    color: #fff;
+    transition: .4s;
+}
+
+.dropdown-item.active,
+.dropdown-item:active,
+.dropdown-item:hover {
+  color: #fff;
+  text-decoration: none;
+  background-color: var(--cs-orange-hover);
+}
+
+.content-wrapper,
+.main-footer {
+  -webkit-transition: -webkit-transform 0.3s ease-in-out,
+    margin 0.3s ease-in-out;
+  -moz-transition: -moz-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
+  -o-transition: -o-transform 0.3s ease-in-out, margin 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out, margin 0.3s ease-in-out;
+  margin-left: 250px;
+  z-index: 820;
+}
+
+@media (max-width: 767px) {
+  .content-wrapper,
+  .main-footer {
+    margin-left: 0;
+  }
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+
+footer {
+  position: absolute;
+  bottom: 0px;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+.main-footer {
+  width: 100%;
+  font: bold 14px sans-serif;
+  text-align: left;
+  padding: 30px 25px 35px;
+}
+
+@media (max-width: 1000px) {
+  .main-footer {
+    font: bold 14px sans-serif;
+  }
+}
+
+
+/* --------------------- Bootstrap Extends -----------------------------*/
+
+.btn-group-xs > .btn, .btn-xs {
+    padding: 1px 5px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+
+a.btn-secondary, a.btn-info, a.btn-danger, a.btn-warning,
+a.btn-secondary:hover, a.btn-info:hover, a.btn-danger:hover, a.btn-warning:hover,
+a.btn-outline-primary:hover, a.btn-outline-secondary:hover, a.btn-outline-info:hover, a.btn-outline-danger:hover, a.btn-outline-warning:hover,
+a.btn-outline-primary:active, a.btn-outline-secondary:active, a.btn-outline-info:active, a.btn-outline-danger:active, a.btn-outline-warning:active,
+a.btn-secondary:active, a.btn-info:active, a.btn-danger:active, a.btn-warning:active {
+    color: #fff;
+}
+
+a.btn-outline-primary {
+    color: #007bff;
+}
+
+.control-label {
+    font-weight: 600;
+}
+
+@media (min-width: 576px) {
+    .modal-dialog {
+        /*max-width: 580px;*/
+        margin: 1.75rem auto;
+    }
+}
+
+
+strong.select2-results__group {
+    color: #afafaf;
+    font-size: 0.8rem;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #4c6784;
+}
+
+/* --------------------- Select2 Extends -----------------------------*/
+
+.select2-container {
+    width: 100% !important;
+}
