@@ -34,6 +34,7 @@
                             <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Pregrado")">Conceptos de pago</a>
                             <a class="dropdown-item" href="@Url.Action("Obligaciones", "Pregrado")">Obligaciones</a>
                             <a class="dropdown-item" href="@Url.Action("Pagos", "Pregrado")">Pagos</a>
+                            <a class="dropdown-item" href="@Url.Action("Migracion", "Pregrado")">Migración</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -43,6 +44,7 @@
                             <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Posgrado")">Conceptos de pago</a>
                             <a class="dropdown-item" href="@Url.Action("Obligaciones", "Posgrado")">Obligaciones</a>
                             <a class="dropdown-item" href="@Url.Action("Pagos", "Posgrado")">Pagos</a>
+                            <a class="dropdown-item" href="@Url.Action("Migracion", "Posgrado")">Migración</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -52,6 +54,7 @@
                             <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Euded")">Conceptos de pago</a>
                             <a class="dropdown-item" href="@Url.Action("Obligaciones", "Euded")">Obligaciones</a>
                             <a class="dropdown-item" href="@Url.Action("Pagos", "Euded")">Pagos</a>
+                            <a class="dropdown-item" href="@Url.Action("Migracion", "Euded")">Migración</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -60,7 +63,7 @@
                             <a class="dropdown-item" href="@Url.Action("CuotaPago", "Tasas")">Cuota de pago</a>
                             <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Tasas")">Conceptos de pago</a>
                             <a class="dropdown-item" href="@Url.Action("Obligaciones", "Tasas")">Obligaciones</a>
-                            <a class="dropdown-item" href="@Url.Action("Pagos", "Tasas")">Pagos</a>
+                            <a class="dropdown-item" href="@Url.Action("Pagos", "Tasas")">Migración</a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
@@ -76,12 +79,40 @@
             </div>
         </div>
     </div>
-    <div class="container-fluid body-content" style="padding-top: 100px;">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - UNFV</p>
-        </footer>
+    <main class="wrapper">
+        <div class="content-wrapper pt-3">
+            @RenderBody()
+        </div>
+    </main>
+    <footer class="main-footer">
+        <div class="container-fluid">
+            <p class="text-muted">&copy @DateTime.Now.Year Elaborado por <a href="http://www.unfv.edu.pe/ceuci/">CEUCI - UNFV</a></p>
+        </div>
+    </footer>
+
+    <div class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="modal-container-label" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modal-container-lg" tabindex="-1" role="dialog" aria-labelledby="modal-container-label" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="modal-container-xl" tabindex="-1" role="dialog" aria-labelledby="modal-container-label" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>
+            </div>
+        </div>
     </div>
 
     @Scripts.Render("~/bundles/bootstrap")

@@ -17,6 +17,7 @@ CREATE TABLE TR_MG_EcPri (
 	ANO				nvarchar(255)  NULL,
 	P				nvarchar(255)  NULL,
 	ELIMINADO		bit  NULL,
+	I_ProcedenciaID	int  NOT NULL,
 	D_FecCarga		datetime  NULL,
 	B_Actualizado	bit  NOT NULL DEFAULT 0,
 	D_FecActualiza	datetime  NULL,
@@ -46,6 +47,7 @@ CREATE TABLE dbo.TR_MG_EcObl (
 	FCH_VENC		datetime  NULL,
 	MONTO			float  NULL,
 	PAGADO			bit  NULL,
+	I_ProcedenciaID	int  NOT NULL,
 	D_FecCarga		datetime  NULL,
 	B_Actualizado	bit  NOT NULL DEFAULT 0,
 	D_FecActualiza	datetime  NULL,
@@ -78,6 +80,7 @@ CREATE TABLE TR_MG_EcDet (
 	ID_LUG_PAG		nvarchar(50)  NULL,
 	CANTIDAD		nvarchar(50)  NULL,
 	MONTO			nvarchar(50)  NULL,
+	DOCUMENTO		nvarchar(4000) NULL,
 	PAGADO			nvarchar(50)  NULL,
 	CONCEPTO_F		nvarchar(50)  NULL,
 	FCH_ELIMIN		nvarchar(50)  NULL,
@@ -89,6 +92,7 @@ CREATE TABLE TR_MG_EcDet (
 	TIPO_PAGO		nvarchar(50)  NULL,
 	NO_BANCO		nvarchar(50)  NULL,
 	COD_DEP			nvarchar(50)  NULL,
+	I_ProcedenciaID	int  NOT NULL,
 	D_FecCarga		datetime  NULL,
 	B_Actualizado	bit  NOT NULL DEFAULT 0,
 	D_FecActualiza	datetime  NULL,
@@ -115,6 +119,7 @@ CREATE TABLE TR_MG_CpDes(
 	FCH_VENC		datetime  NULL,
 	PRIORIDAD		nvarchar(255)  NULL,
 	C_MORA			nvarchar(255)  NULL,
+	I_ProcedenciaID	int  NOT NULL,
 	I_CatPagoID		int  NULL, 
 	I_Anio			smallint  NULL,
 	I_Periodo		int	 NULL,
@@ -165,6 +170,7 @@ CREATE TABLE TR_MG_CpPri (
 	DESCRIP_L		nvarchar(255)  NULL,
 	COD_DEP_PL		nvarchar(255)  NULL,
 	OBLIG_MORA		nvarchar(255)  NULL,
+	I_ProcedenciaID	int  NOT NULL,
 	I_TipAluID		int  NULL,
 	I_TipGradoID	int  NULL,
 	I_TipOblID		int  NULL,
@@ -200,6 +206,7 @@ CREATE TABLE TR_MG_Alumnos
 	T_ApePaterno	varchar(50), 
 	T_ApeMaterno	varchar(50), 
 	T_Nombre		varchar(50), 
+	I_ProcedenciaID	int  NOT NULL,
 	C_Sexo			char(1), 
 	D_FecNac		date, 
 	C_CodModIng		varchar(2), 
@@ -215,6 +222,19 @@ CREATE TABLE TR_MG_Alumnos
 	D_FecRemovido	datetime  NULL,
 )
 GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TC_ProcedenciaData')
+	DROP TABLE TC_ProcedenciaData
+GO
+
+CREATE TABLE TC_ProcedenciaData
+(
+	I_ProcedenciaID		tinyint,
+	T_ProcedenciaDesc	varchar(100)
+	CONSTRAINT PK_ProcedenciaData PRIMARY KEY (I_ProcedenciaID)
+)
+GO
+
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TI_ObservacionRegistroTabla')

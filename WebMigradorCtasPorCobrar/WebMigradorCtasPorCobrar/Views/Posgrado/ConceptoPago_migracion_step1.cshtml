@@ -1,0 +1,20 @@
+﻿
+
+@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.ConceptoPagoTP>
+@using GridMvc.Html
+
+<div class="table-responsive" style="min-height:300px">
+    @Html.Grid(Model).Columns(columns =>
+        {
+            columns.Add(c => c.Id_cp).Titled("Codigo").Filterable(true);
+            columns.Add(c => c.Cuota_pago).Titled("Cuota de pago").Filterable(true);
+            columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
+            columns.Add(c => c.Ano).Titled("Año").Filterable(true);
+            columns.Add(c => c.Tipo_oblig).Titled("Obligación").Filterable(true);
+            columns.Add(c => c.Clasificad).Titled("Clasificador").Filterable(true);
+            columns.Add(c => c.Nro_pagos).Titled("Nro Pagos").Filterable(true);
+            columns.Add(c => c.Monto).Titled("Monto").Filterable(true);
+        }
+    ).WithPaging(30).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+</div>
+

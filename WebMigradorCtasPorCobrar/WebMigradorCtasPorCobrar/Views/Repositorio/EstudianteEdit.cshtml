@@ -1,0 +1,81 @@
+﻿
+@model WebMigradorCtasPorCobrar.Models.Entities.AlumnoMG
+
+@Scripts.Render("~/bundles/jqueryval")
+
+<div class="modal-header bg-dark-gray" style="border-radius: .2rem .2rem 0px 0px">
+    <h5 class="modal-title text-center"><i class="fa fa-address-book">&nbsp;</i> @ViewBag.Title</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+</div>
+@using (Ajax.BeginForm("EstudianteEdit", "Repositorio", new { area = "" }, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "div_msg", OnBegin = "Load", OnSuccess = "Submited", OnComplete = "Stop" }))
+{
+    @Html.Hidden("submited", 0)
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="container-fluid">
+            @Html.HiddenFor(model => model.I_RowID)
+
+            <div class="form-group row">
+                @Html.Label("Nro. Documento", new { @class = "col-md-4" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.C_NumDNI, new { @class = "form-control" })
+                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_NumDNI)</p>
+                </div>
+            </div>
+            <div class="form-group row">
+                @Html.Label("Apellido paterno", new { @class = "col-md-4" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.T_ApePaterno, new { @class = "form-control" })
+                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.T_ApePaterno)</p>
+                </div>
+            </div>
+            <div class="form-group row">
+                @Html.Label("Apellido materno", new { @class = "col-md-4" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.T_ApeMaterno, new { @class = "form-control" })
+                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.T_ApeMaterno)</p>
+                </div>
+            </div>
+            <div class="row form-group">
+                @Html.Label("Nombre", new { @class = "col-md-4" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.T_Nombre, new { @class = "form-control" })
+                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.T_Nombre)</p>
+                </div>
+            </div>
+            <div class="row form-group">
+                @Html.Label("Sexo", new { @class = "col-md-4" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.C_Sexo, new { @class = "form-control" })
+                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_Sexo)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer" id="div_msg">
+        <div class="col-md-12" style="display:none" id="loading">
+            <h6>Actualizando los datos...</h6>
+
+            <div class="progress">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btnsubmit"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+        <button type="button" class="btn btn-secondary" id="btnCancel" data-dismiss="modal"><i class="fa fa-times-circle-o">&nbsp;</i>Cancelar</button>
+    </div>
+}
+
+<script>
+    $(document).on('ready', function () {
+        $('#btnsubmit').removeClass('disabled');
+    });
+
+    $("form").submit(function () {
+        if (parseInt($("#submited").val()) > 0) {
+            return false;
+        }
+    });
+
+</script>

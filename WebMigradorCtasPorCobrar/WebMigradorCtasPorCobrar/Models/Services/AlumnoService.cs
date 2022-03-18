@@ -30,7 +30,21 @@ namespace WebMigradorCtasPorCobrar.Models.Services
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.Query<AlumnoMG>("SELECT * FROM TC_MG_Alumnos", commandType: CommandType.Text);
+                result = connection.Query<AlumnoMG>("SELECT * FROM TR_MG_Alumnos", commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+
+        public AlumnoMG ObtenerAlumnosMG(int id)
+        {
+            AlumnoMG result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.QuerySingleOrDefault<AlumnoMG>("SELECT * FROM TR_MG_Alumnos WHERE I_RowID = @I_RowID", 
+                                                                    new { I_RowID = id }, commandType: CommandType.Text);
             }
 
             return result;

@@ -22,6 +22,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities
 
     public class AlumnoMG
     {
+        public int I_RowID { get; set; }
         public string C_RcCod { get; set; }
         public string C_CodAlu { get; set; }
         public string C_NumDNI { get; set; }

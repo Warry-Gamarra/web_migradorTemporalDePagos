@@ -138,9 +138,17 @@
     <Compile Include="Models\Entities\Alumno.cs" />
     <Compile Include="Models\Entities\ConceptoPago.cs" />
     <Compile Include="Models\Entities\CuotaPago.cs" />
+    <Compile Include="Models\Entities\DetalleObligacion.cs" />
+    <Compile Include="Models\Entities\Obligacion.cs" />
+    <Compile Include="Models\Helpers\AnioObligacion.cs" />
+    <Compile Include="Models\Helpers\Constant.cs" />
+    <Compile Include="Models\Helpers\Response.cs" />
     <Compile Include="Models\Services\AlumnoService.cs" />
     <Compile Include="Models\Services\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\CuotaPagoService.cs" />
+    <Compile Include="Models\Services\DetalleObligacionService.cs" />
+    <Compile Include="Models\Services\ObligacionService.cs" />
+    <Compile Include="Models\ViewModels\ObligacionViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -388,12 +396,32 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\ViewModels\" />
     <Folder Include="Views\CajaPeriferica\" />
     <Folder Include="Views\Tasas\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <Content Include="Views\Repositorio\Estudiante_migracion_step1.cshtml" />
+    <Content Include="Views\Repositorio\Estudiante_migracion_step2.cshtml" />
+    <Content Include="Views\Repositorio\Estudiante_migracion_step4.cshtml" />
+    <Content Include="Views\Repositorio\Estudiante_migracion_step3.cshtml" />
+    <Content Include="Views\Posgrado\CuotaPago_migracion_step1.cshtml" />
+    <Content Include="Views\Posgrado\CuotaPago_migracion_step3.cshtml" />
+    <Content Include="Views\Posgrado\CuotaPago_migracion_step2.cshtml" />
+    <Content Include="Views\Posgrado\CuotaPago_migracion_step4.cshtml" />
+    <Content Include="Views\Repositorio\EstudianteEdit.cshtml" />
+    <Content Include="Views\Posgrado\ConceptoPago.cshtml" />
+    <Content Include="Views\Posgrado\ConceptoPago_migracion_step1.cshtml" />
+    <Content Include="Views\Posgrado\ConceptoPago_migracion_step2.cshtml" />
+    <Content Include="Views\Posgrado\ConceptoPago_migracion_step3.cshtml" />
+    <Content Include="Views\Posgrado\ConceptoPago_migracion_step4.cshtml" />
+    <Content Include="Views\Posgrado\Obligacion.cshtml" />
+    <Content Include="Views\Posgrado\Obligacion_migracion_step1.cshtml" />
+    <Content Include="Views\Posgrado\Obligacion_migracion_step2.cshtml" />
+    <Content Include="Views\Posgrado\Obligacion_migracion_step3.cshtml" />
+    <Content Include="Views\Posgrado\Obligacion_migracion_step4.cshtml" />
+    <Content Include="Views\Posgrado\Migracion.cshtml" />
+    <Content Include="Views\Posgrado\_ObligacionesAnio.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

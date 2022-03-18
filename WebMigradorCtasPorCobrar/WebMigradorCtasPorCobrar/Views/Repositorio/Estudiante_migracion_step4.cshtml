@@ -1,0 +1,22 @@
+﻿
+@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.AlumnoTP>
+@using GridMvc.Html
+
+<div class="table-responsive" style="min-height:300px">
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(c => c.C_CodAlu).Titled("Codigo").Filterable(true);
+        columns.Add(c => c.T_ApePater).Titled("Ape. Paterno").Filterable(true);
+        columns.Add(c => c.T_ApeMater).Titled("Ape. Materno").Filterable(true);
+        columns.Add(c => c.T_Nombre).Titled("Nombre").Filterable(true);
+        columns.Add(c => c.C_CodTipDo).Titled("Tipo Doc.").Filterable(true);
+        columns.Add(c => c.C_NumDNI).Titled("Nro DNI.").Filterable(true);
+        columns.Add(c => c.C_Sexo).Titled("Sexo").Filterable(true);
+        columns.Add(c => c.C_RcCod).Titled("Cod RC").Filterable(true);
+        columns.Add(c => c.C_AnioIngr).Titled("Año Ingr.").Filterable(true);
+        columns.Add(c => c.C_CodModIn).Titled("Mod Ing").Filterable(true);
+        }
+    ).WithPaging(30).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+</div>
+
+
