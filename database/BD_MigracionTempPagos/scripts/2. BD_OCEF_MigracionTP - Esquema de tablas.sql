@@ -1,22 +1,22 @@
 USE [BD_OCEF_MigracionTP]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_MG_EcPri')
-	DROP TABLE TR_MG_EcPri
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_Ec_Pri')
+	DROP TABLE TR_Ec_Pri
 GO
 
-CREATE TABLE TR_MG_EcPri (
+CREATE TABLE TR_Ec_Pri (
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
-	COD_ALU			nvarchar(255)  NULL,
-	COD_RC			nvarchar(255)  NULL,
-	TOT_APAGAR		float  NULL,
-	NRO_EC			float  NULL,
-	FCH_EC			datetime  NULL,
-	TOT_PAGADO		float  NULL,
-	SALDO			float  NULL,
-	ANO				nvarchar(255)  NULL,
-	P				nvarchar(255)  NULL,
-	ELIMINADO		bit  NULL,
+	Cod_alu			varchar(20)  NULL,
+	Cod_rc			varchar(3) NULL,
+	Tot_apagar		decimal(10,2)  NULL,
+	Nro_ec			bigint  NULL,
+	Fch_ec			date  NULL,
+	Tot_pagado		float  NULL,
+	Saldo			decimal(10,2)  NULL,
+	Ano				varchar(4) NULL,
+	P				varchar(3) NULL,
+	Eliminado		bit  NULL,
 	I_ProcedenciaID	int  NOT NULL,
 	D_FecCarga		datetime  NULL,
 	B_Actualizado	bit  NOT NULL DEFAULT 0,
@@ -31,22 +31,22 @@ CREATE TABLE TR_MG_EcPri (
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_MG_EcObl')
-	DROP TABLE TR_MG_EcObl
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_Ec_Obl')
+	DROP TABLE TR_Ec_Obl
 GO
 
-CREATE TABLE dbo.TR_MG_EcObl (
+CREATE TABLE dbo.TR_Ec_Obl (
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
-	ANO				nvarchar(255)  NULL,
-	P				nvarchar(255)  NULL,
+	Ano				varchar(4) NULL,
+	P				varchar(3) NULL,
 	I_Periodo		int	NULL,
-	COD_ALU			nvarchar(255)  NULL,
-	COD_RC			nvarchar(255)  NULL,
-	CUOTA_PAGO		float  NULL,
-	TIPO_OBLIG		bit  NULL,
-	FCH_VENC		datetime  NULL,
-	MONTO			float  NULL,
-	PAGADO			bit  NULL,
+	Cod_alu			varchar(20)  NULL,
+	Cod_rc			varchar(3) NULL,
+	Cuota_pago		int  NULL,
+	Tipo_oblig		bit  NULL,
+	Fch_venc		date  NULL,
+	Monto			decimal(10,2)  NULL,
+	Pagado			bit  NULL,
 	I_ProcedenciaID	int  NOT NULL,
 	D_FecCarga		datetime  NULL,
 	B_Actualizado	bit  NOT NULL DEFAULT 0,
@@ -61,37 +61,37 @@ CREATE TABLE dbo.TR_MG_EcObl (
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_MG_EcDet')
-	DROP TABLE TR_MG_EcDet
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_Ec_Det')
+	DROP TABLE TR_Ec_Det
 GO
 
-CREATE TABLE TR_MG_EcDet (
+CREATE TABLE TR_Ec_Det (
 	I_RowID			bigint IDENTITY(1, 1) NOT NULL,
-	COD_ALU			nvarchar(50)  NULL,
-	COD_RC			nvarchar(50)  NULL,
-	CUOTA_PAGO		float  NULL,
-	ANO				nvarchar(50)  NULL,
-	P				nvarchar(50)  NULL,
-	TIPO_OBLIG		varchar(50)  NULL,
-	CONCEPTO		float  NULL,
-	FCH_VENC		nvarchar(50)  NULL,
-	NRO_RECIBO		nvarchar(50)  NULL,
-	FCH_PAGO		nvarchar(50)  NULL,
-	ID_LUG_PAG		nvarchar(50)  NULL,
-	CANTIDAD		nvarchar(50)  NULL,
-	MONTO			nvarchar(50)  NULL,
-	DOCUMENTO		nvarchar(4000) NULL,
-	PAGADO			nvarchar(50)  NULL,
-	CONCEPTO_F		nvarchar(50)  NULL,
-	FCH_ELIMIN		nvarchar(50)  NULL,
-	NRO_EC			float  NULL,
-	FCH_EC			nvarchar(50)  NULL,
-	ELIMINADO		nvarchar(50)  NULL,
-	PAG_DEMAS		nvarchar(50)  NULL,
-	COD_CAJERO		nvarchar(50)  NULL,
-	TIPO_PAGO		nvarchar(50)  NULL,
-	NO_BANCO		nvarchar(50)  NULL,
-	COD_DEP			nvarchar(50)  NULL,
+	Cod_alu			varchar(20)  NULL,
+	Cod_rc			varchar(3) NULL,
+	Cuota_pago		int  NULL,
+	Ano				varchar(4) NULL,
+	P				varchar(3) NULL,
+	Tipo_oblig		bit  NULL,
+	Concepto		int  NULL,
+	Fch_venc		date  NULL,
+	Nro_recibo		varchar(20)  NULL,
+	Fch_pago		date  NULL,
+	Id_lug_pag		varchar(10)  NULL,
+	Cantidad		decimal(10,2)  NULL,
+	Monto			decimal(10,2)  NULL,
+	Documento		nvarchar(4000)  NULL,
+	Pagado			bit  NULL,
+	Concepto_f		bit  NULL,
+	Fch_elimin		date  NULL,
+	Nro_ec			bigint  NULL,
+	Fch_ec			date  NULL,
+	Eliminado		bit  NULL,
+	Pag_demas		bit  NULL,
+	Cod_cajero		varchar(20)  NULL,
+	Tipo_pago		bit  NULL,
+	No_banco		bit  NULL,
+	Cod_dep			varchar(10)  NULL,
 	I_ProcedenciaID	int  NOT NULL,
 	D_FecCarga		datetime  NULL,
 	B_Actualizado	bit  NOT NULL DEFAULT 0,
@@ -105,20 +105,20 @@ CREATE TABLE TR_MG_EcDet (
 ) 
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_MG_CpDes')
-	DROP TABLE TR_MG_CpDes
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_Cp_Des')
+	DROP TABLE TR_Cp_Des
 GO
 
-CREATE TABLE TR_MG_CpDes(
+CREATE TABLE TR_Cp_Des(
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
-	CUOTA_PAGO		float  NULL,
-	DESCRIPCIO		nvarchar(255)  NULL,
-	N_CTA_CTE		nvarchar(255)  NULL,
-	ELIMINADO		bit NULL,
-	CODIGO_BNC		nvarchar(255)  NULL,
-	FCH_VENC		datetime  NULL,
-	PRIORIDAD		nvarchar(255)  NULL,
-	C_MORA			nvarchar(255)  NULL,
+	Cuota_pago		int  NULL,
+	Descripcio		varchar(50)  NULL,
+	N_cta_cte		varchar(50)  NULL,
+	Eliminado		bit NULL,
+	Codigo_bnc		varchar(10)  NULL,
+	Fch_venc		date  NULL,
+	Prioridad		varchar(1)  NULL,
+	C_mora			bit  NULL,
 	I_ProcedenciaID	int  NOT NULL,
 	I_CatPagoID		int  NULL, 
 	I_Anio			smallint  NULL,
@@ -136,40 +136,40 @@ CREATE TABLE TR_MG_CpDes(
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_MG_CpPri')
-	DROP TABLE TR_MG_CpPri
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_Cp_Pri')
+	DROP TABLE TR_Cp_Pri
 GO
 
-CREATE TABLE TR_MG_CpPri (
+CREATE TABLE TR_Cp_Pri (
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
-	ID_CP			float  NULL,
-	CUOTA_PAGO		float  NULL,
-	ANO				nvarchar(255) NULL,
-	P				nvarchar(255) NULL,
-	COD_RC			nvarchar(255) NULL,
-	COD_ING			nvarchar(255) NULL,
-	TIPO_OBLIG		bit  NULL,
-	CLASIFICAD		nvarchar(255) NULL,
-	CLASIFIC_5		nvarchar(255) NULL,
-	ID_CP_AGRP		float  NULL,
-	AGRUPA			bit  NULL,
-	NRO_PAGOS		float  NULL,
-	ID_CP_AFEC		float  NULL,
-	PORCENTAJE		bit  NULL,
-	MONTO			float  NULL,
-	ELIMINADO		bit  NULL,
-	DESCRIPCIO		nvarchar(255)  NULL,
-	CALCULAR		nvarchar(255)  NULL,
-	GRADO			float  NULL,
-	TIP_ALUMNO		float  NULL,
-	GRUPO_RC		nvarchar(255)  NULL,
-	FRACCIONAB		bit  NULL,
-	CONCEPTO_G		bit  NULL,
-	DOCUMENTO		nvarchar(255)  NULL,
-	MONTO_MIN		nvarchar(255)  NULL,
-	DESCRIP_L		nvarchar(255)  NULL,
-	COD_DEP_PL		nvarchar(255)  NULL,
-	OBLIG_MORA		nvarchar(255)  NULL,
+	Id_cp			int  NULL,
+	Cuota_pago		int  NULL,
+	Ano				varchar(4) NULL,
+	P				varchar(3) NULL,
+	Cod_rc			varchar(3) NULL,
+	Cod_ing			varchar(3) NULL,
+	Tipo_oblig		bit  NULL,
+	Clasificad		varchar(15) NULL,
+	Clasific_5		varchar(5) NULL,
+	Id_cp_agrp		int  NULL,
+	Agrupa			bit  NULL,
+	Nro_pagos		smallint  NULL,
+	Id_cp_afec		int  NULL,
+	Porcentaje		bit  NULL,
+	Monto			decimal(10, 2)  NULL,
+	Eliminado		bit  NULL,
+	Descripcio		varchar(255)  NULL,
+	Calcular		varchar(3)  NULL,
+	Grado			tinyint  NULL,
+	Tip_alumno		tinyint  NULL,
+	Grupo_rc		varchar(3)  NULL,
+	Fraccionab		bit  NULL,
+	Concepto_g		bit  NULL,
+	Documento		nvarchar(4000)  NULL,
+	Monto_min		decimal(10, 2)  NULL,
+	Descrip_l		nvarchar(4000)  NULL,
+	Cod_dep_pl		varchar(20)  NULL,
+	Oblig_mora		bit  NULL,
 	I_ProcedenciaID	int  NOT NULL,
 	I_TipAluID		int  NULL,
 	I_TipGradoID	int  NULL,
@@ -192,11 +192,11 @@ CREATE TABLE TR_MG_CpPri (
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_MG_Alumnos')
-	DROP TABLE TR_MG_Alumnos
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_Alumnos')
+	DROP TABLE TR_Alumnos
 GO
 
-CREATE TABLE TR_MG_Alumnos
+CREATE TABLE TR_Alumnos
 (
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
 	C_RcCod			varchar(3), 
