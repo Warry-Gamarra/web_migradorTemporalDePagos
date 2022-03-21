@@ -143,8 +143,8 @@ BEGIN
 
 	BEGIN TRY 
 	
-		MERGE TR_MG_Alumnos AS TRG
-		USING (SELECT DISTINCT * FROM alumnos) AS SRC
+		MERGE TR_Alumnos AS TRG
+		USING (SELECT DISTINCT * FROM BD_OCEF_TemporalPagos.dbo.alumnos) AS SRC
 		ON	TRG.C_CodAlu = SRC.C_CODALU 
 			AND TRG.C_RcCod = SRC.C_RCCOD
 			AND ISNULL(TRG.C_CodModIng, '') = ISNULL(SRC.C_CODMODIN, '')
@@ -158,9 +158,9 @@ BEGIN
 						TRG.D_FecNac = CONVERT(DATE, SRC.D_FECNAC, 103),
 						TRG.C_AnioIngreso = SRC.C_ANIOINGR
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, D_FecCarga, B_Actualizado)
+			INSERT (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, I_ProcedenciaID, D_FecCarga, B_Actualizado)
 			VALUES (SRC.C_RCCOD, SRC.C_CODALU, SRC.C_NUMDNI, SRC.C_CODTIPDO, REPLACE(SRC.T_APEPATER, '-', ' '), REPLACE(SRC.T_APEMATER, '-', ' '), REPLACE(SRC.T_NOMBRE, '-', ' '), 
-					SRC.C_SEXO, CONVERT(DATE, SRC.D_FECNAC, 103), SRC.C_CODMODIN, SRC.C_ANIOINGR, @D_FecProceso, 1)
+					SRC.C_SEXO, CONVERT(DATE, SRC.D_FECNAC, 103), SRC.C_CODMODIN, SRC.C_ANIOINGR, 4, @D_FecProceso, 1)
 		WHEN NOT MATCHED BY SOURCE THEN
 			UPDATE SET TRG.B_Removido = 1, 
 					   TRG.D_FecRemovido = @D_FecProceso
@@ -169,13 +169,13 @@ BEGIN
 				deleted.C_NumDNI, deleted.C_CodTipDoc, deleted.T_ApePaterno, deleted.T_ApeMaterno, deleted.T_Nombre, 
 				deleted.C_Sexo, deleted.D_FecNac, deleted.C_CodModIng, deleted.C_AnioIngreso, deleted.B_Removido INTO @Tbl_output;
 		
-		UPDATE	TR_MG_Alumnos 
+		UPDATE	TR_Alumnos 
 				SET	B_Actualizado = 0, B_Migrable = 1, D_FecMigrado = NULL, B_Migrado = 0
 
 		UPDATE	t_Alu
 		SET		t_Alu.B_Actualizado = 1,
 				t_Alu.D_FecActualiza = @D_FecProceso
-		FROM TR_MG_Alumnos AS t_Alu
+		FROM TR_Alumnos AS t_Alu
 				INNER JOIN 	@Tbl_output as t_out ON t_out.C_RcCod = t_Alu.C_RcCod 
 				AND t_out.C_CodAlu = t_Alu.C_CodAlu AND t_out.accion = 'UPDATE' AND t_out.B_Removido = 0
 		WHERE 
@@ -189,7 +189,7 @@ BEGIN
 				ISNULL(t_out.INS_C_CodModIng, '') <> ISNULL(t_out.DEL_C_CodModIng, '') OR
 				t_out.INS_C_AnioIngreso <> t_out.DEL_C_AnioIngreso
 
-		SET @I_CantAlu = (SELECT COUNT(*) FROM alumnos)
+		SET @I_CantAlu = (SELECT COUNT(*) FROM BD_OCEF_TemporalPagos.dbo.alumnos)
 		SET @I_Insertados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'INSERT')
 		SET @I_Actualizados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
 		SET @I_Removidos = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
@@ -228,7 +228,7 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		UPDATE	TR_MG_Alumnos
+		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	
@@ -237,7 +237,7 @@ BEGIN
 				OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApeMaterno, '-', ' ')) <> 0
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_Alumnos
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_Nombre, '-', ' ')) <> 0 
 						OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApePaterno, '-', ' ')) <> 0 
 						OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApeMaterno, '-', ' ')) <> 0) AS SRC
@@ -287,17 +287,17 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		UPDATE	TR_MG_Alumnos
+		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_MG_Alumnos A 
-						WHERE A.C_CodAlu = TR_MG_Alumnos.C_CodAlu AND A.C_RcCod = TR_MG_Alumnos.C_RcCod
+		WHERE	EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
+						WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod
 						GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)
 				
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_Alumnos
-				  WHERE	EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_MG_Alumnos A 
-						WHERE A.C_CodAlu = TR_MG_Alumnos.C_CodAlu AND A.C_RcCod = TR_MG_Alumnos.C_RcCod
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
+				  WHERE	EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
+						WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod
 						GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -324,6 +324,7 @@ BEGIN
 END
 GO
 
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarCodigoCarreraAlumno')
 	DROP PROCEDURE [dbo].[USP_U_ValidarCodigoCarreraAlumno]
 GO
@@ -344,16 +345,16 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		UPDATE	TR_MG_Alumnos
+		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	NOT EXISTS (SELECT C_RcCod FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional c
-							WHERE C.C_RcCod = TR_MG_Alumnos.C_RcCod)
+							WHERE C.C_RcCod = TR_Alumnos.C_RcCod)
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_Alumnos
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	NOT EXISTS (SELECT C_RcCod FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional c
-							WHERE C.C_RcCod = TR_MG_Alumnos.C_RcCod)) AS SRC
+							WHERE C.C_RcCod = TR_Alumnos.C_RcCod)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -400,13 +401,13 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		UPDATE	TR_MG_Alumnos
+		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	C_AnioIngreso IS NULL OR C_AnioIngreso = 0
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_Alumnos
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	C_AnioIngreso IS NULL OR C_AnioIngreso = 0) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -454,16 +455,16 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		UPDATE	TR_MG_Alumnos
+		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
-							WHERE MI.C_CodModIng = TR_MG_Alumnos.C_CodModIng)
+							WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)
 		
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_Alumnos
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
-									WHERE MI.C_CodModIng = TR_MG_Alumnos.C_CodModIng)) AS SRC
+									WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -571,7 +572,7 @@ BEGIN
 		SELECT	A.I_PersonaID, I_RowID, A.C_RcCod, A.C_CodAlu, P.C_NumDNI, P.C_CodTipDoc
 		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
 				INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID
-				INNER JOIN TR_MG_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+				INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
 		WHERE (A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
 		ORDER BY A.I_PersonaID
 		
@@ -582,7 +583,7 @@ BEGIN
 		INSERT INTO ##TEMP_AlumnoPersona (I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc)
 		SELECT	I_RowID, TA.C_RcCod, TA.C_CodAlu, TA.C_NumDNI, TA.C_CodTipDoc
 		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
-				RIGHT JOIN TR_MG_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod 
+				RIGHT JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod 
 		WHERE ((A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
 			  AND A.I_PersonaID IS NULL
 
@@ -592,7 +593,7 @@ BEGIN
 
 		MERGE BD_UNFV_Repositorio.dbo.TC_Persona AS TRG
 		USING (SELECT AP.I_PersonaID, A.* FROM ##TEMP_AlumnoPersona AP 
-				INNER JOIN TR_MG_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1) AS SRC
+				INNER JOIN TR_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1) AS SRC
 		ON TRG.I_PersonaID = SRC.I_PersonaID
 		WHEN MATCHED AND B_Migrado = 0 THEN
 			UPDATE SET	TRG.C_NumDNI	 = SRC.C_NumDNI,
@@ -614,7 +615,7 @@ BEGIN
 
 		MERGE BD_UNFV_Repositorio.dbo.TC_Alumno AS TRG
 		USING (SELECT AP.I_PersonaID, A.* FROM ##TEMP_AlumnoPersona AP 
-				INNER JOIN TR_MG_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1) AS SRC
+				INNER JOIN TR_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1) AS SRC
 		ON	TRG.C_RcCod = SRC.C_RcCod 
 			AND TRG.C_CodAlu = SRC.C_CodAlu
 		WHEN MATCHED AND B_Migrado = 0 THEN
@@ -631,11 +632,11 @@ BEGIN
 		UPDATE	t_Alumnos
 		SET		t_Alumnos.B_Migrado = 1,
 				t_Alumnos.D_FecMigrado = @D_FecProceso
-		FROM TR_MG_Alumnos AS t_Alumnos
+		FROM TR_Alumnos AS t_Alumnos
 		INNER JOIN 	@Tbl_output_persona as t_out_p ON t_out_p.I_RowID = t_Alumnos.I_RowID
 		INNER JOIN 	@Tbl_output_alumno as t_out_a ON t_out_a.I_RowID = t_Alumnos.I_RowID
 
-		SET @I_CantAlu = (SELECT COUNT(*) FROM ##TEMP_AlumnoPersona AP INNER JOIN TR_MG_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1)
+		SET @I_CantAlu = (SELECT COUNT(*) FROM ##TEMP_AlumnoPersona AP INNER JOIN TR_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1)
 		SET @I_Insertados_persona = (SELECT COUNT(*) FROM @Tbl_output_persona WHERE accion = 'INSERT')
 		SET @I_Insertados_alumno = (SELECT COUNT(*) FROM @Tbl_output_alumno WHERE accion = 'INSERT')
 		SET @I_Actualizados_persona = (SELECT COUNT(*) FROM @Tbl_output_persona WHERE accion = 'UPDATE' AND B_Removido = 0)

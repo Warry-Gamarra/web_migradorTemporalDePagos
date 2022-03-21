@@ -93,6 +93,29 @@ GO
 
 /*	CREACIÓN DE USUARIO DE BASE DE DATOS	*/
 
+
+USE [BD_OCEF_TemporalPagos]
+GO
+
+IF NOT EXISTS (SELECT uid FROM sys.sysusers WHERE name = 'UserOCEF' AND issqluser = 1)
+BEGIN
+
+	CREATE USER [UserOCEF] FOR LOGIN [UserOCEF] WITH DEFAULT_SCHEMA=[dbo]
+
+	ALTER ROLE [db_owner] ADD MEMBER [UserOCEF]
+
+	ALTER ROLE [db_datareader] ADD MEMBER [UserOCEF]
+
+	ALTER ROLE [db_datawriter] ADD MEMBER [UserOCEF]
+
+END
+ELSE
+BEGIN
+	PRINT ('Ya existe el usuario UserOCEF en BD_OCEF_TemporalPagos. Se omitió la creación')
+END
+GO
+
+
 USE [BD_OCEF_MigracionTP]
 GO
 
@@ -113,3 +136,5 @@ BEGIN
 	PRINT ('Ya existe el usuario UserOCEF en BD_OCEF_MigracionTP. Se omitió la creación')
 END
 GO
+
+
