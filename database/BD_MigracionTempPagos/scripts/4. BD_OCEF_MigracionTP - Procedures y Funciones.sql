@@ -491,6 +491,149 @@ END
 GO
 
 
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarCorrespondenciaNumDocumentoPersona')
+	DROP PROCEDURE [dbo].[USP_U_ValidarCorrespondenciaNumDocumentoPersona]
+GO
+
+CREATE PROCEDURE USP_U_ValidarCorrespondenciaNumDocumentoPersona	
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare @B_Resultado  bit,
+--		@T_Message	  nvarchar(4000)
+--exec USP_U_ValidarCorrespondenciaNumDocumentoPersona @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 30
+	DECLARE @I_TablaID int = 1
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		
+		SELECT I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, I_ProcedenciaID, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso
+		INTO #NumDoc_Repetidos_nombres_diferentes
+		FROM TR_Alumnos WHERE C_NumDNI IN (
+			SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM TR_Alumnos
+									WHERE C_NumDNI IS NOT NULL
+									GROUP BY C_NumDNI
+									HAVING COUNT(*) > 1) T1
+			WHERE NOT EXISTS (
+				SELECT C_NumDNI, T_ApePaterno COLLATE Modern_Spanish_CI_AI, T_ApeMaterno COLLATE Modern_Spanish_CI_AI
+					, T_Nombre COLLATE Modern_Spanish_CI_AI, COUNT(*) R
+				FROM TR_Alumnos
+				WHERE C_NumDNI IS NOT NULL AND T1.C_NumDNI = C_NumDNI
+				GROUP BY C_NumDNI, T_ApePaterno COLLATE Modern_Spanish_CI_AI, T_ApeMaterno COLLATE Modern_Spanish_CI_AI, T_Nombre COLLATE Modern_Spanish_CI_AI
+				HAVING COUNT(*) > 1
+			)
+		)
+
+		UPDATE	TR_Alumnos
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres_diferentes WHERE I_RowID = TR_Alumnos.I_RowID)
+		
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
+				  WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres_diferentes WHERE I_RowID = TR_Alumnos.I_RowID)) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+			DELETE;
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
+				
+		COMMIT TRANSACTION
+		SET @B_Resultado = 1
+		SET @T_Message = CAST(@I_Observados AS varchar)
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarSexoDiferenteMismoDocumento')
+	DROP PROCEDURE [dbo].[USP_U_ValidarSexoDiferenteMismoDocumento]
+GO
+
+CREATE PROCEDURE USP_U_ValidarSexoDiferenteMismoDocumento	
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare @B_Resultado  bit,
+--		@T_Message	  nvarchar(4000)
+--exec USP_U_ValidarSexoDiferenteMismoDocumento @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 31
+	DECLARE @I_TablaID int = 1
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		
+		SELECT I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, I_ProcedenciaID, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso
+		INTO #NumDoc_Repetidos_sexo_diferente
+		FROM TR_Alumnos WHERE C_NumDNI IN (
+				SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM TR_Alumnos
+						WHERE C_NumDNI IS NOT NULL
+						GROUP BY C_NumDNI
+						HAVING COUNT(*) > 1) T1
+				WHERE NOT EXISTS (SELECT C_NumDNI, C_Sexo, COUNT(*) R FROM TR_Alumnos
+									WHERE C_NumDNI IS NOT NULL AND T1.C_NumDNI = C_NumDNI
+									GROUP BY C_NumDNI, C_Sexo
+									HAVING COUNT(*) > 1)
+		)
+
+		UPDATE	TR_Alumnos
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_sexo_diferente WHERE I_RowID = TR_Alumnos.I_RowID)
+		
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
+				  WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_sexo_diferente WHERE I_RowID = TR_Alumnos.I_RowID)) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+			DELETE;
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
+				
+		COMMIT TRANSACTION
+		SET @B_Resultado = 1
+		SET @T_Message = CAST(@I_Observados AS varchar)
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+	END CATCH
+END
+GO
+
+
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarDataAlumnosUnfvRepositorio')
 	DROP PROCEDURE [dbo].[USP_IU_MigrarDataAlumnosUnfvRepositorio]
 GO
@@ -503,7 +646,7 @@ CREATE PROCEDURE USP_IU_MigrarDataAlumnosUnfvRepositorio
 AS
 --declare @B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
---exec USP_IU_MigrarDataAlumnosUnfvRepositorio @B_Resultado output, @T_Message output
+--exec USP_IU_MigrarDataAlumnosUnfvRepositorio NULL, NULL, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_CantAlu int = 0
@@ -571,9 +714,9 @@ BEGIN
 		INSERT INTO ##TEMP_AlumnoPersona (I_PersonaID, I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc)
 		SELECT	A.I_PersonaID, I_RowID, A.C_RcCod, A.C_CodAlu, P.C_NumDNI, P.C_CodTipDoc
 		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
-				INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID
+				INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID AND P.B_Eliminado = 0 AND A.B_Eliminado = 0
 				INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
-		WHERE (A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
+		--WHERE (A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
 		ORDER BY A.I_PersonaID
 		
 		SET IDENTITY_INSERT ##TEMP_AlumnoPersona OFF
@@ -583,16 +726,17 @@ BEGIN
 		INSERT INTO ##TEMP_AlumnoPersona (I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc)
 		SELECT	I_RowID, TA.C_RcCod, TA.C_CodAlu, TA.C_NumDNI, TA.C_CodTipDoc
 		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
-				RIGHT JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod 
-		WHERE ((A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
-			  AND A.I_PersonaID IS NULL
+				RIGHT JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod  
+		WHERE --((A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
+			 -- AND 
+			  A.I_PersonaID IS NULL
 
 		--SELECT * FROM ##TEMP_AlumnoPersona ORDER BY I_PersonaID
 
 		SET IDENTITY_INSERT BD_UNFV_Repositorio.dbo.TC_Persona ON
 
 		MERGE BD_UNFV_Repositorio.dbo.TC_Persona AS TRG
-		USING (SELECT AP.I_PersonaID, A.* FROM ##TEMP_AlumnoPersona AP 
+		USING (SELECT DISTINCT AP.I_PersonaID, A.* FROM ##TEMP_AlumnoPersona AP 
 				INNER JOIN TR_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1) AS SRC
 		ON TRG.I_PersonaID = SRC.I_PersonaID
 		WHEN MATCHED AND B_Migrado = 0 THEN
@@ -601,7 +745,6 @@ BEGIN
 						TRG.T_ApePaterno = SRC.T_ApePaterno,
 						TRG.T_ApeMaterno = SRC.T_ApeMaterno,
 						TRG.T_Nombre	 = SRC.T_Nombre,
-						TRG.D_FecNac	 = SRC.D_FecNac,
 						TRG.C_Sexo		 = SRC.C_Sexo
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Habilitado, B_Eliminado)

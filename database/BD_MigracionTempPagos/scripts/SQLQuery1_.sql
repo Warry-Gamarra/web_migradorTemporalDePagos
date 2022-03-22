@@ -102,3 +102,98 @@ select * from cp_pri where ID_CP = 4981
 select * from alumnos where C_CODALU = '0009317166'
 
 --select distinct cuota_pago from EUDED_ec_obl
+
+
+
+SELECT COUNT(I_PersonaID) FROM  ##TEMP_AlumnoPersona
+select count(*) from (SELECT distinct I_PersonaID FROM  ##TEMP_AlumnoPersona) tbl
+
+select I_PersonaID, COUNT(I_PersonaID) 'repetidos' FROM  ##TEMP_AlumnoPersona 
+group by I_PersonaID
+having COUNT(I_PersonaID) > 1
+
+select * from  ##TEMP_AlumnoPersona 
+where I_PersonaId in (
+18131
+,158
+,2242
+,525
+,2463
+,1313
+,5931)
+order by 1
+
+
+SELECT A.* FROM ##TEMP_AlumnoPersona AP 
+				INNER JOIN TR_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1
+where I_PersonaId in (
+18131
+,158
+,2242
+,525
+,2463
+,1313
+,5931)
+order by 1
+
+SELECT DISTINCT AP.I_PersonaID, A.C_NumDNI, A.C_CodTipDoc, A.T_ApePaterno COLLATE Modern_Spanish_CI_AI
+, A.T_ApeMaterno COLLATE Modern_Spanish_CI_AI
+,  A.T_Nombre COLLATE Modern_Spanish_CI_AI
+, A.D_FecNac, A.C_Sexo
+ FROM ##TEMP_AlumnoPersona AP 
+				INNER JOIN TR_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1
+where AP.I_PersonaID in (
+18131
+,158
+,2242
+,525
+,2463
+,1313
+,5931)
+order by 1
+
+SELECT * FROM TR_Alumnos WHERE I_RowID IN (77324
+,272405)
+
+SELECT COUNT(C_NumDNI) FROM TR_Alumnos 
+SELECT DISTINCT COUNT(C_NumDNI) FROM TR_Alumnos 
+SELECT COUNT(C_NumDNI) FROM (SELECT DISTINCT C_NumDNI FROM TR_Alumnos ) TBL
+SELECT COUNT(*) FROM (SELECT C_NumDNI, C_Sexo FROM TR_Alumnos WHERE C_NumDNI IS NOT NULL) TBL 
+SELECT COUNT(*) FROM (SELECT DISTINCT C_NumDNI, C_Sexo FROM TR_Alumnos  WHERE C_NumDNI IS NOT NULL) TBL
+
+select * from tr_alumnos where c_numdni = '70063617'
+
+SELECT C_NumDNI, COUNT(*) FROM TR_Alumnos
+WHERE C_NumDNI IS NOT NULL
+GROUP BY C_NumDNI
+HAVING COUNT(*) > 1
+ORDER BY 1
+
+SELECT C_NumDNI, T_ApePaterno COLLATE Modern_Spanish_CI_AI, T_ApeMaterno COLLATE Modern_Spanish_CI_AI
+	, T_Nombre COLLATE Modern_Spanish_CI_AI, COUNT(*) 
+FROM TR_Alumnos
+WHERE C_NumDNI IS NOT NULL
+GROUP BY C_NumDNI, T_ApePaterno COLLATE Modern_Spanish_CI_AI, T_ApeMaterno COLLATE Modern_Spanish_CI_AI, T_Nombre COLLATE Modern_Spanish_CI_AI
+HAVING COUNT(*) > 1
+
+SELECT * FROM TR_Alumnos WHERE C_NumDNI IN (
+SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM TR_Alumnos
+WHERE C_NumDNI IS NOT NULL
+GROUP BY C_NumDNI
+HAVING COUNT(*) > 1) T1
+WHERE EXISTS (
+SELECT C_NumDNI, T_ApePaterno COLLATE Modern_Spanish_CI_AI, T_ApeMaterno COLLATE Modern_Spanish_CI_AI
+	, T_Nombre COLLATE Modern_Spanish_CI_AI, COUNT(*) R
+FROM TR_Alumnos
+WHERE C_NumDNI IS NOT NULL AND T1.C_NumDNI = C_NumDNI
+GROUP BY C_NumDNI, T_ApePaterno COLLATE Modern_Spanish_CI_AI, T_ApeMaterno COLLATE Modern_Spanish_CI_AI, T_Nombre COLLATE Modern_Spanish_CI_AI
+HAVING COUNT(*) > 1)
+)
+ORDER BY C_NumDNI
+
+
+SELECT C_NumDNI, C_Sexo, COUNT(*) FROM TR_Alumnos
+WHERE C_NumDNI IS NOT NULL
+GROUP BY C_NumDNI, C_Sexo
+HAVING COUNT(*) > 1
+

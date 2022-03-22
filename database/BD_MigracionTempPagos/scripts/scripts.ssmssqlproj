@@ -3,7 +3,7 @@
   <Items>
     <LogicalFolder Name="Connections" Type="2" Sorted="true">
       <Items>
-        <ConnectionNode Name="14-CEUC-DESA-05\SQL_2016E:UNFV\wgamarra">
+        <ConnectionNode Name="14-CEUC-DESA-05\SQL_2016E:DESKTOP-B34HJML\gamar">
           <Created>2021-10-12T12:20:16.8959196-05:00</Created>
           <Type>SQL</Type>
           <Server>14-CEUC-DESA-05\SQL_2016E</Server>
@@ -15,7 +15,7 @@
           <ConnectionProtocol>NotSpecified</ConnectionProtocol>
           <ApplicationName />
         </ConnectionNode>
-        <ConnectionNode Name="DESKTOP-B34HJML\SQL_2016E:UNFV\wgamarra">
+        <ConnectionNode Name="DESKTOP-B34HJML\SQL_2016E:DESKTOP-B34HJML\gamar">
           <Created>2021-10-13T12:00:57.5227069-05:00</Created>
           <Type>SQL</Type>
           <Server>DESKTOP-B34HJML\SQL_2016E</Server>
@@ -32,26 +32,26 @@
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
       <Items>
         <FileNode Name="1. BD_OCEF_MigracionTP - Creación de base de datos.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>1. BD_OCEF_MigracionTP - Creación de base de datos.sql</FullPath>
         </FileNode>
         <FileNode Name="2. BD_OCEF_MigracionTP - Esquema de tablas.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>2. BD_OCEF_MigracionTP - Esquema de tablas.sql</FullPath>
         </FileNode>
         <FileNode Name="3. BD_OCEF_MigracionTP - Carga de datos iniciales.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>3. BD_OCEF_MigracionTP - Carga de datos iniciales.sql</FullPath>
         </FileNode>
         <FileNode Name="4. BD_OCEF_MigracionTP - Procedures y Funciones.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>4. BD_OCEF_MigracionTP - Procedures y Funciones.sql</FullPath>
         </FileNode>
