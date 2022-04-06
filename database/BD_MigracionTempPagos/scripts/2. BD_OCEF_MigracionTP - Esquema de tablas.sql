@@ -37,6 +37,7 @@ GO
 
 CREATE TABLE dbo.TR_Ec_Obl (
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
+	I_MigracionID	int NULL,
 	Ano				varchar(4) NULL,
 	P				varchar(3) NULL,
 	I_Periodo		int	NULL,
@@ -48,6 +49,7 @@ CREATE TABLE dbo.TR_Ec_Obl (
 	Monto			decimal(10,2)  NULL,
 	Pagado			bit  NULL,
 	I_ProcedenciaID	int  NOT NULL,
+	B_Obligacion	bit  NOT NULL,
 	D_FecCarga		datetime  NULL,
 	B_Actualizado	bit  NOT NULL DEFAULT 0,
 	D_FecActualiza	datetime  NULL,
@@ -65,8 +67,10 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABL
 	DROP TABLE TR_Ec_Det
 GO
 
-CREATE TABLE TR_Ec_Det (
+CREATE TABLE dbo.TR_Ec_Det (
 	I_RowID			bigint IDENTITY(1, 1) NOT NULL,
+	I_OblRowID		int NULL,
+	I_MigracionID	int NULL,
 	Cod_alu			varchar(20)  NULL,
 	Cod_rc			varchar(3) NULL,
 	Cuota_pago		int  NULL,
@@ -93,6 +97,7 @@ CREATE TABLE TR_Ec_Det (
 	No_banco		bit  NULL,
 	Cod_dep			varchar(10)  NULL,
 	I_ProcedenciaID	int  NOT NULL,
+	B_Obligacion	bit  NOT NULL,
 	D_FecCarga		datetime  NULL,
 	B_Actualizado	bit  NOT NULL DEFAULT 0,
 	D_FecActualiza	datetime  NULL,
@@ -109,7 +114,7 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABL
 	DROP TABLE TR_Cp_Des
 GO
 
-CREATE TABLE TR_Cp_Des(
+CREATE TABLE dbo.TR_Cp_Des(
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
 	Cuota_pago		int  NULL,
 	Descripcio		varchar(50)  NULL,
@@ -140,7 +145,7 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABL
 	DROP TABLE TR_Cp_Pri
 GO
 
-CREATE TABLE TR_Cp_Pri (
+CREATE TABLE dbo.TR_Cp_Pri (
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
 	Id_cp			int  NULL,
 	Cuota_pago		int  NULL,
@@ -196,7 +201,7 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABL
 	DROP TABLE TR_Alumnos
 GO
 
-CREATE TABLE TR_Alumnos
+CREATE TABLE dbo.TR_Alumnos
 (
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
 	C_RcCod			varchar(3), 
@@ -227,7 +232,7 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABL
 	DROP TABLE TC_ProcedenciaData
 GO
 
-CREATE TABLE TC_ProcedenciaData
+CREATE TABLE dbo.TC_ProcedenciaData
 (
 	I_ProcedenciaID		tinyint,
 	T_ProcedenciaDesc	varchar(100)
@@ -250,7 +255,7 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABL
 GO
 
 
-CREATE TABLE TC_CatalogoObservacion
+CREATE TABLE dbo.TC_CatalogoObservacion
 (
 	I_ObservID		tinyint,
 	T_ObservDesc	varchar(100),
@@ -261,7 +266,7 @@ CREATE TABLE TC_CatalogoObservacion
 GO
 
 
-CREATE TABLE TC_CatalogoTabla
+CREATE TABLE dbo.TC_CatalogoTabla
 (
 	I_TablaID	tinyint,
 	T_TablaNom	varchar(50)
@@ -270,7 +275,7 @@ CREATE TABLE TC_CatalogoTabla
 GO
 
 
-CREATE TABLE TI_ObservacionRegistroTabla
+CREATE TABLE dbo.TI_ObservacionRegistroTabla
 (
 	I_ObsTablaID	int IDENTITY(1, 1),
 	I_ObservID		tinyint,
