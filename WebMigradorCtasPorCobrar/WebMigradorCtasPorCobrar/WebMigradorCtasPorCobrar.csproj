@@ -124,9 +124,14 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\Migracion\Controllers\CuotaPagoController.cs" />
+    <Compile Include="Areas\Migracion\MigracionAreaRegistration.cs" />
+    <Compile Include="Areas\temporal_pagos\Controllers\EstudianteController.cs" />
+    <Compile Include="Areas\temporal_pagos\temporal_pagosAreaRegistration.cs" />
     <Compile Include="Controllers\CajaPerifericaController.cs" />
     <Compile Include="Controllers\EudedController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MigracionController.cs" />
     <Compile Include="Controllers\PosgradoController.cs" />
     <Compile Include="Controllers\PregradoController.cs" />
     <Compile Include="Controllers\RepositorioController.cs" />
@@ -396,10 +401,19 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Migracion\Models\" />
+    <Folder Include="Areas\Migracion\Views\CuotaPago\" />
+    <Folder Include="Areas\Migracion\Views\Shared\" />
+    <Folder Include="Areas\temporal_pagos\Models\" />
+    <Folder Include="Areas\temporal_pagos\Views\Estudiante\" />
+    <Folder Include="Areas\temporal_pagos\Views\Shared\" />
     <Folder Include="Views\CajaPeriferica\" />
+    <Folder Include="Views\Migracion\" />
     <Folder Include="Views\Tasas\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Areas\Migracion\Views\web.config" />
+    <Content Include="Areas\temporal_pagos\Views\web.config" />
     <None Include="packages.config" />
     <Content Include="Views\Repositorio\Estudiante_migracion_step1.cshtml" />
     <Content Include="Views\Repositorio\Estudiante_migracion_step2.cshtml" />

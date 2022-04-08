@@ -17,48 +17,49 @@ AS
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_NAME = 'VW_DetalleObligacionItems')
-	DROP VIEW [dbo].[VW_DetalleObligacionItems]
+--IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_NAME = 'VW_DetalleObligacionItems')
+--	DROP VIEW [dbo].[VW_DetalleObligacionItems]
+--GO
+
+--CREATE VIEW VW_DetalleObligacionItems
+--AS
+--(
+--	SELECT  Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, Id_lug_pag, Cantidad, Monto, 
+--			Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep,
+--			I_ProcedenciaID, B_Migrable, B_Migrado
+--	FROM	TR_Ec_Det
+--	WHERE	Concepto_f = 0
+--			AND B_Obligacion = 1
+--			--AND Cuota_pago NOT IN (SELECT Cuota_pago FROM TR_Cp_Des where Codigo_bnc = '' AND Cuota_pago <> 155)
+--)
+--GO
+
+
+--IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_NAME = 'VW_DetalleObligacionPagos')
+--	DROP VIEW [dbo].[VW_DetalleObligacionPagos]
+--GO
+
+--CREATE VIEW VW_DetalleObligacionPagos
+--AS
+--(
+--	SELECT  Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, Id_lug_pag, Cantidad, Monto, 
+--			Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep,
+--			I_ProcedenciaID, B_Migrable, B_Migrado
+--	FROM	TR_Ec_Det
+--	WHERE	CONCEPTO_F = 1
+--			AND TIPO_OBLIG = 0
+--			AND B_Obligacion = 1
+--)
+--GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION' AND ROUTINE_NAME = 'Func_B_ValidarExisteTablaTemporalPagos')
+	DROP FUNCTION [dbo].[Func_B_ValidarExisteTablaTemporalPagos]
 GO
 
-CREATE VIEW VW_DetalleObligacionItems
-AS
+CREATE FUNCTION Func_B_ValidarExisteTablaTemporalPagos 
 (
-	SELECT  Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, Id_lug_pag, Cantidad, Monto, 
-			Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep,
-			I_ProcedenciaID, B_Migrable, B_Migrado
-	FROM	TR_Ec_Det
-	WHERE	Concepto_f = 0
-			AND B_Obligacion = 1
-			--AND Cuota_pago NOT IN (SELECT Cuota_pago FROM TR_Cp_Des where Codigo_bnc = '' AND Cuota_pago <> 155)
-)
-GO
-
-
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.VIEWS WHERE TABLE_NAME = 'VW_DetalleObligacionPagos')
-	DROP VIEW [dbo].[VW_DetalleObligacionPagos]
-GO
-
-CREATE VIEW VW_DetalleObligacionPagos
-AS
-(
-	SELECT  Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, Id_lug_pag, Cantidad, Monto, 
-			Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep,
-			I_ProcedenciaID, B_Migrable, B_Migrado
-	FROM	TR_Ec_Det
-	WHERE	CONCEPTO_F = 1
-			AND TIPO_OBLIG = 0
-			AND B_Obligacion = 1
-)
-GO
-
-
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION' AND ROUTINE_NAME = 'Func_B_ValidarExisteTablaDatos')
-	DROP FUNCTION [dbo].[Func_B_ValidarExisteTablaDatos]
-GO
-
-CREATE FUNCTION Func_B_ValidarExisteTablaDatos 
-(
+	@T_NombreSchema	varchar(50),
 	@T_NombreTabla	varchar(50)
 )
 RETURNS  bit
@@ -66,7 +67,8 @@ AS
 BEGIN
 	DECLARE  @B_Result bit;
 
-	IF EXIStS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = @T_NombreTabla)
+	IF EXIStS (SELECT * FROM  BD_OCEF_TemporalPagos.INFORMATION_SCHEMA.TABLES 
+				WHERE TABLE_SCHEMA = @T_NombreSchema AND TABLE_NAME = @T_NombreTabla)
 	BEGIN
 		SET @B_Result = 1;
 	END
@@ -80,20 +82,92 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_CambiarEstadoMigrableCuotaPago')
-	DROP PROCEDURE [dbo].[USP_U_CambiarEstadoMigrableCuotaPago]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_CambiarEstadoMigrableRegistro')
+	DROP PROCEDURE [dbo].[USP_U_CambiarEstadoMigrableRegistro]
 GO
 
-CREATE PROCEDURE USP_U_CambiarEstadoMigrableCuotaPago
+CREATE PROCEDURE [dbo].[USP_U_CambiarEstadoMigrableRegistro]
+	@Tabla		  varchar(20),
 	@I_RowID	  int,
-	@B_Migrable	  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
+--declare @B_Resultado  bit,
+--		  @T_Message	nvarchar(4000)
+--exec USP_U_CambiarEstadoMigrableRegistro 'TR_Cp_Des', 1, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+
 BEGIN
-	UPDATE TR_MG_CpDes
-	SET B_Migrable = @B_Migrable
-	WHERE I_RowID = @I_RowID
+	DECLARE @T_Sql nvarchar(1000)
+	BEGIN TRY
+		SET @T_Sql = '	UPDATE ' + @Tabla + '
+					 	SET B_Migrable = ~ B_Migrable
+					 	WHERE I_RowID = ' + CAST(@I_RowID AS varchar(11)) + '; ' 
+		
+		exec sp_executesql @T_Sql
+
+		SET @T_Message = @@ROWCOUNT
+		SET @B_Resultado = 1
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ActualizarRegistroAlumno')
+	DROP PROCEDURE [dbo].[USP_U_ActualizarRegistroAlumno]
+GO
+
+CREATE PROCEDURE USP_U_ActualizarRegistroAlumno
+	@I_RowID	  int,
+	@C_CodAlu	  varchar(20), 
+	@C_NumDNI	  varchar(20), 
+	@C_CodTipDoc  varchar(5), 
+	@T_ApePaterno varchar(50),  
+	@T_ApeMaterno varchar(50),  
+	@T_Nombre	  varchar(50), 
+	@C_Sexo		  char(1), 
+	@D_FecNac	  date, 
+	@C_CodModIng  varchar(2), 	 
+	@C_AnioIngres smallint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare @B_Resultado  bit,
+--		  @T_Message	nvarchar(4000)
+--exec USP_U_ActualizarRegistroAlumno @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+
+	DECLARE @D_FecProceso datetime = GETDATE() 
+
+	BEGIN TRY 
+		UPDATE TR_Alumnos
+		SET	C_CodAlu = @C_CodAlu,
+			C_NumDNI = @C_NumDNI,
+			C_CodTipDoc = @C_CodTipDoc,
+			T_ApePaterno = @T_ApePaterno, 
+			T_ApeMaterno = @T_ApeMaterno, 
+			T_Nombre = @T_Nombre,
+			C_Sexo = @C_Sexo,
+			D_FecNac = @D_FecNac,
+			C_AnioIngreso = @C_AnioIngres
+		WHERE 
+			I_RowID = @I_RowID
+
+		
+		SET @T_Message =  @@ROWCOUNT
+		SET @B_Resultado = 1
+
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+	END CATCH
 END
 GO
 
@@ -107,7 +181,7 @@ CREATE PROCEDURE USP_IU_CopiarTablaAlumno
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
---		@T_Message	  nvarchar(4000)
+--		  @T_Message	nvarchar(4000)
 --exec USP_IU_CopiarTablaAlumno @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
@@ -196,15 +270,14 @@ BEGIN
 		SET @I_Actualizados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
 		SET @I_Removidos = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
 
-		SELECT @I_CantAlu AS tot_alumnos, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
-		
 		SET @B_Resultado = 1
-		SET @T_Message =  'Total: ' + CAST(@I_CantAlu AS varchar) + '|Insertados: ' + CAST(@I_Insertados AS varchar) 
-						+ '|Actualizados: ' + CAST(@I_Actualizados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
+		SET @T_Message =  'Total: ' + CAST(@I_CantAlu AS varchar) 
+
+		SELECT @I_CantAlu AS tot_alumnos, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
 END
 GO
@@ -263,7 +336,7 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
 END
 GO
@@ -321,7 +394,7 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
 END
 GO
@@ -377,7 +450,7 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
 END
 GO
@@ -431,7 +504,7 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
 END
 GO
@@ -487,12 +560,10 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
 END
 GO
-
-
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarCorrespondenciaNumDocumentoPersona')
@@ -561,7 +632,7 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
 END
 GO
@@ -629,7 +700,7 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
 END
 GO

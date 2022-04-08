@@ -9,6 +9,12 @@ INSERT INTO TC_ProcedenciaData (I_ProcedenciaID, T_ProcedenciaDesc) VALUES (4, '
 
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (1, 'El nombre de alumno tiene caracteres extraños', 'CARACTERES', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (2, 'La combinación código de carrera + código de alumno se encuentran repetidos', 'REPETIDO', NULL)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (22, 'El codigo de alumno no cuenta con año de ingreso.', 'SIN AÑO INGRESO', NULL)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (21, 'No se encontró código de carrera asociado en la base de datos de repositorio.', 'SIN CARRERA', NULL)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (23, 'No se encontró código de modalidad de ingreso asociado en la base de datos de repositorio.', 'SIN MOD. INGRESO', NULL)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (30, 'El valor del campo <Número Documento> prensenta valores diferentes para apellidos y/o nombres', 'DNI REPETIDO', NULL)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (31, 'El valor del campo <Sexo> prensenta valores diferentes para misma persona en filas diferentes', 'SEXO ERRADO', NULL)
+
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (3, 'La cuota de pago se encuentra repetida con estado ACTIVO', 'REPETIDO', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (4, 'La cuota de pago se encuentra repetida con estado ELIMINADO', 'REPETIDO', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (5, 'La cuota de pago presenta más de un año asociado en las tablas cp_pri o ec_det.', '1+ AÑOS', NULL)
@@ -27,9 +33,6 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (18, 'Concepto de pago de obligacion sin cuota de pago.', 'SIN CUOTA', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (19, 'La cuota de pago asociada no fue migrada.', 'SIN CUOTA MIGRADA', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (20, 'El concepto de pago ha sido ingresado o modificado desde una fuente externa.', 'EXTERNO', NULL)
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (21, 'No se encontró código de carrera asociado en la base de datos de repositorio.', 'SIN CARRERA', NULL)
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (22, 'El codigo de alumno no cuenta con año de ingreso.', 'SIN AÑO INGRESO', NULL)
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (23, 'No se encontró código de modalidad de ingreso asociado en la base de datos de repositorio.', 'SIN MOD. INGRESO', NULL)
 
 
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (24, 'No se encontró un alumno para el codigo de alumno y carrera de la obligación.', 'SIN ALUMNO', NULL)
@@ -39,8 +42,6 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (28, 'La fecha de vencimiento se encuentra repetida para la misma cuota de pago y codigo de alumno.', 'SIN PERIODO', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (29, 'La obligación ya existe en la base de datos de destino con otro monto.', 'EXISTE', NULL)
 
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (30, 'El valor del campo <Número Documento> prensenta valores diferentes para apellidos y/o nombres', 'DNI REPETIDO', NULL)
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (31, 'El valor del campo <Sexo> prensenta valores diferentes para misma persona en filas diferentes', 'SEXO ERRADO', NULL)
 
 
 
