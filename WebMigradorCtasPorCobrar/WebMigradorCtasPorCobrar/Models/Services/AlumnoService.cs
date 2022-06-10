@@ -16,7 +16,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services
         {
             IEnumerable<AlumnoTP> result;
 
-            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
                 result = connection.Query<AlumnoTP>("SELECT * FROM alumnos", commandType: CommandType.Text);
             }

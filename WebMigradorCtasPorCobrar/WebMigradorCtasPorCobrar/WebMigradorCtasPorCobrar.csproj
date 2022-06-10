@@ -436,6 +436,8 @@
     <Content Include="Views\Posgrado\Obligacion_migracion_step4.cshtml" />
     <Content Include="Views\Posgrado\Migracion.cshtml" />
     <Content Include="Views\Posgrado\_ObligacionesAnio.cshtml" />
+    <Content Include="Views\Euded\ConceptoPago.cshtml" />
+    <Content Include="Views\Euded\CuotaPago.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -16,9 +16,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services
         {
             IEnumerable<DetalleObligacionTP> result;
 
-            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
-                string str_query = $"SELECT * FROM EUPG_ec_det WHERE ano = @ano AND p = @p AND cod_alu = @cod_alu AND cuota_pago = @cuota_pago";
+                string str_query = $"SELECT * FROM EUPG.ec_det WHERE ano = @ano AND p = @p AND cod_alu = @cod_alu AND cuota_pago = @cuota_pago";
                 str_query += fecVenc.HasValue ? " AND fhc_venc = @fch_venc;" : ";";
 
                 result = connection.Query<DetalleObligacionTP>(str_query,
@@ -39,9 +39,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services
         {
             IEnumerable<DetalleObligacionMG> result;
 
-            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
-                result = connection.Query<DetalleObligacionMG>("SELECT * FROM EUPG_ec_det WHERE I_RowID = @I_RowID", new { I_RowID = rowId }, commandType: CommandType.Text);
+                result = connection.Query<DetalleObligacionMG>("SELECT * FROM EUPG.ec_det WHERE I_RowID = @I_RowID", new { I_RowID = rowId }, commandType: CommandType.Text);
             }
 
             return result;

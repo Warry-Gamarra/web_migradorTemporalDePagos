@@ -276,7 +276,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_ObligacionesAnio", model);
         }
 
-        public ActionResult ValidarObligacionesAnio(string anio)
+        public ActionResult ValidarDatosObligacionAnio(string anio)
         {
             var model = obligacionService.ObtenerResultadoValidacion(anio);
 

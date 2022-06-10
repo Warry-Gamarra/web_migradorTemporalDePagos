@@ -16,9 +16,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services
         {
             IEnumerable<Obligacion> result;
 
-            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
-                result = connection.Query<Obligacion>("SELECT * FROM EUPG_ec_det WHERE ano = @ano "
+                result = connection.Query<Obligacion>("SELECT * FROM EUPG.ec_det WHERE ano = @ano "
                                                         , new { ano = anio}, commandType: CommandType.Text);
             }
 

@@ -22,7 +22,15 @@ namespace WebMigradorCtasPorCobrar.Models
                 return ConfigurationManager.ConnectionStrings["BD_MigracionTPConnection"].ConnectionString;
             }
         }
-        
+
+        public static string TemporalPagoConnectionString
+        {
+            get
+            {
+                return ConfigurationManager.ConnectionStrings["BD_TemporalPagoConnection"].ConnectionString;
+            }
+        }
+
         public static string RepositorioUnfvConnectionString
         {
             get

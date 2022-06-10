@@ -1,0 +1,44 @@
+﻿
+@{
+    string action = @ViewBag.Action;
+}
+
+
+<div class="container-fluid">
+    <div class="col-12">
+        <section class="content-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb float-right small d-none d-sm-inline-flex">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")"><i class="fa fa-home">&nbsp;</i>Inicio</a></li>
+                    <li class="breadcrumb-item"><span><i class="fa bi-tools">&nbsp;</i>@ViewBag.Group </span></li>
+                    <li class="breadcrumb-item active"><span><i class="fa fa-envelope">&nbsp;</i>@ViewBag.Title </span></li>
+                </ol>
+            </nav>
+            <h1 class="">@ViewBag.Title <small></small></h1>
+        </section>
+    </div>
+    <br />
+
+    <div class="col-12">
+        <ul class="nav nav-pills nav-fill mb-3">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @ViewBag.Enabled_1 @ViewBag.Active_1" id="pills-step1-tab" href="@Url.Action("ConceptoPago","Posgrado", new { step = 1 })">1. Data Original</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @ViewBag.Enabled_2 @ViewBag.Active_2" id="pills-step2-tab" href="@Url.Action("ConceptoPago","Posgrado", new { step = 2 })">2. Transformación y validaciones </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @ViewBag.Enabled_3 @ViewBag.Active_3" id="pills-step3-tab" href="@Url.Action("ConceptoPago","Posgrado", new { step = 3 })">3. Data a migrar</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @ViewBag.Enabled_4 @ViewBag.Active_4" id="pills-step4-tab" href="@Url.Action("ConceptoPago","Posgrado", new { step = 4 })">4. Resultado migración</a>
+            </li>
+        </ul>
+        <div class="tab-content p-3" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="@ViewBag.Id" role="tabpanel" aria-labelledby="pills-@ViewBag.Step-tab">
+                @Html.Action(action, "Posgrado", new { id = "" })
+            </div>
+        </div>
+
+    </div>
+</div>

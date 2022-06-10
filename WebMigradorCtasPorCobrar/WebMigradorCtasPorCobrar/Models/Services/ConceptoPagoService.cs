@@ -15,9 +15,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services
         {
             IEnumerable<ConceptoPagoTP> result;
 
-            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
-                result = connection.Query<ConceptoPagoTP>("SELECT * FROM EUPG_cp_pri", commandType: CommandType.Text);
+                result = connection.Query<ConceptoPagoTP>("SELECT * FROM EUPG.cp_pri", commandType: CommandType.Text);
             }
 
             return result;
@@ -34,6 +34,31 @@ namespace WebMigradorCtasPorCobrar.Models.Services
 
             return result;
         }
+
+        public IEnumerable<ConceptoPagoTP> ObtenerEudedTP()
+        {
+            IEnumerable<ConceptoPagoTP> result;
+
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+            {
+                result = connection.Query<ConceptoPagoTP>("SELECT * FROM EUPG.cp_pri", commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+        public IEnumerable<ConceptoPagoMG> ObtenerEudedMG()
+        {
+            IEnumerable<ConceptoPagoMG> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<ConceptoPagoMG>("SELECT * FROM TR_MG_CpPri", commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
 
     }
 }
