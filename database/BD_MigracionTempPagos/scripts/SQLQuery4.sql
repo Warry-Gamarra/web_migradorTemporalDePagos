@@ -104,12 +104,12 @@ inner join (select obl.*, cp.descripcio
 
 
 
-elect * from eupg.ec_det where ano = 2021
+select * from eupg.ec_det where ano = 2021
 
---validar cuota de pago por año
+--validar cuota de pago por aï¿½o
 select distinct cuota_pago from eupg.ec_det where ano = 2021
 
---validar conceptos de pago por año
+--validar conceptos de pago por aï¿½o
 select distinct concepto from eupg.ec_det where concepto_f = 1 and ano = 2021
 
 
