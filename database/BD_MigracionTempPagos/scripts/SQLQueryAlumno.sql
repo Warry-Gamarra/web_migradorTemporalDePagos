@@ -14,10 +14,9 @@ AS
 --exec USP_IU_MigrarObligacionesAlumno '2010002487', '2012', @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
-    IF EXISTS (SELECT * FROM TR_Ec_Obl WHERE C_CodAlu = @C_CodAlu AND Ano = @C_Ano)
+    IF EXISTS (SELECT * FROM TR_Ec_Obl WHERE Cod_Alu = @C_CodAlu AND Ano = @C_Anio)
     BEGIN
-        DECLARE @T_Sql  nvarchar(max)
-
+		
         
     END
     ELSE
@@ -72,3 +71,5 @@ BEGIN
     RETURN @T_Procedencia;
 END
 GO
+
+
