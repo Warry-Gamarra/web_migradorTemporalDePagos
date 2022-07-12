@@ -1,3 +1,30 @@
+select count(*) from euded.cp_des
+select count(*) from euded.cp_pri
+select count(*) from euded.ec_alu
+select count(*) from euded.ec_det
+select count(*) from euded.ec_nro
+select count(*) from euded.ec_obl
+select count(*) from euded.ec_pri
+
+select count(*) from eupg.cp_des
+select count(*) from eupg.cp_pri
+select count(*) from eupg.ec_alu
+select count(*) from eupg.ec_det
+select count(*) from eupg.ec_nro
+select count(*) from eupg.ec_obl
+select count(*) from eupg.ec_pri
+
+select count(*) from pregrado.cp_des
+select count(*) from pregrado.cp_pri
+select count(*) from pregrado.ec_alu
+select count(*) from pregrado.ec_det
+select count(*) from pregrado.ec_nro
+select count(*) from pregrado.ec_obl
+select count(*) from pregrado.ec_pri
+
+
+
+
 SELECT DISTINCT cuota_pago, concepto FROM EUDED_ec_det WHERE eliminado = 1
 ORDER BY concepto
 
