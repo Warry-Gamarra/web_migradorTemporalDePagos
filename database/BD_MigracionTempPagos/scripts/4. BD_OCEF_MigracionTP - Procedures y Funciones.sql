@@ -1004,17 +1004,17 @@ BEGIN
 	DECLARE @I_Observados_eliminados int = 0
 
 	BEGIN TRY 
-		UPDATE	TR_MG_CpDes
+		UPDATE	TR_Cp_Des
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_MG_CpDes WHERE ELIMINADO = 0 GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1
+		WHERE	CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE ELIMINADO = 0 GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1
 								UNION
-							   SELECT CUOTA_PAGO FROM TR_MG_CpDes WHERE ELIMINADO = 1 GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
+							   SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE ELIMINADO = 1 GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_activo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_CpDes 
-				 WHERE CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_MG_CpDes WHERE ELIMINADO = 0 GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
+				 FROM TR_Cp_Des 
+				 WHERE CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE ELIMINADO = 0 GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1027,8 +1027,8 @@ BEGIN
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_eliminado AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_CpDes 
-				 WHERE CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_MG_CpDes WHERE ELIMINADO = 1 GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
+				 FROM TR_Cp_Des 
+				 WHERE CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE ELIMINADO = 1 GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1086,31 +1086,31 @@ BEGIN
 			--CUOTAS DE PAGO CON AÑO EN CP_PRI
 		INSERT INTO @cuota_anio(cuota_pago, anio_cuota)
 			SELECT DISTINCT D.CUOTA_PAGO, ISNULL(P.ANO, SUBSTRING(D.DESCRIPCIO, 1,4)) AS ANO 
-			  FROM cp_des D LEFT JOIN cp_pri P ON D.CUOTA_PAGO = P.CUOTA_PAGO 
+			  FROM TR_Cp_Des D LEFT JOIN TR_cp_pri P ON D.CUOTA_PAGO = P.CUOTA_PAGO 
 			 WHERE ISNUMERIC(ISNULL(P.ANO, SUBSTRING(D.DESCRIPCIO, 1,4))) = 1;
 
 			--CUOTAS DE PAGO SIN AÑO EN CP_PRI PERO CON AÑO EN EC_DET
 		INSERT INTO @cuota_anio(cuota_pago, anio_cuota)
-		SELECT DISTINCT ed.CUOTA_PAGO, ed.ANO FROM ec_det ed 
-				INNER JOIN (SELECT cd.CUOTA_PAGO FROM TR_MG_CpDes cd
+		SELECT DISTINCT ed.CUOTA_PAGO, ed.ANO FROM TR_ec_det ed 
+				INNER JOIN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd
 							LEFT JOIN @cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago
 							WHERE anio_cuota IS NULL) cdca
 				ON cdca.CUOTA_PAGO = ed.CUOTA_PAGO
 
-		UPDATE	TR_MG_CpDes
+		UPDATE	TR_Cp_Des
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM @cuota_anio GROUP BY cuota_pago HAVING COUNT(*) > 1)
 		
-		UPDATE	TR_MG_CpDes
+		UPDATE	TR_Cp_Des
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_MG_CpDes cd
+		WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd
 							  LEFT JOIN @cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago
 							  WHERE anio_cuota IS NULL)
 	
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObsMasUnAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_CpDes
+		USING 	(SELECT	@I_ObsMasUnAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				 WHERE CUOTA_PAGO IN (SELECT cuota_pago FROM @cuota_anio GROUP BY cuota_pago HAVING COUNT(*) > 1)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1122,7 +1122,7 @@ BEGIN
 			DELETE;
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObsSinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_CpDes
+		USING 	(SELECT	@I_ObsSinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_CpDes
 				  WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_MG_CpDes cd LEFT JOIN @cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago WHERE anio_cuota IS NULL)
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
