@@ -82,7 +82,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult CuotaPagoTransformacion()
         {
-            var model = cuotaPagoService.ObtenerPosgradoMG();
+            var model = cuotaPagoService.ObtenerPosgradoTP();
 
             return PartialView("CuotaPago_migracion_step2", model);
         }

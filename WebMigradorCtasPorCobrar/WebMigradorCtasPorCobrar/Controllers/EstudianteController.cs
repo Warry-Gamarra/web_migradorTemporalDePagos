@@ -6,13 +6,12 @@ using System.Web.Mvc;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
-    [Authorize]
-    public class HomeController : Controller
+    public class EstudianteController : Controller
     {
+        // GET: Estudiante
         public ActionResult Index()
         {
             return View();
         }
-
     }
 }

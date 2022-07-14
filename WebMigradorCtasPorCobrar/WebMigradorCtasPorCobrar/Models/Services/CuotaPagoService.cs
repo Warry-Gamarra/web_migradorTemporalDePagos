@@ -31,7 +31,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.Query<CuotaPagoMG>("SELECT * FROM TR_MG_CpDes", commandType: CommandType.Text);
+                result = connection.Query<CuotaPagoMG>("SELECT * FROM TR_Cp_Des", commandType: CommandType.Text);
             }
 
             return result;

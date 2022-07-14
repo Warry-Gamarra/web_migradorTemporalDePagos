@@ -13,77 +13,64 @@
     @Scripts.Render("~/bundles/jquery")
     <script src="@Url.Content("~/Assets/jquery/jquery.unobtrusive-ajax.js")"></script>
 </head>
-<body>
-    <div class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container-fluid">
+<body class="sidebar-collapse">
+    <header>
+        <nav class="navbar navbar-expand navbar-light bg-light-gray">
+            @if (Request.IsAuthenticated)
+            {
+                <a class="sidebar-toggle" href="javascript:;" id="toggle-menu"><i class="fa fa-bars"></i></a>
+            }
+
             <div class="navbar-header">
-                @Html.ActionLink("UNFV - Migrador Temporal de pagos", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("UNFV - Migrador Temporal de pagos", "Index", "Home", new { area = "" }, new { @class = "navbar-brand navbar-title d-none d-sm-inline-block", title = "Universidad Nacional Federico Villarreal" })
             </div>
-            <div class="navbar-collapse collapse">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">REPOSITORIO <span class="caret"></span></a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="@Url.Action("Estudiantes", "Repositorio")">Estudiantes</a>
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">PREGRADO <span class="caret"></span></a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="@Url.Action("CuotaPago", "Pregrado")">Cuota de pago</a>
-                            <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Pregrado")">Conceptos de pago</a>
-                            <a class="dropdown-item" href="@Url.Action("Obligaciones", "Pregrado")">Obligaciones</a>
-                            <a class="dropdown-item" href="@Url.Action("Pagos", "Pregrado")">Pagos</a>
-                            <a class="dropdown-item" href="@Url.Action("Migracion", "Pregrado")">Migración</a>
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">POSGRADO <span class="caret"></span></a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="@Url.Action("CuotaPago", "Posgrado")">Cuota de pago</a>
-                            <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Posgrado")">Conceptos de pago</a>
-                            <a class="dropdown-item" href="@Url.Action("Obligaciones", "Posgrado")">Obligaciones</a>
-                            <a class="dropdown-item" href="@Url.Action("Pagos", "Posgrado")">Pagos</a>
-                            <a class="dropdown-item" href="@Url.Action("Migracion", "Posgrado")">Migración</a>
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">EUDED <span class="caret"></span></a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="@Url.Action("CuotaPago", "Euded")">Cuota de pago</a>
-                            <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Euded")">Conceptos de pago</a>
-                            <a class="dropdown-item" href="@Url.Action("Obligaciones", "Euded")">Obligaciones</a>
-                            <a class="dropdown-item" href="@Url.Action("Pagos", "Euded")">Pagos</a>
-                            <a class="dropdown-item" href="@Url.Action("Migracion", "Euded")">Migración</a>
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">TASAS <span class="caret"></span></a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="@Url.Action("CuotaPago", "Tasas")">Cuota de pago</a>
-                            <a class="dropdown-item" href="@Url.Action("ConceptoPago", "Tasas")">Conceptos de pago</a>
-                            <a class="dropdown-item" href="@Url.Action("Obligaciones", "Tasas")">Obligaciones</a>
-                            <a class="dropdown-item" href="@Url.Action("Pagos", "Tasas")">Migración</a>
-                        </div>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">CAJA PERIFERICA <span class="caret"></span></a>
-                        <div class="dropdown-menu">
-                            <a class="dropdown-item" href="@Url.Action("CuotaPago", "CajaPeriferica")">Cuota de pago</a>
-                            <a class="dropdown-item" href="@Url.Action("ConceptoPago", "CajaPeriferica")">Conceptos de pago</a>
-                            <a class="dropdown-item" href="@Url.Action("Obligaciones", "CajaPeriferica")">Obligaciones</a>
-                            <a class="dropdown-item" href="@Url.Action("Pagos", "CajaPeriferica")">Pagos</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            @if (Request.IsAuthenticated)
+            {
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto">
+                        <!-- <li class="nav-item">
+                          <a class="nav-link" href="#"><i class="fa fa-bell"></i></a>
+                        </li> -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+                               aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-user-circle-o">&nbsp;</i> @User.Identity.Name
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="@Url.Action("Index", "Help")"><i class="fa fa-fw fa-life-ring">&nbsp;</i>Ayuda</a>
+                                <div class="dropdown-divider"></div>
+                                @using (Html.BeginForm("LogOut", "Account", new { area = "" }, FormMethod.Post, new { id = "LogOutForm", @class = "text-center" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <a class="dropdown-item" href="javascript:document.getElementById('LogOutForm').submit()">
+                                        <i class="fa fa-fw fa-power-off">&nbsp;</i>Cerrar Sesión
+                                    </a>
+                                }
+
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            }
+        </nav>
+    </header>
     <main class="wrapper">
-        <div class="content-wrapper pt-3">
+        @if (Request.IsAuthenticated)
+        {
+            <div id="sidebar">
+                @Html.Partial("_Sidebar")
+            </div>
+        }
+        <div class="content-wrapper pt-3 px-4">
             @RenderBody()
         </div>
     </main>
+
     <footer class="main-footer">
         <div class="container-fluid">
             <p class="text-muted">&copy @DateTime.Now.Year Elaborado por <a href="http://www.unfv.edu.pe/ceuci/">CEUCI - UNFV</a></p>
@@ -123,71 +110,73 @@
 
     @RenderSection("scripts", required: false)
 
-    <script type="text/javascript">
-        $(function () {
-            $('body').on('click', '.modal-link', function (e) {
-                e.preventDefault();
-                $(this).attr('data-target', '#modal-container');
-                $(this).attr('data-toggle', 'modal');
-            });
+    @section scripts {
+        <script type="text/javascript">
+            $(function () {
+                $('body').on('click', '.modal-link', function (e) {
+                    e.preventDefault();
+                    $(this).attr('data-target', '#modal-container');
+                    $(this).attr('data-toggle', 'modal');
+                });
 
-            $('body').on('click', '.modal-link-lg', function (e) {
-                e.preventDefault();
-                $(this).attr('data-target', '#modal-container-lg');
-                $(this).attr('data-toggle', 'modal');
-            });
+                $('body').on('click', '.modal-link-lg', function (e) {
+                    e.preventDefault();
+                    $(this).attr('data-target', '#modal-container-lg');
+                    $(this).attr('data-toggle', 'modal');
+                });
 
-            $('body').on('click', '.modal-link-xl', function (e) {
-                e.preventDefault();
-                $(this).attr('data-target', '#modal-container-xl');
-                $(this).attr('data-toggle', 'modal');
-            });
+                $('body').on('click', '.modal-link-xl', function (e) {
+                    e.preventDefault();
+                    $(this).attr('data-target', '#modal-container-xl');
+                    $(this).attr('data-toggle', 'modal');
+                });
 
-            $('#modal-container-lg').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var url = button.attr("href");
-                var modal = $(this);
-                modal.find('.modal-content').load(url);
-            });
+                $('#modal-container-lg').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget);
+                    var url = button.attr("href");
+                    var modal = $(this);
+                    modal.find('.modal-content').load(url);
+                });
 
-            $('#modal-container-xl').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var url = button.attr("href");
-                var modal = $(this);
-                modal.find('.modal-content').load(url);
-            });
+                $('#modal-container-xl').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget);
+                    var url = button.attr("href");
+                    var modal = $(this);
+                    modal.find('.modal-content').load(url);
+                });
 
-            $('#modal-container').on('show.bs.modal', function (event) {
-                var button = $(event.relatedTarget);
-                var url = button.attr("href");
-                var modal = $(this);
-                modal.find('.modal-content').load(url);
-            });
+                $('#modal-container').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget);
+                    var url = button.attr("href");
+                    var modal = $(this);
+                    modal.find('.modal-content').load(url);
+                });
 
-            $('#modal-container').on('hide.bs.modal', function () {
-                $(this).removeData('bs.modal');
-                $('#modal-container .modal-dialog').removeClass('modal-lg')
-                $('#modal-container .modal-content').html('<p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>');
-            });
+                $('#modal-container').on('hide.bs.modal', function () {
+                    $(this).removeData('bs.modal');
+                    $('#modal-container .modal-dialog').removeClass('modal-lg')
+                    $('#modal-container .modal-content').html('<p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>');
+                });
 
-            $('#modal-container-lg').on('hide.bs.modal', function () {
-                $(this).removeData('bs.modal');
-                $('#modal-container-lg .modal-content').html('<p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>');
-            });
+                $('#modal-container-lg').on('hide.bs.modal', function () {
+                    $(this).removeData('bs.modal');
+                    $('#modal-container-lg .modal-content').html('<p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>');
+                });
 
-            $('#modal-container-xl').on('hide.bs.modal', function () {
-                $(this).removeData('bs.modal');
-                $('#modal-container-xl .modal-content').html('<p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>');
-            });
+                $('#modal-container-xl').on('hide.bs.modal', function () {
+                    $(this).removeData('bs.modal');
+                    $('#modal-container-xl .modal-content').html('<p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>');
+                });
 
-            $('.select-filter').select2({
-                theme: 'bootstrap4',
-                placeholder: 'SELECCIONAR',
-                allowClear: true
-            });
+                $('.select-filter').select2({
+                    theme: 'bootstrap4',
+                    placeholder: 'SELECCIONAR',
+                    allowClear: true
+                });
 
-            $('[data-toggle="tooltip"]').tooltip()
-        });
-    </script>
+                $('[data-toggle="tooltip"]').tooltip()
+            });
+        </script>
+    }
 </body>
 </html>

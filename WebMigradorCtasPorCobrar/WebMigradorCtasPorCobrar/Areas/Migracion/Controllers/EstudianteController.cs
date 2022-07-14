@@ -4,16 +4,14 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace WebMigradorCtasPorCobrar.Controllers
+namespace WebMigradorCtasPorCobrar.Areas.Migracion.Controllers
 {
-    public class MigracionController : Controller
+    public class EstudianteController : Controller
     {
-        // GET: Migracion
+        // GET: Migracion/Estudiante
         public ActionResult Index()
         {
             return View();
         }
-
-
     }
 }

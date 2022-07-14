@@ -1,0 +1,47 @@
+﻿
+@{
+    ViewBag.Title = "Estudiante";
+    var pregrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Pregrado;
+    var posgrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Posgrado;
+    var cuded = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Cuded;
+}
+
+
+<div class="col-12 pb-3">
+    <h1>@ViewBag.Title</h1>
+</div>
+
+<div class="col-12">
+    <div class="form-group row">
+        <label for="inputEmail3" class="col-sm-2 col-form-label text-right">Seleccionar procedencia</label>
+        <div class="col-sm-2">
+            <select class="form-control" id="cbo-procedencia">
+                <option value="@pregrado">PREGRADO</option>
+                <option value="@posgrado">POSGRADO</option>
+                <option value="@cuded" selected>CUDED</option>
+            </select>
+        </div>
+    </div>
+
+</div>
+
+@section scripts{
+    <script>
+        $('#cbo-procedencia').on('change', function () {
+            $.ajax({
+                url: '@Url.Action("Index", "Estudiante", new { area = "Temporal_Pagos" })' + '?procedencia=' + this.val(),
+                type: 'GET',
+                cache: false,
+                beforeSend: function () {
+
+                },
+                success: function (data) {
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+
+                }
+            })
+        })
+    </script>
+}
