@@ -110,7 +110,7 @@ BEGIN
 
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet AS TRG
 		USING (SELECT ECD.*, OBL.I_periodo, OAC.I_ObligacionAluID  FROM TR_Ec_Det ECD
-					INNER JOIN TR_MG_EcObl OBL ON ECD.CUOTA_PAGO = OBL.CUOTA_PAGO AND ECD.COD_RC = OBL.COD_RC AND ECD.P = OBL.P
+					INNER JOIN TR_Ec_Obl OBL ON ECD.CUOTA_PAGO = OBL.CUOTA_PAGO AND ECD.COD_RC = OBL.COD_RC AND ECD.P = OBL.P
 												AND ECD.COD_ALU = OBL.COD_ALU AND ECD.FCH_VENC= OBL.FCH_VENC AND OBL.B_Migrado = 1  
 					INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno MAT ON MAT.C_CodRc = OBL.COD_RC AND MAT.C_CodAlu = OBL.COD_ALU
 																			  AND MAT.I_Anio = OBL.ANO AND MAT.I_Periodo = OBL.I_periodo
@@ -127,14 +127,14 @@ BEGIN
 		OUTPUT $action, SRC.I_CatPagoID INTO @Tbl_outputCtasCat;
 		
 
-		UPDATE	TR_MG_CpDes 
+		UPDATE	TR_Cp_Des 
 		SET		B_Migrado = 0 
-		WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_MG_CpDes CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
+		WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_Cp_Des CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
 							WHERE CD.B_Migrable = 1 AND O.I_RowID IS NULL)
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_CpDes
-				  WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_MG_CpDes CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+				  WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_Cp_Des CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
 									WHERE CD.B_Migrable = 1 AND O.I_RowID IS NULL)
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
@@ -284,7 +284,7 @@ BEGIN
 
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet AS TRG
 		USING (SELECT ECD.*, OBL.I_periodo, OAC.I_ObligacionAluID  FROM TR_Ec_Det ECD
-					INNER JOIN TR_MG_EcObl OBL ON ECD.CUOTA_PAGO = OBL.CUOTA_PAGO AND ECD.COD_RC = OBL.COD_RC AND ECD.P = OBL.P
+					INNER JOIN TR_Ec_Obl OBL ON ECD.CUOTA_PAGO = OBL.CUOTA_PAGO AND ECD.COD_RC = OBL.COD_RC AND ECD.P = OBL.P
 												AND ECD.COD_ALU = OBL.COD_ALU AND ECD.FCH_VENC= OBL.FCH_VENC AND OBL.B_Migrado = 1  
 					INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno MAT ON MAT.C_CodRc = OBL.COD_RC AND MAT.C_CodAlu = OBL.COD_ALU
 																			  AND MAT.I_Anio = OBL.ANO AND MAT.I_Periodo = OBL.I_periodo
@@ -301,14 +301,14 @@ BEGIN
 		OUTPUT $action, SRC.I_CatPagoID INTO @Tbl_outputCtasCat;
 		
 
-		UPDATE	TR_MG_CpDes 
+		UPDATE	TR_Cp_Des 
 		SET		B_Migrado = 0 
-		WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_MG_CpDes CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
+		WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_Cp_Des CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
 							WHERE CD.B_Migrable = 1 AND O.I_RowID IS NULL)
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_CpDes
-				  WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_MG_CpDes CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+				  WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_Cp_Des CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
 									WHERE CD.B_Migrable = 1 AND O.I_RowID IS NULL)
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID

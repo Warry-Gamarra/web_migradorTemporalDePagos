@@ -24,6 +24,20 @@ select count(*) from pregrado.ec_pri
 
 
 
+select cuota_pago, I_MatAluID, 'PEN', Monto, Fch_venc, Pagado, 1, 0, getdate(), null, null, 5, I_RowID, 1
+from [BD_OCEF_MigracionTP].[dbo].[TR_Ec_Obl] a
+	 inner join TC_MatriculaAlumno m on a.Cod_alu = m.C_CodAlu and a.Cod_rc = m.C_CodRc
+where a.Ano in ('2020', '2021', '2012') and a.I_ProcedenciaID = 2
+
+
+INSERT INTO [dbo].[TR_ObligacionAluDet](I_ObligacionAluID, I_ConcPagID, I_Monto, B_Pagado, D_FecVencto, I_TipoDocumento, T_DescDocumento, B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, I_UsuarioMod, D_FecMod, B_Mora, I_MigracionTablaID, I_MigracionRowID, B_Migrado)
+select c.I_ObligacionAluID,  Concepto, a.Monto, a.Pagado, a.Fch_venc, null, Documento , 1, 0, null, getdate(), null, null, 0, 4, A.I_RowID, 1
+from [BD_OCEF_MigracionTP].[dbo].[TR_Ec_Det] a
+	 inner join [BD_OCEF_MigracionTP].[dbo].[TR_Ec_Obl] b on a.Cod_alu = b.Cod_alu and a.Cod_rc = b.Cod_rc and a.Ano = b.Ano 
+				and a.p = b.P and a.Cuota_pago = b.Cuota_pago
+	 inner join [TR_ObligacionAluCab] c on b.I_RowID = c.I_MigracionRowID --and b.I_ProcedenciaID = 1 
+where a.Ano in ('2020', '2021', '2012')
+
 
 SELECT DISTINCT cuota_pago, concepto FROM EUDED_ec_det WHERE eliminado = 1
 ORDER BY concepto

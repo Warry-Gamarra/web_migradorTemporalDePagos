@@ -220,23 +220,26 @@ BEGIN
 	BEGIN TRY 
 	
 		MERGE TR_Alumnos AS TRG
-		USING (SELECT DISTINCT * FROM BD_OCEF_TemporalPagos.dbo.alumnos) AS SRC
-		ON	TRG.C_CodAlu = SRC.C_CODALU 
-			AND TRG.C_RcCod = SRC.C_RCCOD
-			AND ISNULL(TRG.C_CodModIng, '') = ISNULL(SRC.C_CODMODIN, '')
+		USING (SELECT cod_fac, cod_esc, cod_esp, cod_rc, cod_alu, nom_alu, nom_pat, nom_mat, nom_nom, sexo, estado, resoluc, motivo, mod_ing, cod_ing, niv_alu, ano_ing, per_ing 
+				 FROM BD_OCEF_TemporalPagos.dbo.alumnos) AS SRC
+		ON	TRG.C_CodAlu = SRC.COD_ALU 
+			AND TRG.C_RcCod = SRC.COD_RC
+			AND ISNULL(TRG.C_CodModIng, '') = ISNULL(SRC.MOD_ING, '')
 		WHEN MATCHED THEN
-			UPDATE SET	TRG.C_NumDNI = SRC.C_NUMDNI,
-						TRG.C_CodTipDoc = SRC.C_CODTIPDO,
-						TRG.T_ApePaterno = REPLACE(SRC.T_APEPATER, '-', ' '),
-						TRG.T_ApeMaterno = REPLACE(SRC.T_APEMATER, '-', ' '),
-						TRG.T_Nombre = REPLACE(SRC.T_NOMBRE, '-', ' '),
-						TRG.C_Sexo = SRC.C_SEXO,
-						TRG.D_FecNac = CONVERT(DATE, SRC.D_FECNAC, 103),
-						TRG.C_AnioIngreso = SRC.C_ANIOINGR
+			UPDATE SET	--TRG.C_NumDNI = SRC.C_NUMDNI,
+						--TRG.C_CodTipDoc = SRC.C_CODTIPDO,
+						TRG.T_ApePaterno = REPLACE(SRC.nom_pat, '-', ' '),
+						TRG.T_ApeMaterno = REPLACE(SRC.nom_mat, '-', ' '),
+						TRG.T_Nombre = REPLACE(SRC.nom_nom, '-', ' '),
+						TRG.C_Sexo = SRC.sexo,
+						--TRG.D_FecNac = CONVERT(DATE, SRC.fec, 103),
+						TRG.C_AnioIngreso = SRC.ano_ing
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, I_ProcedenciaID, D_FecCarga, B_Actualizado)
-			VALUES (SRC.C_RCCOD, SRC.C_CODALU, SRC.C_NUMDNI, SRC.C_CODTIPDO, REPLACE(SRC.T_APEPATER, '-', ' '), REPLACE(SRC.T_APEMATER, '-', ' '), REPLACE(SRC.T_NOMBRE, '-', ' '), 
-					SRC.C_SEXO, CONVERT(DATE, SRC.D_FECNAC, 103), SRC.C_CODMODIN, SRC.C_ANIOINGR, 4, @D_FecProceso, 1)
+			--VALUES (SRC.COD_RC, SRC.COD_ALU, SRC.C_NUMDNI, SRC.C_CODTIPDO, REPLACE(SRC.T_APEPATER, '-', ' '), REPLACE(SRC.T_APEMATER, '-', ' '), REPLACE(SRC.T_NOMBRE, '-', ' '), 
+			--		SRC.C_SEXO, CONVERT(DATE, SRC.D_FECNAC, 103), SRC.C_CODMODIN, SRC.C_ANIOINGR, 4, @D_FecProceso, 1)
+			VALUES (SRC.COD_RC, SRC.COD_ALU, null, null, REPLACE(SRC.nom_pat, '-', ' '), REPLACE(SRC.nom_mat, '-', ' '), REPLACE(SRC.nom_nom, '-', ' '), 
+					SRC.SEXO, null, SRC.cod_ing, SRC.ano_ing, 4, @D_FecProceso, 1)
 		WHEN NOT MATCHED BY SOURCE THEN
 			UPDATE SET TRG.B_Removido = 1, 
 					   TRG.D_FecRemovido = @D_FecProceso
@@ -890,7 +893,7 @@ CREATE PROCEDURE USP_IU_CopiarTablaCuotaDePago
 AS
 --declare @B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
---exec USP_IU_CopiarTablaCuotaDePago 'eupg', 2, @B_Resultado output, @T_Message output
+--exec USP_IU_CopiarTablaCuotaDePago 'pregrado', 2, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_CpDes int = 0
@@ -1122,8 +1125,8 @@ BEGIN
 			DELETE;
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObsSinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_CpDes
-				  WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_MG_CpDes cd LEFT JOIN @cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago WHERE anio_cuota IS NULL)
+		USING 	(SELECT	@I_ObsSinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+				  WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd LEFT JOIN @cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago WHERE anio_cuota IS NULL)
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1137,7 +1140,7 @@ BEGIN
 		UPDATE	tb_des  
 		SET		I_Anio = a1.anio_cuota,
 				D_FecEvalua = @D_FecProceso
-		FROM	TR_MG_CpDes tb_des
+		FROM	TR_Cp_Des tb_des
 				INNER JOIN @cuota_anio a1 ON tb_des.CUOTA_PAGO = a1.cuota_pago
 				INNER JOIN (SELECT cuota_pago FROM @cuota_anio GROUP BY cuota_pago HAVING COUNT(*) = 1) a2
 				ON a1.cuota_pago= a2.cuota_pago
@@ -1146,16 +1149,16 @@ BEGIN
 		INSERT INTO @periodo (cuota_pago, I_Periodo, C_CodPeriodo, T_Descripcion)
 			SELECT	DISTINCT pri.CUOTA_PAGO, I_OpcionID, T_OpcionCod, T_OpcionDesc 
 			FROM	BD_OCEF_CtasPorCobrar.dbo.TC_CatalogoOpcion per 
-					INNER JOIN cp_pri pri ON per.T_OpcionCod = pri.P
+					INNER JOIN BD_OCEF_TemporalPagos.pregrado.cp_pri pri ON per.T_OpcionCod = pri.P
 			WHERE I_ParametroID = 5
 
-		UPDATE	TR_MG_CpDes
+		UPDATE	TR_Cp_Des
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM @periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
 	
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObsMasUnPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_CpDes
+		USING 	(SELECT	@I_ObsMasUnPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				 WHERE CUOTA_PAGO IN (SELECT cuota_pago FROM @periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1169,18 +1172,18 @@ BEGIN
 		UPDATE	tb_des  
 		SET		I_Periodo = per1.I_Periodo,
 				D_FecEvalua = @D_FecProceso
-		FROM	TR_MG_CpDes tb_des
+		FROM	TR_Cp_Des tb_des
 				INNER JOIN @periodo per1 ON tb_des.CUOTA_PAGO = per1.cuota_pago
 				INNER JOIN (SELECT cuota_pago FROM @periodo GROUP BY cuota_pago HAVING COUNT(*) = 1) per2
 				ON per1.CUOTA_PAGO = per2.cuota_pago
 
-		UPDATE	TR_MG_CpDes
+		UPDATE	TR_Cp_Des
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	I_Periodo IS NULL
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObsSinPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_CpDes
+		USING 	(SELECT	@I_ObsSinPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				 WHERE I_Periodo IS NULL) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1232,16 +1235,16 @@ BEGIN
 	BEGIN TRY 
 		DECLARE @categoria_pago AS TABLE (cuota_pago int, I_CatPagoID int, N_CodBanco varchar(10))
 		INSERT INTO @categoria_pago (cuota_pago, I_CatPagoID, N_CodBanco)
-			SELECT d.CUOTA_PAGO, c.I_CatPagoID, c.N_CodBanco FROM TR_MG_CpDes d
+			SELECT d.CUOTA_PAGO, c.I_CatPagoID, c.N_CodBanco FROM TR_Cp_Des d
 			LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CategoriaPago c ON d.CODIGO_BNC = c.N_CodBanco
 
-		UPDATE	TR_MG_CpDes
+		UPDATE	TR_Cp_Des
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM @categoria_pago GROUP BY cuota_pago HAVING COUNT(*) > 1)
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObsMasUnCategoria AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_CpDes
+		USING 	(SELECT	@I_ObsMasUnCategoria AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				  WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM @categoria_pago GROUP BY cuota_pago HAVING COUNT(*) > 1)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1255,18 +1258,18 @@ BEGIN
 		UPDATE	tb_des  
 		SET		I_CatPagoID = cat1.I_CatPagoID,
 				D_FecEvalua = @D_FecProceso
-		FROM	TR_MG_CpDes tb_des
+		FROM	TR_Cp_Des tb_des
 				INNER JOIN @categoria_pago cat1 ON tb_des.CUOTA_PAGO = cat1.cuota_pago
 				INNER JOIN (SELECT cuota_pago FROM @categoria_pago GROUP BY cuota_pago HAVING COUNT(*) = 1) cat2
 				ON cat1.CUOTA_PAGO = cat2.cuota_pago
 
-		UPDATE	TR_MG_CpDes
+		UPDATE	TR_Cp_Des
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	I_CatPagoID IS NULL
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObsSinCategoria AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_CpDes
+		USING 	(SELECT	@I_ObsSinCategoria AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				  WHERE	I_CatPagoID IS NULL) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1329,7 +1332,7 @@ BEGIN
 		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TC_Proceso ON;
 
 		MERGE INTO  BD_OCEF_CtasPorCobrar.dbo.TC_Proceso AS TRG
-		USING (SELECT * FROM TR_MG_CpDes 
+		USING (SELECT * FROM TR_Cp_Des 
 				WHERE B_Migrable = 1 AND I_Anio BETWEEN @I_AnioIni AND @I_AnioFin
 					  AND (CUOTA_PAGO = @I_ProcesoID OR @I_ProcesoID IS NULL)
 			  ) AS SRC
@@ -1337,7 +1340,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN 
 			 INSERT (I_ProcesoID, I_CatPagoID, T_ProcesoDesc, I_Anio, I_Periodo, N_CodBanco, D_FecVencto, I_Prioridad, B_Mora, B_Migrado, D_FecCre, B_Habilitado, B_Eliminado)
 			 VALUES (CUOTA_PAGO, I_CatPagoID, DESCRIPCIO, I_Anio, I_Periodo, CODIGO_BNC, FCH_VENC, PRIORIDAD, 
-					CASE C_MORA WHEN 'VERDADERO' THEN 1 WHEN 'FALSO' THEN 0 WHEN 'True' THEN 1 WHEN 'False' THEN 0 ELSE NULL END, 1, @D_FecProceso, 1, ELIMINADO)
+					C_MORA, 1, @D_FecProceso, 1, ELIMINADO)
 		WHEN MATCHED AND TRG.B_Migrado = 1 AND TRG.I_UsuarioMod IS NULL THEN 
 			 UPDATE SET I_CatPagoID = SRC.I_CatPagoID, 
 					 T_ProcesoDesc = SRC.DESCRIPCIO, 
@@ -1347,19 +1350,19 @@ BEGIN
 					 D_FecVencto = SRC.FCH_VENC, 
 					 I_Prioridad = SRC.PRIORIDAD, 
 					 D_FecMod = @D_FecProceso,
-					 B_Mora = (CASE SRC.C_MORA WHEN 'VERDADERO' THEN 1 WHEN 'FALSO' THEN 0 WHEN 'True' THEN 1 WHEN 'False' THEN 0 ELSE NULL END)
+					 B_Mora = SRC.C_MORA
 		OUTPUT $action, SRC.I_RowID INTO @Tbl_outputProceso;
 		
 		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TC_Proceso OFF
 		
 		IF(@I_ProcesoID IS NULL)
 		BEGIN
-			SET @I_ProcesoID = (SELECT MAX(CAST(CUOTA_PAGO as int)) FROM TR_MG_CpDes) + 1 
+			SET @I_ProcesoID = (SELECT MAX(CAST(CUOTA_PAGO as int)) FROM TR_Cp_Des) + 1 
 			DBCC CHECKIDENT([BD_OCEF_CtasPorCobrar.dbo.TC_Proceso], RESEED, @I_ProcesoID)
 		END
 
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso AS TRG
-		USING (SELECT CD.I_CtaDepositoID, TP_CD.* FROM TR_MG_CpDes TP_CD
+		USING (SELECT CD.I_CtaDepositoID, TP_CD.* FROM TR_Cp_Des TP_CD
 					INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CuentaDeposito CD ON CD.C_NumeroCuenta COLLATE DATABASE_DEFAULT = TP_CD.N_CTA_CTE COLLATE DATABASE_DEFAULT
 					WHERE B_Migrable = 1 AND I_Anio BETWEEN @I_AnioIni AND @I_AnioFin AND (CUOTA_PAGO = @I_ProcesoID OR @I_ProcesoID IS NULL)
 			   ) AS SRC
@@ -1374,7 +1377,7 @@ BEGIN
 
 
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TC_CuentaDeposito_CategoriaPago AS TRG
-		USING (SELECT DISTINCT CD.I_CtaDepositoID, TP_CD.I_CatPagoID FROM TR_MG_CpDes TP_CD
+		USING (SELECT DISTINCT CD.I_CtaDepositoID, TP_CD.I_CatPagoID FROM TR_Cp_Des TP_CD
 				INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CuentaDeposito CD ON CD.C_NumeroCuenta COLLATE DATABASE_DEFAULT = TP_CD.N_CTA_CTE COLLATE DATABASE_DEFAULT
 				WHERE B_Migrable = 1 AND I_Anio BETWEEN @I_AnioIni AND @I_AnioFin) AS SRC
 		ON TRG.I_CatPagoID = SRC.I_CatPagoID AND TRG.I_CtaDepositoID = SRC.I_CtaDepositoID
@@ -1385,19 +1388,19 @@ BEGIN
 			UPDATE SET	D_FecMod = @D_FecProceso
 		OUTPUT $action, SRC.I_CatPagoID INTO @Tbl_outputCtasCat;
 		
-		UPDATE	TR_MG_CpDes 
+		UPDATE	TR_Cp_Des 
 		SET		B_Migrado = 1, 
 				D_FecMigrado = @D_FecProceso
 		WHERE	I_RowID IN (SELECT I_RowID FROM @Tbl_outputProceso)
 
-		UPDATE	TR_MG_CpDes 
+		UPDATE	TR_Cp_Des 
 		SET		B_Migrado = 0 
-		WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_MG_CpDes CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
+		WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_Cp_Des CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
 							WHERE CD.B_Migrable = 1 AND O.I_RowID IS NULL)
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_CpDes
-				  WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_MG_CpDes CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+				  WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_Cp_Des CD LEFT JOIN @Tbl_outputProceso O ON CD.I_RowID = o.I_RowID 
 									WHERE CD.B_Migrable = 1 AND O.I_RowID IS NULL)
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
@@ -1493,8 +1496,8 @@ BEGIN
 
 	BEGIN TRY 
 		
-		MERGE TR_MG_CpPri AS TRG
-		USING cp_pri AS SRC
+		MERGE TR_Cp_Pri AS TRG
+		USING [BD_OCEF_TemporalPagos].pregrado.cp_pri AS SRC
 		ON	TRG.ID_CP = SRC.ID_CP 
 			AND TRG.ELIMINADO = SRC.ELIMINADO
 		WHEN MATCHED THEN
@@ -1510,10 +1513,10 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (ID_CP, CUOTA_PAGO, ANO, P, COD_RC, COD_ING, TIPO_OBLIG, CLASIFICAD, CLASIFIC_5, ID_CP_AGRP, AGRUPA, NRO_PAGOS, ID_CP_AFEC, PORCENTAJE, MONTO, 
 					ELIMINADO, DESCRIPCIO, CALCULAR, GRADO, TIP_ALUMNO, GRUPO_RC, FRACCIONAB, CONCEPTO_G, DOCUMENTO, MONTO_MIN, DESCRIP_L, COD_DEP_PL, OBLIG_MORA,
-					D_FecCarga)
+					D_FecCarga, I_ProcedenciaID)
 			VALUES (ID_CP, CUOTA_PAGO, ANO, P, COD_RC, COD_ING, TIPO_OBLIG, CLASIFICAD, CLASIFIC_5, ID_CP_AGRP, AGRUPA, NRO_PAGOS, ID_CP_AFEC, PORCENTAJE, MONTO, 
-					ELIMINADO, DESCRIPCIO, CALCULAR, GRADO, TIP_ALUMNO, GRUPO_RC, FRACCIONAB, CONCEPTO_G, DOCUMENTO, MONTO_MIN, DESCRIP_L, COD_DEP_PL, OBLIG_MORA,
-					@D_FecProceso)
+					ELIMINADO, DESCRIPCIO, CALCULAR, GRADO, TIP_ALUMNO, GRUPO_RC, FRACCIONAB, CONCEPTO_G, CAST(DOCUMENTO as varchar), MONTO_MIN, CAST(DESCRIP_L as varchar), COD_DEP_PL, OBLIG_MORA,
+					@D_FecProceso, 0)
 		WHEN NOT MATCHED BY SOURCE THEN
 			UPDATE SET TRG.B_Removido = 1, 
 					   TRG.D_FecRemovido = @D_FecProceso
@@ -1527,7 +1530,7 @@ BEGIN
 				deleted.GRADO, deleted.TIP_ALUMNO, deleted.GRUPO_RC, deleted.FRACCIONAB, deleted.CONCEPTO_G, deleted.DOCUMENTO, deleted.MONTO_MIN, deleted.DESCRIP_L, 
 				deleted.COD_DEP_PL, deleted.OBLIG_MORA INTO @Tbl_output;
 		
-		UPDATE	TR_MG_CpPri 
+		UPDATE	TR_Cp_Pri 
 				SET	B_Actualizado = 0, B_Migrable = 1, D_FecMigrado = NULL, B_Migrado = 0,
 					I_TipAluID = NULL, I_TipGradoID = NULL, I_TipOblID = NULL, I_TipCalcID = NULL, 
 					I_TipPerID = NULL, I_DepID = NULL, I_TipGrpRc = NULL, I_CodIngID = NULL
@@ -1535,7 +1538,7 @@ BEGIN
 		UPDATE	t_CpPri
 		SET		t_CpPri.B_Actualizado = 1,
 				t_CpPri.D_FecActualiza = @D_FecProceso
-		FROM TR_MG_CpPri AS t_CpPri
+		FROM TR_Cp_Pri AS t_CpPri
 		INNER JOIN 	@Tbl_output as t_out ON t_out.ID_CP = t_CpPri.ID_CP AND t_out.ELIMINADO = t_CpPri.ELIMINADO 
 					AND t_out.accion = 'UPDATE' AND t_out.B_Removido = 0
 		WHERE 
@@ -1567,7 +1570,7 @@ BEGIN
 				t_out.INS_OBLIG_MORA <> t_out.DEL_OBLIG_MORA
 
 
-		SET @I_CpPri = (SELECT COUNT(*) FROM cp_pri)
+		SET @I_CpPri = (SELECT COUNT(*) FROM [BD_OCEF_TemporalPagos].pregrado.cp_pri)
 		SET @I_Insertados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'INSERT')
 		SET @I_Actualizados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
 		SET @I_Removidos = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
@@ -1607,17 +1610,17 @@ BEGIN
 	DECLARE @I_Observados_eliminados int = 0
 	
 	BEGIN TRY 
-		UPDATE	TR_MG_CpPri
+		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	ID_CP IN (SELECT ID_CP FROM TR_MG_CpPri WHERE ELIMINADO = 0 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1
+		WHERE	ID_CP IN (SELECT ID_CP FROM TR_Cp_Pri WHERE ELIMINADO = 0 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1
 						  UNION
-						  SELECT ID_CP FROM TR_MG_CpPri WHERE ELIMINADO = 1 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
+						  SELECT ID_CP FROM TR_Cp_Pri WHERE ELIMINADO = 1 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_activo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_CpPri 
-				 WHERE ID_CP IN (SELECT ID_CP FROM TR_MG_CpPri WHERE ELIMINADO = 0 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
+				 FROM TR_Cp_Pri 
+				 WHERE ID_CP IN (SELECT ID_CP FROM TR_Cp_Pri WHERE ELIMINADO = 0 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1630,8 +1633,8 @@ BEGIN
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_eliminado AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_CpPri 
-				 WHERE ID_CP IN (SELECT ID_CP FROM TR_MG_CpPri WHERE ELIMINADO = 1 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
+				 FROM TR_Cp_Pri 
+				 WHERE ID_CP IN (SELECT ID_CP FROM TR_Cp_Pri WHERE ELIMINADO = 1 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1677,14 +1680,14 @@ BEGIN
 	DECLARE @I_Observados_AnioDif int = 0
 	
 	BEGIN TRY 
-		UPDATE	TR_MG_CpPri
+		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	(ANO IS NULL OR ANO = 0) AND TIPO_OBLIG = 1
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_CpPri WHERE (ANO IS NULL OR ANO = 0) AND TIPO_OBLIG = 1
+				 FROM TR_Cp_Pri WHERE (ANO IS NULL OR ANO = 0) AND TIPO_OBLIG = 1
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1695,15 +1698,15 @@ BEGIN
 		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinAnio THEN
 			DELETE;
 
-		UPDATE	TR_MG_CpPri
+		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 				--T_Observacion = ISNULL(T_Observacion, '') + '012 - NO COINCIDE AÑO : ('+ CONVERT(varchar, @D_FecProceso, 112) + '). Año del concepto de pago de obligacion no coincide con el año de la cuota de pagos.|'
-		WHERE	NOT EXISTS (SELECT * FROM TR_MG_CpDes WHERE I_Anio = TR_MG_CpPri.ANO) AND TIPO_OBLIG = 1
+		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE I_Anio = TR_Cp_Pri.ANO) AND TIPO_OBLIG = 1
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_CpPri WHERE NOT EXISTS (SELECT * FROM TR_MG_CpDes WHERE I_Anio = TR_MG_CpPri.ANO) AND TIPO_OBLIG = 1
+				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE I_Anio = TR_Cp_Pri.ANO) AND TIPO_OBLIG = 1
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1749,14 +1752,14 @@ BEGIN
 	DECLARE @I_Observados_PerDif int = 0
 	
 	BEGIN TRY 
-		UPDATE	TR_MG_CpPri
+		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	(P IS NULL OR P = '') AND TIPO_OBLIG = 1
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinPer AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_CpPri WHERE (P IS NULL OR P = '') AND TIPO_OBLIG = 1
+				 FROM TR_Cp_Pri WHERE (P IS NULL OR P = '') AND TIPO_OBLIG = 1
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1767,14 +1770,14 @@ BEGIN
 		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinPer THEN
 			DELETE;
 
-		UPDATE	TR_MG_CpPri
+		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	NOT EXISTS (SELECT * FROM TR_MG_CpDes WHERE P = TR_MG_CpPri.P) AND TIPO_OBLIG = 1
+		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE P = TR_Cp_Pri.P) AND TIPO_OBLIG = 1
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_PerDif AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_CpPri WHERE NOT EXISTS (SELECT * FROM TR_MG_CpDes WHERE P = TR_MG_CpPri.P) AND TIPO_OBLIG = 1
+				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE P = TR_Cp_Pri.P) AND TIPO_OBLIG = 1
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1820,14 +1823,14 @@ BEGIN
 	DECLARE @I_Observados_CuotaNoM int = 0
 	
 	BEGIN TRY 
-		UPDATE	TR_MG_CpPri
+		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	NOT EXISTS (SELECT * FROM TR_MG_CpDes WHERE CUOTA_PAGO = TR_MG_CpPri.CUOTA_PAGO) AND TIPO_OBLIG = 1
+		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO) AND TIPO_OBLIG = 1
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinCuota AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_CpPri WHERE NOT EXISTS (SELECT * FROM TR_MG_CpDes WHERE CUOTA_PAGO = TR_MG_CpPri.CUOTA_PAGO) AND TIPO_OBLIG = 1
+				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO) AND TIPO_OBLIG = 1
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1839,14 +1842,14 @@ BEGIN
 			DELETE;
 
 
-		UPDATE	TR_MG_CpPri
+		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	EXISTS (SELECT * FROM TR_MG_CpDes WHERE CUOTA_PAGO = TR_MG_CpPri.CUOTA_PAGO AND B_Migrable = 0)
+		WHERE	EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO AND B_Migrable = 0)
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_CuotaNoM AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_CpPri WHERE EXISTS (SELECT * FROM TR_MG_CpDes WHERE CUOTA_PAGO = TR_MG_CpPri.CUOTA_PAGO AND B_Migrable = 0)
+				 FROM TR_Cp_Pri WHERE EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO AND B_Migrable = 0)
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1929,7 +1932,7 @@ BEGIN
 				tb_pri.I_DepID		= dep.I_DepID,
 				tb_pri.I_TipGrpRc	= t_grc.I_TipGrpRc,
 				tb_pri.I_CodIngID	= c_ing.I_CodIngID
-		FROM	TR_MG_CpPri tb_pri
+		FROM	TR_Cp_Pri tb_pri
 				LEFT JOIN @tipo_alumno t_alu ON tb_pri.TIP_ALUMNO = CAST(t_alu.C_CodTipAlu AS float)
 				LEFT JOIN @tipo_grado t_grd ON tb_pri.GRADO = CAST(t_grd.C_CodTipGrado AS float)
 				LEFT JOIN @tipo_obligacion t_obl ON tb_pri.TIPO_OBLIG = CAST(t_obl.C_CodTipObl AS bit)
@@ -1939,7 +1942,7 @@ BEGIN
 				LEFT JOIN @codigo_ing c_ing ON tb_pri.COD_ING = c_ing.C_CodIng
 				LEFT JOIN @unfv_dep dep ON tb_pri.COD_DEP_PL = dep.C_DepCodPl AND LEN(dep.C_DepCodPl) > 0
 		
-		SELECT * FROM TR_MG_CpPri
+		SELECT * FROM TR_Cp_Pri
 
 		SET @B_Resultado = 1
 		SET @T_Message = 'Ok'
@@ -2009,7 +2012,7 @@ BEGIN
 		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago ON;
 
 		MERGE INTO  BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago AS TRG
-		USING (SELECT * FROM TR_MG_CpPri 
+		USING (SELECT * FROM TR_Cp_Pri 
 				WHERE B_Migrable = 1 AND TIPO_OBLIG = 1 AND (CUOTA_PAGO = @I_ProcesoID OR @I_ProcesoID IS NULL) AND ANO BETWEEN @I_AnioIni AND @I_AnioFin
 			  ) AS SRC
 		ON TRG.I_ConcPagID = SRC.ID_CP
@@ -2027,7 +2030,7 @@ BEGIN
 					CASE SRC.ID_CP_AGRP WHEN 0 THEN NULL ELSE SRC.ID_CP_AGRP END, CASE SRC.ID_CP_AFEC WHEN 0 THEN 0 ELSE 1 END,
 					CASE SRC.ID_CP_AFEC WHEN 0 THEN NULL ELSE SRC.ID_CP_AFEC END, SRC.NRO_PAGOS, SRC.PORCENTAJE, 'PEN', SRC.MONTO, 
 					CAST(REPLACE(SRC.MONTO_MIN, ',', '.') as float), SRC.DESCRIP_L, SRC.DOCUMENTO, 
-					CASE SRC.OBLIG_MORA WHEN 'VERDADERO' THEN 1 WHEN 'FALSO' THEN 0 WHEN 'True' THEN 1 WHEN 'False' THEN 0 ELSE NULL END,
+					SRC.OBLIG_MORA,
 					1, 1, SRC.ELIMINADO, NULL, NULL, NULL)
 		WHEN MATCHED AND TRG.B_Migrado = 1 AND TRG.I_UsuarioMod IS NULL THEN 
 			 UPDATE SET T_ConceptoPagoDesc = SRC.DESCRIPCIO, 
@@ -2060,7 +2063,7 @@ BEGIN
 					 M_MontoMinimo = CAST(REPLACE(SRC.MONTO_MIN, ',', '.') as float), 
 					 T_DescripcionLarga = SRC.DESCRIP_L, 
 					 T_Documento = SRC.DOCUMENTO,
-					 B_Mora = (CASE SRC.OBLIG_MORA WHEN 'VERDADERO' THEN 1 WHEN 'FALSO' THEN 0 WHEN 'True' THEN 1 WHEN 'False' THEN 0 ELSE NULL END), 
+					 B_Mora = SRC.OBLIG_MORA, 
 					 I_TipoDescuentoID = NULL, 
 					 --B_EsPagoMatricula = NULL, 
 					 --B_EsPagoExtmp = NULL, 
@@ -2071,19 +2074,19 @@ BEGIN
 
 		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago OFF;
 
-		UPDATE	TR_MG_CpPri 
+		UPDATE	TR_Cp_Pri 
 		SET		B_Migrado = 1, 
 				D_FecMigrado = @D_FecProceso
 		WHERE	I_RowID IN (SELECT I_RowID FROM @Tbl_outputConceptosPago)
 
-		UPDATE	TR_MG_CpDes 
+		UPDATE	TR_Cp_Des 
 		SET		B_Migrado = 0 
-		WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_MG_CpDes CD LEFT JOIN @Tbl_outputConceptosPago O ON CD.I_RowID = o.I_RowID 
+		WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_Cp_Des CD LEFT JOIN @Tbl_outputConceptosPago O ON CD.I_RowID = o.I_RowID 
 							WHERE CD.B_Migrable = 1 AND O.I_RowID IS NULL)
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_CpDes
-				  WHERE	I_RowID IN (SELECT CP.I_RowID FROM TR_MG_CpPri CP LEFT JOIN @Tbl_outputConceptosPago O ON CP.I_RowID = o.I_RowID 
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+				  WHERE	I_RowID IN (SELECT CP.I_RowID FROM TR_Cp_Pri CP LEFT JOIN @Tbl_outputConceptosPago O ON CP.I_RowID = o.I_RowID 
 									WHERE CP.B_Migrable = 1 AND O.I_RowID IS NULL)
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
@@ -2136,30 +2139,30 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY 
 
-		UPDATE	TR_MG_EcObl
+		UPDATE	TR_Ec_Obl
 		SET		B_Actualizado = 0, 
 				B_Migrable	  = 1, 
 				D_FecMigrado  = NULL, 
 				B_Migrado	  = 0 
 
-		UPDATE	TR_MG_EcObl
-		SET		TR_MG_EcObl.B_Removido		= 1, 
-				TR_MG_EcObl.D_FecRemovido	= @D_FecProceso,
-				TR_MG_EcObl.B_Migrable		= 0
-		WHERE	NOT EXISTS (SELECT * FROM ec_obl SRC  
-							WHERE TR_MG_EcObl.ANO = SRC.ANO AND TR_MG_EcObl.P = SRC.P AND TR_MG_EcObl.COD_ALU = SRC.COD_ALU 
-							AND TR_MG_EcObl.COD_RC = SRC.COD_RC AND TR_MG_EcObl.CUOTA_PAGO = SRC.CUOTA_PAGO 
-							AND ISNULL(TR_MG_EcObl.FCH_VENC, '19000101') = ISNULL(SRC.FCH_VENC, '19000101')
-							AND ISNULL(TR_MG_EcObl.TIPO_OBLIG, 0) = ISNULL(SRC.TIPO_OBLIG, 0)
-							AND TR_MG_EcObl.MONTO = SRC.MONTO AND TR_MG_EcObl.PAGADO = SRC.PAGADO)
+		UPDATE	TR_Ec_Obl
+		SET		TR_Ec_Obl.B_Removido		= 1, 
+				TR_Ec_Obl.D_FecRemovido	= @D_FecProceso,
+				TR_Ec_Obl.B_Migrable		= 0
+		WHERE	NOT EXISTS (SELECT * FROM BD_OCEF_TemporalPagos.pregrado.ec_obl SRC  
+							WHERE TR_Ec_Obl.ANO = SRC.ANO AND TR_Ec_Obl.P = SRC.P AND TR_Ec_Obl.COD_ALU = SRC.COD_ALU 
+							AND TR_Ec_Obl.COD_RC = SRC.COD_RC AND TR_Ec_Obl.CUOTA_PAGO = SRC.CUOTA_PAGO 
+							AND ISNULL(TR_Ec_Obl.FCH_VENC, '19000101') = ISNULL(SRC.FCH_VENC, '19000101')
+							AND ISNULL(TR_Ec_Obl.TIPO_OBLIG, 0) = ISNULL(SRC.TIPO_OBLIG, 0)
+							AND TR_Ec_Obl.MONTO = SRC.MONTO AND TR_Ec_Obl.PAGADO = SRC.PAGADO)
 
 		SET @I_Removidos = @@ROWCOUNT
 
-		INSERT TR_MG_EcObl(ANO, P, I_Periodo, COD_ALU, COD_RC, CUOTA_PAGO, TIPO_OBLIG, FCH_VENC, MONTO, PAGADO, D_FecCarga, B_Migrable, B_Migrado)
-		SELECT	ANO, P, I_OpcionID as I_periodo, COD_ALU, COD_RC, CUOTA_PAGO, TIPO_OBLIG, FCH_VENC, MONTO, PAGADO, @D_FecProceso, 1, 0
-		FROM	ec_obl OBL
+		INSERT TR_Ec_Obl(ANO, P, I_Periodo, COD_ALU, COD_RC, CUOTA_PAGO, TIPO_OBLIG, FCH_VENC, MONTO, PAGADO, D_FecCarga, B_Migrable, B_Migrado, I_ProcedenciaID, B_Obligacion)
+		SELECT	ANO, P, I_OpcionID as I_periodo, COD_ALU, COD_RC, CUOTA_PAGO, TIPO_OBLIG, FCH_VENC, MONTO, PAGADO, @D_FecProceso, 1, 0, 1, 1
+		FROM	BD_OCEF_TemporalPagos.pregrado.ec_obl OBL
 				LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CatalogoOpcion cop_per ON OBL.P = cop_per.T_OpcionCod AND cop_per.I_ParametroID = 5
-		WHERE	NOT EXISTS (SELECT * FROM TR_MG_EcObl TRG 
+		WHERE	NOT EXISTS (SELECT * FROM TR_Ec_Obl TRG 
 							WHERE TRG.ANO = OBL.ANO AND TRG.P = OBL.P AND TRG.COD_ALU = OBL.COD_ALU AND TRG.COD_RC = OBL.COD_RC 
 							AND TRG.CUOTA_PAGO = OBL.CUOTA_PAGO AND ISNULL(TRG.FCH_VENC, '19000101') = ISNULL(OBL.FCH_VENC, '19000101')
 							AND ISNULL(TRG.TIPO_OBLIG, 0) = ISNULL(OBL.TIPO_OBLIG, 0) AND TRG.MONTO = OBL.MONTO AND TRG.PAGADO = OBL.PAGADO)
@@ -2167,7 +2170,7 @@ BEGIN
 		SET @I_Insertados = @@ROWCOUNT
 
 
-		SET @I_EcObl = (SELECT COUNT(*) FROM ec_obl)
+		SET @I_EcObl = (SELECT COUNT(*) FROM BD_OCEF_TemporalPagos.pregrado.ec_obl)
 
 		SELECT @I_EcObl AS tot_obligaciones, @I_Insertados AS cant_inserted, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 		
@@ -2252,10 +2255,10 @@ BEGIN
 
 	BEGIN TRY 	
 	
-		DELETE TR_MG_EcDet
+		DELETE TR_Ec_Det
 			
-		MERGE TR_MG_EcDet AS TRG
-		USING (SELECT * FROM ec_det) AS SRC
+		MERGE TR_Ec_Det AS TRG
+		USING (SELECT * FROM BD_OCEF_TemporalPagos.pregrado.ec_det) AS SRC
 		ON	  TRG.COD_ALU = SRC.COD_ALU AND
 			  TRG.COD_RC = SRC.COD_RC AND
 			  TRG.CUOTA_PAGO = SRC.CUOTA_PAGO AND
@@ -2266,9 +2269,9 @@ BEGIN
 			  TRG.ELIMINADO = SRC.ELIMINADO
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (COD_ALU, COD_RC, CUOTA_PAGO, ANO, P, TIPO_OBLIG, CONCEPTO, FCH_VENC, NRO_RECIBO, FCH_PAGO, ID_LUG_PAG, CANTIDAD, MONTO, PAGADO, CONCEPTO_F, FCH_ELIMIN, 
-					NRO_EC, FCH_EC, ELIMINADO, PAG_DEMAS, COD_CAJERO, TIPO_PAGO, NO_BANCO, COD_DEP, D_FecCarga, B_Migrable, B_Migrado, D_FecMigrado)
+					NRO_EC, FCH_EC, ELIMINADO, PAG_DEMAS, COD_CAJERO, TIPO_PAGO, NO_BANCO, COD_DEP, D_FecCarga, B_Migrable, B_Migrado, D_FecMigrado, I_ProcedenciaID, B_Obligacion)
 			VALUES (COD_ALU, COD_RC, CUOTA_PAGO, ANO, P, TIPO_OBLIG, CONCEPTO, FCH_VENC, NRO_RECIBO, FCH_PAGO, ID_LUG_PAG, CANTIDAD, MONTO, PAGADO, CONCEPTO_F, FCH_ELIMIN, 
-					NRO_EC, FCH_EC, ELIMINADO, PAG_DEMAS, COD_CAJERO, TIPO_PAGO, NO_BANCO, COD_DEP, @D_FecProceso, 1, 0, NULL)
+					NRO_EC, FCH_EC, ELIMINADO, PAG_DEMAS, COD_CAJERO, TIPO_PAGO, NO_BANCO, COD_DEP, @D_FecProceso, 1, 0, NULL, 1, 1)
 		WHEN NOT MATCHED BY SOURCE THEN
 			UPDATE SET	TRG.B_Removido		= 1, 
 						TRG.D_FecRemovido	= @D_FecProceso,
@@ -2282,7 +2285,7 @@ BEGIN
 				deleted.B_Removido INTO @Tbl_output;
 				
 
-		SET @I_EcDet = (SELECT COUNT(*) FROM ec_det)
+		SET @I_EcDet = (SELECT COUNT(*) FROM BD_OCEF_TemporalPagos.pregrado.ec_det)
 		SET @I_Insertados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'INSERT')
 		SET @I_Removidos = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
 
@@ -2319,14 +2322,14 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		UPDATE	TR_MG_EcObl
+		UPDATE	TR_Ec_Obl
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	NOT EXISTS (SELECT * FROM TR_MG_Alumnos b WHERE TR_MG_EcObl.COD_ALU = C_CodAlu and TR_MG_EcObl.COD_RC = C_RcCod)
+		WHERE	NOT EXISTS (SELECT * FROM TR_Alumnos b WHERE TR_Ec_Obl.COD_ALU = C_CodAlu and TR_Ec_Obl.COD_RC = C_RcCod)
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_EcObl
-				  WHERE	NOT EXISTS (SELECT * FROM TR_MG_Alumnos b WHERE TR_MG_EcObl.COD_ALU = C_CodAlu and TR_MG_EcObl.COD_RC = C_RcCod)) AS SRC
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Ec_Obl
+				  WHERE	NOT EXISTS (SELECT * FROM TR_Alumnos b WHERE TR_Ec_Obl.COD_ALU = C_CodAlu and TR_Ec_Obl.COD_RC = C_RcCod)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -2373,13 +2376,13 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		UPDATE	TR_MG_EcObl
+		UPDATE	TR_Ec_Obl
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	ISNUMERIC(ANO) = 0
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_EcObl
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Ec_Obl
 				  WHERE	ISNUMERIC(ANO) = 0) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -2427,13 +2430,13 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		UPDATE	TR_MG_EcObl
+		UPDATE	TR_Ec_Obl
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	I_Periodo IS NULL
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_EcObl
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Ec_Obl
 				  WHERE	I_Periodo IS NULL) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -2486,9 +2489,9 @@ BEGIN
 		UPDATE	TRG_1
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		FROM	TR_MG_EcObl TRG_1
+		FROM	TR_Ec_Obl TRG_1
 				INNER JOIN (SELECT ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
-							FROM  TR_MG_EcObl
+							FROM  TR_Ec_Obl
 							GROUP BY ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
 							HAVING COUNT(*) > 1) SRC_1 
 				ON TRG_1.ANO = SRC_1.ANO AND TRG_1.P = SRC_1.P AND TRG_1.COD_ALU = SRC_1.COD_ALU AND TRG_1.COD_RC = SRC_1.COD_RC 
@@ -2497,9 +2500,9 @@ BEGIN
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_MG_EcObl TRG_1
+				 FROM TR_Ec_Obl TRG_1
 					INNER JOIN (SELECT ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
-								FROM  TR_MG_EcObl
+								FROM  TR_Ec_Obl
 								GROUP BY ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
 								HAVING COUNT(*) > 1) SRC_1 
 					ON TRG_1.ANO = SRC_1.ANO AND TRG_1.P = SRC_1.P AND TRG_1.COD_ALU = SRC_1.COD_ALU AND TRG_1.COD_RC = SRC_1.COD_RC 
@@ -2552,29 +2555,29 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		UPDATE	TR_MG_EcDet
+		UPDATE	TR_Ec_Det
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	TIPO_OBLIG = 'T' AND
-				NOT EXISTS (SELECT * FROM TR_MG_EcObl b 
-							WHERE	TR_MG_EcDet.ANO = b.ANO 
-									AND TR_MG_EcDet.P = b.P
-									AND TR_MG_EcDet.CUOTA_PAGO = b.CUOTA_PAGO
-									AND TR_MG_EcDet.COD_ALU = b.COD_ALU
-									AND TR_MG_EcDet.COD_RC = b.COD_RC
+				NOT EXISTS (SELECT * FROM TR_Ec_Obl b 
+							WHERE	TR_Ec_Det.ANO = b.ANO 
+									AND TR_Ec_Det.P = b.P
+									AND TR_Ec_Det.CUOTA_PAGO = b.CUOTA_PAGO
+									AND TR_Ec_Det.COD_ALU = b.COD_ALU
+									AND TR_Ec_Det.COD_RC = b.COD_RC
 									AND CONVERT(DATETIME, FCH_VENC, 102) = b.FCH_VENC
 							)
 
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_MG_EcDet
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Ec_Det
 				  WHERE	TIPO_OBLIG = 'T' AND
-						NOT EXISTS (SELECT * FROM TR_MG_EcObl b 
-									WHERE	TR_MG_EcDet.ANO = b.ANO 
-											AND TR_MG_EcDet.P = b.P
-											AND TR_MG_EcDet.CUOTA_PAGO = b.CUOTA_PAGO
-											AND TR_MG_EcDet.COD_ALU = b.COD_ALU
-											AND TR_MG_EcDet.COD_RC = b.COD_RC
+						NOT EXISTS (SELECT * FROM TR_Ec_Obl b 
+									WHERE	TR_Ec_Det.ANO = b.ANO 
+											AND TR_Ec_Det.P = b.P
+											AND TR_Ec_Det.CUOTA_PAGO = b.CUOTA_PAGO
+											AND TR_Ec_Det.COD_ALU = b.COD_ALU
+											AND TR_Ec_Det.COD_RC = b.COD_RC
 											AND CONVERT(DATETIME, FCH_VENC, 102) = b.FCH_VENC
 								)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
