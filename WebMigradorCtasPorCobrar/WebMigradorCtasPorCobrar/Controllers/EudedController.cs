@@ -9,15 +9,15 @@ namespace WebMigradorCtasPorCobrar.Controllers
 {
     public class EudedController : Controller
     {
-        private readonly CuotaPagoService cuotaPagoService;
-        private readonly ConceptoPagoService conceptoPagoService;
+        //private readonly CuotaPagoService cuotaPagoService;
+        //private readonly ConceptoPagoService conceptoPagoService;
         private readonly ObligacionService obligacionService;
 
 
         public EudedController()
         {
-            cuotaPagoService = new CuotaPagoService();
-            conceptoPagoService = new ConceptoPagoService();
+            //cuotaPagoService = new CuotaPagoService();
+            //conceptoPagoService = new ConceptoPagoService();
             obligacionService = new ObligacionService();
         }
 
@@ -70,34 +70,34 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return View();
         }
 
-        public ActionResult CuotaPagoTemporalPagos()
-        {
-            var model = cuotaPagoService.ObtenerEudedTP();
+        //public ActionResult CuotaPagoTemporalPagos()
+        //{
+        //    var model = cuotaPagoService.ObtenerEudedTP();
 
-            return PartialView("CuotaPago_migracion_step1", model);
-        }
+        //    return PartialView("CuotaPago_migracion_step1", model);
+        //}
 
-        public ActionResult CuotaPagoTransformacion()
-        {
-            var model = cuotaPagoService.ObtenerEudedMG();
+        //public ActionResult CuotaPagoTransformacion()
+        //{
+        //    var model = cuotaPagoService.ObtenerEudedMG();
 
-            return PartialView("CuotaPago_migracion_step2", model);
-        }
+        //    return PartialView("CuotaPago_migracion_step2", model);
+        //}
 
 
-        public ActionResult CuotaPagoResultadoRevision()
-        {
-            var model = cuotaPagoService.ObtenerEudedMG();
+        //public ActionResult CuotaPagoResultadoRevision()
+        //{
+        //    var model = cuotaPagoService.ObtenerEudedMG();
 
-            return PartialView("CuotaPago_migracion_step3", model);
-        }
+        //    return PartialView("CuotaPago_migracion_step3", model);
+        //}
 
-        public ActionResult CuotaPagoResultadoMigracion()
-        {
-            var model = cuotaPagoService.ObtenerEudedMG();
+        //public ActionResult CuotaPagoResultadoMigracion()
+        //{
+        //    var model = cuotaPagoService.ObtenerEudedMG();
 
-            return PartialView("CuotaPago_migracion_step4", model);
-        }
+        //    return PartialView("CuotaPago_migracion_step4", model);
+        //}
 
         #endregion
 
@@ -145,34 +145,34 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return View();
         }
 
-        public ActionResult ConceptoPagoTemporalPagos()
-        {
-            var model = conceptoPagoService.ObtenerEudedTP();
+        //public ActionResult ConceptoPagoTemporalPagos()
+        //{
+        //    var model = conceptoPagoService.ObtenerEudedTP();
 
-            return PartialView("ConceptoPago_migracion_step1", model);
-        }
+        //    return PartialView("ConceptoPago_migracion_step1", model);
+        //}
 
-        public ActionResult ConceptoPagoTransformacion()
-        {
-            var model = conceptoPagoService.ObtenerEudedMG();
+        //public ActionResult ConceptoPagoTransformacion()
+        //{
+        //    var model = conceptoPagoService.ObtenerEudedMG();
 
-            return PartialView("ConceptoPago_migracion_step2", model);
-        }
+        //    return PartialView("ConceptoPago_migracion_step2", model);
+        //}
 
 
-        public ActionResult ConceptoPagoResultadoRevision()
-        {
-            var model = conceptoPagoService.ObtenerEudedMG();
+        //public ActionResult ConceptoPagoResultadoRevision()
+        //{
+        //    var model = conceptoPagoService.ObtenerEudedMG();
 
-            return PartialView("ConceptoPago_migracion_step3", model);
-        }
+        //    return PartialView("ConceptoPago_migracion_step3", model);
+        //}
 
-        public ActionResult ConceptoPagoResultadoMigracion()
-        {
-            var model = conceptoPagoService.ObtenerEudedMG();
+        //public ActionResult ConceptoPagoResultadoMigracion()
+        //{
+        //    var model = conceptoPagoService.ObtenerEudedMG();
 
-            return PartialView("ConceptoPago_migracion_step4", model);
-        }
+        //    return PartialView("ConceptoPago_migracion_step4", model);
+        //}
 
         #endregion
 

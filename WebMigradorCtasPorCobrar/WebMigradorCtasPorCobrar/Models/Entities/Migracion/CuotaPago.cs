@@ -3,23 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace WebMigradorCtasPorCobrar.Models.Entities
+namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
 {
-    public class CuotaPagoTP
-    {
-        public int Cuota_pago { get; set; }
-        public string Descripcio { get; set; }
-        public string N_cta_cte { get; set; }
-        public bool Eliminado { get; set; }
-        public string Codigo_bnc { get; set; }
-        public DateTime Fch_venc { get; set; }
-        public string Prioridad { get; set; }
-        public bool C_mora { get; set; }
-
-    }
-
-
-    public class CuotaPagoMG
+    public class CuotaPago
     {
         public int I_RowID { get; set; }
         public int Cuota_pago { get; set; }
@@ -42,5 +28,4 @@ namespace WebMigradorCtasPorCobrar.Models.Entities
         public bool B_Removido { get; set; }
         public DateTime D_FecRemovido { get; set; }
     }
-
 }

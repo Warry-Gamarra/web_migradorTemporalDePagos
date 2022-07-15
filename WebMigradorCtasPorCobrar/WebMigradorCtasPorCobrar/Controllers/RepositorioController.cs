@@ -9,11 +9,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
 {
     public class RepositorioController : Controller
     {
-        public readonly AlumnoService _alumnoService;
 
         public RepositorioController()
         {
-            _alumnoService = new AlumnoService();
         }
         // GET: Repositorio
         public ActionResult Index()
@@ -62,41 +60,41 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
-        public ActionResult TemporalPagos()
-        {
-            var model = _alumnoService.ObtenerAlumnosTP();
+        //public ActionResult TemporalPagos()
+        //{
+        //    var model = _alumnoService.ObtenerAlumnosTP();
 
-            return PartialView("Estudiante_migracion_step1", model);
-        }
+        //    return PartialView("Estudiante_migracion_step1", model);
+        //}
 
-        public ActionResult Transformacion()
-        {
-            var model = _alumnoService.ObtenerAlumnosMG();
+        //public ActionResult Transformacion()
+        //{
+        //    var model = _alumnoService.ObtenerAlumnosMG();
 
-            return PartialView("Estudiante_migracion_step2", model);
-        }
+        //    return PartialView("Estudiante_migracion_step2", model);
+        //}
 
 
-        public ActionResult ResultadoRevision()
-        {
-            var model = _alumnoService.ObtenerAlumnosMG();
+        //public ActionResult ResultadoRevision()
+        //{
+        //    var model = _alumnoService.ObtenerAlumnosMG();
 
-            return PartialView("Estudiante_migracion_step3", model);
-        }
+        //    return PartialView("Estudiante_migracion_step3", model);
+        //}
 
-        public ActionResult ResultadoMigracion()
-        {
-            var model = _alumnoService.ObtenerAlumnosTP();
+        //public ActionResult ResultadoMigracion()
+        //{
+        //    var model = _alumnoService.ObtenerAlumnosTP();
 
-            return PartialView("Estudiante_migracion_step4", model);
-        }
+        //    return PartialView("Estudiante_migracion_step4", model);
+        //}
 
-        public ActionResult EstudianteEdit(int id)
-        {
-            var model = _alumnoService.ObtenerAlumnosMG(id);
+        //public ActionResult EstudianteEdit(int id)
+        //{
+        //    var model = _alumnoService.ObtenerAlumnosMG(id);
 
-            return PartialView(model);
-        }
+        //    return PartialView(model);
+        //}
 
 
     }

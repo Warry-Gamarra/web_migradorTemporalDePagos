@@ -1,6 +1,9 @@
 ﻿@{
+    ViewBag.Title = "CUOTAS DE PAGO";
+
     string action = ViewBag.Action;
     string controller = ViewBag.Controller;
+    var procedencia_value = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Posgrado;
 }
 
 <div class="py-3">
@@ -10,9 +13,9 @@
     <div class="col-md-2">
         <fieldset>
             <legend class="pb-3 font-weight-bold">OPCIONES</legend>
-            <button class="btn btn-outline-dark btn-block my-3" id="btn-tp">Temporal de pagos</button>
-            <button class="btn btn-outline-dark btn-block my-3" id="btn-mg">Registros para migración</button>
-            <a class="btn btn-outline-dark btn-block my-3" id="btn-proc" href="@Url.Action("", "CuotaPago")">
+            <a class="btn btn-outline-dark btn-block my-3" id="btn-tp" href="@Url.Action("Posgrado", "CuotaPago", new { partial = "TemporalPagos" })">Temporal de pagos</a>
+            <a class="btn btn-outline-dark btn-block my-3" id="btn-mg" href="@Url.Action("Posgrado", "CuotaPago", new { partial = "DatosMigracion" })">Registros para migración</a>
+            <a class="btn btn-outline-dark btn-block my-3" id="btn-proc" href="@Url.Action("Posgrado", "CuotaPago", new { partial = "ProcesoMigracion" })">
                 Proceso de migración
             </a>
         </fieldset>
@@ -32,7 +35,7 @@
         }
         else
         {
-            @Html.Action(action, controller)
+            @Html.Action(action, controller, new { procedencia = procedencia_value })
         }
     </div>
 </div>

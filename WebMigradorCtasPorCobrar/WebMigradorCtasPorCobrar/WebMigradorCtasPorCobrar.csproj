@@ -136,7 +136,6 @@
     <Compile Include="Controllers\EudedController.cs" />
     <Compile Include="Controllers\HelpController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\PosgradoController.cs" />
     <Compile Include="Controllers\PregradoController.cs" />
     <Compile Include="Controllers\RepositorioController.cs" />
     <Compile Include="Controllers\TasasController.cs" />
@@ -144,20 +143,33 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Databases.cs" />
-    <Compile Include="Models\Entities\Alumno.cs" />
-    <Compile Include="Models\Entities\ConceptoPago.cs" />
-    <Compile Include="Models\Entities\CuotaPago.cs" />
+    <Compile Include="Models\Repository\Migracion\AlumnoRepository.cs" />
+    <Compile Include="Models\Repository\Migracion\ConceptoPagoRepository.cs" />
+    <Compile Include="Models\Repository\Migracion\CuotaPagoRepository.cs" />
+    <Compile Include="Models\Repository\TemporalPagos\AlumnoRepository.cs" />
+    <Compile Include="Models\Repository\TemporalPagos\ConceptoPagoRepository.cs" />
+    <Compile Include="Models\Repository\TemporalPagos\ObligacionRepository.cs" />
+    <Compile Include="Models\Repository\TemporalPagos\CuotaPagoRepository.cs" />
     <Compile Include="Models\Entities\DetalleObligacion.cs" />
-    <Compile Include="Models\Entities\Obligacion.cs" />
+    <Compile Include="Models\Entities\Migracion\Alumno.cs" />
+    <Compile Include="Models\Entities\Migracion\ConceptoPago.cs" />
+    <Compile Include="Models\Entities\Migracion\CuotaPago.cs" />
+    <Compile Include="Models\Entities\TemporalPagos\Obligacion.cs" />
+    <Compile Include="Models\Entities\TemporalPagos\Alumno.cs" />
+    <Compile Include="Models\Entities\TemporalPagos\ConceptoPago.cs" />
+    <Compile Include="Models\Entities\TemporalPagos\CuotaPago.cs" />
     <Compile Include="Models\Helpers\AnioObligacion.cs" />
     <Compile Include="Models\Helpers\Constant.cs" />
-    <Compile Include="Models\Helpers\Enum_procedencia.cs" />
+    <Compile Include="Models\Helpers\Procedencia.cs" />
     <Compile Include="Models\Helpers\Response.cs" />
-    <Compile Include="Models\Services\AlumnoService.cs" />
-    <Compile Include="Models\Services\ConceptoPagoService.cs" />
-    <Compile Include="Models\Services\CuotaPagoService.cs" />
     <Compile Include="Models\Services\DetalleObligacionService.cs" />
+    <Compile Include="Models\Services\Migracion\AlumnoServices.cs" />
+    <Compile Include="Models\Services\Migracion\ConceptoPagoService.cs" />
+    <Compile Include="Models\Services\Migracion\CuotaPagoService.cs" />
     <Compile Include="Models\Services\ObligacionService.cs" />
+    <Compile Include="Models\Services\TemporalPagos\ConceptoPagoService.cs" />
+    <Compile Include="Models\Services\TemporalPagos\CuotaPagoService.cs" />
+    <Compile Include="Models\Services\TemporalPagos\AlumnoService.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\ObligacionViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -394,13 +406,8 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Posgrado\Index.cshtml" />
-    <Content Include="Views\Pregrado\Index.cshtml" />
-    <Content Include="Views\Euded\Index.cshtml" />
     <Content Include="Views\Shared\_Tablas.cshtml" />
     <Content Include="Views\Repositorio\Estudiantes.cshtml" />
-    <Content Include="Views\Pregrado\CuotaPago.cshtml" />
-    <Content Include="Views\Pregrado\ConceptoPago.cshtml" />
-    <Content Include="Views\Pregrado\Obligaciones.cshtml" />
     <Content Include="Views\Shared\_GridPager.cshtml" />
     <Content Include="Views\Shared\_Grid.cshtml" />
     <Content Include="Views\Posgrado\CuotaPago.cshtml" />
@@ -408,7 +415,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\CajaPeriferica\" />
-    <Folder Include="Views\Migracion\" />
     <Folder Include="Views\Tasas\" />
   </ItemGroup>
   <ItemGroup>
@@ -435,8 +441,6 @@
     <Content Include="Views\Posgrado\Obligacion_migracion_step4.cshtml" />
     <Content Include="Views\Posgrado\Migracion.cshtml" />
     <Content Include="Views\Posgrado\_ObligacionesAnio.cshtml" />
-    <Content Include="Views\Euded\ConceptoPago.cshtml" />
-    <Content Include="Views\Euded\CuotaPago.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\_Sidebar.cshtml" />
     <Content Include="Views\Estudiante\Index.cshtml" />
@@ -448,9 +452,12 @@
     <Content Include="Views\ConceptoPago\Pregrado.cshtml" />
     <Content Include="Views\Help\Index.cshtml" />
     <Content Include="Views\Help\Manual.cshtml" />
-    <Content Include="Views\CuotaPago\_TemporalPago.cshtml" />
+    <Content Include="Views\CuotaPago\_TemporalPagos.cshtml" />
     <Content Include="Views\CuotaPago\_DatosMigracion.cshtml" />
     <Content Include="Views\CuotaPago\_ProcesoMigracion.cshtml" />
+    <Content Include="Views\ConceptoPago\_TemporalPagos.cshtml" />
+    <Content Include="Views\ConceptoPago\_DatosMigracion.cshtml" />
+    <Content Include="Views\ConceptoPago\_ProcesoMigracion.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

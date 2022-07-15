@@ -12,18 +12,18 @@ namespace WebMigradorCtasPorCobrar.Models.Services
 {
     public class ObligacionService
     {
-        public IEnumerable<Obligacion> ObtenerPosgrado(string anio)
-        {
-            IEnumerable<Obligacion> result;
+        //public IEnumerable<Obligacion> ObtenerPosgrado(string anio)
+        //{
+        //    IEnumerable<Obligacion> result;
 
-            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
-            {
-                result = connection.Query<Obligacion>("SELECT * FROM EUPG.ec_det WHERE ano = @ano "
-                                                        , new { ano = anio}, commandType: CommandType.Text);
-            }
+        //    using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+        //    {
+        //        result = connection.Query<Obligacion>("SELECT * FROM EUPG.ec_det WHERE ano = @ano "
+        //                                                , new { ano = anio}, commandType: CommandType.Text);
+        //    }
 
-            return result;
-        }
+        //    return result;
+        //}
 
 
 
