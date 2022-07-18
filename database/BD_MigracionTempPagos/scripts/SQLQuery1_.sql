@@ -22,7 +22,27 @@ select count(*) from pregrado.ec_nro
 select count(*) from pregrado.ec_obl
 select count(*) from pregrado.ec_pri
 
+select codigo_bnc, *
+from BD_OCEF_TemporalPagos.pregrado.cp_des
+where codigo_bnc IN (select distinct(codigo_bnc) from BD_OCEF_TemporalPagos.pregrado.cp_des)
+order by 1 
 
+
+SELECT * FROM BD_OCEF_TemporalPagos.euded.ec_obl where cuota_pago 
+in (
+'0689',
+'0690',
+'0691',
+'0692')
+
+select * from BD_OCEF_TemporalPagos.dbo.alumnos
+
+--PREGRADO: 0635, 0636, 0637, 0638, 0639
+--EUDED: 0658, 0685, 0687, 0688
+--PROLICE: 0689, 0690
+--PROCUNED: 0691, 0692
+--EUPG: 0670, 0671, 0672, 0673, 0674, 0675, 0676, 0677, 0678, 0679, 0680, 
+--		0681, 0682, 0683, 0695, 0696, 0697, 0698
 
 select cuota_pago, I_MatAluID, 'PEN', Monto, Fch_venc, Pagado, 1, 0, getdate(), null, null, 5, I_RowID, 1
 from [BD_OCEF_MigracionTP].[dbo].[TR_Ec_Obl] a

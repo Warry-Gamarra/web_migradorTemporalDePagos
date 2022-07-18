@@ -2,77 +2,129 @@ USE [BD_OCEF_CtasPorCobrar]
 GO
 
 -- CP_DES
-ALTER TABLE [dbo].[TC_Proceso]
-	ADD I_MigracionTablaID	int  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TC_Proceso' AND COLUMN_NAME = 'I_MigracionTablaID')
+BEGIN
+	ALTER TABLE [dbo].[TC_Proceso]
+		ADD I_MigracionTablaID	int  NULL
+END
 GO
 
-ALTER TABLE [dbo].[TC_Proceso]
-	ADD I_MigracionRowID	int  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TC_Proceso' AND COLUMN_NAME = 'I_MigracionRowID')
+BEGIN
+	ALTER TABLE [dbo].[TC_Proceso]
+		ADD I_MigracionRowID	int  NULL
+END
 GO
 
 --CP_PRI
-ALTER TABLE [dbo].[TI_ConceptoPago]
-	ADD I_MigracionTablaID	int  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TI_ConceptoPago' AND COLUMN_NAME = 'I_MigracionTablaID')
+BEGIN
+	ALTER TABLE [dbo].[TI_ConceptoPago]
+		ADD I_MigracionTablaID	int  NULL
+END
 GO
 
-ALTER TABLE [dbo].[TI_ConceptoPago]
-	ADD I_MigracionRowID	int  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TI_ConceptoPago' AND COLUMN_NAME = 'I_MigracionRowID')
+BEGIN
+	ALTER TABLE [dbo].[TI_ConceptoPago]
+		ADD I_MigracionRowID	int  NULL
+END
 GO
 
 --EC_OBL
-ALTER TABLE [dbo].[TR_ObligacionAluCab]
-	ADD B_Migrado	bit  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_ObligacionAluCab' AND COLUMN_NAME = 'B_Migrado')
+BEGIN
+	ALTER TABLE [dbo].[TR_ObligacionAluCab]
+		ADD B_Migrado	bit  NULL
+END
 GO
 
-ALTER TABLE [dbo].[TR_ObligacionAluCab]
-	ADD I_MigracionTablaID	int  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_ObligacionAluCab' AND COLUMN_NAME = 'I_MigracionTablaID')
+BEGIN
+	ALTER TABLE [dbo].[TR_ObligacionAluCab]
+		ADD I_MigracionTablaID	int  NULL
+END
 GO
 
-ALTER TABLE [dbo].[TR_ObligacionAluCab]
-	ADD I_MigracionRowID	int  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_ObligacionAluCab' AND COLUMN_NAME = 'I_MigracionRowID')
+BEGIN
+	ALTER TABLE [dbo].[TR_ObligacionAluCab]
+		ADD I_MigracionRowID	int  NULL
+END
 GO
 
 
 
 --EC_DET
-ALTER TABLE [dbo].[TR_ObligacionAluDet]
-	ADD B_Migrado	bit  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_ObligacionAluDet' AND COLUMN_NAME = 'B_Migrado')
+BEGIN
+	ALTER TABLE [dbo].[TR_ObligacionAluDet]
+		ADD B_Migrado	bit  NULL
+END
 GO
 
-ALTER TABLE [dbo].[TR_ObligacionAluDet]
-	ADD I_MigracionTablaID	int  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_ObligacionAluDet' AND COLUMN_NAME = 'I_MigracionTablaID')
+BEGIN
+	ALTER TABLE [dbo].[TR_ObligacionAluDet]
+		ADD I_MigracionTablaID	int  NULL
+END
 GO
 
-ALTER TABLE [dbo].[TR_ObligacionAluDet]
-	ADD I_MigracionRowID	int  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_ObligacionAluDet' AND COLUMN_NAME = 'I_MigracionRowID')
+BEGIN
+	ALTER TABLE [dbo].[TR_ObligacionAluDet]
+		ADD I_MigracionRowID	int  NULL
+END
 GO
 
-ALTER TABLE [dbo].[TR_ObligacionAluDet]
-	ALTER COLUMN T_DescDocumento varchar(max)
-GO
-
-ALTER TABLE [dbo].[TR_PagoBanco]
-	ADD B_Migrado	bit  NULL
-GO
-
-ALTER TABLE [dbo].[TR_PagoBanco]
-	ADD I_MigracionTablaID	int  NULL
-GO
-
-ALTER TABLE [dbo].[TR_PagoBanco]
-	ADD I_MigracionRowID	int  NULL
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_ObligacionAluDet' AND COLUMN_NAME = 'T_DescDocumento')
+BEGIN
+	ALTER TABLE [dbo].[TR_ObligacionAluDet]
+		ALTER COLUMN T_DescDocumento varchar(max)
+END
 GO
 
 
-ALTER TABLE [dbo].[TRI_PagoProcesadoUnfv]
-	ADD B_Migrado	bit  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_PagoBanco' AND COLUMN_NAME = 'B_Migrado')
+BEGIN
+	ALTER TABLE [dbo].[TR_PagoBanco]
+		ADD B_Migrado	bit  NULL
+END
 GO
 
-ALTER TABLE [dbo].[TRI_PagoProcesadoUnfv]
-	ADD I_MigracionTablaID	int  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_PagoBanco' AND COLUMN_NAME = 'I_MigracionTablaID')
+BEGIN
+	ALTER TABLE [dbo].[TR_PagoBanco]
+		ADD I_MigracionTablaID	int  NULL
+END
 GO
 
-ALTER TABLE [dbo].[TRI_PagoProcesadoUnfv]
-	ADD I_MigracionRowID	int  NULL
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_PagoBanco' AND COLUMN_NAME = 'I_MigracionRowID')
+BEGIN
+	ALTER TABLE [dbo].[TR_PagoBanco]
+		ADD I_MigracionRowID	int  NULL
+END
+GO
+
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TRI_PagoProcesadoUnfv' AND COLUMN_NAME = 'B_Migrado')
+BEGIN
+	ALTER TABLE [dbo].[TRI_PagoProcesadoUnfv]
+		ADD B_Migrado	bit  NULL
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TRI_PagoProcesadoUnfv' AND COLUMN_NAME = 'I_MigracionTablaID')
+BEGIN
+	ALTER TABLE [dbo].[TRI_PagoProcesadoUnfv]
+		ADD I_MigracionTablaID	int  NULL
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TRI_PagoProcesadoUnfv' AND COLUMN_NAME = 'I_MigracionTablaID')
+BEGIN
+	ALTER TABLE [dbo].[TRI_PagoProcesadoUnfv]
+		ADD I_MigracionRowID	int  NULL
+END
 GO
 

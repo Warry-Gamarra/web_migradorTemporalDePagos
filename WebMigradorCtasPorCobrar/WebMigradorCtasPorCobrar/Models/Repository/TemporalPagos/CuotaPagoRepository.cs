@@ -11,13 +11,13 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
 {
     public class CuotaPagoRepository
     {
-        public static IEnumerable<CuotaPago> Obtener(string schemaDb)
+        public static IEnumerable<CuotaPago> Obtener(string schemaDb, string codigos_bnc)
         {
             IEnumerable<CuotaPago> result;
 
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
-                result = connection.Query<CuotaPago>($"SELECT * FROM {schemaDb}.cp_des", commandType: CommandType.Text);
+                result = connection.Query<CuotaPago>($"SELECT * FROM {schemaDb}.cp_des WHERE codigo_bnc IN ({codigos_bnc})", commandType: CommandType.Text);
             }
 
             return result;

@@ -37,7 +37,6 @@ GO
 
 CREATE TABLE dbo.TR_Ec_Obl (
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
-	I_MigracionID	int NULL,
 	Ano				varchar(4) NULL,
 	P				varchar(3) NULL,
 	I_Periodo		int	NULL,
@@ -70,7 +69,6 @@ GO
 CREATE TABLE dbo.TR_Ec_Det (
 	I_RowID			bigint IDENTITY(1, 1) NOT NULL,
 	I_OblRowID		int NULL,
-	I_MigracionID	int NULL,
 	Cod_alu			varchar(20)  NULL,
 	Cod_rc			varchar(3) NULL,
 	Cuota_pago		int  NULL,
