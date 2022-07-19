@@ -3,7 +3,7 @@
   <Items>
     <LogicalFolder Name="Connections" Type="2" Sorted="true">
       <Items>
-        <ConnectionNode Name="14-CEUC-DESA-05\SQL_2016E:DESKTOP-B34HJML\gamar">
+        <ConnectionNode Name="14-CEUC-DESA-05\SQL_2016E:UNFV\wgamarra">
           <Created>2021-10-12T12:20:16.8959196-05:00</Created>
           <Type>SQL</Type>
           <Server>14-CEUC-DESA-05\SQL_2016E</Server>
@@ -15,7 +15,7 @@
           <ConnectionProtocol>NotSpecified</ConnectionProtocol>
           <ApplicationName />
         </ConnectionNode>
-        <ConnectionNode Name="DESKTOP-B34HJML\SQL_2016E:DESKTOP-B34HJML\gamar">
+        <ConnectionNode Name="DESKTOP-B34HJML\SQL_2016E:UNFV\wgamarra">
           <Created>2021-10-13T12:00:57.5227069-05:00</Created>
           <Type>SQL</Type>
           <Server>DESKTOP-B34HJML\SQL_2016E</Server>
@@ -50,20 +50,20 @@
           <FullPath>1. BD_OCEF_CtasPorCobrar - Creación de columnas de migracion.sql</FullPath>
         </FileNode>
         <FileNode Name="1. BD_OCEF_MigracionTP - Creación de base de datos.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>1. BD_OCEF_MigracionTP - Creación de base de datos.sql</FullPath>
         </FileNode>
         <FileNode Name="2. BD_OCEF_MigracionTP - Esquema de tablas.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>2. BD_OCEF_MigracionTP - Esquema de tablas.sql</FullPath>
         </FileNode>
         <FileNode Name="3. BD_OCEF_MigracionTP - Carga de datos iniciales.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>3. BD_OCEF_MigracionTP - Carga de datos iniciales.sql</FullPath>
         </FileNode>
@@ -74,26 +74,26 @@
           <FullPath>4. BD_OCEF_MigracionTP - Vistas y Funciones.sql</FullPath>
         </FileNode>
         <FileNode Name="5. BD_OCEF_MigracionTP - Procedures Alumno.sql">
-          <AssociatedConnectionMoniker />
-          <AssociatedConnSrvName />
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>5. BD_OCEF_MigracionTP - Procedures Alumno.sql</FullPath>
         </FileNode>
         <FileNode Name="6. BD_OCEF_MigracionTP - Procedures Cuota Pago.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>6. BD_OCEF_MigracionTP - Procedures Cuota Pago.sql</FullPath>
         </FileNode>
         <FileNode Name="7. BD_OCEF_MigracionTP - Procedures Concepto Pago.sql">
-          <AssociatedConnectionMoniker />
-          <AssociatedConnSrvName />
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>7. BD_OCEF_MigracionTP - Procedures Concepto Pago.sql</FullPath>
         </FileNode>
         <FileNode Name="8. BD_OCEF_MigracionTP - Procedures Obligaciones.sql">
-          <AssociatedConnectionMoniker />
-          <AssociatedConnSrvName />
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>8. BD_OCEF_MigracionTP - Procedures Obligaciones.sql</FullPath>
         </FileNode>

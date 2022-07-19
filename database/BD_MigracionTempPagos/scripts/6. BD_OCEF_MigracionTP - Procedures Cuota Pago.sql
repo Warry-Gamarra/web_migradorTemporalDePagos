@@ -99,7 +99,11 @@ BEGIN
 				t_out.INS_PRIORIDAD <> t_out.DEL_PRIORIDAD OR
 				t_out.INS_C_MORA <> t_out.DEL_C_MORA
 		
-		SET @T_SQL = 'SELECT @I_CpDes = COUNT(*) FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des'
+		SET @T_SQL = 'SELECT cuota_pago FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des'
+		print @T_SQL
+		Exec sp_executesql @T_SQL
+
+		SET @I_CpDes = @@ROWCOUNT
 
 		SET @I_Insertados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'INSERT')
 		SET @I_Actualizados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)

@@ -133,16 +133,16 @@
     <Compile Include="Controllers\ConceptoPagoController.cs" />
     <Compile Include="Controllers\CuotaPagoController.cs" />
     <Compile Include="Controllers\EstudianteController.cs" />
-    <Compile Include="Controllers\EudedController.cs" />
     <Compile Include="Controllers\HelpController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\PregradoController.cs" />
+    <Compile Include="Controllers\ObligacionesController.cs" />
     <Compile Include="Controllers\RepositorioController.cs" />
     <Compile Include="Controllers\TasasController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Databases.cs" />
+    <Compile Include="Models\Entities\Migracion\Obligacion.cs" />
     <Compile Include="Models\Repository\Migracion\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\CuotaPagoRepository.cs" />
@@ -166,10 +166,12 @@
     <Compile Include="Models\Services\Migracion\AlumnoServices.cs" />
     <Compile Include="Models\Services\Migracion\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\Migracion\CuotaPagoService.cs" />
+    <Compile Include="Models\Services\Migracion\ObligacionService.cs" />
     <Compile Include="Models\Services\ObligacionService.cs" />
     <Compile Include="Models\Services\TemporalPagos\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\TemporalPagos\CuotaPagoService.cs" />
     <Compile Include="Models\Services\TemporalPagos\AlumnoService.cs" />
+    <Compile Include="Models\Services\TemporalPagos\ObligacionService.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\ObligacionViewModels.cs" />
     <Compile Include="Models\ViewModels\ResponseViewModel.cs" />
@@ -446,6 +448,13 @@
     <Content Include="Views\ConceptoPago\_ProcesoMigracion.cshtml" />
     <Content Include="Views\CuotaPago\_CopiarRegistrosResultado.cshtml" />
     <Content Include="Views\ConceptoPago\_CopiarRegistrosResultado.cshtml" />
+    <Content Include="Views\Obligaciones\_CopiarRegistrosResultado.cshtml" />
+    <Content Include="Views\Obligaciones\_DatosMigracion.cshtml" />
+    <Content Include="Views\Obligaciones\_ProcesoMigracion.cshtml" />
+    <Content Include="Views\Obligaciones\_TemporalPagos.cshtml" />
+    <Content Include="Views\Obligaciones\Cuded.cshtml" />
+    <Content Include="Views\Obligaciones\Posgrado.cshtml" />
+    <Content Include="Views\Obligaciones\Pregrado.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
