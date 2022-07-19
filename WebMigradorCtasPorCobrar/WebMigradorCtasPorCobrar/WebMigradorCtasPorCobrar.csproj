@@ -421,25 +421,10 @@
   <ItemGroup>
     <Content Include="Files\Help\ManualUsuario.pdf" />
     <None Include="packages.config" />
-    <Content Include="Views\Repositorio\Estudiante_migracion_step1.cshtml" />
-    <Content Include="Views\Repositorio\Estudiante_migracion_step2.cshtml" />
-    <Content Include="Views\Repositorio\Estudiante_migracion_step4.cshtml" />
     <Content Include="Views\Repositorio\Estudiante_migracion_step3.cshtml" />
-    <Content Include="Views\Posgrado\CuotaPago_migracion_step1.cshtml" />
-    <Content Include="Views\Posgrado\CuotaPago_migracion_step3.cshtml" />
-    <Content Include="Views\Posgrado\CuotaPago_migracion_step2.cshtml" />
-    <Content Include="Views\Posgrado\CuotaPago_migracion_step4.cshtml" />
     <Content Include="Views\Repositorio\EstudianteEdit.cshtml" />
     <Content Include="Views\Posgrado\ConceptoPago.cshtml" />
-    <Content Include="Views\Posgrado\ConceptoPago_migracion_step1.cshtml" />
-    <Content Include="Views\Posgrado\ConceptoPago_migracion_step2.cshtml" />
-    <Content Include="Views\Posgrado\ConceptoPago_migracion_step3.cshtml" />
-    <Content Include="Views\Posgrado\ConceptoPago_migracion_step4.cshtml" />
     <Content Include="Views\Posgrado\Obligacion.cshtml" />
-    <Content Include="Views\Posgrado\Obligacion_migracion_step1.cshtml" />
-    <Content Include="Views\Posgrado\Obligacion_migracion_step2.cshtml" />
-    <Content Include="Views\Posgrado\Obligacion_migracion_step3.cshtml" />
-    <Content Include="Views\Posgrado\Obligacion_migracion_step4.cshtml" />
     <Content Include="Views\Posgrado\Migracion.cshtml" />
     <Content Include="Views\Posgrado\_ObligacionesAnio.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
