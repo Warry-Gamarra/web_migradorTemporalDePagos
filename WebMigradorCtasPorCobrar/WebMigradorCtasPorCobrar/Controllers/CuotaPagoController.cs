@@ -31,8 +31,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             return View();
         }
-
-
+        
         public ActionResult Posgrado(string partial)
         {
             if (!string.IsNullOrEmpty(partial))
@@ -43,8 +42,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             return View();
         }
-
-
+        
         public ActionResult Cuded(string partial)
         {
             if (!string.IsNullOrEmpty(partial))
@@ -72,6 +70,52 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
 
         public ActionResult ProcesoMigracion(Procedencia procedencia)
+        {
+            ViewBag.Procedencia = procedencia;
+
+            return PartialView("_ProcesoMigracion");
+        }
+
+
+        [HttpPost]
+        public ActionResult CopiarRegistros(Procedencia procedencia)
+        {
+            Response result = _cuotaPagoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
+
+            return PartialView("_CopiarRegistrosResultado", result);
+        }
+
+        [HttpPost]
+        public ActionResult ValidarRegistros(Procedencia procedencia)
+        {
+
+
+            return PartialView();
+        }
+
+        [HttpPost]
+        public ActionResult MigrarRegistrosValidos(Procedencia procedencia)
+        {
+
+
+            return PartialView();
+        }
+
+
+        public ActionResult MostrarObservaciones(int id)
+        {
+
+            return PartialView("_ProcesoMigracion");
+        }
+
+        public ActionResult EditarRegistros(int id)
+        {
+
+            return PartialView("_ProcesoMigracion");
+        }
+
+        [HttpPost]
+        public ActionResult GuardarCorreccion(int id)
         {
 
             return PartialView("_ProcesoMigracion");

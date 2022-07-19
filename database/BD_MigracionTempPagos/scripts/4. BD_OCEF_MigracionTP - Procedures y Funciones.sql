@@ -886,25 +886,29 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_IU_CopiarTablaCuotaDePago
-	@T_Schema	  varchar(10),
-	@I_SchemaID	  int,
-	@B_Resultado  bit output,
-	@T_Message	  nvarchar(4000) OUTPUT	
+	@I_ProcedenciaID tinyint,
+	@T_SchemaDB		 varchar(20),
+	@T_Codigo_bnc	 varchar(250),
+	@B_Resultado	 bit output,
+	@T_Message		 nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
---		@T_Message	  nvarchar(4000)
---exec USP_IU_CopiarTablaCuotaDePago 'pregrado', 2, @B_Resultado output, @T_Message output
+--		@I_ProcedenciaID	tinyint = 3,
+--		@T_SchemaDB			varchar(20) = 'euded',
+--		@T_Codigo_bnc		varchar(250) = '''0658'', ''0685'', ''0687'', ''0688''',
+--		@T_Message			nvarchar(4000)
+--exec USP_IU_CopiarTablaCuotaDePago @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
+	DECLARE @T_SQL nvarchar(max)
+
 	DECLARE @I_CpDes int = 0
 	DECLARE @I_Removidos int = 0
 	DECLARE @I_Actualizados int = 0
 	DECLARE @I_Insertados int = 0
-	DECLARE @D_FecProceso datetime = GETDATE() 
-	DECLARE @T_SQL nvarchar(max)
+	DECLARE @D_FecProceso datetime = GETDATE()
 
-
-	DECLARE @Tbl_output AS TABLE 
+	CREATE TABLE #Tbl_output  
 	(
 		accion  varchar(20), 
 		CUOTA_PAGO	float, 
@@ -925,29 +929,36 @@ BEGIN
 	)
 
 	BEGIN TRY 
-		
-		MERGE TR_Cp_Des AS TRG
-		USING BD_OCEF_TemporalPagos.eupg.cp_des AS SRC
-		ON	TRG.CUOTA_PAGO = SRC.CUOTA_PAGO 
-			AND TRG.ELIMINADO = SRC.ELIMINADO
-		WHEN MATCHED THEN
-			UPDATE SET	TRG.DESCRIPCIO = SRC.DESCRIPCIO,
-						TRG.N_CTA_CTE = SRC.N_CTA_CTE,
-						TRG.CODIGO_BNC = SRC.CODIGO_BNC,
-						TRG.FCH_VENC = SRC.FCH_VENC,
-						TRG.PRIORIDAD = SRC.PRIORIDAD,
-						TRG.C_MORA = SRC.C_MORA
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (CUOTA_PAGO, DESCRIPCIO, N_CTA_CTE, ELIMINADO, CODIGO_BNC, FCH_VENC, PRIORIDAD, C_MORA, I_ProcedenciaID, D_FecCarga, B_Actualizado)
-			VALUES (SRC.CUOTA_PAGO, SRC.DESCRIPCIO, SRC.N_CTA_CTE, SRC.ELIMINADO, SRC.CODIGO_BNC, SRC.FCH_VENC, SRC.PRIORIDAD, SRC.C_MORA, @I_SchemaID, @D_FecProceso, 1)
-		WHEN NOT MATCHED BY SOURCE THEN
-			UPDATE SET TRG.B_Removido = 1, 
-					   TRG.D_FecRemovido = @D_FecProceso
-		OUTPUT	$ACTION, inserted.CUOTA_PAGO, inserted.ELIMINADO, inserted.DESCRIPCIO, inserted.N_CTA_CTE,  
-				inserted.CODIGO_BNC, inserted.FCH_VENC, inserted.PRIORIDAD, inserted.C_MORA, deleted.DESCRIPCIO, 
-				deleted.N_CTA_CTE, deleted.CODIGO_BNC, deleted.FCH_VENC, deleted.PRIORIDAD, deleted.C_MORA, 
-				deleted.B_Removido INTO @Tbl_output;
-		
+	
+		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE()			 
+		 
+					  MERGE TR_Cp_Des AS TRG
+					  USING (SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des WHERE codigo_bnc IN (' + @T_Codigo_bnc + ')) AS SRC
+					  ON	TRG.Cuota_pago = SRC.cuota_pago 
+				  		AND TRG.Eliminado = SRC.eliminado
+						AND TRG.Codigo_bnc = SRC.codigo_bnc
+					  WHEN MATCHED THEN
+				  		UPDATE SET	TRG.Descripcio = SRC.descripcio,
+				  					TRG.N_cta_cte = SRC.n_cta_cte,
+				  					TRG.Codigo_bnc = SRC.codigo_bnc,
+				  					TRG.Fch_venc = SRC.fch_venc,
+				  					TRG.Prioridad = SRC.prioridad,
+				  					TRG.C_mora = SRC.c_mora
+					  WHEN NOT MATCHED BY TARGET THEN
+				  		INSERT (Cuota_pago, Descripcio, N_cta_cte, Eliminado, Codigo_bnc, Fch_venc, Prioridad, C_mora, I_ProcedenciaID, D_FecCarga, B_Actualizado)
+				  		VALUES (SRC.cuota_pago, SRC.descripcio, SRC.n_cta_cte, SRC.eliminado, SRC.codigo_bnc, SRC.fch_venc, SRC.prioridad, SRC.c_mora, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', @D_FecProceso, 1)
+					  WHEN NOT MATCHED BY SOURCE AND TRG.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' THEN
+				  		UPDATE SET TRG.B_Removido = 1, 
+				  				   TRG.D_FecRemovido = @D_FecProceso
+					  OUTPUT	$ACTION, inserted.CUOTA_PAGO, inserted.ELIMINADO, inserted.DESCRIPCIO, inserted.N_CTA_CTE,  
+				  			inserted.CODIGO_BNC, inserted.FCH_VENC, inserted.PRIORIDAD, inserted.C_MORA, deleted.DESCRIPCIO, 
+				  			deleted.N_CTA_CTE, deleted.CODIGO_BNC, deleted.FCH_VENC, deleted.PRIORIDAD, deleted.C_MORA, 
+				  			deleted.B_Removido INTO #Tbl_output;
+					'
+
+		print @T_SQL
+		Exec sp_executesql @T_SQL
+
 		UPDATE	TR_Cp_Des 
 				SET	B_Actualizado = 0, B_Migrable = 1, 
 					D_FecMigrado = NULL, B_Migrado = 0,
@@ -957,8 +968,8 @@ BEGIN
 		SET		t_CpDes.B_Actualizado = 1,
 				t_CpDes.D_FecActualiza = @D_FecProceso
 		FROM TR_Cp_Des  AS t_CpDes
-		INNER JOIN 	@Tbl_output as t_out ON t_out.CUOTA_PAGO = t_CpDes.CUOTA_PAGO 
-					AND t_out.ELIMINADO = t_CpDes.ELIMINADO AND t_out.accion = 'UPDATE' AND t_out.B_Removido = 0
+		INNER JOIN 	#Tbl_output as t_out ON t_out.CUOTA_PAGO = t_CpDes.Cuota_pago 
+					AND t_out.ELIMINADO = t_CpDes.Eliminado AND t_out.accion = 'UPDATE' AND t_out.B_Removido = 0
 		WHERE 
 				t_out.INS_DESCRIPCIO <> t_out.DEL_DESCRIPCIO OR
 				t_out.INS_N_CTA_CTE <> t_out.DEL_N_CTA_CTE OR
@@ -966,11 +977,12 @@ BEGIN
 				t_out.INS_FCH_VENC <> t_out.DEL_FCH_VENC OR
 				t_out.INS_PRIORIDAD <> t_out.DEL_PRIORIDAD OR
 				t_out.INS_C_MORA <> t_out.DEL_C_MORA
+		
+		SET @T_SQL = 'SELECT @I_CpDes = COUNT(*) FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des'
 
-		SET @I_CpDes = (SELECT COUNT(*) FROM BD_OCEF_TemporalPagos.eupg.cp_des)
-		SET @I_Insertados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'INSERT')
-		SET @I_Actualizados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
-		SET @I_Removidos = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
+		SET @I_Insertados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'INSERT')
+		SET @I_Actualizados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
+		SET @I_Removidos = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
 
 		SELECT @I_CpDes AS tot_cuotaPago, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 		
@@ -1445,21 +1457,29 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_IU_CopiarTablaConceptoDePago
+	@I_ProcedenciaID tinyint,
+	@T_SchemaDB		 varchar(20),
+	@T_Codigo_bnc	 varchar(250),
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID	tinyint = 3,
+--		@T_SchemaDB			varchar(20) = 'euded',
+--		@T_Codigo_bnc		varchar(250) = '''0658'', ''0685'', ''0687'', ''0688''',
 --		@T_Message	  nvarchar(4000)
---exec USP_IU_CopiarTablaConceptoDePago @B_Resultado output, @T_Message output
+--exec USP_IU_CopiarTablaConceptoDePago @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
+	DECLARE @T_SQL nvarchar(max)
+
 	DECLARE @I_CpPri int = 0
 	DECLARE @I_Removidos int = 0
 	DECLARE @I_Actualizados int = 0
 	DECLARE @I_Insertados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
 
-	DECLARE @Tbl_output AS TABLE 
+	CREATE TABLE #Tbl_output  
 	(
 		accion		varchar(20), 
 		ID_CP		float,
@@ -1496,40 +1516,48 @@ BEGIN
 
 	BEGIN TRY 
 		
-		MERGE TR_Cp_Pri AS TRG
-		USING [BD_OCEF_TemporalPagos].pregrado.cp_pri AS SRC
-		ON	TRG.ID_CP = SRC.ID_CP 
-			AND TRG.ELIMINADO = SRC.ELIMINADO
-		WHEN MATCHED THEN
-			UPDATE SET	TRG.CUOTA_PAGO = SRC.CUOTA_PAGO, TRG.ANO = SRC.ANO, TRG.P = SRC.P,
-						TRG.COD_RC = SRC.COD_RC, TRG.COD_ING = SRC.COD_ING, TRG.TIPO_OBLIG = SRC.TIPO_OBLIG,
-						TRG.CLASIFICAD = SRC.CLASIFICAD, TRG.CLASIFIC_5 = SRC.CLASIFIC_5, 
-						TRG.AGRUPA = SRC.AGRUPA, TRG.NRO_PAGOS = SRC.NRO_PAGOS, TRG.ID_CP_AFEC = SRC.ID_CP_AFEC,
-						TRG.PORCENTAJE = SRC.PORCENTAJE, TRG.MONTO = SRC.MONTO, TRG.ID_CP_AGRP = SRC.ID_CP_AGRP,
-						TRG.DESCRIPCIO = SRC.DESCRIPCIO, TRG.CALCULAR = SRC.CALCULAR, TRG.GRADO = SRC.GRADO,
-						TRG.TIP_ALUMNO = SRC.TIP_ALUMNO, TRG.GRUPO_RC = SRC.GRUPO_RC, TRG.FRACCIONAB = SRC.FRACCIONAB,
-						TRG.CONCEPTO_G = SRC.CONCEPTO_G, TRG.DOCUMENTO = SRC.DOCUMENTO, TRG.MONTO_MIN = SRC.MONTO_MIN,
-						TRG.DESCRIP_L = SRC.DESCRIP_L, TRG.COD_DEP_PL = SRC.COD_DEP_PL, TRG.OBLIG_MORA = SRC.OBLIG_MORA
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (ID_CP, CUOTA_PAGO, ANO, P, COD_RC, COD_ING, TIPO_OBLIG, CLASIFICAD, CLASIFIC_5, ID_CP_AGRP, AGRUPA, NRO_PAGOS, ID_CP_AFEC, PORCENTAJE, MONTO, 
-					ELIMINADO, DESCRIPCIO, CALCULAR, GRADO, TIP_ALUMNO, GRUPO_RC, FRACCIONAB, CONCEPTO_G, DOCUMENTO, MONTO_MIN, DESCRIP_L, COD_DEP_PL, OBLIG_MORA,
-					D_FecCarga, I_ProcedenciaID)
-			VALUES (ID_CP, CUOTA_PAGO, ANO, P, COD_RC, COD_ING, TIPO_OBLIG, CLASIFICAD, CLASIFIC_5, ID_CP_AGRP, AGRUPA, NRO_PAGOS, ID_CP_AFEC, PORCENTAJE, MONTO, 
-					ELIMINADO, DESCRIPCIO, CALCULAR, GRADO, TIP_ALUMNO, GRUPO_RC, FRACCIONAB, CONCEPTO_G, CAST(DOCUMENTO as varchar), MONTO_MIN, CAST(DESCRIP_L as varchar), COD_DEP_PL, OBLIG_MORA,
-					@D_FecProceso, 0)
-		WHEN NOT MATCHED BY SOURCE THEN
-			UPDATE SET TRG.B_Removido = 1, 
-					   TRG.D_FecRemovido = @D_FecProceso
-		OUTPUT	$ACTION, inserted.ID_CP, inserted.ELIMINADO, deleted.B_Removido, inserted.CUOTA_PAGO, inserted.OBLIG_MORA, inserted.ANO, inserted.P, 
-				inserted.COD_RC, inserted.COD_ING, inserted.TIPO_OBLIG, inserted.CLASIFICAD, inserted.CLASIFIC_5, inserted.ID_CP_AGRP, inserted.AGRUPA, 
-				inserted.NRO_PAGOS, inserted.ID_CP_AFEC, inserted.PORCENTAJE, inserted.MONTO, inserted.DESCRIPCIO, inserted.CALCULAR, inserted.GRADO, 
-				inserted.TIP_ALUMNO, inserted.GRUPO_RC, inserted.FRACCIONAB, inserted.CONCEPTO_G, inserted.DOCUMENTO, inserted.MONTO_MIN, inserted.DESCRIP_L, 
-				inserted.COD_DEP_PL, 
-				deleted.CUOTA_PAGO, deleted.ANO, deleted.P, deleted.COD_RC, deleted.COD_ING, deleted.TIPO_OBLIG, deleted.CLASIFICAD, deleted.CLASIFIC_5, 
-				deleted.ID_CP_AGRP, deleted.AGRUPA, deleted.NRO_PAGOS, deleted.ID_CP_AFEC, deleted.PORCENTAJE, deleted.MONTO, deleted.DESCRIPCIO, deleted.CALCULAR, 
-				deleted.GRADO, deleted.TIP_ALUMNO, deleted.GRUPO_RC, deleted.FRACCIONAB, deleted.CONCEPTO_G, deleted.DOCUMENTO, deleted.MONTO_MIN, deleted.DESCRIP_L, 
-				deleted.COD_DEP_PL, deleted.OBLIG_MORA INTO @Tbl_output;
-		
+		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE()			 
+					  MERGE TR_Cp_Pri AS TRG
+					  USING (SELECT cp_pri.* FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_pri cp_pri 
+									  INNER JOIN BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des cp_des ON cp_pri.cuota_pago = cp_des.cuota_pago 
+									  WHERE cp_des.codigo_bnc IN (' + @T_Codigo_bnc + ') AND cp_des.Eliminado = 0) AS SRC
+					  ON	TRG.Id_cp = SRC.id_cp 
+						AND TRG.Cuota_pago = SRC.cuota_pago 
+					  	AND TRG.Eliminado = SRC.eliminado
+					  WHEN MATCHED THEN
+					  	UPDATE SET	TRG.Cuota_pago = SRC.cuota_pago, TRG.Ano = SRC.ano, TRG.P = SRC.p,
+					  				TRG.Cod_rc = SRC.cod_rc, TRG.Cod_Ing = SRC.cod_ing, TRG.Tipo_oblig = SRC.tipo_oblig,
+					  				TRG.Clasificad = SRC.clasificad, TRG.Clasific_5 = SRC.clasific_5, 
+					  				TRG.Agrupa = SRC.agrupa, TRG.Nro_pagos = SRC.nro_pagos, TRG.Id_cp_afec = SRC.id_cp_afec,
+					  				TRG.Porcentaje = SRC.porcentaje, TRG.Monto = SRC.monto, TRG.Id_cp_agrp = SRC.id_cp_agrp,
+					  				TRG.Descripcio = SRC.descripcio, TRG.Calcular = SRC.calcular, TRG.Grado = SRC.grado,
+					  				TRG.Tip_alumno = SRC.tip_alumno, TRG.Grupo_rc = SRC.grupo_rc, TRG.Fraccionab = SRC.fraccionab,
+					  				TRG.Concepto_g = SRC.concepto_g, TRG.Documento = SRC.documento, TRG.Monto_min = SRC.monto_min,
+					  				TRG.Descrip_l = SRC.descrip_l, TRG.Cod_dep_pl = SRC.cod_dep_pl, TRG.Oblig_mora = SRC.oblig_mora,
+									TRG.I_ProcedenciaID = ' + CAST(@I_ProcedenciaID as varchar(3)) + '
+					  WHEN NOT MATCHED BY TARGET THEN
+					  	INSERT (Id_cp, Cuota_pago, Ano, P, Cod_rc, Cod_Ing, Tipo_oblig, Clasificad, Clasific_5, Id_cp_agrp, Agrupa, Nro_pagos, Id_cp_afec, Porcentaje, Monto, 
+					  			Eliminado, Descripcio, Calcular, Grado, Tip_alumno, Grupo_rc, Fraccionab, Concepto_g, Documento, Monto_min, Descrip_l, Cod_dep_pl, Oblig_mora,
+					  			D_FecCarga, I_ProcedenciaID)
+					  	VALUES (id_cp, cuota_pago, ano, p, cod_rc, cod_ing, tipo_oblig, clasificad, clasific_5, id_cp_agrp, agrupa, nro_pagos, id_cp_afec, porcentaje, monto,
+					  			Eliminado, Descripcio, Calcular, Grado, Tip_alumno, Grupo_rc, Fraccionab, Concepto_g, CAST(documento as varchar(max)), monto_min, CAST(descrip_l as varchar(max)), cod_dep_pl, oblig_mora,
+					  			@D_FecProceso, ' + CAST(@I_ProcedenciaID as varchar(3)) + ')
+					  WHEN NOT MATCHED BY SOURCE AND TRG.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' THEN
+					  	UPDATE SET TRG.B_Removido = 1, 
+					  			   TRG.D_FecRemovido = @D_FecProceso
+					  OUTPUT	$ACTION, inserted.ID_CP, inserted.ELIMINADO, deleted.B_Removido, inserted.CUOTA_PAGO, inserted.OBLIG_MORA, inserted.ANO, inserted.P, 
+					  		inserted.COD_RC, inserted.COD_ING, inserted.TIPO_OBLIG, inserted.CLASIFICAD, inserted.CLASIFIC_5, inserted.ID_CP_AGRP, inserted.AGRUPA, 
+					  		inserted.NRO_PAGOS, inserted.ID_CP_AFEC, inserted.PORCENTAJE, inserted.MONTO, inserted.DESCRIPCIO, inserted.CALCULAR, inserted.GRADO, 
+					  		inserted.TIP_ALUMNO, inserted.GRUPO_RC, inserted.FRACCIONAB, inserted.CONCEPTO_G, inserted.DOCUMENTO, inserted.MONTO_MIN, inserted.DESCRIP_L, 
+					  		inserted.COD_DEP_PL, 
+					  		deleted.CUOTA_PAGO, deleted.ANO, deleted.P, deleted.COD_RC, deleted.COD_ING, deleted.TIPO_OBLIG, deleted.CLASIFICAD, deleted.CLASIFIC_5, 
+					  		deleted.ID_CP_AGRP, deleted.AGRUPA, deleted.NRO_PAGOS, deleted.ID_CP_AFEC, deleted.PORCENTAJE, deleted.MONTO, deleted.DESCRIPCIO, deleted.CALCULAR, 
+					  		deleted.GRADO, deleted.TIP_ALUMNO, deleted.GRUPO_RC, deleted.FRACCIONAB, deleted.CONCEPTO_G, deleted.DOCUMENTO, deleted.MONTO_MIN, deleted.DESCRIP_L, 
+					  		deleted.COD_DEP_PL, deleted.OBLIG_MORA INTO #Tbl_output;
+					'
+		print @T_SQL
+		Exec sp_executesql @T_SQL
+
 		UPDATE	TR_Cp_Pri 
 				SET	B_Actualizado = 0, B_Migrable = 1, D_FecMigrado = NULL, B_Migrado = 0,
 					I_TipAluID = NULL, I_TipGradoID = NULL, I_TipOblID = NULL, I_TipCalcID = NULL, 
@@ -1539,7 +1567,7 @@ BEGIN
 		SET		t_CpPri.B_Actualizado = 1,
 				t_CpPri.D_FecActualiza = @D_FecProceso
 		FROM TR_Cp_Pri AS t_CpPri
-		INNER JOIN 	@Tbl_output as t_out ON t_out.ID_CP = t_CpPri.ID_CP AND t_out.ELIMINADO = t_CpPri.ELIMINADO 
+		INNER JOIN 	#Tbl_output as t_out ON t_out.ID_CP = t_CpPri.ID_CP AND t_out.ELIMINADO = t_CpPri.ELIMINADO 
 					AND t_out.accion = 'UPDATE' AND t_out.B_Removido = 0
 		WHERE 
 				t_out.INS_CUOTA_PAGO <> t_out.DEL_CUOTA_PAGO OR
@@ -1571,9 +1599,9 @@ BEGIN
 
 
 		SET @I_CpPri = (SELECT COUNT(*) FROM [BD_OCEF_TemporalPagos].pregrado.cp_pri)
-		SET @I_Insertados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'INSERT')
-		SET @I_Actualizados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
-		SET @I_Removidos = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
+		SET @I_Insertados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'INSERT')
+		SET @I_Actualizados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
+		SET @I_Removidos = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
 
 		SELECT @I_CpPri AS tot_concetoPago, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 		

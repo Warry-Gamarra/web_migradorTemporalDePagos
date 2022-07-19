@@ -73,8 +73,34 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult ProcesoMigracion(Procedencia procedencia)
         {
+            ViewBag.Procedencia = procedencia;
 
             return PartialView("_ProcesoMigracion");
         }
+
+        [HttpPost]
+        public ActionResult CopiarRegistros(Procedencia procedencia)
+        {
+            Response result = _conceptoPagoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
+
+            return PartialView("_CopiarRegistrosResultado", result);
+        }
+
+        [HttpPost]
+        public ActionResult ValidarRegistros(Procedencia procedencia)
+        {
+
+
+            return PartialView();
+        }
+
+        [HttpPost]
+        public ActionResult MigrarRegistrosValidos(Procedencia procedencia)
+        {
+
+
+            return PartialView();
+        }
+
     }
 }

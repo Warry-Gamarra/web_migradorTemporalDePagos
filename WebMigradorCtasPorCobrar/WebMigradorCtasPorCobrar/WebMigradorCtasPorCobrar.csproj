@@ -172,6 +172,7 @@
     <Compile Include="Models\Services\TemporalPagos\AlumnoService.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\ObligacionViewModels.cs" />
+    <Compile Include="Models\ViewModels\ResponseViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -458,6 +459,8 @@
     <Content Include="Views\ConceptoPago\_TemporalPagos.cshtml" />
     <Content Include="Views\ConceptoPago\_DatosMigracion.cshtml" />
     <Content Include="Views\ConceptoPago\_ProcesoMigracion.cshtml" />
+    <Content Include="Views\CuotaPago\_CopiarRegistrosResultado.cshtml" />
+    <Content Include="Views\ConceptoPago\_CopiarRegistrosResultado.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
