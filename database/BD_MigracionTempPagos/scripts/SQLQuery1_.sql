@@ -258,3 +258,55 @@ WHERE C_NumDNI IS NOT NULL
 GROUP BY C_NumDNI, C_Sexo
 HAVING COUNT(*) > 1
 
+select count(*) from (select distinct cuota_pago from TR_Ec_Obl where I_ProcedenciaID = 3) as obl
+select count(*) from (select distinct cuota_pago from TR_Ec_Det where I_ProcedenciaID = 3) as det 
+
+select distinct cuota_pago from TR_Ec_Det where I_ProcedenciaID = 3 
+and not exists (select * from TR_Ec_Obl where I_ProcedenciaID = 3 and Cuota_pago = TR_Ec_Det.Cuota_pago)
+select top 10 * from TR_Ec_Det
+select distinct I_ProcedenciaID from TR_Cp_Des
+select * from TR_Cp_Des  where  Cuota_pago in (
+'0'
+,'195'
+,'129'
+,'21'
+,'196'
+,'254'
+,'231'
+,'463'
+,'54'
+,'237')
+
+select * from BD_OCEF_TemporalPagos.pregrado.cp_des where cuota_pago = '54'
+
+
+select count(*) from TR_Ec_Det where I_ProcedenciaID = 3
+
+select distinct cuota_pago 
+from TR_Ec_Obl obl
+	inner join TR_Ec_Det det ON obl.Cuota_pago = det.Cuota_pago and obl.Cod_rc = det.Cod_rc and obl.Cod_alu = det.Cod_alu 
+ where I_ProcedenciaID = 3
+
+ select * from BD_OCEF_CtasPorCobrar..TI_ConceptoPago where I_ConcPagID = 7643
+
+
+
+
+ truncate table tr_ec_obl
+
+
+select * from BD_OCEF_TemporalPagos.eupg.ec_det
+where concepto in
+(select id_cp from  BD_OCEF_TemporalPagos.eupg.cp_pri where descripcio like '%mora%')
+
+select top 1000 * from BD_OCEF_TemporalPagos.pregrado.ec_det where concepto = '7643'
+
+SELECT cuota_pago, p, ano, fch_venc, cod_alu, cod_rc, monto, pagado FROM BD_OCEF_TemporalPagos.euded.ec_det
+
+
+select distinct concepto, ano from BD_OCEF_TemporalPagos.eupg.ec_det
+where concepto in
+(select id_cp from  BD_OCEF_TemporalPagos.eupg.cp_pri where descripcio like '%mora%')
+order by 2 desc
+
+

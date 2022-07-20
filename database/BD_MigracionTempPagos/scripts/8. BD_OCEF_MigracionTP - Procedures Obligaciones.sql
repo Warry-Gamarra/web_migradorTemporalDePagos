@@ -546,10 +546,40 @@ BEGIN
 	DECLARE @I_Actualizados int = 0
 	DECLARE @I_Insertados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE()
+	DECLARE @I_I_MigracionTablaID tinyint = 5
+	DECLARE @T_Moneda varchar(3) = 'PEN'
 
 	BEGIN TRANSACTION;
 	BEGIN TRY 
-		
+
+		DECLARE CUR_OBL CURSOR
+		FOR
+		SELECT obl.*, mat.I_MatAluID
+		FROM TR_Ec_Obl obl
+			 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno mat ON obl.cod_alu = mat.C_CodAlu and obl.cod_rc = mat.C_CodRc and obl.ano = CAST(mat.I_Anio as varchar(4)) and obl.I_Periodo = mat.I_Periodo
+		WHERE I_ProcedenciaID = @I_ProcedenciaID
+			  AND (Cuota_pago = @I_ProcesoID OR @I_ProcesoID IS NULL)
+			  AND (Ano BETWEEN @I_AnioIni AND @I_AnioFin)
+			  AND B_Migrable = 1;
+
+		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab (I_ProcesoID, I_MatAluID, C_Moneda, I_MontoOblig, D_FecVencto, B_Pagado, B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
+		SELECT obl.Cuota_pago, mat.I_MatAluID, @T_Moneda, obl.Monto, obl.Fch_venc, 0 AS Pagado, 1 AS Habilitado, 0 AS Eliminado, 1, @D_FecProceso, 1 AS Migrado, @I_I_MigracionTablaID, obl.I_RowID 
+		FROM TR_Ec_Obl obl
+			 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno mat ON obl.cod_alu = mat.C_CodAlu and obl.cod_rc = mat.C_CodRc and obl.ano = CAST(mat.I_Anio as varchar(4)) and obl.I_Periodo = mat.I_Periodo
+		WHERE I_ProcedenciaID = @I_ProcedenciaID
+			  AND (Cuota_pago = @I_ProcesoID OR @I_ProcesoID IS NULL)
+			  AND (Ano BETWEEN @I_AnioIni AND @I_AnioFin)
+			  AND B_Migrable = 1;
+
+		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet (I_ObligacionAluID, I_ConcPagID, I_Monto, B_Pagado, D_FecVencto, I_TipoDocumento, T_DescDocumento, B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, B_Mora, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
+		SELECT cab.I_ObligacionAluID, det.Concepto, det.Monto, B_Pagado, D_FecVencto, null AS I_TipoDocumento, null AS T_DescDocumento, 1 AS Habilitado, 0 AS Eliminado, 1, @D_FecProceso, det.
+		FROM TR_Ec_Det det
+			 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab cab ON cab.I_MigracionRowID = det.I_OblRowID
+
+		WHERE
+
+		OPEN CUR_OBL
+		FETCH NEXT
 
 		COMMIT TRANSACTION;
 	END TRY
