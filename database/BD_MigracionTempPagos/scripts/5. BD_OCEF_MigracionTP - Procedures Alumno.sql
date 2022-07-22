@@ -104,25 +104,25 @@ BEGIN
 	BEGIN TRY 
 	
 		MERGE TR_Alumnos AS TRG
-		USING (SELECT * FROM BD_OCEF_TemporalPagos.dbo.alumnos) AS SRC
+		USING (SELECT DISTINCT * FROM BD_OCEF_TemporalPagos.dbo.alumnos) AS SRC
 		ON	TRG.C_CodAlu = SRC.C_CodAlu 
 			AND TRG.C_RcCod = SRC.C_RcCod
 			AND ISNULL(TRG.C_CodModIng, '') = ISNULL(SRC.C_CODMODIN, '')
+			AND TRG.C_AnioIngreso = SRC.C_ANIOINGR
 		WHEN MATCHED THEN
-			UPDATE SET	TRG.C_NumDNI = SRC.C_NUMDNI,
-						TRG.C_CodTipDoc = SRC.C_CODTIPDO,
+			UPDATE SET	TRG.C_NumDNI = CASE WHEN SRC.C_NUMDNI = '' THEN NULL ELSE SRC.C_NUMDNI END,
+						TRG.C_CodTipDoc = CASE WHEN SRC.C_CODTIPDO = '' THEN NULL ELSE SRC.C_CODTIPDO END,
 						TRG.T_ApePaterno = REPLACE(SRC.T_APEPATER, '-', ' '),
 						TRG.T_ApeMaterno = REPLACE(SRC.T_APEMATER, '-', ' '),
 						TRG.T_Nombre = REPLACE(SRC.T_NOMBRE, '-', ' '),
 						TRG.C_Sexo = SRC.C_SEXO,
-						TRG.D_FecNac = CONVERT(DATE, SRC.D_FECNAC, 103),
-						TRG.C_AnioIngreso = SRC.C_ANIOINGR
+						TRG.D_FecNac = CASE WHEN TRY_CONVERT(DATE, SRC.D_FECNAC, 103) IS NULL THEN IIF(ISDATE(SRC.D_FECNAC) = 1, SRC.D_FECNAC, NULL) ELSE CONVERT(DATE, SRC.D_FECNAC, 103) END
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, I_ProcedenciaID, D_FecCarga, B_Actualizado)
-			VALUES (SRC.C_RcCod, SRC.C_CodAlu, SRC.C_NUMDNI, SRC.C_CODTIPDO, REPLACE(SRC.T_APEPATER, '-', ' '), REPLACE(SRC.T_APEMATER, '-', ' '), REPLACE(SRC.T_NOMBRE, '-', ' '), 
-					SRC.C_SEXO, CONVERT(DATE, SRC.D_FECNAC, 103), SRC.C_CODMODIN, SRC.C_ANIOINGR, 4, @D_FecProceso, 1)
-			--VALUES (SRC.COD_RC, SRC.COD_ALU, null, null, REPLACE(SRC.nom_pat, '-', ' '), REPLACE(SRC.nom_mat, '-', ' '), REPLACE(SRC.nom_nom, '-', ' '), 
-			--		SRC.SEXO, null, SRC.cod_ing, SRC.ano_ing, 4, @D_FecProceso, 1)
+			VALUES (SRC.C_RcCod, SRC.C_CodAlu, CASE WHEN SRC.C_NUMDNI = '' THEN NULL ELSE SRC.C_NUMDNI END, CASE WHEN SRC.C_CODTIPDO = '' THEN NULL ELSE SRC.C_CODTIPDO END,
+			 REPLACE(SRC.T_APEPATER, '-', ' '), REPLACE(SRC.T_APEMATER, '-', ' '), REPLACE(SRC.T_NOMBRE, '-', ' '), 
+					SRC.C_SEXO, CASE WHEN TRY_CONVERT(DATE, SRC.D_FECNAC, 103) IS NULL THEN IIF(ISDATE(SRC.D_FECNAC) = 1, SRC.D_FECNAC, NULL) ELSE CONVERT(DATE, SRC.D_FECNAC, 103) END, 
+					SRC.C_CODMODIN, SRC.C_ANIOINGR, 4, @D_FecProceso, 1)
 		WHEN NOT MATCHED BY SOURCE THEN
 			UPDATE SET TRG.B_Removido = 1, 
 					   TRG.D_FecRemovido = @D_FecProceso
@@ -698,13 +698,13 @@ BEGIN
 		USING (SELECT DISTINCT AP.I_PersonaID, A.* FROM ##TEMP_AlumnoPersona AP 
 				INNER JOIN TR_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1) AS SRC
 		ON TRG.I_PersonaID = SRC.I_PersonaID
-		--WHEN MATCHED AND B_Migrado = 0 THEN
-		--	UPDATE SET	TRG.C_NumDNI	 = SRC.C_NumDNI,
-		--				TRG.C_CodTipDoc	 = SRC.C_CodTipDoc,
-		--				TRG.T_ApePaterno = SRC.T_ApePaterno,
-		--				TRG.T_ApeMaterno = SRC.T_ApeMaterno,
-		--				TRG.T_Nombre	 = SRC.T_Nombre,
-		--				TRG.C_Sexo		 = SRC.C_Sexo
+		WHEN MATCHED AND B_Migrado = 0 THEN
+			UPDATE SET	TRG.C_NumDNI	 = SRC.C_NumDNI,
+						TRG.C_CodTipDoc	 = SRC.C_CodTipDoc,
+						TRG.T_ApePaterno = SRC.T_ApePaterno,
+						TRG.T_ApeMaterno = SRC.T_ApeMaterno,
+						TRG.T_Nombre	 = SRC.T_Nombre,
+						TRG.C_Sexo		 = SRC.C_Sexo
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Habilitado, B_Eliminado)
 			VALUES (SRC.I_PersonaID,SRC.C_NUMDNI, SRC.C_CodTipDoc, SRC.T_ApePaterno, SRC.T_ApeMaterno, SRC.T_Nombre, SRC.C_Sexo, D_FecNac, 1, 0)
@@ -716,14 +716,14 @@ BEGIN
 
 
 		MERGE BD_UNFV_Repositorio.dbo.TC_Alumno AS TRG
-		USING (SELECT AP.I_PersonaID, A.* FROM ##TEMP_AlumnoPersona AP 
+		USING (SELECT DISTINCT AP.I_PersonaID, A.* FROM ##TEMP_AlumnoPersona AP 
 				INNER JOIN TR_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1) AS SRC
 		ON	TRG.C_RcCod = SRC.C_RcCod 
 			AND TRG.C_CodAlu = SRC.C_CodAlu
-		--WHEN MATCHED AND B_Migrado = 0 THEN
-		--	UPDATE SET	TRG.I_PersonaID	 = SRC.I_PersonaID,
-		--				TRG.C_CodModIng	 = SRC.C_CodModIng,
-		--				TRG.C_AnioIngreso = SRC.C_AnioIngreso
+			AND TRG.C_CodModIng	 = SRC.C_CodModIng
+			AND TRG.C_AnioIngreso = SRC.C_AnioIngreso		
+		WHEN MATCHED AND B_Migrado = 0 THEN
+			UPDATE SET	TRG.I_PersonaID	 = SRC.I_PersonaID
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (C_RcCod, C_CodAlu, I_PersonaID, C_CodModIng, C_AnioIngreso, B_Habilitado, B_Eliminado)
 			VALUES (SRC.C_RcCod, SRC.C_CodAlu, SRC.I_PersonaID, SRC.C_CodModIng, SRC.C_AnioIngreso, 1, 0)

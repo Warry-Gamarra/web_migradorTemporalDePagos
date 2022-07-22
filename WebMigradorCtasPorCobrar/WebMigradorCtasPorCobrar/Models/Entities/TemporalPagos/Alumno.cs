@@ -18,5 +18,14 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos
         public string D_FecNac { get; set; }
         public string C_CodModIn { get; set; }
         public string C_AnioIngr { get; set; }
+        public string T_NomCompleto
+        {
+            get
+            {
+                return (string.IsNullOrEmpty(this.T_ApePater) ? "" : $" {this.T_ApePater.Trim()}") +
+                       (string.IsNullOrEmpty(this.T_ApeMater) ? "" : $" {this.T_ApeMater.Trim()}") +
+                       (string.IsNullOrEmpty(this.T_Nombre) ? "" : $", {this.T_Nombre.Trim()}");
+            }
+        }
     }
 }

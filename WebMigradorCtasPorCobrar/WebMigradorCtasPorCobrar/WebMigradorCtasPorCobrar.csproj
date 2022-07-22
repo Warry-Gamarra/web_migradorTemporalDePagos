@@ -163,7 +163,7 @@
     <Compile Include="Models\Helpers\Procedencia.cs" />
     <Compile Include="Models\Helpers\Response.cs" />
     <Compile Include="Models\Services\DetalleObligacionService.cs" />
-    <Compile Include="Models\Services\Migracion\AlumnoServices.cs" />
+    <Compile Include="Models\Services\Migracion\AlumnoService.cs" />
     <Compile Include="Models\Services\Migracion\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\Migracion\CuotaPagoService.cs" />
     <Compile Include="Models\Services\Migracion\ObligacionService.cs" />
@@ -455,6 +455,10 @@
     <Content Include="Views\Obligaciones\Cuded.cshtml" />
     <Content Include="Views\Obligaciones\Posgrado.cshtml" />
     <Content Include="Views\Obligaciones\Pregrado.cshtml" />
+    <Content Include="Views\Estudiante\_TemporalPagos.cshtml" />
+    <Content Include="Views\Estudiante\Opciones.cshtml" />
+    <Content Include="Views\Estudiante\_DatosMigracion.cshtml" />
+    <Content Include="Views\Estudiante\_ProcesoMigracion.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

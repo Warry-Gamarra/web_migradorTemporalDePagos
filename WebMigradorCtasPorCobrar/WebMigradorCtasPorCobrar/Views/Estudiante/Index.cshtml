@@ -4,6 +4,11 @@
     var pregrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Pregrado;
     var posgrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Posgrado;
     var cuded = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Cuded;
+
+    string action = ViewBag.Action;
+    string controller = ViewBag.Controller;
+    var procedencia_value = ViewBag.Procedencia;
+
 }
 
 
@@ -13,35 +18,84 @@
 
 <div class="col-12">
     <div class="form-group row">
-        <label for="inputEmail3" class="col-sm-2 col-form-label text-right">Seleccionar procedencia</label>
+        <label for="cbo-procedencia" class="col-sm-2 col-form-label">SELECCIONAR PROCEDENCIA</label>
         <div class="col-sm-2">
             <select class="form-control" id="cbo-procedencia">
+                <option value="">NINGUNO</option>
                 <option value="@pregrado">PREGRADO</option>
                 <option value="@posgrado">POSGRADO</option>
-                <option value="@cuded" selected>CUDED</option>
+                <option value="@cuded">CUDED</option>
             </select>
         </div>
     </div>
-
+</div>
+<div class="col-12">
+    @if (procedencia_value == null)
+    {
+        <div class="jumbotron" style="min-height: 450px">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-2">
+                <fieldset>
+                    <legend class="pb-3">OPCIONES</legend>
+                    <a class="btn btn-outline-dark btn-block my-3" id="btn-tp" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "TemporalPagos" })">
+                        Temporal de pagos
+                    </a>
+                    <a class="btn btn-outline-dark btn-block my-3" id="btn-mg" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "DatosMigracion" })">
+                        Registros para migración
+                    </a>
+                    <a class="btn btn-outline-dark btn-block my-3" id="btn-proc" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "ProcesoMigracion" })">
+                        Proceso de migración
+                    </a>
+                </fieldset>
+            </div>
+            <div class="col-md-10">
+                @if (string.IsNullOrEmpty(action))
+                {
+                    <div class="jumbotron" style="min-height: 450px">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">Special title treatment</h5>
+                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                                <a href="#" class="btn btn-primary">Go somewhere</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @Html.Action(action, controller, new { procedencia = procedencia_value })
+                }
+            </div>
+        </div>
+    }
 </div>
 
-@section scripts{
-    <script>
-        $('#cbo-procedencia').on('change', function () {
-            $.ajax({
-                url: '@Url.Action("Index", "Estudiante", new { area = "Temporal_Pagos" })' + '?procedencia=' + this.val(),
-                type: 'GET',
-                cache: false,
-                beforeSend: function () {
+<script>
+    if ('@procedencia_value' === 'Pregrado') {
+        $('#cbo-procedencia option[value=Pregrado]').prop('selected', true)
+    }
+    else if ('@procedencia_value' === 'Posgrado') {
+        $('#cbo-procedencia option[value=Posgrado]').prop('selected', true)
+    }
+    else if ('@procedencia_value' === 'Cuded') {
+        $('#cbo-procedencia option[value=Cuded]').prop('selected', true)
+    }
+    else {
+        $('#cbo-procedencia option[value=""]').prop('selected', true)
+    }
 
-                },
-                success: function (data) {
-
-                },
-                error: function (jqXHR, textStatus, errorThrown) {
-
-                }
-            })
-        })
-    </script>
-}
+    $('#cbo-procedencia').on('change', function () {
+        location.href = '@Url.Action("Index", "Estudiante", new { area = "" })' + '?procedencia=' + this.value;
+    })
+</script>

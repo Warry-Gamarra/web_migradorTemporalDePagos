@@ -15,9 +15,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         {
             IEnumerable<Alumno> result;
 
-            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.Query<Alumno>($"SELECT * FROM {schemaDb}.TR_Alumnos", commandType: CommandType.Text);
+                result = connection.Query<Alumno>($"SELECT top 100 * FROM dbo.TR_Alumnos", commandType: CommandType.Text);
             }
 
             return result;

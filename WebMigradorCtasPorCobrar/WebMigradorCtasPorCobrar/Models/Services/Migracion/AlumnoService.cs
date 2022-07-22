@@ -8,7 +8,7 @@ using WebMigradorCtasPorCobrar.Models.Helpers;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
-    public class AlumnoServices
+    public class AlumnoService
     {
         public IEnumerable<Alumno> Obtener(Procedencia procedencia)
         {
