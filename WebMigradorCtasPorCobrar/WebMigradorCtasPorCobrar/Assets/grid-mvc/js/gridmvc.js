@@ -415,8 +415,8 @@ GridMvc.lang.en = {
         LessThanOrEquals: "Menor o menor que"
     },
     code: 'en',
-    boolTrueLabel: "Habilitado",
-    boolFalseLabel: "No habilitado",
+    boolTrueLabel: "Si",
+    boolFalseLabel: "No",
     clearFilterLabel: "Borrar filtro"
 };
 /***

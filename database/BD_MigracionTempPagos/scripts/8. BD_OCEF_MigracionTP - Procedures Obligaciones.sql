@@ -572,11 +572,12 @@ BEGIN
 			  AND B_Migrable = 1;
 
 		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet (I_ObligacionAluID, I_ConcPagID, I_Monto, B_Pagado, D_FecVencto, I_TipoDocumento, T_DescDocumento, B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, B_Mora, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
-		SELECT cab.I_ObligacionAluID, det.Concepto, det.Monto, B_Pagado, D_FecVencto, null AS I_TipoDocumento, null AS T_DescDocumento, 1 AS Habilitado, 0 AS Eliminado, 1, @D_FecProceso, det.
+		SELECT cab.I_ObligacionAluID, det.Concepto, det.Monto, B_Pagado, D_FecVencto, CASE WHEN CAST(det.Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, CAST(det.Documento as varchar(max)) AS T_DescDocumento, 1 AS Habilitado, det.Eliminado, 1, @D_FecProceso, 0 AS Mora, 1 AS Migrado, 4 AS TablaID, det.I_RowID
 		FROM TR_Ec_Det det
 			 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab cab ON cab.I_MigracionRowID = det.I_OblRowID
-
-		WHERE
+		WHERE det.Concepto_f = 0
+			
+			  AND det.B_Migrable = 1
 
 		OPEN CUR_OBL
 		FETCH NEXT
@@ -621,12 +622,7 @@ BEGIN
 
 	BEGIN TRANSACTION;
 	BEGIN TRY 
-		
-		-- 1. Insertar detalle obligacion
-		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet (I_ObligacionAluID, I_ConcPagID, I_Monto, B_Pagado, D_FecVencto, I_TipoDocumento, T_DescDocumento, B_Habilitado, B_Eliminado, B_Mora)
-		VALUES
-
-		-- 2. Insertar pagos detalle obligacion
+		select * from TR_Ec_Det
 
 		COMMIT TRANSACTION;
 	END TRY

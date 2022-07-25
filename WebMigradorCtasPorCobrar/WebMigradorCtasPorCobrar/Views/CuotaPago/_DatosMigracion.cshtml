@@ -9,16 +9,17 @@
         columns.Add(c => c.Cuota_pago).Titled("Codigo").Filterable(true);
         columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
         columns.Add(c => c.N_cta_cte).Titled("Nro. Cuenta").Filterable(true);
-        columns.Add(c => c.Eliminado).Titled("Eliminado").Filterable(true);
-        columns.Add(c => c.Codigo_bnc).Titled("Codigo BNC").Filterable(true);
-        columns.Add(c => c.Fch_venc).Titled("Fec. Venc").Filterable(true);
-        columns.Add(c => c.Prioridad).Titled("Prioridad").Filterable(true);
+        columns.Add(c => c.Codigo_bnc).Css("text-center").Titled("Codigo BNC").Filterable(true);
+        columns.Add(c => c.Fch_venc).Css("text-center").Titled("Fec. Venc").Filterable(true);
+        columns.Add(c => c.Prioridad).Css("text-center").Titled("Prioridad").Filterable(true);
         columns.Add(c => c.C_mora).Titled("Mora").Filterable(true);
-        columns.Add(c => c.B_Migrable).Titled("Migrable").Filterable(true);
+        columns.Add(c => c.B_Migrable).Css("text-center").Titled("Migrable").Filterable(true);
+        columns.Add(c => c.Eliminado).Css("text-center").Titled("Eliminado").Filterable(true)
+                                     .RenderValueAs();
         columns.Add().SetWidth(150).Css("text-right").Encoded(false).Sanitized(false)
-                        .RenderValueAs(model => model.B_Migrable ?
-                                            @Html.Raw("")
-                                            : @Html.Raw($"<a href=\"{ Url.Action("CuotaPagoObserv", "Posgrado", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observacion</span></a>"));
+                    .RenderValueAs(model => model.B_Migrable ?
+                                        @Html.Raw("")
+                                        : @Html.Raw($"<a href=\"{ Url.Action("CuotaPagoObserv", "Posgrado", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observacion</span></a>"));
         columns.Add().SetWidth(120).Css("text-right").Encoded(false).Sanitized(false)
                         .RenderValueAs(model => model.B_Migrable ?
                                             @Html.Raw("")
