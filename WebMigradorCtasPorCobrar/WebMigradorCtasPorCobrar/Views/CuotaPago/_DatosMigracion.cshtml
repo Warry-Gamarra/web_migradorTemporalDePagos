@@ -15,7 +15,6 @@
         columns.Add(c => c.C_mora).Titled("Mora").Filterable(true);
         columns.Add(c => c.B_Migrable).Css("text-center").Titled("Migrable").Filterable(true);
         columns.Add(c => c.Eliminado).Css("text-center").Titled("Eliminado").Filterable(true)
-                                     .RenderValueAs();
         columns.Add().SetWidth(150).Css("text-right").Encoded(false).Sanitized(false)
                     .RenderValueAs(model => model.B_Migrable ?
                                         @Html.Raw("")

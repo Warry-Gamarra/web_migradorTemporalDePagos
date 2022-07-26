@@ -9,6 +9,7 @@ using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
+    [Authorize]
     public class ObligacionesController : Controller
     {
         public readonly TemporalPagos.ObligacionService _obligacionServiceTemporalPagos;
