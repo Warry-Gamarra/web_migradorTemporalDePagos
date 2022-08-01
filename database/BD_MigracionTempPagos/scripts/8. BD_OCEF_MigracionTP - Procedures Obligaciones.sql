@@ -8,18 +8,18 @@ GO
 CREATE PROCEDURE USP_IU_CopiarTablaObligacionesPago	
 	@I_ProcedenciaID tinyint,
 	@T_SchemaDB	  varchar(20),
-	@T_AnioIni	  varchar(4),
-	@T_AnioFin	  varchar(4),
+	@T_AnioIni	  varchar(4) = NULL,
+	@T_AnioFin	  varchar(4) = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @I_ProcedenciaID	tinyint = 2,
 --		@T_SchemaDB   varchar(20) = 'eupg',
---		@T_AnioFin	  varchar(4) = '2018',
---		@T_AnioIni	  varchar(4) = '2012',
+--		@T_AnioIni	  varchar(4) = null,
+--		@T_AnioFin	  varchar(4) = null,
 --		@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
---exec USP_IU_CopiarTablaObligacionesPago @I_ProcedenciaID, @T_SchemaDB, @I_AnioIni, @I_AnioFin, @B_Resultado output, @T_Message output
+--exec USP_IU_CopiarTablaObligacionesPago @I_ProcedenciaID, @T_SchemaDB, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_EcObl int = 0
@@ -37,7 +37,8 @@ BEGIN
 				B_Migrable	  = 1, 
 				D_FecMigrado  = NULL, 
 				B_Migrado	  = 0 
-		WHERE   Ano BETWEEN @T_AnioIni AND @T_AnioFin
+		WHERE   (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
+				OR @T_AnioIni is null
 
 		SET @T_SQL = '  DECLARE @D_FecProceso datetime = GETDATE()
 					 
@@ -50,45 +51,98 @@ BEGIN
 											AND TR_Ec_Obl.COD_RC = SRC.COD_RC AND TR_Ec_Obl.CUOTA_PAGO = SRC.CUOTA_PAGO 
 											AND ISNULL(TR_Ec_Obl.FCH_VENC, ''19000101'') = ISNULL(SRC.FCH_VENC, ''19000101'')
 											AND ISNULL(TR_Ec_Obl.TIPO_OBLIG, 0) = ISNULL(SRC.TIPO_OBLIG, 0)
-											AND TR_Ec_Obl.MONTO = SRC.MONTO AND TR_Ec_Obl.PAGADO = SRC.PAGADO)
-								AND (TR_Ec_Obl.ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''')
-								AND TR_Ec_Obl.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3))
+											AND TR_Ec_Obl.MONTO = SRC.MONTO AND TR_Ec_Obl.PAGADO = SRC.PAGADO) '
+						
+		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+		BEGIN
+			SET @T_SQL = @T_SQL + 'AND (TR_Ec_Obl.ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''') '
+		END
+
+		SET @T_SQL = @T_SQL + 'AND TR_Ec_Obl.B_Migrado = 0 
+							   AND TR_Ec_Obl.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ';'
 
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
 
 		SET @I_Removidos = @@ROWCOUNT
 
+		
 		SET @T_SQL = '	DECLARE @D_FecProceso datetime = GETDATE()
 			
-						INSERT TR_Ec_Obl(ANO, P, I_Periodo, COD_ALU, COD_RC, CUOTA_PAGO, TIPO_OBLIG, FCH_VENC, MONTO, PAGADO, D_FecCarga, B_Migrable, B_Migrado, I_ProcedenciaID, B_Obligacion)
-						SELECT	ANO, P, I_OpcionID as I_periodo, COD_ALU, COD_RC, CUOTA_PAGO, TIPO_OBLIG, FCH_VENC, MONTO, PAGADO, @D_FecProceso, 1, 0, '+ CAST(@I_ProcedenciaID as varchar(3)) + ', 1
+						UPDATE	TR_Ec_Obl
+						SET		TR_Ec_Obl.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ', 
+								TR_Ec_Obl.B_Obligacion = 1,
+								TR_Ec_Obl.D_FecActualiza = @D_FecProceso,
+								TR_Ec_Obl.B_Actualizado = 1,
+								TR_Ec_Obl.B_Migrable = 0,
+								TR_Ec_Obl.D_FecEvalua = NULL,
+								TR_Ec_Obl.B_Removido = 0,
+								TR_Ec_Obl.D_FecRemovido = NULL
+						WHERE	EXISTS (SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl SRC  
+										WHERE TR_Ec_Obl.Ano = SRC.ano AND TR_Ec_Obl.P = SRC.p AND TR_Ec_Obl.Cod_alu = SRC.cod_alu 
+										AND TR_Ec_Obl.Cod_rc = SRC.cod_rc AND TR_Ec_Obl.Cuota_pago = SRC.cuota_pago 
+										AND ISNULL(TR_Ec_Obl.Fch_venc, ''19000101'') = ISNULL(SRC.fch_venc, ''19000101'')
+										AND ISNULL(TR_Ec_Obl.Tipo_oblig, 0) = ISNULL(SRC.tipo_oblig, 0)
+										AND TR_Ec_Obl.Monto = SRC.monto AND TR_Ec_Obl.Pagado = SRC.pagado) '
+
+		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+		BEGIN
+			SET @T_SQL = @T_SQL + 'AND (TR_Ec_Obl.ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''') ' 
+		END
+
+		SET @T_SQL = @T_SQL + 'AND TR_Ec_Obl.B_Migrado = 0;' 
+
+		PRINT @T_SQL
+		EXEC sp_executesql @T_SQL
+
+		SET @I_Actualizados = @@ROWCOUNT
+
+
+		SET @T_SQL = '	DECLARE @D_FecProceso datetime = GETDATE()
+			
+						INSERT TR_Ec_Obl(Ano, P, I_Periodo, Cod_alu, Cod_rc, Cuota_pago, Tipo_oblig, Fch_venc, Monto, Pagado, D_FecCarga, B_Migrable, B_Migrado, I_ProcedenciaID, B_Obligacion)
+						SELECT	ano, p, I_OpcionID as I_periodo, cod_alu, cod_rc, cuota_pago, tipo_oblig, fch_venc, monto, pagado, @D_FecProceso, 1, 0, '+ CAST(@I_ProcedenciaID as varchar(3)) + ', 1
 						FROM	BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl OBL
 								LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CatalogoOpcion cop_per ON OBL.P = cop_per.T_OpcionCod AND cop_per.I_ParametroID = 5
 						WHERE	NOT EXISTS (SELECT * FROM TR_Ec_Obl TRG 
-											WHERE TRG.ANO = OBL.ANO AND TRG.P = OBL.P AND TRG.COD_ALU = OBL.COD_ALU AND TRG.COD_RC = OBL.COD_RC 
-											AND TRG.CUOTA_PAGO = OBL.CUOTA_PAGO AND ISNULL(TRG.FCH_VENC, ''19000101'') = ISNULL(OBL.FCH_VENC, ''19000101'')
-											AND ISNULL(TRG.TIPO_OBLIG, 0) = ISNULL(OBL.TIPO_OBLIG, 0) AND TRG.MONTO = OBL.MONTO AND TRG.PAGADO = OBL.PAGADO
-											AND TRG.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ') 
-								AND (OBL.ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''')' 							
+											WHERE TRG.Ano = OBL.ano AND TRG.P = OBL.p AND TRG.Cod_alu = OBL.COD_ALU AND TRG.Cod_rc = OBL.COD_RC 
+											AND TRG.Cuota_pago = OBL.cuota_pago AND ISNULL(TRG.Fch_venc, ''19000101'') = ISNULL(OBL.fch_venc, ''19000101'')
+											AND ISNULL(TRG.Tipo_oblig, 0) = ISNULL(OBL.tipo_oblig, 0) AND TRG.Monto = OBL.monto AND TRG.Pagado = OBL.pagado
+											AND TRG.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ') '
+
+		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+		BEGIN
+			SET @T_SQL = @T_SQL + 'AND (OBL.ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''');' 
+		END
 
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
 
 		SET @I_Insertados = @@ROWCOUNT
+
 		
-		SET @T_SQL = '(SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl WHERE ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin +''')'					
+		SET @T_SQL = '(SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl'
+
+		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+		BEGIN
+			SET @T_SQL = @T_SQL + ' WHERE ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''''
+		END
+		
+		SET @T_SQL = @T_SQL + ')'
+
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
 
 		SET @I_EcObl = @@ROWCOUNT
 
-		SELECT @I_EcObl AS tot_obligaciones, @I_Insertados AS cant_inserted, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
+		SELECT @I_EcObl AS tot_obligaciones, @I_Insertados AS cant_inserted, @I_Actualizados AS cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 		
+
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1
 		SET @T_Message =  'Total: ' + CAST(@I_EcObl AS varchar) + '|Insertados: ' + CAST(@I_Insertados AS varchar) 
 						+ '|Actualizados: ' + CAST(@I_Actualizados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
+
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -106,14 +160,18 @@ GO
 CREATE PROCEDURE USP_IU_CopiarTablaDetalleObligacionesPago	
 	@I_ProcedenciaID tinyint,
 	@T_SchemaDB	  varchar(20),
+	@T_AnioIni	  varchar(4) = NULL,
+	@T_AnioFin	  varchar(4) = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 3,
---		@T_SchemaDB varchar(20) = 'euded',
+--declare @I_ProcedenciaID	tinyint = 2,
+--		@T_SchemaDB   varchar(20) = 'eupg',
+--		@T_AnioIni	  varchar(4) = '2019',
+--		@T_AnioFin	  varchar(4) = '2021',
 --		@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
---exec USP_IU_CopiarTablaDetalleObligacionesPago @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
+--exec USP_IU_CopiarTablaDetalleObligacionesPago @I_ProcedenciaID, @T_SchemaDB, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_EcDet int = 0
@@ -170,52 +228,98 @@ BEGIN
 	)
 
 	BEGIN TRY 	
-	
-		--DELETE TR_Ec_Det
-			
+				
+		DECLARE @T_Source varchar(2000)
+		SET @T_Source = 'SELECT obl.I_RowID AS I_OblRowID , det.* 
+						 FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det det
+							  LEFT JOIN (SELECT I_RowID, obl2.* FROM TR_Ec_Obl obl1 
+										 INNER JOIN (SELECT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, pagado, I_ProcedenciaID
+													 FROM TR_Ec_Obl WHERE  I_ProcedenciaID = ' + CAST(@I_ProcedenciaID as varchar(3)) + ' 
+													 GROUP BY  I_ProcedenciaID, Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Pagado
+													 HAVING count(*) = 1
+													) obl2 ON obl1.Ano = obl2.Ano AND obl1.P = obl2.P AND obl1.Cod_alu = obl2.Cod_alu
+													 		  AND obl1.Cod_rc = obl2.Cod_rc AND obl1.Cuota_pago = obl2.Cuota_pago 
+													 		  AND obl1.Fch_venc = obl2.Fch_venc AND obl1.Pagado = obl2.Pagado 
+													 		  AND obl1.I_ProcedenciaID = obl2.I_ProcedenciaID
+										) obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
+							  			 		 AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
+							  			 		 AND det.fch_venc = obl.fch_venc AND det.pagado = obl.Pagado '
+							  			 							   
+		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+		BEGIN
+			SET @T_Source = @T_Source + ' ' + char(13)+CHAR(10)+ 'WHERE (det.ano BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''')'
+		END
+
 		SET @T_SQL = '	DECLARE @D_FecProceso datetime = GETDATE()			 
 						MERGE TR_Ec_Det AS TRG
-						USING (SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det) AS SRC
-						ON	  TRG.COD_ALU = SRC.COD_ALU AND
-							  TRG.COD_RC = SRC.COD_RC AND
-							  TRG.CUOTA_PAGO = SRC.CUOTA_PAGO AND
-							  TRG.ANO = SRC.ANO AND
-							  TRG.P = SRC.P AND
-							  TRG.TIPO_OBLIG = SRC.TIPO_OBLIG AND
-							  TRG.CONCEPTO = SRC.CONCEPTO AND
-							  TRG.ELIMINADO = SRC.ELIMINADO
+						USING ('+ @T_Source +') AS SRC
+						ON	  TRG.Cod_alu = SRC.cod_alu AND
+							  TRG.Cod_rc = SRC.cod_rc AND
+							  TRG.Cuota_pago = SRC.cuota_pago AND
+							  TRG.Ano = SRC.ano AND
+							  TRG.P = SRC.p AND
+							  TRG.Tipo_oblig = SRC.tipo_oblig AND
+							  TRG.Concepto = SRC.concepto AND
+							  TRG.Fch_venc = SRC.fch_venc AND
+							  TRG.Eliminado = SRC.eliminado AND
+							  TRG.Pagado = SRC.pagado AND
+							  TRG.Concepto_f = SRC.concepto_f
+						--WHEN MATCHED AND TRG.B_Migrado = 0 THEN
+						--	UPDATE SET Nro_recibo = SRC.nro_recibo, 
+						--			   Fch_pago = SRC.fch_pago, 
+						--			   Id_lug_pag = SRC.id_lug_pag, 
+						--			   Cantidad = SRC.cantidad, 
+						--			   Monto = SRC.monto, 
+						--			   Documento = CAST(SRC.documento as nvarchar(4000)),
+						--			   Nro_ec = SRC.nro_ec, 
+						--			   Fch_ec = SRC.fch_ec, 
+						--			   Pag_demas = SRC.pag_demas, 
+						--			   Cod_cajero = SRC.cod_cajero, 
+						--			   Tipo_pago = SRC.tipo_pago, 
+						--			   No_banco = SRC.no_banco, 
+						--			   Cod_dep = SRC.cod_dep
 						WHEN NOT MATCHED BY TARGET THEN
-							INSERT (COD_ALU, COD_RC, CUOTA_PAGO, ANO, P, TIPO_OBLIG, CONCEPTO, FCH_VENC, NRO_RECIBO, FCH_PAGO, ID_LUG_PAG, CANTIDAD, MONTO, PAGADO, CONCEPTO_F, FCH_ELIMIN, 
-									NRO_EC, FCH_EC, ELIMINADO, PAG_DEMAS, COD_CAJERO, TIPO_PAGO, NO_BANCO, COD_DEP, D_FecCarga, B_Migrable, B_Migrado, D_FecMigrado, I_ProcedenciaID, B_Obligacion)
-							VALUES (COD_ALU, COD_RC, CUOTA_PAGO, ANO, P, TIPO_OBLIG, CONCEPTO, FCH_VENC, NRO_RECIBO, FCH_PAGO, ID_LUG_PAG, CANTIDAD, MONTO, PAGADO, CONCEPTO_F, FCH_ELIMIN, 
-									NRO_EC, FCH_EC, ELIMINADO, PAG_DEMAS, COD_CAJERO, TIPO_PAGO, NO_BANCO, COD_DEP, @D_FecProceso, 1, 0, NULL, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', 1)
-						WHEN NOT MATCHED BY SOURCE THEN
-							UPDATE SET	TRG.B_Removido		= 1, 
-										TRG.D_FecRemovido	= @D_FecProceso,
-										TRG.B_Migrable		= 0, 
-										TRG.D_FecMigrado	= 0, 
-										TRG.B_Migrado		= 0 
+							INSERT (Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, 
+									Nro_ec, Fch_ec, Eliminado, Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, D_FecCarga, B_Migrable, B_Migrado, D_FecMigrado, I_ProcedenciaID, B_Obligacion, I_OblRowID)
+							VALUES (cod_alu, cod_rc, cuota_pago, ano, p, tipo_oblig, concepto, fch_venc, nro_recibo, fch_pago, id_lug_pag, cantidad, monto, CAST(SRC.documento as nvarchar(4000)), pagado, concepto_f, fch_elimin, 
+									nro_ec, fch_ec, eliminado, pag_demas, cod_cajero, tipo_pago, no_banco, cod_dep, @D_FecProceso, 1, 0, NULL, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', 1, I_OblRowID)
+						WHEN NOT MATCHED BY SOURCE AND I_ProcedenciaID = ' + CAST(@I_ProcedenciaID as varchar(3)) + ' THEN
+							UPDATE SET	TRG.B_Removido	  = 1, 
+										TRG.D_FecRemovido = @D_FecProceso,
+										TRG.B_Migrable	  = 0, 
+										TRG.D_FecEvalua   = NULL,
+										TRG.D_FecMigrado  = NULL, 
+										TRG.B_Migrado	  = 0 
 						OUTPUT	$ACTION, inserted.I_RowID, inserted.COD_ALU, inserted.COD_RC, inserted.CUOTA_PAGO, inserted.ANO, inserted.P, inserted.TIPO_OBLIG, inserted.CONCEPTO, inserted.FCH_VENC, inserted.ELIMINADO, 
 								inserted.NRO_RECIBO, inserted.FCH_PAGO, inserted.ID_LUG_PAG, inserted.CANTIDAD, inserted.MONTO, inserted.PAGADO, inserted.CONCEPTO_F, inserted.FCH_ELIMIN, inserted.NRO_EC, inserted.FCH_EC, 
 								inserted.PAG_DEMAS, inserted.COD_CAJERO, inserted.TIPO_PAGO, inserted.NO_BANCO, inserted.COD_DEP, deleted.NRO_RECIBO, deleted.FCH_PAGO, deleted.ID_LUG_PAG, deleted.CANTIDAD, deleted.MONTO, 
 								deleted.PAGADO, deleted.CONCEPTO_F, deleted.FCH_ELIMIN, deleted.NRO_EC, deleted.FCH_EC, deleted.PAG_DEMAS, deleted.COD_CAJERO, deleted.TIPO_PAGO, deleted.NO_BANCO, deleted.COD_DEP, 
 								deleted.B_Removido INTO #Tbl_output;
 					'
+
 		print @T_SQL
 		Exec sp_executesql @T_SQL
 
-		SET @T_SQL = 'SELECT cuota_pago, concepto, p, ano, fch_venc, cod_alu, cod_rc, monto, pagado FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det'
+		
+		SET @T_SQL = 'SELECT cuota_pago, concepto, p, ano, fch_venc, cod_alu, cod_rc, monto, pagado, concepto_f FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det'
+		
+		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+		BEGIN
+			SET @T_SQL = @T_SQL + ' WHERE (ano BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''') '
+		END
+
 		print @T_SQL
 		Exec sp_executesql @T_SQL
 
 		SET @I_EcDet = @@ROWCOUNT
 		SET @I_Insertados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'INSERT')
+		SET @I_Actualizados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
 		SET @I_Removidos = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
 
 		SELECT @I_EcDet AS tot_obligaciones, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 		
 		SET @B_Resultado = 1
-		SET @T_Message =  'Total: ' + CAST(@I_EcDet AS varchar) + '|Insertados: ' + CAST(@I_Insertados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
+		SET @T_Message =  'Total: ' + CAST(@I_EcDet AS varchar) + '|Insertados: ' + CAST(@I_Insertados AS varchar) + '|Actualizados: ' + CAST(@I_Actualizados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
@@ -575,7 +679,7 @@ BEGIN
 								
 		DECLARE CUR_OBL CURSOR
 		FOR
-		SELECT top 100 obl.I_RowID, obl.Ano, obl.P, obl.I_Periodo, obl.Cod_alu, obl.Cod_rc, obl.Cuota_pago, obl.Tipo_oblig, 
+		SELECT obl.I_RowID, obl.Ano, obl.P, obl.I_Periodo, obl.Cod_alu, obl.Cod_rc, obl.Cuota_pago, obl.Tipo_oblig, 
 			   obl.Fch_venc, obl.Monto, obl.Pagado, mat.I_MatAluID
 		FROM TR_Ec_Obl obl
 			 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno mat ON 

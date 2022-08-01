@@ -1,20 +1,107 @@
-MERGE INTO BD_OCEF_TemporalPagos.dbo.alumnos AS TRG
-USING dbo.walter AS SRC
-   ON SRC.c_codalu	 = TRG.C_CODALU 
-	  AND SRC.c_rccod	 = TRG.C_RCCOD 
-	  AND SRC.c_anioingr = TRG.C_ANIOINGR
-	  AND SRC.c_codmodin = TRG.C_CODMODIN
-WHEN MATCHED THEN
-	UPDATE SET TRG.T_APEPATER	= SRC.T_APEPATER	
-			 , TRG.T_APEMATER	= SRC.T_APEMATER	
-			 , TRG.T_NOMBRE		= SRC.T_NOMBRE		
-			 , TRG.C_NUMDNI		= SRC.C_NUMDNI		
-			 , TRG.C_CODTIPDO	= SRC.C_CODTIPDO	
-			 , TRG.D_FECNAC		= SRC.D_FECNAC		
-			 , TRG.C_SEXO		= SRC.C_SEXO		
-WHEN NOT MATCHED THEN
-	INSERT (C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO)
-	VALUES (SRC.C_RCCOD, SRC.C_CODALU, SRC.T_APEPATER, SRC.T_APEMATER, SRC.T_NOMBRE, SRC.C_NUMDNI, SRC.C_CODTIPDO, SRC.C_CODMODIN, SRC.C_ANIOINGR, SRC.D_FECNAC, SRC.C_SEXO);
+SELECT count(*) FROM BD_OCEF_TemporalPagos.eupg.ec_det det
+				LEFT JOIN TR_Ec_Obl obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
+						AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
+						AND det.fch_venc = obl.fch_venc AND det.pagado = obl.Pagado
+						AND obl.I_ProcedenciaID = 2
+
+SELECT obl.*, det.* FROM BD_OCEF_TemporalPagos.eupg.ec_det det
+							   LEFT JOIN TR_Ec_Obl obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
+										AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
+										AND det.fch_venc = obl.fch_venc AND det.pagado = obl.Pagado
+										AND obl.I_ProcedenciaID = 2
+					WHERE det.ano BETWEEN '2014' AND '2014'
+
+
+SELECT obl.I_RowID, det.* 
+FROM BD_OCEF_TemporalPagos.eupg.ec_det det
+	 LEFT JOIN (SELECT I_RowID, obl2.* FROM TR_Ec_Obl obl1 
+									  INNER JOIN (SELECT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, pagado, I_ProcedenciaID
+													FROM TR_Ec_Obl WHERE  I_ProcedenciaID = 2 
+												  GROUP BY  I_ProcedenciaID, Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Pagado
+												  HAVING count(*) = 1
+												 ) obl2 ON obl1.Ano = obl2.Ano AND obl1.P = obl2.P AND obl1.Cod_alu = obl2.Cod_alu
+														   AND obl1.Cod_rc = obl2.Cod_rc AND obl1.Cuota_pago = obl2.Cuota_pago 
+														   AND obl1.Fch_venc = obl2.Fch_venc AND obl1.Pagado = obl2.Pagado 
+														   AND obl1.I_ProcedenciaID = obl2.I_ProcedenciaID
+				) obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
+						AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
+						AND det.fch_venc = obl.fch_venc AND det.pagado = obl.Pagado
+WHERE det.ano BETWEEN '2014' AND '2014'
+and det.cod_alu = '2014326491'
+and det.cuota_pago = '286'
+
+
+select distinct(ano) from TR_Ec_Obl
+
+select * from BD_OCEF_TemporalPagos.eupg.ec_obl where cod_alu = '2013310037' and ano = '2014' 
+
+select count(*) from TR_Ec_Obl where I_ProcedenciaID = 2 and Ano = '2014'
+
+TRUNCATE TABLE TR_EC_DET
+
+SELECT obl.*, det.* FROM BD_OCEF_TemporalPagos.eupg.ec_det det
+							   LEFT JOIN TR_Ec_Obl obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu AND det.ano = obl.ano 
+													  AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago AND det.fch_venc = obl.fch_venc 
+													  AND obl.I_ProcedenciaID = 2
+						where det.cod_alu = '2009316686'
+
+select * from BD_OCEF_TemporalPagos.eupg.cp_des where cuota_pago = 162
+select * from BD_OCEF_TemporalPagos.eupg.ec_obl where cuota_pago = 162 and cod_alu = '2009316686'
+select * from BD_OCEF_TemporalPagos.eupg.ec_obl where cod_alu = '2009316686'
+select * from BD_OCEF_TemporalPagos.eupg.ec_det where cod_alu = '2009316686'
+
+select count(*) from TR_Ec_Obl where I_ProcedenciaID = 2
+select count(*) from BD_OCEF_TemporalPagos.eupg.ec_obl
+
+select count(*) from TR_Ec_Det
+select count(*) from BD_OCEF_TemporalPagos.eupg.ec_det 
+WHERE ano BETWEEN '2014' AND '2014'
+and cod_alu = '2014326491'
+and cuota_pago = '286'
+
+select * from BD_OCEF_TemporalPagos.eupg.ec_det 
+WHERE ano BETWEEN '2014' AND '2014'
+and cod_alu = '2014326491'
+and cuota_pago = '286'
+
+select * from TR_Ec_Obl where cod_alu = '2013335513' and ano = '2014' 
+select * from BD_OCEF_TemporalPagos.eupg.ec_obl where cod_alu = '2013335513' and ano = '2014' 
+
+
+
+select Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, pagado, I_ProcedenciaID, count(*) 
+from TR_Ec_Obl
+WHERE
+I_ProcedenciaID = 2 --and ano BETWEEN '2014' AND '2014'
+group by I_ProcedenciaID, Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, pagado
+having count(*) = 1
+
+select Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, pagado, count(*) 
+from TR_Ec_Obl
+WHERE
+I_ProcedenciaID = 2 --and ano BETWEEN '2014' AND '2014'
+group by Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, pagado
+having count(*) > 1
+
+
+
+--MERGE INTO BD_OCEF_TemporalPagos.dbo.alumnos AS TRG
+--USING dbo.walter AS SRC
+--   ON SRC.c_codalu	 = TRG.C_CODALU 
+--	  AND SRC.c_rccod	 = TRG.C_RCCOD 
+--	  AND SRC.c_anioingr = TRG.C_ANIOINGR
+--	  AND SRC.c_codmodin = TRG.C_CODMODIN
+--WHEN MATCHED THEN
+--	UPDATE SET TRG.T_APEPATER	= SRC.T_APEPATER	
+--			 , TRG.T_APEMATER	= SRC.T_APEMATER	
+--			 , TRG.T_NOMBRE		= SRC.T_NOMBRE		
+--			 , TRG.C_NUMDNI		= SRC.C_NUMDNI		
+--			 , TRG.C_CODTIPDO	= SRC.C_CODTIPDO	
+--			 , TRG.D_FECNAC		= SRC.D_FECNAC		
+--			 , TRG.C_SEXO		= SRC.C_SEXO		
+--WHEN NOT MATCHED THEN
+--	INSERT (C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO)
+--	VALUES (SRC.C_RCCOD, SRC.C_CODALU, SRC.T_APEPATER, SRC.T_APEMATER, SRC.T_NOMBRE, SRC.C_NUMDNI, SRC.C_CODTIPDO, SRC.C_CODMODIN, SRC.C_ANIOINGR, SRC.D_FECNAC, SRC.C_SEXO);
 
 
 select count(*) from euded.cp_des
