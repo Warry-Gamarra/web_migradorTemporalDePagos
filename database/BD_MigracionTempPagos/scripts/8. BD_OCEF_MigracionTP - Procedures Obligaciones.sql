@@ -263,7 +263,10 @@ BEGIN
 							  TRG.Fch_venc = SRC.fch_venc AND
 							  TRG.Eliminado = SRC.eliminado AND
 							  TRG.Pagado = SRC.pagado AND
-							  TRG.Concepto_f = SRC.concepto_f
+							  TRG.Concepto_f = SRC.concepto_f AND
+							  TRG.Fch_elimin = SRC.fch_elimin AND
+							  TRG.Nro_ec = SRC.nro_ec AND
+							  TRG.Fch_ec = SRC.fch_ec
 						--WHEN MATCHED AND TRG.B_Migrado = 0 THEN
 						--	UPDATE SET Nro_recibo = SRC.nro_recibo, 
 						--			   Fch_pago = SRC.fch_pago, 
@@ -654,7 +657,7 @@ CREATE PROCEDURE [dbo].[USP_IU_MigrarObligacionesCtasPorCobrar]
 AS
 --declare   @I_ProcedenciaID tinyint = 2,
 --			@I_ProcesoID int = null, 
---			@T_AnioIni varchar(4) = '2018', 
+--			@T_AnioIni varchar(4) = '2013', 
 --			@T_AnioFin varchar(4) = '2018', 
 --			@B_Resultado  bit, 
 --			@T_Message nvarchar(4000)
@@ -677,10 +680,11 @@ BEGIN
 		DECLARE @I_RowID  int, @Ano	 varchar(4), @P	 varchar(3), @I_Periodo	 int, @Cod_alu	varchar(20), @Cod_rc  varchar(3), 
 				@Cuota_pago  int, @Tipo_oblig  bit,@Fch_venc  date, @Monto  decimal(10,2), @Pagado  bit, @I_MatAluID  int; 
 								
-		DECLARE CUR_OBL CURSOR
-		FOR
-		SELECT obl.I_RowID, obl.Ano, obl.P, obl.I_Periodo, obl.Cod_alu, obl.Cod_rc, obl.Cuota_pago, obl.Tipo_oblig, 
-			   obl.Fch_venc, obl.Monto, obl.Pagado, mat.I_MatAluID
+		SET @I_RowID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab')
+
+		SELECT @I_RowID + ROW_NUMBER() OVER (ORDER BY obl.I_RowID ASC) as OblCabAluID, ROW_NUMBER() OVER (ORDER BY obl.I_RowID ASC) as TempRowID, obl.I_RowID, obl.Ano, 
+				obl.P, obl.I_Periodo, obl.Cod_alu, obl.Cod_rc, obl.Cuota_pago, obl.Tipo_oblig, obl.Fch_venc, obl.Monto, obl.Pagado, mat.I_MatAluID
+		INTO #tmp_obl_migra
 		FROM TR_Ec_Obl obl
 			 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno mat ON 
 						obl.cod_alu = mat.C_CodAlu AND obl.cod_rc = mat.C_CodRc 
@@ -688,54 +692,134 @@ BEGIN
 		WHERE I_ProcedenciaID = @I_ProcedenciaID
 			  AND (Cuota_pago = @I_ProcesoID OR @I_ProcesoID IS NULL)
 			  AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
-			  AND B_Migrable = 1;
+			  --AND B_Migrable = 1;
+
+		select * from #tmp_obl_migra
+
+		SET @I_RowID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet')
+
+		SELECT @I_RowID + ROW_NUMBER() OVER (ORDER BY det.I_OblRowID ASC) as OblDetAluID, ROW_NUMBER() OVER (ORDER BY det.I_OblRowID ASC) as TempRowID, I_OblRowID, Concepto, det.Monto, det.Pagado, 
+				det.Fch_venc, CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, CAST(Documento as varchar(max)) AS T_DescDocumento, 
+			   1 AS Habilitado, Eliminado, 1 as I_UsuarioCre, @D_FecProceso as D_FecCre, 0 AS Mora, 1 AS Migrado, @I_MigracionTablaDetID as I_MigracionTablaID, det.I_RowID
+		INTO #tmp_det_migra
+		FROM  TR_Ec_Det det
+			  INNER JOIN TR_Ec_Obl obl ON det.I_OblRowID = obl.I_RowID
+		WHERE det.I_ProcedenciaID = @I_ProcedenciaID
+			  AND (det.Cuota_pago = @I_ProcesoID OR @I_ProcesoID IS NULL)
+			  AND (det.Ano BETWEEN @T_AnioIni AND @T_AnioFin)
+			  AND det.Concepto_f = 1
+			  --AND det.B_Migrable = 1
+
+		select * from #tmp_det_migra
+
+		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab ON
+
+		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab AS TRG
+		USING #tmp_obl_migra AS SRC
+		ON TRG.I_MigracionRowID = SRC.I_RowID AND
+		   TRG.I_MigracionTablaID = @I_MigracionTablaOblID
+		WHEN MATCHED THEN
+			UPDATE SET TRG.I_ProcesoID = SRC.Cuota_pago, 
+					   TRG.I_MatAluID = SRC.I_MatAluID, 
+					   TRG.I_MontoOblig = SRC.Monto, 
+					   TRG.D_FecVencto = SRC.Fch_venc, 
+					   TRG.B_Pagado = SRC.Pagado, 
+					   TRG.I_UsuarioMod = 1, 
+					   TRG.D_FecMod = @D_FecProceso
+		WHEN NOT MATCHED THEN
+			INSERT (I_ObligacionAluID, I_ProcesoID, I_MatAluID, C_Moneda, I_MontoOblig, D_FecVencto, B_Pagado, B_Habilitado, 
+					B_Eliminado, I_UsuarioCre, D_FecCre, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
+			VALUES (SRC.OblCabAluID, SRC.Cuota_pago, SRC.I_MatAluID, @T_Moneda, SRC.Monto, SRC.Fch_venc, SRC.Pagado, 1, 
+					0, 1, @D_FecProceso, 1, @I_MigracionTablaOblID, @I_RowID);
+
+		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab OFF
 
 
-		OPEN CUR_OBL
-		FETCH NEXT FROM	CUR_OBL INTO @I_RowID, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, @Cuota_pago, @Tipo_oblig, @Fch_venc, 
-									 @Monto, @Pagado, @I_MatAluID;
+		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet ON
 
-			WHILE @@FETCH_STATUS = 0
-			BEGIN
+		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet AS TRG
+		USING (SELECT obl.I_ObligacionAluID, det.* FROM #tmp_det_migra det 
+							INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab obl ON det.I_OblRowID = obl.I_MigracionRowID) AS SRC
+		ON TRG.I_MigracionRowID = SRC.I_RowID AND
+		   TRG.I_MigracionTablaID = @I_MigracionTablaDetID
+		WHEN MATCHED THEN
+			UPDATE SET TRG.I_ObligacionAluID = SRC.I_ObligacionAluID, 
+					   TRG.I_ConcPagID = SRC.Concepto, 
+					   TRG.I_Monto = SRC.Monto, 
+					   TRG.B_Pagado = SRC.Pagado, 
+					   TRG.D_FecVencto = SRC.Fch_venc, 
+					   TRG.I_TipoDocumento = SRC.I_TipoDocumento, 
+					   TRG.T_DescDocumento = SRC.T_DescDocumento, 
+					   TRG.B_Mora = SRC.Mora, 
+					   TRG.I_UsuarioMod = 1, 
+					   TRG.D_FecMod = @D_FecProceso
+		WHEN NOT MATCHED THEN
+			INSERT (I_ObligacionAluDetID, I_ObligacionAluID, I_ConcPagID, I_Monto, B_Pagado, D_FecVencto, I_TipoDocumento, T_DescDocumento, 
+					B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, B_Mora, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
+			VALUES (SRC.OblDetAluID, SRC.I_ObligacionAluID, SRC.Concepto, SRC.Monto, SRC.Pagado, SRC.Fch_venc, SRC.I_TipoDocumento, SRC.T_DescDocumento, 
+					SRC.Habilitado, SRC.Eliminado, SRC.I_UsuarioCre, SRC.D_FecCre, SRC.Mora, SRC.Migrado, SRC.I_MigracionTablaID, SRC.I_RowID);
 
-				INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab (I_ProcesoID, I_MatAluID, C_Moneda, I_MontoOblig, D_FecVencto, B_Pagado, B_Habilitado, 
-																			B_Eliminado, I_UsuarioCre, D_FecCre, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
-																   VALUES (@Cuota_pago, @I_MatAluID, @T_Moneda, @Monto, @Fch_venc, @Pagado, 1, 
-																			0, 1, @D_FecProceso, 1, @I_MigracionTablaOblID, @I_RowID)
+		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet OFF
 
-				UPDATE TR_Ec_Obl 
-				   SET B_Migrado = 1,
-					   D_FecMigrado = @D_FecProceso
-				WHERE
-					   I_RowID = @I_RowID
+		--DECLARE CUR_OBL CURSOR
+		--FOR
+		--SELECT obl.I_RowID, obl.Ano, obl.P, obl.I_Periodo, obl.Cod_alu, obl.Cod_rc, obl.Cuota_pago, obl.Tipo_oblig, 
+		--	   obl.Fch_venc, obl.Monto, obl.Pagado, mat.I_MatAluID
+		--FROM TR_Ec_Obl obl
+		--	 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno mat ON 
+		--				obl.cod_alu = mat.C_CodAlu AND obl.cod_rc = mat.C_CodRc 
+		--				AND obl.ano = CAST(mat.I_Anio as varchar(4)) AND obl.I_Periodo = mat.I_Periodo
+		--WHERE I_ProcedenciaID = @I_ProcedenciaID
+		--	  AND (Cuota_pago = @I_ProcesoID OR @I_ProcesoID IS NULL)
+		--	  AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
+		--	  AND B_Migrable = 1;
+
+
+		--OPEN CUR_OBL
+		--FETCH NEXT FROM	CUR_OBL INTO @I_RowID, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, @Cuota_pago, @Tipo_oblig, @Fch_venc, 
+		--							 @Monto, @Pagado, @I_MatAluID;
+
+		--	WHILE @@FETCH_STATUS = 0
+		--	BEGIN
+
+		--		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab (I_ProcesoID, I_MatAluID, C_Moneda, I_MontoOblig, D_FecVencto, B_Pagado, B_Habilitado, 
+		--																	B_Eliminado, I_UsuarioCre, D_FecCre, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
+		--														   VALUES (@Cuota_pago, @I_MatAluID, @T_Moneda, @Monto, @Fch_venc, @Pagado, 1, 
+		--																	0, 1, @D_FecProceso, 1, @I_MigracionTablaOblID, @I_RowID)
+
+		--		UPDATE TR_Ec_Obl 
+		--		   SET B_Migrado = 1,
+		--			   D_FecMigrado = @D_FecProceso
+		--		WHERE
+		--			   I_RowID = @I_RowID
 				
-				SET @I_Obl_Insertados = @I_Obl_Insertados + 1
+		--		SET @I_Obl_Insertados = @I_Obl_Insertados + 1
 
-				--INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet (I_ObligacionAluID, I_ConcPagID, I_Monto, B_Pagado, D_FecVencto, I_TipoDocumento, T_DescDocumento, 
-				--														   B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, B_Mora, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
-				--SELECT I_OblRowID, Concepto, Monto, Pagado, Fch_venc, CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, 
-				--	   CAST(Documento as varchar(max)) AS T_DescDocumento, 1 AS Habilitado, Eliminado, 1, @D_FecProceso, 0 AS Mora, 1 AS Migrado, @I_MigracionTablaDetID, I_RowID
-				--FROM  TR_Ec_Det
-				--WHERE I_OblRowID = @I_RowID
-				--	  AND Concepto_f = 1
-				--	  AND B_Migrable = 1
+		--		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet (I_ObligacionAluID, I_ConcPagID, I_Monto, B_Pagado, D_FecVencto, I_TipoDocumento, T_DescDocumento, 
+		--																   B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, B_Mora, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
+		--		SELECT I_OblRowID, Concepto, Monto, Pagado, Fch_venc, CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, 
+		--			   CAST(Documento as varchar(max)) AS T_DescDocumento, 1 AS Habilitado, Eliminado, 1, @D_FecProceso, 0 AS Mora, 1 AS Migrado, @I_MigracionTablaDetID, I_RowID
+		--		FROM  TR_Ec_Det
+		--		WHERE I_OblRowID = @I_RowID
+		--			  AND Concepto_f = 1
+		--			  AND B_Migrable = 1
 
-				--UPDATE TR_Ec_Det
-				--   SET B_Migrado = 1,
-				--	   D_FecMigrado = @D_FecProceso
-				--WHERE
-				--	  I_OblRowID = @I_RowID
-				--	  AND Concepto_f = 1
-				--	  AND B_Migrable = 1
+		--		UPDATE TR_Ec_Det
+		--		   SET B_Migrado = 1,
+		--			   D_FecMigrado = @D_FecProceso
+		--		WHERE
+		--			  I_OblRowID = @I_RowID
+		--			  AND Concepto_f = 1
+		--			  AND B_Migrable = 1
 
-				--SET @I_Det_Insertados = @I_Det_Insertados + @@ROWCOUNT
+		--		SET @I_Det_Insertados = @I_Det_Insertados + @@ROWCOUNT
 
-				FETCH NEXT FROM	CUR_OBL INTO @I_RowID, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, @Cuota_pago, @Tipo_oblig, @Fch_venc, 
-											 @Monto, @Pagado, @I_MatAluID;
-			END;
+		--		FETCH NEXT FROM	CUR_OBL INTO @I_RowID, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, @Cuota_pago, @Tipo_oblig, @Fch_venc, 
+		--									 @Monto, @Pagado, @I_MatAluID;
+		--	END;
 			
-			CLOSE CUR_OBL;
-			DEALLOCATE CUR_OBL;
+		--	CLOSE CUR_OBL;
+		--	DEALLOCATE CUR_OBL;
 
 			SET @B_Resultado = 1
 			SET @T_Message = 'Obligaciones migradas:' + CAST(@I_Obl_Insertados AS varchar(10))  + ' | Detalle de obligaciones migradas: ' + CAST(@I_Det_Insertados AS varchar(10))
