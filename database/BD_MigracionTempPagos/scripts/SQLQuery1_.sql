@@ -137,6 +137,9 @@ GO
 
 
 
+
+
+
 SELECT count(*) FROM BD_OCEF_TemporalPagos.eupg.ec_det det
 				LEFT JOIN TR_Ec_Obl obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
 						AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 

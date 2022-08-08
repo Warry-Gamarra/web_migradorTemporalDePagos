@@ -554,20 +554,23 @@ BEGIN
 		ON TRG.I_ProcesoID = SRC.CUOTA_PAGO 
 		WHEN NOT MATCHED BY TARGET THEN 
 			 INSERT (I_ProcesoID, I_CatPagoID, T_ProcesoDesc, I_Anio, I_Periodo, N_CodBanco, D_FecVencto, I_Prioridad, B_Mora, 
-					 B_Migrado, D_FecCre, B_Habilitado, B_Eliminado, )
-			 VALUES (CUOTA_PAGO, I_CatPagoID, DESCRIPCIO, I_Anio, I_Periodo, CODIGO_BNC, FCH_VENC, PRIORIDAD, C_MORA, 
-					 1, @D_FecProceso, 1, ELIMINADO)
+					 B_Migrado, D_FecCre, B_Habilitado, B_Eliminado, I_MigracionTablaID, I_MigracionRowID)
+			 VALUES (CUOTA_PAGO, I_CatPagoID, DESCRIPCIO
+			 , I_Anio, I_Periodo, CODIGO_BNC, FCH_VENC, PRIORIDAD, C_MORA, 
+					 1, @D_FecProceso, 1, ELIMINADO, @I_TablaID, I_RowID)
 					
 		WHEN MATCHED AND TRG.B_Migrado = 1 AND TRG.I_UsuarioMod IS NULL THEN 
 			 UPDATE SET I_CatPagoID = SRC.I_CatPagoID, 
-					 T_ProcesoDesc = SRC.DESCRIPCIO, 
+					 T_ProcesoDesc = SRC.DESCRIPCIO,
 					 I_Anio = SRC.I_Anio, 
 					 I_Periodo = SRC.I_Periodo,
 					 N_CodBanco = SRC.CODIGO_BNC, 
 					 D_FecVencto = SRC.FCH_VENC, 
 					 I_Prioridad = SRC.PRIORIDAD, 
 					 D_FecMod = @D_FecProceso,
-					 B_Mora = SRC.C_MORA
+					 B_Mora = SRC.C_MORA,
+					 I_MigracionTablaID = @I_TablaID,
+					 I_MigracionRowID = I_RowID
 		OUTPUT $action, SRC.I_RowID INTO @Tbl_outputProceso;
 		
 		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TC_Proceso OFF
