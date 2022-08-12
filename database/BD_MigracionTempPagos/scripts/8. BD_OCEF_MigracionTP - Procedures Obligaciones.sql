@@ -13,8 +13,8 @@ CREATE PROCEDURE USP_IU_CopiarTablaObligacionesPago
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 2,
---		@T_SchemaDB   varchar(20) = 'eupg',
+--declare @I_ProcedenciaID	tinyint = 3,
+--		@T_SchemaDB   varchar(20) = 'euded',
 --		@T_AnioIni	  varchar(4) = null,
 --		@T_AnioFin	  varchar(4) = null,
 --		@B_Resultado  bit,
@@ -165,10 +165,10 @@ CREATE PROCEDURE USP_IU_CopiarTablaDetalleObligacionesPago
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 2,
---		@T_SchemaDB   varchar(20) = 'eupg',
---		@T_AnioIni	  varchar(4) = '2019',
---		@T_AnioFin	  varchar(4) = '2021',
+--declare @I_ProcedenciaID	tinyint = 3,
+--		@T_SchemaDB   varchar(20) = 'euded',
+--		@T_AnioIni	  varchar(4) = null,
+--		@T_AnioFin	  varchar(4) = null,
 --		@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
 --exec USP_IU_CopiarTablaDetalleObligacionesPago @I_ProcedenciaID, @T_SchemaDB, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
@@ -286,13 +286,13 @@ BEGIN
 									Nro_ec, Fch_ec, Eliminado, Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, D_FecCarga, B_Migrable, B_Migrado, D_FecMigrado, I_ProcedenciaID, B_Obligacion, I_OblRowID)
 							VALUES (cod_alu, cod_rc, cuota_pago, ano, p, tipo_oblig, concepto, fch_venc, nro_recibo, fch_pago, id_lug_pag, cantidad, monto, CAST(SRC.documento as nvarchar(4000)), pagado, concepto_f, fch_elimin, 
 									nro_ec, fch_ec, eliminado, pag_demas, cod_cajero, tipo_pago, no_banco, cod_dep, @D_FecProceso, 1, 0, NULL, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', 1, I_OblRowID)
-						WHEN NOT MATCHED BY SOURCE AND I_ProcedenciaID = ' + CAST(@I_ProcedenciaID as varchar(3)) + ' THEN
-							UPDATE SET	TRG.B_Removido	  = 1, 
-										TRG.D_FecRemovido = @D_FecProceso,
-										TRG.B_Migrable	  = 0, 
-										TRG.D_FecEvalua   = NULL,
-										TRG.D_FecMigrado  = NULL, 
-										TRG.B_Migrado	  = 0 
+						--WHEN NOT MATCHED BY SOURCE AND I_ProcedenciaID = ' + CAST(@I_ProcedenciaID as varchar(3)) + ' THEN
+						--	UPDATE SET	TRG.B_Removido	  = 1, 
+						--				TRG.D_FecRemovido = @D_FecProceso,
+						--				TRG.B_Migrable	  = 0, 
+						--				TRG.D_FecEvalua   = NULL,
+						--				TRG.D_FecMigrado  = NULL, 
+						--				TRG.B_Migrado	  = 0 
 						OUTPUT	$ACTION, inserted.I_RowID, inserted.COD_ALU, inserted.COD_RC, inserted.CUOTA_PAGO, inserted.ANO, inserted.P, inserted.TIPO_OBLIG, inserted.CONCEPTO, inserted.FCH_VENC, inserted.ELIMINADO, 
 								inserted.NRO_RECIBO, inserted.FCH_PAGO, inserted.ID_LUG_PAG, inserted.CANTIDAD, inserted.MONTO, inserted.PAGADO, inserted.CONCEPTO_F, inserted.FCH_ELIMIN, inserted.NRO_EC, inserted.FCH_EC, 
 								inserted.PAG_DEMAS, inserted.COD_CAJERO, inserted.TIPO_PAGO, inserted.NO_BANCO, inserted.COD_DEP, deleted.NRO_RECIBO, deleted.FCH_PAGO, deleted.ID_LUG_PAG, deleted.CANTIDAD, deleted.MONTO, 
@@ -303,6 +303,7 @@ BEGIN
 		print @T_SQL
 		Exec sp_executesql @T_SQL
 
+		print @T_Source
 		
 		SET @T_SQL = 'SELECT cuota_pago, concepto, p, ano, fch_venc, cod_alu, cod_rc, monto, pagado, concepto_f FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det'
 		
@@ -337,17 +338,18 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE [dbo].[USP_U_ValidarExisteAlumnoCabeceraObligacion]	
-	@T_AnioIni	  varchar(4),
-	@T_AnioFin	  varchar(4),
+	@I_ProcedenciaID tinyint,
+	@I_AnioIni	  int,
+	@I_AnioFin	  int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare
---		@T_AnioIni	  varchar(4) = '2012',
---		@T_AnioFin	  varchar(4) = '2018',
+--declare @I_ProcedenciaID	tinyint = 3,
+--		@I_AnioIni	  int = null,
+--		@I_AnioFin	  int = null,
 --		@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarExisteAlumnoCabeceraObligacion @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
+--exec USP_U_ValidarExisteAlumnoCabeceraObligacion @I_ProcedenciaID, @I_AnioIni, @I_AnioFin, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -355,18 +357,33 @@ BEGIN
 	DECLARE @I_ObservID int = 24
 	DECLARE @I_TablaID int = 5
 
+	SET @I_AnioIni = (SELECT ISNULL(@I_AnioIni, 0))
+	SET @I_AnioFin = (SELECT ISNULL(@I_AnioFin, 3000))
+
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		UPDATE	TR_Ec_Obl
+		SELECT * 
+		INTO #Numeric_Year_Ec_Obl
+		FROM TR_Ec_Obl
+		WHERE ISNUMERIC(ANO) = 1
+			  AND I_ProcedenciaID = @I_ProcedenciaID
+
+		UPDATE	ec_obl
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	NOT EXISTS (SELECT * FROM TR_Alumnos b WHERE TR_Ec_Obl.COD_ALU = C_CodAlu and TR_Ec_Obl.COD_RC = C_RcCod)
-				AND Ano BETWEEN @T_AnioIni AND @T_AnioFin
+		FROM	TR_Ec_Obl ec_obl
+				INNER JOIN #Numeric_Year_Ec_Obl num_ec_obl ON ec_obl.I_RowID = num_ec_obl.I_RowID
+		WHERE	NOT EXISTS (SELECT * FROM TR_Alumnos b WHERE ec_obl.COD_ALU = C_CodAlu and ec_obl.COD_RC = C_RcCod)
+				AND CAST(num_ec_obl.Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin
+			    AND ec_obl.I_ProcedenciaID = @I_ProcedenciaID
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Ec_Obl
-				  WHERE	NOT EXISTS (SELECT * FROM TR_Alumnos b WHERE TR_Ec_Obl.COD_ALU = C_CodAlu and TR_Ec_Obl.COD_RC = C_RcCod)
-									AND Ano BETWEEN @T_AnioIni AND @T_AnioFin) AS SRC
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, ec_obl.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM	TR_Ec_Obl ec_obl
+						INNER JOIN #Numeric_Year_Ec_Obl num_ec_obl ON ec_obl.I_RowID = num_ec_obl.I_RowID
+				 WHERE	NOT EXISTS (SELECT * FROM TR_Alumnos b WHERE ec_obl.COD_ALU = C_CodAlu and ec_obl.COD_RC = C_RcCod)
+						AND CAST(num_ec_obl.Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin
+						AND ec_obl.I_ProcedenciaID = @I_ProcedenciaID) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -398,12 +415,14 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE [dbo].[USP_U_ValidarAnioEnCabeceraObligacion]	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
+--declare @I_ProcedenciaID	tinyint = 3, 
+--		@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarAñoEnCabeceraObligacion @B_Resultado output, @T_Message output
+--exec USP_U_ValidarAnioEnCabeceraObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -417,10 +436,14 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	ISNUMERIC(ANO) = 0
+				AND I_ProcedenciaID = @I_ProcedenciaID
+
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Ec_Obl
-				  WHERE	ISNUMERIC(ANO) = 0) AS SRC
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM	TR_Ec_Obl 
+				 WHERE	ISNUMERIC(ANO) = 0 
+						AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro

@@ -636,7 +636,7 @@ BEGIN
 		USING (SELECT * FROM TR_Cp_Pri 
 				WHERE B_Migrable = 1 AND TIPO_OBLIG = 1 
 					  AND (CUOTA_PAGO = @I_ProcesoID OR @I_ProcesoID IS NULL)
-					  AND ANO BETWEEN @I_AnioIni AND @I_AnioFin
+					  AND (ANO BETWEEN @I_AnioIni AND @I_AnioFin)
 					  AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
 		ON TRG.I_ConcPagID = SRC.ID_CP
@@ -692,26 +692,31 @@ BEGIN
 					 --B_EsPagoMatricula = NULL, 
 					 --B_EsPagoExtmp = NULL, 
 					 D_FecMod = @D_FecProceso
-		WHEN NOT MATCHED BY SOURCE AND TRG.B_Migrado = 1 AND TRG.I_UsuarioMod IS NULL AND TRG.B_EsPagoMatricula IS NULL AND TRG.B_EsPagoExtmp IS NULL  THEN
-			DELETE  		 
+		--WHEN NOT MATCHED BY SOURCE AND TRG.B_Migrado = 1 AND TRG.I_UsuarioMod IS NULL AND TRG.B_EsPagoMatricula IS NULL AND TRG.B_EsPagoExtmp IS NULL  THEN
+		--	DELETE  		 
 		OUTPUT $action, SRC.I_RowID INTO @Tbl_outputConceptosPago;
 
 		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago OFF;
+
 
 		UPDATE	TR_Cp_Pri 
 		SET		B_Migrado = 1, 
 				D_FecMigrado = @D_FecProceso
 		WHERE	I_RowID IN (SELECT I_RowID FROM @Tbl_outputConceptosPago)
+				AND I_ProcedenciaID = @I_ProcedenciaID
 
 		UPDATE	TR_Cp_Des 
 		SET		B_Migrado = 0 
 		WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_Cp_Des CD LEFT JOIN @Tbl_outputConceptosPago O ON CD.I_RowID = o.I_RowID 
 							WHERE CD.B_Migrable = 1 AND O.I_RowID IS NULL)
+				AND I_ProcedenciaID = @I_ProcedenciaID
+
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				  WHERE	I_RowID IN (SELECT CP.I_RowID FROM TR_Cp_Pri CP LEFT JOIN @Tbl_outputConceptosPago O ON CP.I_RowID = o.I_RowID 
 									WHERE CP.B_Migrable = 1 AND O.I_RowID IS NULL)
+					    AND I_ProcedenciaID = @I_ProcedenciaID
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
