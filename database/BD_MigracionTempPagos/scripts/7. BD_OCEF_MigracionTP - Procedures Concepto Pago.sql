@@ -175,12 +175,14 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_MarcarConceptosPagoRepetidos	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_MarcarConceptosPagoRepetidos @B_Resultado output, @T_Message output
+--exec USP_U_MarcarConceptosPagoRepetidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -194,14 +196,18 @@ BEGIN
 		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	ID_CP IN (SELECT ID_CP FROM TR_Cp_Pri WHERE ELIMINADO = 0 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1
-						  UNION
-						  SELECT ID_CP FROM TR_Cp_Pri WHERE ELIMINADO = 1 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
+		WHERE	ID_CP IN (SELECT ID_CP FROM TR_Cp_Pri WHERE I_ProcedenciaID = @I_ProcedenciaID AND ELIMINADO = 0 
+						  GROUP BY ID_CP HAVING COUNT(ID_CP) > 1
+						   UNION
+						  SELECT ID_CP FROM TR_Cp_Pri WHERE I_ProcedenciaID = @I_ProcedenciaID AND ELIMINADO = 1 
+						  GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
+
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_activo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Cp_Pri 
-				 WHERE ID_CP IN (SELECT ID_CP FROM TR_Cp_Pri WHERE ELIMINADO = 0 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
+				 WHERE ID_CP IN (SELECT ID_CP FROM TR_Cp_Pri WHERE I_ProcedenciaID = @I_ProcedenciaID AND ELIMINADO = 0 
+								 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -212,10 +218,12 @@ BEGIN
 		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_activo THEN
 			DELETE;
 
+
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_eliminado AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Cp_Pri 
-				 WHERE ID_CP IN (SELECT ID_CP FROM TR_Cp_Pri WHERE ELIMINADO = 1 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
+				 WHERE ID_CP IN (SELECT ID_CP FROM TR_Cp_Pri WHERE I_ProcedenciaID = @I_ProcedenciaID AND ELIMINADO = 1 
+								 GROUP BY ID_CP HAVING COUNT(ID_CP) > 1)
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -225,6 +233,7 @@ BEGIN
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
 		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_eliminado THEN
 			DELETE;
+
 
 		SET @I_Observados_activos = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_activo AND I_TablaID = @I_TablaID)
 		SET @I_Observados_eliminados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_eliminado AND I_TablaID = @I_TablaID)
@@ -245,12 +254,14 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_MarcarConceptosPagoObligSinAnioAsignado	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_MarcarConceptosPagoObligSinAnioAsignado @B_Resultado output, @T_Message output
+--exec USP_U_MarcarConceptosPagoObligSinAnioAsignado @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -264,11 +275,13 @@ BEGIN
 		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	(ANO IS NULL OR ANO = 0) AND TIPO_OBLIG = 1
+		WHERE	(ANO IS NULL OR ANO = 0) 
+				AND TIPO_OBLIG = 1
+				AND I_ProcedenciaID = @I_ProcedenciaID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_Cp_Pri WHERE (ANO IS NULL OR ANO = 0) AND TIPO_OBLIG = 1
+				 FROM TR_Cp_Pri WHERE (ANO IS NULL OR ANO = 0) AND TIPO_OBLIG = 1 AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -282,12 +295,15 @@ BEGIN
 		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-				--T_Observacion = ISNULL(T_Observacion, '') + '012 - NO COINCIDE AÑO : ('+ CONVERT(varchar, @D_FecProceso, 112) + '). Año del concepto de pago de obligacion no coincide con el año de la cuota de pagos.|'
-		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE I_Anio = TR_Cp_Pri.ANO) AND TIPO_OBLIG = 1
+		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE I_Anio = TR_Cp_Pri.ANO AND Cuota_pago = TR_Cp_Pri.Cuota_pago) 
+				AND Tipo_oblig = 1
+				AND I_ProcedenciaID = @I_ProcedenciaID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE I_Anio = TR_Cp_Pri.ANO) AND TIPO_OBLIG = 1
+				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE I_Anio = TR_Cp_Pri.Ano AND Cuota_pago = TR_Cp_Pri.Cuota_pago) 
+					  AND Tipo_oblig = 1 
+					  AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -317,12 +333,14 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_MarcarConceptosPagoObligSinPeriodoAsignado	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_MarcarConceptosPagoObligSinPeriodoAsignado @B_Resultado output, @T_Message output
+--exec USP_U_MarcarConceptosPagoObligSinPeriodoAsignado @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -337,10 +355,11 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	(P IS NULL OR P = '') AND TIPO_OBLIG = 1
+				AND I_ProcedenciaID = @I_ProcedenciaID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinPer AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_Cp_Pri WHERE (P IS NULL OR P = '') AND TIPO_OBLIG = 1
+				 FROM TR_Cp_Pri WHERE (P IS NULL OR P = '') AND TIPO_OBLIG = 1 AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -354,11 +373,15 @@ BEGIN
 		UPDATE	TR_Cp_Pri
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE P = TR_Cp_Pri.P) AND TIPO_OBLIG = 1
+		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE P = TR_Cp_Pri.P AND Cuota_pago = TR_Cp_Pri.Cuota_pago) 
+				AND TIPO_OBLIG = 1
+				AND I_ProcedenciaID = @I_ProcedenciaID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_PerDif AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE P = TR_Cp_Pri.P) AND TIPO_OBLIG = 1
+				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE P = TR_Cp_Pri.P AND Cuota_pago = TR_Cp_Pri.Cuota_pago) 
+									  AND TIPO_OBLIG = 1
+									  AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -388,12 +411,14 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_MarcarConceptosPagoObligSinCuotaPago	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_MarcarConceptosPagoObligSinCuotaPago @B_Resultado output, @T_Message output
+--exec USP_U_MarcarConceptosPagoObligSinCuotaPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -408,10 +433,13 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO) AND TIPO_OBLIG = 1
+				AND I_ProcedenciaID = @I_ProcedenciaID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinCuota AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO) AND TIPO_OBLIG = 1
+				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO) 
+									  AND TIPO_OBLIG = 1
+									  AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -427,10 +455,12 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO AND B_Migrable = 0)
-
+				AND I_ProcedenciaID = @I_ProcedenciaID
+			
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_CuotaNoM AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Cp_Pri WHERE EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO AND B_Migrable = 0)
+									  AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -460,12 +490,14 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE [dbo].[USP_U_AsignarIdEquivalenciasConceptoPago]
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_AsignarIdEquivalenciasConceptoPago @B_Resultado output, @T_Message output
+--exec USP_U_AsignarIdEquivalenciasConceptoPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -522,7 +554,9 @@ BEGIN
 				LEFT JOIN @grupo_rc t_grc ON tb_pri.GRUPO_RC = t_grc.C_CodGrpRc
 				LEFT JOIN @codigo_ing c_ing ON tb_pri.COD_ING = c_ing.C_CodIng
 				LEFT JOIN @unfv_dep dep ON tb_pri.COD_DEP_PL = dep.C_DepCodPl AND LEN(dep.C_DepCodPl) > 0
-		
+		WHERE  I_ProcedenciaID = @I_ProcedenciaID
+
+
 		SELECT * FROM TR_Cp_Pri
 
 		SET @B_Resultado = 1
@@ -571,11 +605,17 @@ CREATE PROCEDURE USP_IU_MigrarDataConceptoPagoObligacionesCtasPorCobrar
 	@I_ProcesoID	  int = NULL,
 	@I_AnioIni	  int = NULL,
 	@I_AnioFin	  int = NULL,
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit, @I_ProcesoID int, @I_AnioIni int, @I_AnioFin int, @T_Message	  nvarchar(4000)
---exec USP_IU_MigrarDataConceptoPagoObligacionesCtasPorCobrar @I_ProcesoID = null, @I_AnioIni = null, @I_AnioFin = null, @B_Resultado = @B_Resultado output, @T_Message = @T_Message output
+--declare	@B_Resultado  bit, 
+--			@I_ProcesoID int = NULL,
+--			@I_AnioIni int = NULL, 
+--			@I_AnioFin int = NULL,
+--			@I_ProcedenciaID tinyint = 3,
+--			@T_Message nvarchar(4000)
+--exec USP_IU_MigrarDataConceptoPagoObligacionesCtasPorCobrar @I_ProcesoID, @I_AnioIni, @I_AnioFin, @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -594,7 +634,10 @@ BEGIN
 
 		MERGE INTO  BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago AS TRG
 		USING (SELECT * FROM TR_Cp_Pri 
-				WHERE B_Migrable = 1 AND TIPO_OBLIG = 1 AND (CUOTA_PAGO = @I_ProcesoID OR @I_ProcesoID IS NULL) AND ANO BETWEEN @I_AnioIni AND @I_AnioFin
+				WHERE B_Migrable = 1 AND TIPO_OBLIG = 1 
+					  AND (CUOTA_PAGO = @I_ProcesoID OR @I_ProcesoID IS NULL)
+					  AND ANO BETWEEN @I_AnioIni AND @I_AnioFin
+					  AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
 		ON TRG.I_ConcPagID = SRC.ID_CP
 		WHEN NOT MATCHED BY TARGET THEN 
