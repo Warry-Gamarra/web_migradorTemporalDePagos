@@ -558,3 +558,167 @@ where concepto in
 order by 2 desc
 
 
+
+
+select *  from TR_Cp_Pri
+
+select *  from TR_Cp_Pri
+WHERE B_Migrable = 0
+
+select * from TR_Ec_Obl where I_ProcedenciaID = 2
+
+
+select count(*) from BD_OCEF_TemporalPagos.euded.ec_obl 
+select count(*) from TR_Ec_obl where I_ProcedenciaID = 3
+
+select count(*) from BD_OCEF_TemporalPagos.euded.ec_det --where concepto_f = 0
+select count(*) from TR_Ec_Det where I_ProcedenciaID = 3 AND B_Removido = 1
+
+
+update TR_Ec_Det set B_Removido = 0, D_FecRemovido = NULL
+
+select top 100 * from TR_Alumnos
+select * from TI_ObservacionRegistroTabla
+select top 100 * from TR_Ec_Obl where B_Migrable = 0
+
+SELECT * FROM TR_Ec_Obl WHERE ISNUMERIC(ANO) = 0 AND I_ProcedenciaID = 3
+select count(*) from TR_Ec_Det where i_procedenciaid = 3 and I_OblRowID is null
+
+SELECT * FROM TR_Ec_Obl WHERE I_ProcedenciaID = 3  and Cuota_pago = 0
+select count(*) from TR_Ec_Det where i_procedenciaid = 3 and I_OblRowID is null
+select count(*) from TR_Ec_Det where i_procedenciaid = 3 and Cuota_pago = 0
+select count(*) from BD_OCEF_TemporalPagos.euded.ec_det where Cuota_pago = 0
+select count(*) from BD_OCEF_TemporalPagos.euded.ec_obl where Cuota_pago = 0
+select count(*) from BD_OCEF_TemporalPagos.euded.cp_des where Cuota_pago = 0
+
+select count(*) from TR_Ec_Det where i_procedenciaid = 3 and Eliminado = 1 and  I_OblRowID is null
+
+
+select * from TR_Ec_Obl where Cuota_pago = 462 AND Ano = 2019 AND P = 1 AND Cod_alu = '2006701141'
+select * from TR_Ec_Det where Cuota_pago = 462 AND Ano = 2019 AND P = 1 AND Cod_alu = '2006701141'
+
+select count(*) from TR_Ec_Obl where i_procedenciaid = 3 
+
+SELECT obl.I_RowID AS I_OblRowID , det.* 
+FROM BD_OCEF_TemporalPagos.euded.ec_det det
+	LEFT JOIN (SELECT I_RowID, obl2.* FROM TR_Ec_Obl obl1 
+				INNER JOIN (SELECT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, pagado, I_ProcedenciaID
+							FROM TR_Ec_Obl WHERE  I_ProcedenciaID = 3 
+							GROUP BY  I_ProcedenciaID, Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Pagado
+							HAVING count(*) = 1
+						) obl2 ON obl1.Ano = obl2.Ano AND obl1.P = obl2.P AND obl1.Cod_alu = obl2.Cod_alu
+									AND obl1.Cod_rc = obl2.Cod_rc AND obl1.Cuota_pago = obl2.Cuota_pago 
+									AND obl1.Fch_venc = obl2.Fch_venc AND obl1.Pagado = obl2.Pagado 
+									AND obl1.I_ProcedenciaID = obl2.I_ProcedenciaID
+			) obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
+						AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
+						AND det.fch_venc = obl.fch_venc AND det.pagado = obl.Pagado
+
+
+select distinct TR_Ec_Det.Cuota_pago from TR_Ec_Det 
+left join TR_Ec_Obl on TR_Ec_Det.Cuota_pago = TR_Ec_Obl.Cuota_pago and TR_Ec_Det.I_ProcedenciaID = TR_Ec_Obl.I_ProcedenciaID
+where TR_Ec_Det.I_ProcedenciaID = 3 and TR_Ec_Obl.I_RowID is null
+	
+select * from TR_Cp_Des where I_ProcedenciaID = 1 and Cuota_pago
+in (
+0
+,195
+,129
+,21
+,196
+,254
+,231
+,463
+,54
+,237)
+
+SELECT I_RowID, obl2.* FROM TR_Ec_Obl obl1 
+INNER JOIN (SELECT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, pagado, I_ProcedenciaID
+			FROM TR_Ec_Obl WHERE  I_ProcedenciaID = 3 
+			GROUP BY  I_ProcedenciaID, Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Pagado
+			HAVING count(*) = 1
+) obl2 ON obl1.Ano = obl2.Ano AND obl1.P = obl2.P AND obl1.Cod_alu = obl2.Cod_alu
+						AND obl1.Cod_rc = obl2.Cod_rc AND obl1.Cuota_pago = obl2.Cuota_pago 
+						AND obl1.Fch_venc = obl2.Fch_venc AND obl1.Pagado = obl2.Pagado 
+						AND obl1.I_ProcedenciaID = obl2.I_ProcedenciaID
+
+select distinct i_Anio from BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno
+select distinct Ano from TR_Ec_Obl where I_ProcedenciaID = 3
+
+		SELECT * 
+		INTO #Numeric_Year_Ec_Obl
+		FROM TR_Ec_Obl
+		WHERE ISNUMERIC(ANO) = 1
+			  AND I_ProcedenciaID = 3
+
+		SELECT ROW_NUMBER() OVER (ORDER BY obl.I_RowID ASC) as TempRowID, obl.I_RowID, 
+			   obl.Ano, mat.I_Anio, obl.P, obl.I_Periodo, obl.Cod_alu, obl.Cod_rc, obl.Cuota_pago, obl.Tipo_oblig, obl.Fch_venc, obl.Monto, obl.Pagado, mat.I_MatAluID
+		FROM #Numeric_Year_Ec_Obl obl
+			 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno mat ON 
+						obl.cod_alu = mat.C_CodAlu AND obl.cod_rc = mat.C_CodRc 
+						AND CAST(obl.ano AS int) = mat.I_Anio
+						AND obl.I_Periodo = mat.I_Periodo
+		WHERE obl.I_ProcedenciaID = 3
+			  AND (CAST(obl.Ano AS int) BETWEEN 0 AND 3000)
+			  AND B_Migrable = 1;
+
+
+SELECT DISTINCT Cuota_pago FROM TR_Ec_Obl WHERE Cuota_pago NOT IN (SELECT I_ProcesoID FROM BD_OCEF_CtasPorCobrar..TC_Proceso) AND I_ProcedenciaID =  3 and B_Migrable = 1
+
+select * from TR_Ec_Obl where B_Migrable = 1
+
+
+SELECT * FROM TR_ec_obl WHERE Cuota_pago IN (229
+,26
+,133
+,142
+,128
+,134) 
+
+
+SELECT * FROM TR_Cp_Des WHERE Cuota_pago IN (229
+,26
+,133
+,142
+,128
+,134) 
+
+
+SELECT * FROM TC_CatalogoTabla
+
+declare @I_ProcedenciaID tinyint = 3,
+		@I_ProcesoID int = null, 
+		@I_AnioIni	 int = null, 
+		@I_AnioFin	 int = null 
+
+DECLARE @I_RowID  int
+
+	SET @I_AnioIni = (SELECT ISNULL(@I_AnioIni, 0))
+	SET @I_AnioFin = (SELECT ISNULL(@I_AnioFin, 3000))
+
+	SET @I_RowID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab')
+
+	SELECT @I_RowID + ROW_NUMBER() OVER (ORDER BY obl.I_RowID ASC) as OblCabAluID, ROW_NUMBER() OVER (ORDER BY obl.I_RowID ASC) as TempRowID, obl.I_RowID, 
+			obl.Ano, obl.P, obl.I_Periodo, obl.Cod_alu, obl.Cod_rc, obl.Cuota_pago, obl.Tipo_oblig, obl.Fch_venc, obl.Monto, obl.Pagado, mat.I_MatAluID
+	--INTO #tmp_obl_migra
+	FROM #Numeric_Year_Ec_Obl obl
+			INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno mat ON 
+					obl.cod_alu = mat.C_CodAlu AND obl.cod_rc = mat.C_CodRc 
+					AND CAST(obl.ano AS int) = mat.I_Anio 
+					AND obl.I_Periodo = mat.I_Periodo
+	WHERE obl.I_ProcedenciaID = @I_ProcedenciaID
+			AND (obl.Cuota_pago = @I_ProcesoID OR @I_ProcesoID IS NULL)
+			AND (CAST(obl.Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin)
+			AND B_Migrable = 1;
+
+	select * from #tmp_obl_migra
+
+
+	SELECT COUNT(*) FROM TR_Ec_Obl WHERE B_Migrable = 1 AND I_ProcedenciaID = 3
+		SELECT COUNT(*) FROM TR_Ec_Obl WHERE B_Migrable = 0 AND I_ProcedenciaID = 3
+
+	SELECT * FROM TR_CP_DES WHERE B_MIGRADO = 1 AND I_ProcedenciaID = 3
+
+	UPDATE TR_Ec_Obl SET B_Migrable = 1 WHERE I_ProcedenciaID = 3
+
+
