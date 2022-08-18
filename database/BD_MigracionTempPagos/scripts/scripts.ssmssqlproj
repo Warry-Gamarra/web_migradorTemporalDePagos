@@ -103,6 +103,18 @@
           <AssociatedConnUserName />
           <FullPath>SQLQuery1_.sql</FullPath>
         </FileNode>
+        <FileNode Name="Test_posgrado.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnUserName />
+          <FullPath>Test_posgrado.sql</FullPath>
+        </FileNode>
+        <FileNode Name="Test_pregrado.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnUserName />
+          <FullPath>Test_pregrado.sql</FullPath>
+        </FileNode>
       </Items>
     </LogicalFolder>
     <LogicalFolder Name="Miscellaneous" Type="3" Sorted="true">

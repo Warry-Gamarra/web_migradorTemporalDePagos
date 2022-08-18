@@ -686,6 +686,7 @@ SELECT * FROM TR_Cp_Des WHERE Cuota_pago IN (229
 
 SELECT * FROM TC_CatalogoTabla
 
+
 declare @I_ProcedenciaID tinyint = 3,
 		@I_ProcesoID int = null, 
 		@I_AnioIni	 int = null, 
@@ -693,8 +694,106 @@ declare @I_ProcedenciaID tinyint = 3,
 
 DECLARE @I_RowID  int
 
-	SET @I_AnioIni = (SELECT ISNULL(@I_AnioIni, 0))
-	SET @I_AnioFin = (SELECT ISNULL(@I_AnioFin, 3000))
+SET @I_AnioIni = (SELECT ISNULL(@I_AnioIni, 0))
+SET @I_AnioFin = (SELECT ISNULL(@I_AnioFin, 3000))
+
+SET @I_RowID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet')
+
+SELECT det.B_Migrable, @I_RowID + ROW_NUMBER() OVER (ORDER BY det.I_OblRowID ASC) as OblDetAluID, ROW_NUMBER() OVER (ORDER BY det.I_OblRowID ASC) as TempRowID, I_OblRowID, Concepto, det.Monto, det.Pagado, 
+		det.Fch_venc, CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, CAST(Documento as varchar(max)) AS T_DescDocumento, 
+		1 AS Habilitado, Eliminado, 1 as I_UsuarioCre, getdate() as D_FecCre, 0 AS Mora, det.I_RowID
+--INTO #tmp_det_migra
+FROM  TR_Ec_Det det
+		INNER JOIN TR_Ec_Obl obl ON det.I_OblRowID = obl.I_RowID
+WHERE det.I_ProcedenciaID = @I_ProcedenciaID
+		AND (det.Cuota_pago = @I_ProcesoID OR @I_ProcesoID IS NULL)
+		AND (CAST(det.Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin)
+		AND det.Concepto_f = 1
+		AND det.B_Migrable = 1
+
+
+		select count(*) from TR_Cp_Des  where B_Migrable = 1 and I_ProcedenciaID = 3
+select count(*) from TR_Cp_Des  where B_Migrado = 1 and I_ProcedenciaID = 3
+
+select * from TR_Ec_Obl
+		WHERE	Cuota_pago NOT IN (SELECT Cuota_pago FROM TR_Cp_Des WHERE I_ProcedenciaID = 3)
+				AND I_ProcedenciaID = 3
+
+
+select DISTINCT Concepto from TR_Ec_Det where B_Migrable = 1 and I_ProcedenciaID = 3
+and Concepto not in (select distinct id_cp from TR_Cp_Pri where B_Migrado = 1 and I_ProcedenciaID = 3
+)
+
+select DISTINCT Concepto from TR_Ec_Det where B_Migrable = 1 and I_ProcedenciaID = 3
+and Concepto not in (select distinct id_cp from TR_Cp_Pri where B_Migrable = 1 and I_ProcedenciaID = 3
+)
+
+
+select DISTINCT Concepto from TR_Ec_Det where I_ProcedenciaID = 3
+and Concepto not in (select distinct id_cp from TR_Cp_Pri WHERE I_ProcedenciaID = 3
+)
+
+
+select * from TR_Cp_Pri where Id_cp = 4788
+
+select count(*) from TR_Ec_Det where I_ProcedenciaID = 3 and B_Migrable = 1
+select count(*) from TR_Ec_Det where I_ProcedenciaID = 3 and B_Migrable = 0
+select count(*) from TR_Ec_Det where I_ProcedenciaID = 3 and B_Migrable = 1
+select count(*) from TR_Ec_Det where I_ProcedenciaID = 3 
+
+SELECT * FROM BD_OCEF_TemporalPagos.euded.cp_pri WHERE Id_cp IN (
+0
+,1
+,4
+,19
+,48
+,323
+,324
+,326
+,327
+,328
+,329
+,330
+,331
+,332
+,333
+,334
+,336
+,337
+,339
+,341
+,351
+,355
+,695
+,3091
+,4788
+,4915
+,4916
+,4930
+,4931
+,4981
+,5197
+,5535
+,5536
+,5700
+,5701
+,5707
+,5708
+,6215
+,6595)
+
+
+SELECT * FROM TR_Ec_Det		WHERE	TIPO_OBLIG = 1 AND
+				NOT EXISTS (SELECT * FROM TR_Ec_Obl b 
+							WHERE	TR_Ec_Det.ANO = b.ANO 
+									AND TR_Ec_Det.P = b.P
+									AND TR_Ec_Det.CUOTA_PAGO = b.CUOTA_PAGO
+									AND TR_Ec_Det.COD_ALU = b.COD_ALU
+									AND TR_Ec_Det.COD_RC = b.COD_RC
+									AND CONVERT(DATE, FCH_VENC, 102) = b.FCH_VENC
+							)
+				AND TR_Ec_Det.I_ProcedenciaID = 3
+
 
 	SET @I_RowID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab')
 

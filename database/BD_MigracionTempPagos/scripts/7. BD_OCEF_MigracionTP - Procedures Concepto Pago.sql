@@ -41,12 +41,12 @@ BEGIN
 		INS_CLASIFIC_5	nvarchar(255),	INS_ID_CP_AGRP	float,
 		INS_AGRUPA		bit,			INS_NRO_PAGOS	float,
 		INS_ID_CP_AFEC	float,			INS_PORCENTAJE	bit,
-		INS_MONTO		float,			INS_DESCRIPCIO	nvarchar(255),
+		INS_MONTO		float,			INS_DESCRIPCIO	nvarchar(500),
 		INS_CALCULAR	nvarchar(255),	INS_GRADO		float,
 		INS_TIP_ALUMNO	float,			INS_GRUPO_RC	nvarchar(255),
 		INS_FRACCIONAB	bit,			INS_CONCEPTO_G	bit,
-		INS_DOCUMENTO	nvarchar(255),	INS_MONTO_MIN	nvarchar(255),
-		INS_DESCRIP_L	nvarchar(255),	INS_COD_DEP_PL	nvarchar(255),
+		INS_DOCUMENTO	nvarchar(500),	INS_MONTO_MIN	nvarchar(255),
+		INS_DESCRIP_L	nvarchar(1000),	INS_COD_DEP_PL	nvarchar(255),
 		
 		DEL_CUOTA_PAGO	float, 			DEL_ANO			nvarchar(255),		
 		DEL_P			nvarchar(255),	DEL_COD_RC		nvarchar(255),
@@ -55,11 +55,11 @@ BEGIN
 		DEL_ID_CP_AGRP	float,			DEL_AGRUPA		bit,		
 		DEL_NRO_PAGOS	float,			DEL_ID_CP_AFEC	float,
 		DEL_PORCENTAJE	bit,			DEL_MONTO		float,
-		DEL_DESCRIPCIO	nvarchar(255),	DEL_CALCULAR	nvarchar(255),
+		DEL_DESCRIPCIO	nvarchar(500),	DEL_CALCULAR	nvarchar(255),
 		DEL_GRADO		float,			DEL_TIP_ALUMNO	float,
 		DEL_GRUPO_RC	nvarchar(255),	DEL_FRACCIONAB	bit,
-		DEL_CONCEPTO_G	bit,			DEL_DOCUMENTO	nvarchar(255),
-		DEL_MONTO_MIN	nvarchar(255),	DEL_DESCRIP_L	nvarchar(255),
+		DEL_CONCEPTO_G	bit,			DEL_DOCUMENTO	nvarchar(500),
+		DEL_MONTO_MIN	nvarchar(255),	DEL_DESCRIP_L	nvarchar(1000),
 		DEL_COD_DEP_PL	nvarchar(255),	DEL_OBLIG_MORA	nvarchar(255)
 	)
 
