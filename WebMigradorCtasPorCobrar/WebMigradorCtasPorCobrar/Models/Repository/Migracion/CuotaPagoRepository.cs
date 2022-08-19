@@ -26,6 +26,21 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
+        public static CuotaPago ObtenerPorId(int rowID)
+        {
+            CuotaPago result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.QuerySingleOrDefault<CuotaPago>("SELECT * FROM dbo.TR_Cp_Des WHERE I_RowID = @I_RowID"
+                                                        , new { I_RowID = rowID }
+                                                        , commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+
         public Response CopiarRegistros(int procedenciaID, string schemaDB, string codigos_bnc)
         {
             Response result = new Response();

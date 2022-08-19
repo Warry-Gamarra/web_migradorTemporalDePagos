@@ -16,6 +16,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return CuotaPagoRepository.Obtener((int)procedencia);
         }
 
+        public CuotaPago Obtener(int id)
+        {
+            return CuotaPagoRepository.ObtenerPorId(id);
+        }
+
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {
             Response result = new Response();

@@ -116,8 +116,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult Editar(int id)
         {
+            var model = _cuotaPagoServiceMigracion.Obtener(id);
 
-            return PartialView("_ProcesoMigracion");
+            return PartialView("_Editar", model);
         }
 
         [HttpPost]
