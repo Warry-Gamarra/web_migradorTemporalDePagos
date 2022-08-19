@@ -16,9 +16,10 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public string T_ApeMaterno { get; set; }
         public string T_Nombre { get; set; }
         public string C_Sexo { get; set; }
-        public string D_FecNac { get; set; }
+        public DateTime? D_FecNac { get; set; }
         public string C_CodModIng { get; set; }
         public string C_AnioIngreso { get; set; }
+        public byte I_ProcedenciaID { get; set; }
         public DateTime D_FecCarga { get; set; }
         public bool B_Actualizado { get; set; }
         public DateTime D_FecActualiza { get; set; }

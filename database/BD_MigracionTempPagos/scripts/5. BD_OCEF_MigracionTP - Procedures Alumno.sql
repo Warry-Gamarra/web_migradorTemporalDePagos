@@ -8,6 +8,7 @@ GO
 
 CREATE PROCEDURE USP_U_ActualizarRegistroAlumno
 	@I_RowID	  int,
+	@C_RcCod	  varchar(3),
 	@C_CodAlu	  varchar(20), 
 	@C_NumDNI	  varchar(20), 
 	@C_CodTipDoc  varchar(5), 
@@ -17,11 +18,25 @@ CREATE PROCEDURE USP_U_ActualizarRegistroAlumno
 	@C_Sexo		  char(1), 
 	@D_FecNac	  date, 
 	@C_CodModIng  varchar(2), 	 
-	@C_AnioIngres smallint,
+	@C_AnioIngreso	 smallint,
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
+--declare @I_RowID	  int,
+--		  @C_RcCod	  varchar(3),
+--		  @C_CodAlu	  varchar(20),
+--		  @C_NumDNI	  varchar(20),
+--		  @C_CodTipDoc  varchar(5), 
+--		  @T_ApePaterno varchar(50),
+--		  @T_ApeMaterno varchar(50),
+--		  @T_Nombre	  varchar(50),
+--		  @C_Sexo		  char(1), 
+--		  @D_FecNac	  date, 
+--		  @C_CodModIng  varchar(2), 
+--		  @C_AnioIngreso	 smallint,
+--		  @I_ProcedenciaID tinyint,
+--		  @B_Resultado  bit output,
 --		  @T_Message	nvarchar(4000)
 --exec USP_U_ActualizarRegistroAlumno @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
@@ -29,9 +44,11 @@ BEGIN
 
 	DECLARE @D_FecProceso datetime = GETDATE() 
 
+	BEGIN TRANSACTION;
 	BEGIN TRY 
 		UPDATE TR_Alumnos
 		SET	C_CodAlu = @C_CodAlu,
+			C_RcCod = @C_RcCod,
 			C_NumDNI = @C_NumDNI,
 			C_CodTipDoc = @C_CodTipDoc,
 			T_ApePaterno = @T_ApePaterno, 
@@ -39,16 +56,20 @@ BEGIN
 			T_Nombre = @T_Nombre,
 			C_Sexo = @C_Sexo,
 			D_FecNac = @D_FecNac,
-			C_AnioIngreso = @C_AnioIngres
+			C_AnioIngreso = @C_AnioIngreso,
+			C_CodModIng = @C_CodModIng,
+			I_ProcedenciaID = @I_ProcedenciaID
 		WHERE 
 			I_RowID = @I_RowID
 
+		COMMIT TRANSACTION;
 		
 		SET @T_Message =  @@ROWCOUNT
 		SET @B_Resultado = 1
 
 	END TRY
 	BEGIN CATCH
+		ROLLBACK TRANSACTION;
 		SET @B_Resultado = 0
 		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
@@ -61,21 +82,27 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_IU_CopiarTablaAlumno	
+	@I_ProcedenciaID tinyint,
+	@T_SchemaDB		 varchar(20),
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		  @I_ProcedenciaID	tinyint = 1,
+--		  @T_SchemaDB		varchar(20) = 'pregrado',
 --		  @T_Message	nvarchar(4000)
---exec USP_IU_CopiarTablaAlumno @B_Resultado output, @T_Message output
+--exec USP_IU_CopiarTablaAlumno @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
+	DECLARE @T_SQL nvarchar(max)
+
 	DECLARE @I_CantAlu int = 0
 	DECLARE @I_Removidos int = 0
 	DECLARE @I_Actualizados int = 0
 	DECLARE @I_Insertados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
 
-	DECLARE @Tbl_output AS TABLE 
+	CREATE TABLE #Tbl_output  
 	(
 		accion			  varchar(20), 
 		C_RcCod			  varchar(3), 
@@ -101,46 +128,53 @@ BEGIN
 		B_Removido	bit
 	)
 
+	BEGIN TRANSACTION;
 	BEGIN TRY 
 	
-		MERGE TR_Alumnos AS TRG
-		USING (SELECT C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO 
-				 FROM BD_OCEF_TemporalPagos.dbo.alumnos
-			   GROUP BY C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO) AS SRC
-		ON	TRG.C_CodAlu = SRC.C_CodAlu 
-			AND TRG.C_RcCod = SRC.C_RcCod
-			AND ISNULL(TRG.C_CodModIng, '') = ISNULL(SRC.C_CODMODIN, '')
-			AND TRG.C_AnioIngreso = SRC.C_ANIOINGR
-		WHEN MATCHED THEN
-			UPDATE SET	TRG.C_NumDNI = CASE WHEN SRC.C_NUMDNI = '' THEN NULL ELSE SRC.C_NUMDNI END,
-						TRG.C_CodTipDoc = CASE WHEN SRC.C_CODTIPDO = '' THEN NULL ELSE SRC.C_CODTIPDO END,
-						TRG.T_ApePaterno = REPLACE(SRC.T_APEPATER, '-', ' '),
-						TRG.T_ApeMaterno = REPLACE(SRC.T_APEMATER, '-', ' '),
-						TRG.T_Nombre = REPLACE(SRC.T_NOMBRE, '-', ' '),
-						TRG.C_Sexo = SRC.C_SEXO,
-						TRG.D_FecNac = CASE WHEN TRY_CONVERT(DATE, SRC.D_FECNAC, 103) IS NULL THEN IIF(ISDATE(SRC.D_FECNAC) = 1, SRC.D_FECNAC, NULL) ELSE CONVERT(DATE, SRC.D_FECNAC, 103) END
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, I_ProcedenciaID, D_FecCarga, B_Actualizado)
-			VALUES (SRC.C_RcCod, SRC.C_CodAlu, CASE WHEN SRC.C_NUMDNI = '' THEN NULL ELSE SRC.C_NUMDNI END, CASE WHEN SRC.C_CODTIPDO = '' THEN NULL ELSE SRC.C_CODTIPDO END,
-			 REPLACE(SRC.T_APEPATER, '-', ' '), REPLACE(SRC.T_APEMATER, '-', ' '), REPLACE(SRC.T_NOMBRE, '-', ' '), 
-					SRC.C_SEXO, CASE WHEN TRY_CONVERT(DATE, SRC.D_FECNAC, 103) IS NULL THEN IIF(ISDATE(SRC.D_FECNAC) = 1, SRC.D_FECNAC, NULL) ELSE CONVERT(DATE, SRC.D_FECNAC, 103) END, 
-					SRC.C_CODMODIN, SRC.C_ANIOINGR, 4, @D_FecProceso, 1)
-		WHEN NOT MATCHED BY SOURCE THEN
-			UPDATE SET TRG.B_Removido = 1, 
-					   TRG.D_FecRemovido = @D_FecProceso
-		OUTPUT	$ACTION, inserted.C_RcCod, inserted.C_CodAlu, inserted.C_NumDNI, inserted.C_CodTipDoc, inserted.T_ApePaterno,   
-				inserted.T_ApeMaterno, inserted.T_Nombre, inserted.C_Sexo, inserted.D_FecNac, inserted.C_CodModIng, inserted.C_AnioIngreso, 
-				deleted.C_NumDNI, deleted.C_CodTipDoc, deleted.T_ApePaterno, deleted.T_ApeMaterno, deleted.T_Nombre, 
-				deleted.C_Sexo, deleted.D_FecNac, deleted.C_CodModIng, deleted.C_AnioIngreso, deleted.B_Removido INTO @Tbl_output;
-		
+		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE()			 
+
+					  MERGE TR_Alumnos AS TRG
+					  USING (SELECT C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO 
+					  		 FROM BD_OCEF_TemporalPagos.dbo.alumnos A
+					  			  INNER JOIN (SELECT DISTINCT cod_alu, cod_rc FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc
+					  	   GROUP BY C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO) AS SRC
+					  ON	TRG.C_CodAlu = SRC.C_CodAlu 
+					  	AND TRG.C_RcCod = SRC.C_RcCod
+					  	AND ISNULL(TRG.C_CodModIng, '''') = ISNULL(SRC.C_CODMODIN, '''')
+					  	AND TRG.C_AnioIngreso = SRC.C_ANIOINGR
+					  WHEN MATCHED THEN
+					  	UPDATE SET	TRG.C_NumDNI = CASE WHEN SRC.C_NUMDNI = '''' THEN NULL ELSE SRC.C_NUMDNI END,
+					  				TRG.C_CodTipDoc = CASE WHEN SRC.C_CODTIPDO = '''' THEN NULL ELSE SRC.C_CODTIPDO END,
+					  				TRG.T_ApePaterno = REPLACE(SRC.T_APEPATER, ''-'', '' ''),
+					  				TRG.T_ApeMaterno = REPLACE(SRC.T_APEMATER, ''-'', '' ''),
+					  				TRG.T_Nombre = REPLACE(SRC.T_NOMBRE, ''-'', '' ''),
+					  				TRG.C_Sexo = SRC.C_SEXO,
+					  				TRG.D_FecNac = CASE WHEN TRY_CONVERT(DATE, SRC.D_FECNAC, 103) IS NULL THEN IIF(ISDATE(SRC.D_FECNAC) = 1, SRC.D_FECNAC, NULL) ELSE CONVERT(DATE, SRC.D_FECNAC, 103) END
+					  WHEN NOT MATCHED BY TARGET THEN
+					  	INSERT (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, I_ProcedenciaID, D_FecCarga, B_Actualizado)
+					  	VALUES (SRC.C_RcCod, SRC.C_CodAlu, CASE WHEN SRC.C_NUMDNI = '''' THEN NULL ELSE SRC.C_NUMDNI END, CASE WHEN SRC.C_CODTIPDO = '''' THEN NULL ELSE SRC.C_CODTIPDO END,
+					  	 REPLACE(SRC.T_APEPATER, ''-'', '' ''), REPLACE(SRC.T_APEMATER, ''-'', '' ''), REPLACE(SRC.T_NOMBRE, ''-'', '' ''), 
+					  			SRC.C_SEXO, CASE WHEN TRY_CONVERT(DATE, SRC.D_FECNAC, 103) IS NULL THEN IIF(ISDATE(SRC.D_FECNAC) = 1, SRC.D_FECNAC, NULL) ELSE CONVERT(DATE, SRC.D_FECNAC, 103) END, 
+					  			SRC.C_CODMODIN, SRC.C_ANIOINGR, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', @D_FecProceso, 1)
+					  WHEN NOT MATCHED BY SOURCE AND TRG.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' THEN
+					  	UPDATE SET TRG.B_Removido = 1, 
+					  			   TRG.D_FecRemovido = @D_FecProceso
+					  OUTPUT	$ACTION, inserted.C_RcCod, inserted.C_CodAlu, inserted.C_NumDNI, inserted.C_CodTipDoc, inserted.T_ApePaterno,   
+					  		inserted.T_ApeMaterno, inserted.T_Nombre, inserted.C_Sexo, inserted.D_FecNac, inserted.C_CodModIng, inserted.C_AnioIngreso, 
+					  		deleted.C_NumDNI, deleted.C_CodTipDoc, deleted.T_ApePaterno, deleted.T_ApeMaterno, deleted.T_Nombre, 
+					  		deleted.C_Sexo, deleted.D_FecNac, deleted.C_CodModIng, deleted.C_AnioIngreso, deleted.B_Removido INTO #Tbl_output;		
+					'
+		print @T_SQL
+		Exec sp_executesql @T_SQL
+
 		UPDATE	TR_Alumnos 
-				SET	B_Actualizado = 0, B_Migrable = 1, D_FecMigrado = NULL, B_Migrado = 0
+				SET	B_Actualizado = 0, B_Migrable = 0, D_FecMigrado = NULL, B_Migrado = 0
 
 		UPDATE	t_Alu
 		SET		t_Alu.B_Actualizado = 1,
 				t_Alu.D_FecActualiza = @D_FecProceso
 		FROM TR_Alumnos AS t_Alu
-				INNER JOIN 	@Tbl_output as t_out ON t_out.C_RcCod = t_Alu.C_RcCod 
+				INNER JOIN 	#Tbl_output as t_out ON t_out.C_RcCod = t_Alu.C_RcCod 
 				AND t_out.C_CodAlu = t_Alu.C_CodAlu AND t_out.accion = 'UPDATE' AND t_out.B_Removido = 0
 		WHERE 
 				t_out.INS_C_NumDNI <> t_out.DEL_C_NumDNI OR
@@ -154,16 +188,58 @@ BEGIN
 				t_out.INS_C_AnioIngreso <> t_out.DEL_C_AnioIngreso
 
 		SET @I_CantAlu = (SELECT COUNT(*) FROM BD_OCEF_TemporalPagos.dbo.alumnos)
-		SET @I_Insertados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'INSERT')
-		SET @I_Actualizados = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
-		SET @I_Removidos = (SELECT COUNT(*) FROM @Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
+		SET @I_Insertados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'INSERT')
+		SET @I_Actualizados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
+		SET @I_Removidos = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
+
+		SELECT @I_CantAlu AS tot_alumnos, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
+
+		COMMIT TRANSACTION;
 
 		SET @B_Resultado = 1
 		SET @T_Message =  'Total: ' + CAST(@I_CantAlu AS varchar) 
 
-		SELECT @I_CantAlu AS tot_alumnos, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 	END TRY
 	BEGIN CATCH
+		ROLLBACK TRANSACTION;
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_InicializarEstadoValidacionAlumno')
+	DROP PROCEDURE [dbo].[USP_U_InicializarEstadoValidacionAlumno]
+GO
+
+CREATE PROCEDURE USP_U_InicializarEstadoValidacionAlumno	
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare @B_Resultado  bit,
+--		@I_ProcedenciaID	tinyint = 3,
+--		@T_Message	  nvarchar(4000)
+--exec USP_U_InicializarEstadoValidacionAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		UPDATE	TR_Alumnos 
+		   SET	B_Actualizado = 0, 
+				B_Migrable = 1, 
+				D_FecMigrado = NULL, 
+				B_Migrado = 0
+		 WHERE I_ProcedenciaID = @I_ProcedenciaID
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
 		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH

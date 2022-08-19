@@ -1,0 +1,23 @@
+﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Migracion.Observacion>
+
+<div class="modal-header">
+    <h5 class="modal-title">Observaciones:</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <dl class="row">
+        @foreach (var item in Model)
+        {
+            <dt class="col-sm-4">@item.T_ObservCod</dt>
+            <dd class="col-sm-8">
+                <p>@item.T_ObservDesc</p>
+                <p>Fec. Registro: @item.D_FecRegistro</p>
+            </dd>
+        }
+    </dl>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+</div>

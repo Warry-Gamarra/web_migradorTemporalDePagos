@@ -143,9 +143,12 @@
     </Compile>
     <Compile Include="Models\Databases.cs" />
     <Compile Include="Models\Entities\Migracion\Obligacion.cs" />
+    <Compile Include="Models\Entities\Migracion\Observacion.cs" />
+    <Compile Include="Models\Helpers\Tablas.cs" />
     <Compile Include="Models\Repository\Migracion\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\CuotaPagoRepository.cs" />
+    <Compile Include="Models\Repository\Migracion\ObservacionRepository.cs" />
     <Compile Include="Models\Repository\TemporalPagos\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\TemporalPagos\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\TemporalPagos\ObligacionRepository.cs" />
@@ -167,6 +170,7 @@
     <Compile Include="Models\Services\Migracion\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\Migracion\CuotaPagoService.cs" />
     <Compile Include="Models\Services\Migracion\ObligacionService.cs" />
+    <Compile Include="Models\Services\Migracion\ObservacionService.cs" />
     <Compile Include="Models\Services\ObligacionService.cs" />
     <Compile Include="Models\Services\TemporalPagos\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\TemporalPagos\CuotaPagoService.cs" />
@@ -459,6 +463,12 @@
     <Content Include="Views\Estudiante\Opciones.cshtml" />
     <Content Include="Views\Estudiante\_DatosMigracion.cshtml" />
     <Content Include="Views\Estudiante\_ProcesoMigracion.cshtml" />
+    <Content Include="Views\Estudiante\_DatosEstudiante.cshtml" />
+    <Content Include="Views\Estudiante\_Observaciones.cshtml" />
+    <Content Include="Views\Estudiante\_Editar.cshtml" />
+    <Content Include="Views\CuotaPago\_Observaciones.cshtml" />
+    <Content Include="Views\Shared\_MsgPartial.cshtml" />
+    <Content Include="Views\Shared\_MsgPartialWR.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

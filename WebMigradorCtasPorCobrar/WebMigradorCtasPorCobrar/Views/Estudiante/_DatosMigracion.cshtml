@@ -6,23 +6,29 @@
 <div class="table-responsive" style="min-height:300px">
     @Html.Grid(Model).Columns(columns =>
     {
-        //columns.Add(c => c.Id_cp).Titled("Codigo").Filterable(true);
-        //columns.Add(c => c.Cuota_pago).Titled("Cuota de pago").Filterable(true);
-        //columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
-        //columns.Add(c => c.Ano).Titled("Año").Filterable(true);
-        //columns.Add(c => c.Tipo_oblig).Titled("Obligación").Filterable(true);
-        //columns.Add(c => c.Clasificad).Titled("Clasificador").Filterable(true);
-        //columns.Add(c => c.Nro_pagos).Titled("Nro Pagos").Filterable(true);
-        //columns.Add(c => c.Monto).Titled("Monto").Filterable(true);
-        //columns.Add(c => c.B_Migrable).Titled("Migrable").Filterable(true);
-        //columns.Add().SetWidth(150).Css("text-right").Encoded(false).Sanitized(false)
-        //             .RenderValueAs(model => model.B_Migrable ?
-        //                                    @Html.Raw("")
-        //                                    : @Html.Raw($"<a href=\"{ Url.Action("EstudianteObserv", "Posgrado", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observacion</span></a>"));
-        //columns.Add().SetWidth(120).Css("text-right").Encoded(false).Sanitized(false)
-        //               .RenderValueAs(model => model.B_Migrable ?
-        //                                    @Html.Raw("")
-        //                                    : @Html.Raw($"<a href=\"{ Url.Action("EstudianteEdit", "Posgrado", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Corregir</span></a>"));
+        columns.Add(c => c.C_CodAlu).Titled("Codigo").Filterable(true);
+        columns.Add(c => c.C_RcCod).Titled("Cod RC").Filterable(true);
+        columns.Add(c => c.T_ApePaterno).Titled("Apellido paterno").Filterable(true);
+        columns.Add(c => c.T_ApeMaterno).Titled("Apellido nombre").Filterable(true);
+        columns.Add(c => c.T_Nombre).Titled("Nombre").Filterable(true);
+        columns.Add(c => c.C_NumDNI).Titled("Num. Doc.").Filterable(true);
+        columns.Add(c => c.B_Migrable).Css("text-center").Encoded(false).Sanitized(false)
+               .RenderValueAs(model => model.B_Migrable? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>"): Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
+               .Titled("Migrable").Filterable(true);
+        columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false)
+               .RenderValueAs(model => model.B_Migrado ? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>") : Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
+               .Titled("Migrado").Filterable(true);
+        columns.Add().SetWidth(100).Css("text-right").Encoded(false).Sanitized(false)
+               .RenderValueAs(model => Html.Raw($"<a href=\"{ Url.Action("VerDatos", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-id-card\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver</span></a>"));
+
+        columns.Add().Css("text-right").Encoded(false).Sanitized(false)
+                     .RenderValueAs(model => model.B_Migrable ?
+                                            Html.Raw("")
+                                            : Html.Raw($"<a href=\"{ Url.Action("Observaciones", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span></a>"));
+        columns.Add().Css("text-right").Encoded(false).Sanitized(false)
+               .RenderValueAs(model => model.B_Migrable ?
+                                            Html.Raw("")
+                                            : Html.Raw($"<a href=\"{ Url.Action("Editar", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Corregir</span></a>"));
     }
     ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
 </div>

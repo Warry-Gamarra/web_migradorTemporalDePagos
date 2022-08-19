@@ -65,6 +65,37 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             Response result_categorias = new Response();
             Response result_anioPeriodo = new Response();
 
+            string schemaDb = Schema.SetSchema(procedencia);
+            string codigos_bnc = "";
+
+            switch (procedencia)
+            {
+                case Procedencia.Pregrado:
+                    codigos_bnc = Constant.PREGRADO_TEMPORAL_CODIGOS_BNC;
+                    break;
+                case Procedencia.Posgrado:
+                    codigos_bnc = Constant.POSGRADO_TEMPORAL_CODIGOS_BNC;
+                    break;
+                case Procedencia.Cuded:
+                    codigos_bnc = Constant.EUDED_TEMPORAL_CODIGOS_BNC + ", "
+                                + Constant.PROLICE_TEMPORAL_CODIGOS_BNC + ", "
+                                + Constant.PROCUNED_TEMPORAL_CODIGOS_BNC;
+                    break;
+                default:
+                    codigos_bnc = "''";
+                    break;
+            }
+
+            result = cuotaPagoRepository.CopiarRegistros((int)procedencia, schemaDb, codigos_bnc);
+
+            if (result.IsDone)
+            {
+                result.Success(false);
+            }
+            else
+            {
+                result.Error(false);
+            }
 
 
             return result;
