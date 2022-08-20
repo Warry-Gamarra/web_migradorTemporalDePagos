@@ -174,7 +174,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public Response MigrarDataCuotaDePagoCtasPorCobrar()
+        public Response MigrarDataCuotaPagoCtasPorCobrar(int procedenciaID, int anio)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -183,10 +183,10 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    //parameters.Add(name: "I_ProcesoID", dbType: DbType.Byte, value: procedenciaID);
-                    //parameters.Add(name: "I_AnioIni", dbType: DbType.Byte, value: procedenciaID);
-                    //parameters.Add(name: "I_AnioFin", dbType: DbType.Byte, value: procedenciaID);
-                    //parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "I_ProcesoID", dbType: DbType.Int32, value: procedenciaID);
+                    parameters.Add(name: "I_AnioIni", dbType: DbType.Int16, value: procedenciaID);
+                    parameters.Add(name: "I_AnioFin", dbType: DbType.Int16, value: procedenciaID);
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Int32, value: procedenciaID);
                     parameters.Add(name: "B_Result", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 

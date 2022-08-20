@@ -98,10 +98,10 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
         [HttpPost]
-        public ActionResult MigrarRegistrosValidos(Procedencia procedencia)
+        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
         {
 
-            Response result = _cuotaPagoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
+            Response result = _cuotaPagoServiceMigracion.MigrarDatosTemporalPagos(procedencia);
 
             return PartialView("_CopiarRegistrosResultado", result);
         }

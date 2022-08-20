@@ -86,9 +86,9 @@
         })
     })
 
-        $('#btn-migrate').on('click', function () {
+    $('#btn-migrate').on('click', function () {
         $.ajax({
-            url: '@Url.Action("MigrarRegistrosValidos", "CuotaPago")' + '?procedencia=' + '@procedencia',
+            url: '@Url.Action("MigrarDatosTemporalPagos", "CuotaPago", new { area = "" })' + '?procedencia=' + '@procedencia',
             type: 'POST',
             cache: false,
             beforeSend: function () {
@@ -107,5 +107,6 @@
                 $('#result-message').show();
             }
         })
+    })
     })
 </script>

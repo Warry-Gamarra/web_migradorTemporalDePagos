@@ -100,5 +100,26 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             return result;
         }
+
+        public Response MigrarDatosTemporalPagos(Procedencia procedencia)
+        {
+            Response result = new Response();
+            string schemaDb = Schema.SetSchema(procedencia);
+
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            result = cuotaPagoRepository.MigrarDataCuotaPagoCtasPorCobrar((int)procedencia, 0);
+
+            if (result.IsDone)
+            {
+                result.Success(false);
+            }
+            else
+            {
+                result.Error(false);
+            }
+
+            return result;
+        }
     }
 }
