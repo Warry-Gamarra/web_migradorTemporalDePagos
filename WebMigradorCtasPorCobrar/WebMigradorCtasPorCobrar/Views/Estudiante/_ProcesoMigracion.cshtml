@@ -39,9 +39,55 @@
     $('#btn-mg').removeClass('active');
     $('#btn-proc').addClass('active');
 
-        $('#btn-copy').on('click', function () {
+    $('#btn-copy').on('click', function () {
         $.ajax({
-            url: '@Url.Action("CopiarRegistros", "Obligaciones")' + '?procedencia=' + '@procedencia',
+            url: '@Url.Action("CopiarRegistros", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
+            type: 'POST',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#result-message').hide();
+            },
+            success: function (data) {
+                $('#result-message').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').html(jqXHR.responseText)
+                $('#result-message').show();
+            },
+            complete: function () {
+                $('#processing').hide();
+                $('#result-message').show();
+            }
+        })
+    })
+
+    $('#btn-validate').on('click', function () {
+        $.ajax({
+            url: '@Url.Action("ValidarRegistros", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
+            type: 'POST',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#result-message').hide();
+            },
+            success: function (data) {
+                $('#result-message').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').html(jqXHR.responseText)
+                $('#result-message').show();
+            },
+            complete: function () {
+                $('#processing').hide();
+                $('#result-message').show();
+            }
+        })
+    })
+
+    $('#btn-migrate').on('click', function () {
+        $.ajax({
+            url: '@Url.Action("MigrarDatosTemporalPagos", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
             type: 'POST',
             cache: false,
             beforeSend: function () {

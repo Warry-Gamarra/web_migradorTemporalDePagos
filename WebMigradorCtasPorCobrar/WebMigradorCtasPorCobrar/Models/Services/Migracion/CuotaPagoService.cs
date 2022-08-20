@@ -56,7 +56,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result;
         }
 
-        public Response ValidarDatosParaMigracion(Procedencia procedencia)
+
+        public Response EjecutarValidaciones(Procedencia procedencia)
         {
             Response result = new Response();
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
@@ -96,7 +97,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             {
                 result.Error(false);
             }
-
 
             return result;
         }

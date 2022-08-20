@@ -85,16 +85,16 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             Response result = _cuotaPagoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
 
-            return PartialView("_CopiarRegistrosResultado", result);
+            return PartialView("_ResultadoCopiarRegistros", result);
         }
 
         [HttpPost]
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
 
-            Response result = _cuotaPagoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
+            Response result = _cuotaPagoServiceMigracion.EjecutarValidaciones(procedencia);
 
-            return PartialView("_CopiarRegistrosResultado", result);
+            return PartialView("_ResultadoValidarRegistros", result);
         }
 
         [HttpPost]

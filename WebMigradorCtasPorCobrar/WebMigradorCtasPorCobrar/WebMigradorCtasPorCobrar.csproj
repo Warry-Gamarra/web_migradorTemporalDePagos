@@ -450,7 +450,7 @@
     <Content Include="Views\ConceptoPago\_TemporalPagos.cshtml" />
     <Content Include="Views\ConceptoPago\_DatosMigracion.cshtml" />
     <Content Include="Views\ConceptoPago\_ProcesoMigracion.cshtml" />
-    <Content Include="Views\CuotaPago\_CopiarRegistrosResultado.cshtml" />
+    <Content Include="Views\Shared\_ResultadoCopiarRegistros.cshtml" />
     <Content Include="Views\ConceptoPago\_CopiarRegistrosResultado.cshtml" />
     <Content Include="Views\Obligaciones\_CopiarRegistrosResultado.cshtml" />
     <Content Include="Views\Obligaciones\_DatosMigracion.cshtml" />
@@ -460,7 +460,6 @@
     <Content Include="Views\Obligaciones\Posgrado.cshtml" />
     <Content Include="Views\Obligaciones\Pregrado.cshtml" />
     <Content Include="Views\Estudiante\_TemporalPagos.cshtml" />
-    <Content Include="Views\Estudiante\Opciones.cshtml" />
     <Content Include="Views\Estudiante\_DatosMigracion.cshtml" />
     <Content Include="Views\Estudiante\_ProcesoMigracion.cshtml" />
     <Content Include="Views\Estudiante\_DatosEstudiante.cshtml" />
@@ -469,6 +468,7 @@
     <Content Include="Views\CuotaPago\_Observaciones.cshtml" />
     <Content Include="Views\Shared\_MsgPartial.cshtml" />
     <Content Include="Views\Shared\_MsgPartialWR.cshtml" />
+    <Content Include="Views\Shared\_ResultadoValidarRegistros.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

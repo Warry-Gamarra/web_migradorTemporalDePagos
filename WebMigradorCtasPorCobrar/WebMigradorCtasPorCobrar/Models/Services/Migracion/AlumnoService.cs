@@ -39,5 +39,123 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             return result;
         }
+
+        public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
+        {
+            Response result = new Response();
+            string schemaDb = Schema.SetSchema(procedencia);
+
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            result = alumnoRepository.CopiarRegistros((int)procedencia, schemaDb);
+
+            if (result.IsDone)
+            {
+                result.Success(false);
+            }
+            else
+            {
+                result.Error(false);
+            }
+
+            return result;
+        }
+
+        public Response EjecutarValidaciones(Procedencia procedencia)
+        {
+            Response result = new Response();
+
+            Response result_InicializarEstados = new Response();
+            Response result_CaracteresEspeciales = new Response();
+            Response result_CodigoCarreraAlumno = new Response();
+            Response result_CodigosAlumnoRepetidos = new Response();
+            Response result_AnioIngresoAlumno = new Response();
+            Response result_ModIngresoAlumno = new Response();
+            Response result_CorrespondenciaNumDoc = new Response();
+            Response result_SexoDiferenteMismoDoc = new Response();
+
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            result_InicializarEstados = alumnoRepository.InicializarEstadoValidacionAlumno((int)procedencia);
+            result_CaracteresEspeciales = alumnoRepository.ValidarCaracteresEspeciales((int)procedencia);
+            result_CodigoCarreraAlumno = alumnoRepository.ValidarCodigoCarreraAlumno((int)procedencia);
+            result_CodigosAlumnoRepetidos = alumnoRepository.ValidarCodigosAlumnoRepetidos((int)procedencia);
+            result_AnioIngresoAlumno = alumnoRepository.ValidarAnioIngresoAlumno((int)procedencia);
+            result_ModIngresoAlumno = alumnoRepository.ValidarModalidadIngresoAlumno((int)procedencia);
+            result_CorrespondenciaNumDoc = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona((int)procedencia);
+            result_SexoDiferenteMismoDoc = alumnoRepository.ValidarSexoDiferenteMismoDocumento((int)procedencia);
+
+            result.IsDone = result_CaracteresEspeciales.IsDone &&
+                            result_CodigoCarreraAlumno.IsDone &&
+                            result_CodigosAlumnoRepetidos.IsDone &&
+                            result_AnioIngresoAlumno.IsDone &&
+                            result_ModIngresoAlumno.IsDone &&
+                            result_CorrespondenciaNumDoc.IsDone &&
+                            result_SexoDiferenteMismoDoc.IsDone;
+
+            result.Message = $"    <dl class=\"row text-justify\">" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por caracteres especiales</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_CaracteresEspeciales.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por codigos de carrera</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_CodigoCarreraAlumno.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por codigos de alumno repetidos</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_CodigosAlumnoRepetidos.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Años de ingreso</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_AnioIngresoAlumno.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Modalidades de ingreso</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_ModIngresoAlumno.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_CorrespondenciaNumDoc.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Sexo duplicado</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_SexoDiferenteMismoDoc.Message}</p>" +
+                             $"        </dd>" +
+                             $"    </dl>";
+
+            if (result.IsDone)
+            {
+                result.Success(false);
+            }
+            else
+            {
+                result.Warning(false);
+            }
+
+            return result;
+        }
+
+
+        public  Response MigrarDatosTemporalPagos(Procedencia procedencia)
+        {
+            Response result = new Response();
+            string schemaDb = Schema.SetSchema(procedencia);
+
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            result = alumnoRepository.MigrarDataAlumnosUnfvRepositorio((int)procedencia);
+
+            if (result.IsDone)
+            {
+                result.Success(false);
+            }
+            else
+            {
+                result.Error(false);
+            }
+
+            return result;
+        }
     }
 }

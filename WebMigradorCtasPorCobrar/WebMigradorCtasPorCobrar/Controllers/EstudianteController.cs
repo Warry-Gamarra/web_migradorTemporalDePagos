@@ -62,6 +62,32 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_ProcesoMigracion");
         }
 
+
+        [HttpPost]
+        public ActionResult CopiarRegistros(Procedencia procedencia)
+        {
+            Response result = _alumnoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
+
+            return PartialView("_ResultadoCopiarRegistros", result);
+        }
+
+
+        [HttpPost]
+        public ActionResult ValidarRegistros(Procedencia procedencia)
+        {
+            Response result = _alumnoServiceMigracion.EjecutarValidaciones(procedencia);
+
+            return PartialView("_ResultadoValidarRegistros", result);
+        }
+
+        [HttpPost]
+        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
+        {
+            Response result = _alumnoServiceMigracion.MigrarDatosTemporalPagos(procedencia);
+
+            return PartialView("_ResultadoValidarRegistros", result);
+        }
+
         public ActionResult VerDatos(int id)
         {
             var model = _alumnoServiceMigracion.Obtener(id);
@@ -69,12 +95,14 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_DatosEstudiante", model);
         }
 
+
         public ActionResult Observaciones(int id)
         {
             var model = _observacionService.Obtener_ObservacionesAlumno(id);
 
             return PartialView("_Observaciones", model);
         }
+
 
         public ActionResult Editar(int id)
         {
