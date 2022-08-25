@@ -13,8 +13,8 @@ namespace WebMigradorCtasPorCobrar.Controllers
     [Authorize]
     public class CuotaPagoController : Controller
     {
-        public readonly TemporalPagos.CuotaPagoService _cuotaPagoServiceTemporalPagos;
-        public readonly Migracion.CuotaPagoService _cuotaPagoServiceMigracion;
+        private readonly TemporalPagos.CuotaPagoService _cuotaPagoServiceTemporalPagos;
+        private readonly Migracion.CuotaPagoService _cuotaPagoServiceMigracion;
         private readonly ObservacionService _observacionService;
 
         public CuotaPagoController()
@@ -85,25 +85,25 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             Response result = _cuotaPagoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
 
-            return PartialView("_CopiarRegistrosResultado", result);
+            return PartialView("_ResultadoCopiarRegistros", result);
         }
 
         [HttpPost]
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
 
-            Response result = _cuotaPagoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
+            Response result = _cuotaPagoServiceMigracion.EjecutarValidaciones(procedencia);
 
-            return PartialView("_CopiarRegistrosResultado", result);
+            return PartialView("_ResultadoValidarRegistros", result);
         }
 
         [HttpPost]
-        public ActionResult MigrarRegistrosValidos(Procedencia procedencia)
+        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
         {
 
-            Response result = _cuotaPagoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
+            Response result = _cuotaPagoServiceMigracion.MigrarDatosTemporalPagos(procedencia);
 
-            return PartialView("_CopiarRegistrosResultado", result);
+            return PartialView("_ResultadoMigrarRegistros", result);
         }
 
 

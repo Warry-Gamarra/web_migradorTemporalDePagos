@@ -136,6 +136,7 @@
     <Compile Include="Controllers\HelpController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ObligacionesController.cs" />
+    <Compile Include="Controllers\ReportesController.cs" />
     <Compile Include="Controllers\RepositorioController.cs" />
     <Compile Include="Controllers\TasasController.cs" />
     <Compile Include="Global.asax.cs">
@@ -148,6 +149,7 @@
     <Compile Include="Models\Repository\Migracion\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\CuotaPagoRepository.cs" />
+    <Compile Include="Models\Repository\Migracion\ObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\ObservacionRepository.cs" />
     <Compile Include="Models\Repository\TemporalPagos\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\TemporalPagos\ConceptoPagoRepository.cs" />
@@ -177,7 +179,6 @@
     <Compile Include="Models\Services\TemporalPagos\AlumnoService.cs" />
     <Compile Include="Models\Services\TemporalPagos\ObligacionService.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
-    <Compile Include="Models\ViewModels\ObligacionViewModels.cs" />
     <Compile Include="Models\ViewModels\ResponseViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -421,6 +422,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\CajaPeriferica\" />
+    <Folder Include="Views\Reporte\" />
     <Folder Include="Views\Tasas\" />
   </ItemGroup>
   <ItemGroup>
@@ -447,9 +449,7 @@
     <Content Include="Views\ConceptoPago\_TemporalPagos.cshtml" />
     <Content Include="Views\ConceptoPago\_DatosMigracion.cshtml" />
     <Content Include="Views\ConceptoPago\_ProcesoMigracion.cshtml" />
-    <Content Include="Views\CuotaPago\_CopiarRegistrosResultado.cshtml" />
-    <Content Include="Views\ConceptoPago\_CopiarRegistrosResultado.cshtml" />
-    <Content Include="Views\Obligaciones\_CopiarRegistrosResultado.cshtml" />
+    <Content Include="Views\Shared\_ResultadoCopiarRegistros.cshtml" />
     <Content Include="Views\Obligaciones\_DatosMigracion.cshtml" />
     <Content Include="Views\Obligaciones\_ProcesoMigracion.cshtml" />
     <Content Include="Views\Obligaciones\_TemporalPagos.cshtml" />
@@ -457,15 +457,19 @@
     <Content Include="Views\Obligaciones\Posgrado.cshtml" />
     <Content Include="Views\Obligaciones\Pregrado.cshtml" />
     <Content Include="Views\Estudiante\_TemporalPagos.cshtml" />
-    <Content Include="Views\Estudiante\Opciones.cshtml" />
     <Content Include="Views\Estudiante\_DatosMigracion.cshtml" />
     <Content Include="Views\Estudiante\_ProcesoMigracion.cshtml" />
     <Content Include="Views\Estudiante\_DatosEstudiante.cshtml" />
     <Content Include="Views\Estudiante\_Observaciones.cshtml" />
     <Content Include="Views\Estudiante\_Editar.cshtml" />
-    <Content Include="Views\CuotaPago\_Observaciones.cshtml" />
+    <Content Include="Views\Shared\_Observaciones.cshtml" />
     <Content Include="Views\Shared\_MsgPartial.cshtml" />
     <Content Include="Views\Shared\_MsgPartialWR.cshtml" />
+    <Content Include="Views\Shared\_ResultadoMigrarRegistros.cshtml" />
+    <Content Include="Views\Shared\_ResultadoValidarRegistros.cshtml" />
+    <Content Include="Views\Reportes\Pregrado.cshtml" />
+    <Content Include="Views\Reportes\Posgrado.cshtml" />
+    <Content Include="Views\Reportes\Cuded.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

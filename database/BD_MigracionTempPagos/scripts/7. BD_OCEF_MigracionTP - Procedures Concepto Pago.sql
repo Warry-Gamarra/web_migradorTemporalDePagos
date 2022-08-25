@@ -170,6 +170,44 @@ END
 GO
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_InicializarEstadoValidacionConceptoPago')
+	DROP PROCEDURE [dbo].[USP_U_InicializarEstadoValidacionConceptoPago]
+GO
+
+CREATE PROCEDURE USP_U_InicializarEstadoValidacionConceptoPago	
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare @B_Resultado  bit,
+--		@I_ProcedenciaID	tinyint = 3,
+--		@T_Message	  nvarchar(4000)
+--exec USP_U_InicializarEstadoValidacionConceptoPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		UPDATE	TR_Cp_Pri 
+		   SET	B_Actualizado = 0, 
+				B_Migrable = 1, 
+				D_FecMigrado = NULL, 
+				B_Migrado = 0
+		 WHERE I_ProcedenciaID = @I_ProcedenciaID
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+	END CATCH
+END
+GO
+
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_MarcarConceptosPagoRepetidos')
 	DROP PROCEDURE [dbo].[USP_U_MarcarConceptosPagoRepetidos]
 GO
@@ -705,10 +743,10 @@ BEGIN
 		WHERE	I_RowID IN (SELECT I_RowID FROM @Tbl_outputConceptosPago)
 				AND I_ProcedenciaID = @I_ProcedenciaID
 
-		UPDATE	TR_Cp_Des 
+		UPDATE	TR_Cp_Pri 
 		SET		B_Migrado = 0 
-		WHERE	I_RowID IN (SELECT CD.I_RowID FROM TR_Cp_Des CD LEFT JOIN @Tbl_outputConceptosPago O ON CD.I_RowID = o.I_RowID 
-							WHERE CD.B_Migrable = 1 AND O.I_RowID IS NULL)
+		WHERE	I_RowID IN (SELECT CP.I_RowID FROM TR_Cp_Pri CP LEFT JOIN @Tbl_outputConceptosPago O ON CP.I_RowID = o.I_RowID 
+							WHERE CP.B_Migrable = 1 AND O.I_RowID IS NULL)
 				AND I_ProcedenciaID = @I_ProcedenciaID
 
 

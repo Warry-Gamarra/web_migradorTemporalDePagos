@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos;
 using WebMigradorCtasPorCobrar.Models.Helpers;
+using WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.TemporalPagos
 {
@@ -11,7 +12,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.TemporalPagos
     {
         public IEnumerable<Obligacion> ObtenerObligaciones(Procedencia procedencia)
         {
-            return new List<Obligacion>();
+            string schemaDb = Schema.SetSchema(procedencia);
+
+            return ObligacionRepository.Obtener(schemaDb);
         }
     }
 }

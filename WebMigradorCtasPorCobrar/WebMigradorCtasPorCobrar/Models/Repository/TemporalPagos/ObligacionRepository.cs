@@ -11,13 +11,14 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
 {
     public class ObligacionRepository
     {
-        public static IEnumerable<CuotaPago> Obtener(string schemaDb)
+        public static IEnumerable<Obligacion> Obtener(string schemaDb)
         {
-            IEnumerable<CuotaPago> result;
+            IEnumerable<Obligacion> result;
 
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
-                result = connection.Query<CuotaPago>($"SELECT * FROM {schemaDb}.ec_obl", commandType: CommandType.Text);
+                result = connection.Query<Obligacion>($"SELECT * FROM {schemaDb}.ec_obl ORDER BY Ano, P, Cuota_pago", 
+                                                        commandType: CommandType.Text);
             }
 
             return result;

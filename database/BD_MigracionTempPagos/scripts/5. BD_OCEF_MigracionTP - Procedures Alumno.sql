@@ -136,7 +136,7 @@ BEGIN
 					  MERGE TR_Alumnos AS TRG
 					  USING (SELECT C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO 
 					  		 FROM BD_OCEF_TemporalPagos.dbo.alumnos A
-					  			  INNER JOIN (SELECT DISTINCT cod_alu, cod_rc FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc
+					  			  INNER JOIN (SELECT DISTINCT cod_alu, cod_rc FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_pri) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc
 					  	   GROUP BY C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO) AS SRC
 					  ON	TRG.C_CodAlu = SRC.C_CodAlu 
 					  	AND TRG.C_RcCod = SRC.C_RcCod
@@ -153,17 +153,18 @@ BEGIN
 					  WHEN NOT MATCHED BY TARGET THEN
 					  	INSERT (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, I_ProcedenciaID, D_FecCarga, B_Actualizado)
 					  	VALUES (SRC.C_RcCod, SRC.C_CodAlu, CASE WHEN SRC.C_NUMDNI = '''' THEN NULL ELSE SRC.C_NUMDNI END, CASE WHEN SRC.C_CODTIPDO = '''' THEN NULL ELSE SRC.C_CODTIPDO END,
-					  	 REPLACE(SRC.T_APEPATER, ''-'', '' ''), REPLACE(SRC.T_APEMATER, ''-'', '' ''), REPLACE(SRC.T_NOMBRE, ''-'', '' ''), 
+							  	REPLACE(SRC.T_APEPATER, ''-'', '' ''), REPLACE(SRC.T_APEMATER, ''-'', '' ''), REPLACE(SRC.T_NOMBRE, ''-'', '' ''), 
 					  			SRC.C_SEXO, CASE WHEN TRY_CONVERT(DATE, SRC.D_FECNAC, 103) IS NULL THEN IIF(ISDATE(SRC.D_FECNAC) = 1, SRC.D_FECNAC, NULL) ELSE CONVERT(DATE, SRC.D_FECNAC, 103) END, 
 					  			SRC.C_CODMODIN, SRC.C_ANIOINGR, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', @D_FecProceso, 1)
 					  WHEN NOT MATCHED BY SOURCE AND TRG.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' THEN
 					  	UPDATE SET TRG.B_Removido = 1, 
 					  			   TRG.D_FecRemovido = @D_FecProceso
-					  OUTPUT	$ACTION, inserted.C_RcCod, inserted.C_CodAlu, inserted.C_NumDNI, inserted.C_CodTipDoc, inserted.T_ApePaterno,   
-					  		inserted.T_ApeMaterno, inserted.T_Nombre, inserted.C_Sexo, inserted.D_FecNac, inserted.C_CodModIng, inserted.C_AnioIngreso, 
-					  		deleted.C_NumDNI, deleted.C_CodTipDoc, deleted.T_ApePaterno, deleted.T_ApeMaterno, deleted.T_Nombre, 
-					  		deleted.C_Sexo, deleted.D_FecNac, deleted.C_CodModIng, deleted.C_AnioIngreso, deleted.B_Removido INTO #Tbl_output;		
+					  OUTPUT $ACTION, inserted.C_RcCod, inserted.C_CodAlu, inserted.C_NumDNI, inserted.C_CodTipDoc, inserted.T_ApePaterno,   
+					  		 inserted.T_ApeMaterno, inserted.T_Nombre, inserted.C_Sexo, inserted.D_FecNac, inserted.C_CodModIng, inserted.C_AnioIngreso, 
+					  		 deleted.C_NumDNI, deleted.C_CodTipDoc, deleted.T_ApePaterno, deleted.T_ApeMaterno, deleted.T_Nombre, 
+					  		 deleted.C_Sexo, deleted.D_FecNac, deleted.C_CodModIng, deleted.C_AnioIngreso, deleted.B_Removido INTO #Tbl_output;		
 					'
+
 		print @T_SQL
 		Exec sp_executesql @T_SQL
 
@@ -252,12 +253,14 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_ValidarCaracteresEspeciales	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID	tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarCaracteresEspeciales @B_Resultado output, @T_Message output
+--exec USP_U_ValidarCaracteresEspeciales @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -271,15 +274,17 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	
-				PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_Nombre, '-', ' ')) <> 0 
+				(PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_Nombre, '-', ' ')) <> 0 
 				OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApePaterno, '-', ' ')) <> 0 
-				OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApeMaterno, '-', ' ')) <> 0
+				OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApeMaterno, '-', ' ')) <> 0)
+				AND I_ProcedenciaID = @I_ProcedenciaID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
-				  WHERE	PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_Nombre, '-', ' ')) <> 0 
+				  WHERE	(PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_Nombre, '-', ' ')) <> 0 
 						OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApePaterno, '-', ' ')) <> 0 
-						OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApeMaterno, '-', ' ')) <> 0) AS SRC
+						OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApeMaterno, '-', ' ')) <> 0)
+						AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -311,10 +316,12 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_ValidarCodigosAlumnoRepetidos	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
 --exec USP_U_ValidarCodigosAlumnoRepetidos @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
@@ -329,15 +336,17 @@ BEGIN
 		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
-						WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod
-						GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)
+		WHERE	I_ProcedenciaID = @I_ProcedenciaID 
+				AND EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
+							WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod
+							GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)
 				
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
-				  WHERE	EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
-						WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod
-						GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)) AS SRC
+				  WHERE	I_ProcedenciaID = @I_ProcedenciaID 
+						AND EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
+									WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod
+									GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -369,10 +378,12 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_ValidarCodigoCarreraAlumno	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
 --exec USP_U_ValidarCodigoCarreraAlumno @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
@@ -387,13 +398,16 @@ BEGIN
 		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	NOT EXISTS (SELECT C_RcCod FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional c
-							WHERE C.C_RcCod = TR_Alumnos.C_RcCod)
+		WHERE	I_ProcedenciaID = @I_ProcedenciaID 
+				AND NOT EXISTS (SELECT C_RcCod FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional c
+								WHERE C.C_RcCod = TR_Alumnos.C_RcCod)
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
-				  WHERE	NOT EXISTS (SELECT C_RcCod FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional c
-							WHERE C.C_RcCod = TR_Alumnos.C_RcCod)) AS SRC
+				  WHERE	I_ProcedenciaID = @I_ProcedenciaID 
+						AND NOT EXISTS (SELECT C_RcCod FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional c
+										WHERE C.C_RcCod = TR_Alumnos.C_RcCod)
+				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -425,10 +439,12 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_ValidarAnioIngresoAlumno	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
 --exec USP_U_ValidarAnioIngresoAlumno @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
@@ -443,11 +459,14 @@ BEGIN
 		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	C_AnioIngreso IS NULL OR C_AnioIngreso = 0
+		WHERE	(C_AnioIngreso IS NULL OR C_AnioIngreso = 0)
+				AND I_ProcedenciaID = @I_ProcedenciaID
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
-				  WHERE	C_AnioIngreso IS NULL OR C_AnioIngreso = 0) AS SRC
+				  WHERE	(C_AnioIngreso IS NULL OR C_AnioIngreso = 0)
+						AND I_ProcedenciaID = @I_ProcedenciaID
+				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -479,10 +498,12 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_ValidarModalidadIngresoAlumno	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
 --exec USP_U_ValidarModalidadIngresoAlumno @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
@@ -497,13 +518,15 @@ BEGIN
 		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
-							WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)
+		WHERE	I_ProcedenciaID = @I_ProcedenciaID 
+				AND NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
+								WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)
 		
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
-				  WHERE	NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
-									WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)) AS SRC
+				  WHERE	I_ProcedenciaID = @I_ProcedenciaID 
+						AND NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
+										WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -535,10 +558,12 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_ValidarCorrespondenciaNumDocumentoPersona	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
 --exec USP_U_ValidarCorrespondenciaNumDocumentoPersona @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
@@ -553,7 +578,8 @@ BEGIN
 		
 		SELECT I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, I_ProcedenciaID, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso
 		INTO #NumDoc_Repetidos_nombres_diferentes
-		FROM TR_Alumnos WHERE C_NumDNI IN (
+		FROM TR_Alumnos 
+		WHERE C_NumDNI IN (
 			SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM TR_Alumnos
 									WHERE C_NumDNI IS NOT NULL
 									GROUP BY C_NumDNI
@@ -572,10 +598,12 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres_diferentes WHERE I_RowID = TR_Alumnos.I_RowID)
-		
+				AND I_ProcedenciaID = @I_ProcedenciaID
+
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
-				  WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres_diferentes WHERE I_RowID = TR_Alumnos.I_RowID)) AS SRC
+				  WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres_diferentes WHERE I_RowID = TR_Alumnos.I_RowID)
+						AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -607,10 +635,12 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_U_ValidarSexoDiferenteMismoDocumento	
+	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
 --exec USP_U_ValidarSexoDiferenteMismoDocumento @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
@@ -640,10 +670,12 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_sexo_diferente WHERE I_RowID = TR_Alumnos.I_RowID)
+				AND I_ProcedenciaID = @I_ProcedenciaID
 		
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
-				  WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_sexo_diferente WHERE I_RowID = TR_Alumnos.I_RowID)) AS SRC
+				  WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_sexo_diferente WHERE I_RowID = TR_Alumnos.I_RowID)
+						AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -676,6 +708,7 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE USP_IU_MigrarDataAlumnosUnfvRepositorio
+	@I_ProcedenciaID tinyint,
 	@C_CodAlu	  varchar(20) = NULL,
 	@C_AnioIng	  smallint = NULL,	
 	@B_Resultado  bit output,
@@ -683,6 +716,7 @@ CREATE PROCEDURE USP_IU_MigrarDataAlumnosUnfvRepositorio
 AS
 --declare @C_CodAlu  varchar(20) = null,
 --		@C_AnioIng  smallint = null,
+--		@I_ProcedenciaID tinyint = 3,
 --		@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
 --exec USP_IU_MigrarDataAlumnosUnfvRepositorio @C_CodAlu, @C_AnioIng, @B_Resultado output, @T_Message output

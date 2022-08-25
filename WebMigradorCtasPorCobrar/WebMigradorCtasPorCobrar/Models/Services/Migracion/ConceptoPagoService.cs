@@ -56,7 +56,100 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result;
         }
 
+        public Response EjecutarValidaciones(Procedencia procedencia)
+        {
+            Response result = new Response();
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
 
+            Response result_inicializarEstados = new Response();
+            Response result_duplicados = new Response();
+            Response result_anio = new Response();
+            Response result_periodo = new Response();
+            Response result_cuotaPago = new Response();
+            Response result_equivalencias = new Response();
+            Response result_catalogoConceptos = new Response();
+
+            string schemaDb = Schema.SetSchema(procedencia);
+
+            result_inicializarEstados = conceptoPagoRepository.InicializarEstadoValidacionCuotaPago((int)procedencia);
+
+            result_duplicados = conceptoPagoRepository.ValidarDuplicadoConceptosPago((int)procedencia);
+            result_anio = conceptoPagoRepository.ValidarConceptosPagoObligSinAnioAsignado((int)procedencia);
+            result_periodo = conceptoPagoRepository.ValidarConceptosPagoObligSinPeriodoAsignado((int)procedencia);
+            result_cuotaPago = conceptoPagoRepository.ValidarConceptosPagoObligSinCuotaPago((int)procedencia);
+            result_equivalencias = conceptoPagoRepository.AsignarIdEquivalenciasConceptoPago((int)procedencia);
+            result_catalogoConceptos = conceptoPagoRepository.GrabarTablaCatalogoConceptos((int)procedencia);
+
+            result.IsDone = result_duplicados.IsDone &&
+                            result_anio.IsDone &&
+                            result_periodo.IsDone &&
+                            result_cuotaPago.IsDone &&
+                            result_equivalencias.IsDone;
+
+            result.Message = $"    <dl class=\"row text-justify\">" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Con código de concepto duplicado</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_duplicados.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">No se identificó año del concepto de pago</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_anio.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">No se identificó periodo del concepto de pago</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_periodo.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Concepto sin cuota de pago</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_cuotaPago.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Codigos de equivalencia para migración</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_equivalencias.Message}</p>" +
+                             $"        </dd>" +
+                             //$"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento</dt>" +
+                             //$"        <dd class=\"col-md-8 col-sm-6\">" +
+                             //$"            <p>{result_catalogoConceptos.Message}</p>" +
+                             //$"        </dd>" +
+                             //$"        <dt class=\"col-md-4 col-sm-6\">Observados por Sexo duplicado</dt>" +
+                             //$"        <dd class=\"col-md-8 col-sm-6\">" +
+                             //$"            <p>{result_SexoDiferenteMismoDoc.Message}</p>" +
+                             //$"        </dd>" +
+                             $"    </dl>";
+
+
+            if (result.IsDone)
+            {
+                result.Success(false);
+            }
+            else
+            {
+                result.Warning(false);
+            }
+
+            return result;
+        }
+
+        public Response MigrarDatosTemporalPagos(Procedencia procedencia)
+        {
+            Response result = new Response();
+            string schemaDb = Schema.SetSchema(procedencia);
+
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            result = conceptoPagoRepository.MigrarDataConceptoPagoCtasPorCobrar((int)procedencia, null, null, null);
+
+            if (result.IsDone)
+            {
+                result.Success(false);
+            }
+            else
+            {
+                result.Error(false);
+            }
+
+            return result;
+        }
     }
 
 
