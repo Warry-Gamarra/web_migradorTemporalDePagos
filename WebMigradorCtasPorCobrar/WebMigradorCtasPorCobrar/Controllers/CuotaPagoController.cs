@@ -13,8 +13,8 @@ namespace WebMigradorCtasPorCobrar.Controllers
     [Authorize]
     public class CuotaPagoController : Controller
     {
-        public readonly TemporalPagos.CuotaPagoService _cuotaPagoServiceTemporalPagos;
-        public readonly Migracion.CuotaPagoService _cuotaPagoServiceMigracion;
+        private readonly TemporalPagos.CuotaPagoService _cuotaPagoServiceTemporalPagos;
+        private readonly Migracion.CuotaPagoService _cuotaPagoServiceMigracion;
         private readonly ObservacionService _observacionService;
 
         public CuotaPagoController()
@@ -103,7 +103,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             Response result = _cuotaPagoServiceMigracion.MigrarDatosTemporalPagos(procedencia);
 
-            return PartialView("_CopiarRegistrosResultado", result);
+            return PartialView("_ResultadoMigrarRegistros", result);
         }
 
 

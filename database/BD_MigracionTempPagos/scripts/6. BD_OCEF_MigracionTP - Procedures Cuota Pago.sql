@@ -81,7 +81,7 @@ BEGIN
 		Exec sp_executesql @T_SQL
 
 		UPDATE	TR_Cp_Des 
-				SET	B_Actualizado = 0, B_Migrable = 1, 
+				SET	B_Actualizado = 0, B_Migrable = 0, 
 					D_FecMigrado = NULL, B_Migrado = 0,
 					I_Anio = NULL, I_CatPagoID = NULL, I_Periodo = NULL
 		WHERE	I_ProcedenciaID = @I_ProcedenciaID
@@ -124,6 +124,44 @@ END
 GO
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_InicializarEstadoValidacionCuotaPago')
+	DROP PROCEDURE [dbo].[USP_U_InicializarEstadoValidacionCuotaPago]
+GO
+
+CREATE PROCEDURE USP_U_InicializarEstadoValidacionCuotaPago	
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare @B_Resultado  bit,
+--		@I_ProcedenciaID	tinyint = 3,
+--		@T_Message	  nvarchar(4000)
+--exec USP_U_InicializarEstadoValidacionCuotaPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		UPDATE	TR_Cp_Des 
+		   SET	B_Actualizado = 0, 
+				B_Migrable = 1, 
+				D_FecMigrado = NULL, 
+				B_Migrado = 0
+		 WHERE I_ProcedenciaID = @I_ProcedenciaID
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+	END CATCH
+END
+GO
+
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_MarcarRepetidosCuotaDePago')
 	DROP PROCEDURE [dbo].[USP_U_MarcarRepetidosCuotaDePago]
 GO
@@ -156,6 +194,15 @@ BEGIN
 							   SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID AND ELIMINADO = 1 
 							   GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
 				
+		IF EXISTS (SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
+		BEGIN
+			UPDATE	TR_Cp_Des
+			SET		B_Migrable = 0,
+					D_FecEvalua = @D_FecProceso
+			WHERE	CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID
+								   GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
+					AND Eliminado = 1
+		END
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_activo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
@@ -178,6 +225,23 @@ BEGIN
 				 FROM TR_Cp_Des 
 				 WHERE CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID AND ELIMINADO = 1 
 									  GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_eliminado THEN
+			DELETE;
+
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID_eliminado AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Cp_Des 
+				 WHERE CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID 
+									  GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
+					   AND Eliminado = 1
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -613,6 +677,9 @@ BEGIN
 			UPDATE SET	D_FecMod = @D_FecProceso
 		OUTPUT $action, SRC.I_CatPagoID INTO @Tbl_outputCtasCat;
 		
+
+		SELECT * FROM @Tbl_outputProceso
+
 		UPDATE	TR_Cp_Des 
 		SET		B_Migrado = 1, 
 				D_FecMigrado = @D_FecProceso

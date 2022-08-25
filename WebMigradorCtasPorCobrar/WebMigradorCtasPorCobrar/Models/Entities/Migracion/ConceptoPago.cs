@@ -14,7 +14,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public string P { get; set; }
         public string Cod_rc { get; set; }
         public string Cod_ing { get; set; }
-        public string Tipo_oblig { get; set; }
+        public bool Tipo_oblig { get; set; }
         public string Clasificad { get; set; }
         public string Clasific_5 { get; set; }
         public double Id_cp_agrp { get; set; }

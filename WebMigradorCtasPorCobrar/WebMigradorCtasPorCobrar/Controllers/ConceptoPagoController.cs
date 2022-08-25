@@ -6,19 +6,22 @@ using System.Web.Mvc;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
+using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
     [Authorize]
     public class ConceptoPagoController : Controller
     {
-        public readonly TemporalPagos.ConceptoPagoService  _conceptoPagoServiceTemporalPagos;
-        public readonly Migracion.ConceptoPagoService _conceptoPagoServiceMigracion;
+        private readonly TemporalPagos.ConceptoPagoService  _conceptoPagoServiceTemporalPagos;
+        private readonly Migracion.ConceptoPagoService _conceptoPagoServiceMigracion;
+        private readonly ObservacionService _observacionService;
 
         public ConceptoPagoController()
         {
             _conceptoPagoServiceTemporalPagos = new TemporalPagos.ConceptoPagoService();
             _conceptoPagoServiceMigracion = new Migracion.ConceptoPagoService();
+            _observacionService = new ObservacionService();
         }
 
         public ActionResult Pregrado(string partial)
@@ -90,16 +93,39 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
 
+            Response result = _conceptoPagoServiceMigracion.EjecutarValidaciones(procedencia);
 
-            return PartialView();
+            return PartialView("_ResultadoValidarRegistros", result);
         }
 
         [HttpPost]
-        public ActionResult MigrarRegistrosValidos(Procedencia procedencia)
+        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
         {
 
+            Response result = _conceptoPagoServiceMigracion.MigrarDatosTemporalPagos(procedencia);
 
-            return PartialView();
+            return PartialView("_ResultadoMigrarRegistros", result);
+        }
+
+
+        public ActionResult Observaciones(int id)
+        {
+            var model = _observacionService.Obtener_ObservacionesConceptoPago(id);
+
+            return PartialView("_Observaciones", model);
+        }
+
+        public ActionResult Editar(int id)
+        {
+
+            return PartialView("_ProcesoMigracion");
+        }
+
+        [HttpPost]
+        public ActionResult Save(int id)
+        {
+
+            return PartialView("_ProcesoMigracion");
         }
 
     }

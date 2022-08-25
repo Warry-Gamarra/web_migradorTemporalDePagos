@@ -13,11 +13,9 @@
     <div class="col-md-2">
         <fieldset>
             <legend class="pb-3 font-weight-bold">OPCIONES</legend>
+            <a class="btn btn-outline-dark btn-block my-3" id="btn-proc" href="@Url.Action("Posgrado", "CuotaPago", new { partial = "ProcesoMigracion" })">Proceso de migración</a>
             <a class="btn btn-outline-dark btn-block my-3" id="btn-tp" href="@Url.Action("Posgrado", "CuotaPago", new { partial = "TemporalPagos" })">Temporal de pagos</a>
             <a class="btn btn-outline-dark btn-block my-3" id="btn-mg" href="@Url.Action("Posgrado", "CuotaPago", new { partial = "DatosMigracion" })">Registros para migración</a>
-            <a class="btn btn-outline-dark btn-block my-3" id="btn-proc" href="@Url.Action("Posgrado", "CuotaPago", new { partial = "ProcesoMigracion" })">
-                Proceso de migración
-            </a>
         </fieldset>
     </div>
     <div class="col-md-10">

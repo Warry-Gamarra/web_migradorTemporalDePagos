@@ -62,4 +62,50 @@
         })
     })
 
+    $('#btn-validate').on('click', function () {
+        $.ajax({
+            url: '@Url.Action("ValidarRegistros", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia',
+            type: 'POST',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#result-message').hide();
+            },
+            success: function (data) {
+                $('#result-message').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').html(jqXHR.responseText)
+                $('#result-message').show();
+            },
+            complete: function () {
+                $('#processing').hide();
+                $('#result-message').show();
+            }
+        })
+    })
+
+    $('#btn-migrate').on('click', function () {
+        $.ajax({
+            url: '@Url.Action("MigrarDatosTemporalPagos", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia',
+            type: 'POST',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#result-message').hide();
+            },
+            success: function (data) {
+                $('#result-message').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').html(jqXHR.responseText)
+                $('#result-message').show();
+            },
+            complete: function () {
+                $('#processing').hide();
+                $('#result-message').show();
+            }
+        })
+    })
+
 </script>

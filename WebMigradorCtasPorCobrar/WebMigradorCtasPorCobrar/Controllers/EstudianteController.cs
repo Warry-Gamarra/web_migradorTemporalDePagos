@@ -85,7 +85,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             Response result = _alumnoServiceMigracion.MigrarDatosTemporalPagos(procedencia);
 
-            return PartialView("_ResultadoValidarRegistros", result);
+            return PartialView("_ResultadoMigrarRegistros", result);
         }
 
         public ActionResult VerDatos(int id)

@@ -4,16 +4,21 @@
 
 <div class="table-responsive" style="min-height:300px">
     @Html.Grid(Model).Columns(columns =>
-    {
-        //columns.Add(c => c.Id_cp).Titled("Codigo").Filterable(true);
-        //columns.Add(c => c.Cuota_pago).Titled("Cuota de pago").Filterable(true);
-        //columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
-        //columns.Add(c => c.Ano).Titled("Año").Filterable(true);
-        //columns.Add(c => c.Tipo_oblig).Titled("Obligación").Filterable(true);
-        //columns.Add(c => c.Clasificad).Titled("Clasificador").Filterable(true);
-        //columns.Add(c => c.Nro_pagos).Titled("Nro Pagos").Filterable(true);
-        //columns.Add(c => c.Monto).Titled("Monto").Filterable(true);
-    }
+{
+    columns.Add(c => c.Ano).Titled("Año").Filterable(true);
+    columns.Add(c => c.P).Titled("Periodo").Filterable(true);
+    columns.Add(c => c.Cuota_pago).Titled("Cuota Pago").Filterable(true);
+    columns.Add(c => c.Cod_RC).Titled("Cod RC").Filterable(true);
+    columns.Add(c => c.Cod_alu).Titled("Cod. Alumno").Filterable(true);
+    columns.Add(c => c.Fch_venc).RenderValueAs(model => model.Fch_venc.ToShortDateString()).Titled("Fec. Venc.").Filterable(true);
+    columns.Add(c => c.Monto).Titled("Monto").Filterable(true);
+    columns.Add(c => c.Pagado).Css("text-center").Encoded(false).Sanitized(false)
+           .RenderValueAs(model => model.Pagado ? Html.Raw("<span class=\"badge badge-pill badge-success\">Si</span>") : Html.Raw("<span class=\"badge badge-pill badge-danger\">No</span>"))
+           .Titled("Pagado").Filterable(true);
+    columns.Add(c => c.Tipo_oblig).Css("text-center").Encoded(false).Sanitized(false)
+           .RenderValueAs(model => model.Tipo_oblig ? Html.Raw("<span class=\"badge badge-pill badge-info\">Si</span>") : Html.Raw("<span class=\"badge badge-pill badge-secondary\">No</span>"))
+           .Titled("Tipo obligación").Filterable(true);
+}
     ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
 </div>
 

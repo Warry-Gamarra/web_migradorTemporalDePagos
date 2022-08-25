@@ -41,7 +41,7 @@
 
     $('#btn-copy').on('click', function () {
         $.ajax({
-            url: '@Url.Action("CopiarRegistros", "CuotaPago")' + '?procedencia=' + '@procedencia',
+            url: '@Url.Action("CopiarRegistros", "CuotaPago", new { area = "" })' + '?procedencia=' + '@procedencia',
             type: 'POST',
             cache: false,
             beforeSend: function () {
@@ -65,7 +65,7 @@
 
     $('#btn-validate').on('click', function () {
         $.ajax({
-            url: '@Url.Action("ValidarRegistros", "CuotaPago")' + '?procedencia=' + '@procedencia',
+            url: '@Url.Action("ValidarRegistros", "CuotaPago", new { area = "" })' + '?procedencia=' + '@procedencia',
             type: 'POST',
             cache: false,
             beforeSend: function () {
@@ -107,6 +107,5 @@
                 $('#result-message').show();
             }
         })
-    })
     })
 </script>

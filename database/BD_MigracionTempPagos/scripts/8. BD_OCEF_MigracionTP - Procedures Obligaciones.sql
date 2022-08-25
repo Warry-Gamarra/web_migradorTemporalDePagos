@@ -333,6 +333,82 @@ END
 GO
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_InicializarEstadoValidacionObligacionPago')
+	DROP PROCEDURE [dbo].[USP_U_InicializarEstadoValidacionObligacionPago]
+GO
+
+CREATE PROCEDURE USP_U_InicializarEstadoValidacionObligacionPago	
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare	@B_Resultado  bit,
+--			@I_ProcedenciaID	tinyint = 3,
+--			@T_Message	  nvarchar(4000)
+--exec USP_U_InicializarEstadoValidacionObligacionPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		UPDATE	TR_Ec_Obl 
+		   SET	B_Actualizado = 0, 
+				B_Migrable = 1, 
+				D_FecMigrado = NULL, 
+				B_Migrado = 0
+		 WHERE I_ProcedenciaID = @I_ProcedenciaID
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_InicializarEstadoValidacionDetalleObligacionPago')
+	DROP PROCEDURE [dbo].[USP_U_InicializarEstadoValidacionDetalleObligacionPago]
+GO
+
+CREATE PROCEDURE USP_U_InicializarEstadoValidacionDetalleObligacionPago	
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare	@B_Resultado  bit,
+--			@I_ProcedenciaID	tinyint = 3,
+--			@T_Message	  nvarchar(4000)
+--exec USP_U_InicializarEstadoValidacionDetalleObligacionPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		UPDATE	TR_Ec_Det 
+		   SET	B_Actualizado = 0, 
+				B_Migrable = 1, 
+				D_FecMigrado = NULL, 
+				B_Migrado = 0
+		 WHERE I_ProcedenciaID = @I_ProcedenciaID
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+	END CATCH
+END
+GO
+
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarExisteAlumnoCabeceraObligacion')
 	DROP PROCEDURE [dbo].[USP_U_ValidarExisteAlumnoCabeceraObligacion]
 GO
@@ -936,7 +1012,7 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 GO
 
 CREATE PROCEDURE [dbo].[USP_IU_MigrarObligacionesCtasPorCobrar]	
-	@I_ProcedenciaID tinyint,
+	@I_ProcedenciaID	tinyint,
 	@I_ProcesoID		int = NULL,
 	@I_AnioIni			int = NULL,
 	@I_AnioFin			int = NULL,
@@ -1184,7 +1260,7 @@ AS
 --			@T_AnioFin varchar(4) = null, 
 --			@B_Resultado  bit, 
 --			@T_Message nvarchar(4000)
---exec USP_IU_MigrarDetalleObligacionCtasPorCobrar @I_ProcedenciaID, @I_ProcesoID, @I_AnioIni, @I_AnioFin, @B_Resultado output, @T_Message output
+--exec USP_IU_PagoObligacionesCtasPorCobrar @I_ProcedenciaID, @I_ProcesoID, @I_AnioIni, @I_AnioFin, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Obl_Removidos int = 0
@@ -1212,6 +1288,7 @@ BEGIN
 					   det.cantidad, det..monto, det.id_lug_pag, det.eliminado, null AS T_Observacion, cast(det.documento as varchar(max)) AS documento,cdp.I_CtaDepositoID, 
 				FROM #temp_det_migrados det 
 					 INNER JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID)
+		
 
 		SET @B_Resultado = 1
 		SET @T_Message = 'Obligaciones migradas:' + CAST(@I_Obl_Insertados AS varchar(10))  + ' | Detalle de obligaciones migradas: ' + CAST(@I_Det_Insertados AS varchar(10))
