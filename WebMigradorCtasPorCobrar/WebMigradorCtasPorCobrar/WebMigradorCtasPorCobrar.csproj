@@ -415,7 +415,6 @@
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Posgrado\Index.cshtml" />
     <Content Include="Views\Shared\_Tablas.cshtml" />
-    <Content Include="Views\Repositorio\Estudiantes.cshtml" />
     <Content Include="Views\Shared\_GridPager.cshtml" />
     <Content Include="Views\Shared\_Grid.cshtml" />
     <Content Include="Views\Posgrado\CuotaPago.cshtml" />
@@ -429,8 +428,6 @@
   <ItemGroup>
     <Content Include="Files\Help\ManualUsuario.pdf" />
     <None Include="packages.config" />
-    <Content Include="Views\Repositorio\Estudiante_migracion_step3.cshtml" />
-    <Content Include="Views\Repositorio\EstudianteEdit.cshtml" />
     <Content Include="Views\Posgrado\ConceptoPago.cshtml" />
     <Content Include="Views\Posgrado\Obligacion.cshtml" />
     <Content Include="Views\Posgrado\Migracion.cshtml" />
