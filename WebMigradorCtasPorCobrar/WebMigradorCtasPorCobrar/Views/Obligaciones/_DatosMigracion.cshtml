@@ -6,12 +6,12 @@
 <div class="table-responsive" style="min-height:300px">
     @Html.Grid(Model).Columns(columns =>
 {
-    columns.Add(c => c.Ano).Titled("Año").Filterable(true);
-    columns.Add(c => c.P).Titled("Periodo").Filterable(true);
-    columns.Add(c => c.Cuota_pago).Titled("Cuota Pago").Filterable(true);
+    columns.Add(c => c.Ano).Css("text-center").Titled("Año").Filterable(true);
+    columns.Add(c => c.P).Css("text-center").Titled("Periodo").Filterable(true);
+    columns.Add(c => c.Cuota_pago).Css("text-center").Titled("Cuota Pago").Filterable(true);
     columns.Add(c => c.Cod_alu).Titled("Cod. Alumno").Filterable(true);
     columns.Add(c => c.Fch_venc).RenderValueAs(model => model.Fch_venc.ToShortDateString()).Titled("Fec. Venc.").Filterable(true);
-    columns.Add(c => c.Monto).Titled("Monto").Filterable(true);
+    columns.Add(c => c.Monto).Css("text-right").Titled("Monto").Filterable(true);
     columns.Add(c => c.B_Migrable).Css("text-center").Encoded(false).Sanitized(false)
            .RenderValueAs(model => model.B_Migrable ? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>") : Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
            .Titled("Migrable").Filterable(true);
