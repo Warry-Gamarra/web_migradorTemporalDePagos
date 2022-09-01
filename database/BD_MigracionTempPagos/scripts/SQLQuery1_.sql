@@ -821,3 +821,45 @@ SELECT * FROM TR_Ec_Det		WHERE	TIPO_OBLIG = 1 AND
 	UPDATE TR_Ec_Obl SET B_Migrable = 1 WHERE I_ProcedenciaID = 3
 
 
+SELECT * INTO #temp_obl_migrados FROM TR_Ec_Obl WHERE I_ProcedenciaID = 3 AND B_Migrable = 1;
+SELECT * INTO #temp_det_migrados FROM TR_Ec_Det WHERE I_ProcedenciaID = 3 AND B_Migrable = 1;
+	
+SELECT * INTO #temp_pagos_interes_mora FROM	TR_Ec_Det WHERE Concepto = 4788		
+SELECT * INTO #temp_pagos_banco FROM TR_Ec_Det WHERE Concepto = 0 AND Concepto_f = 1 AND Pagado = 1		
+SELECT * INTO #temp_pagos_conceptos FROM TR_Ec_Det WHERE Pagado = 1 AND Concepto_f = 0 AND Concepto NOT IN (0, 4788)			
+
+SELECT COUNT(*) FROM #temp_obl_migrados
+SELECT COUNT(*) FROM #temp_det_migrados
+SELECT COUNT(*) FROM #temp_pagos_interes_mora 
+SELECT COUNT(*) FROM #temp_pagos_banco 
+SELECT COUNT(*) FROM #temp_pagos_conceptos
+
+SELECT top 100 * FROM #temp_pagos_banco order by Cod_alu 
+SELECT top 100 * FROM #temp_pagos_conceptos order by Cod_alu
+ 
+SELECT * FROM TR_Ec_Det WHERE I_OblRowID = 1044123
+
+
+SELECT  distinct CASE det.Cod_cajero WHEN 'BCP' THEN 2 ELSE 1 END AS I_EntidadFinanID, det.Nro_recibo, det.Cod_alu, null AS T_NomDepositante, det.Fch_pago, 
+		det.Cantidad, det.Monto, det.Id_lug_pag, det.Eliminado, null AS T_Observacion, cast(det.Documento as varchar(max)) AS Documento, cdp.I_CtaDepositoID,
+		det.Fch_ec, 131 AS I_CondicionPagoID, 133 AS I_TipoPagoID, ISNULL(mora.Monto, 0) AS Interes_moratorio, det.I_RowID
+FROM	#temp_pagos_banco det
+		LEFT JOIN  #temp_pagos_interes_mora mora ON det.Ano = mora.Ano AND det.P = mora.P AND det.Cuota_pago = mora.Cuota_pago 
+													AND det.Cod_Alu = mora.Cod_Alu AND det.Cod_rc = mora.Cod_rc
+		LEFT JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
+
+
+-- I_PagoProcesID, I_PagoBancoID, I_CtaDepositoID, I_TasaUnfvID, I_MontoPagado, I_SaldoAPagar, I_PagoDemas, B_PagoDemas, N_NroSIAF, B_Anulado,
+-- D_FecCre, I_UsuarioCre, D_FecMod, I_UsuarioMod, I_ObligacionAluDetID, B_Migrado, I_MigracionTablaID, I_MigracionRowID
+DECLARE @I_MigracionTablaDetID tinyint = 4
+
+SELECT  distinct pagos.I_PagoBancoID, cdp.I_CtaDepositoID, NULL AS I_TasaUnfvID, det.Monto, 0 AS I_SaldoAPagar, 0 AS I_PagoDemas, 0 AS B_PagoDemas, NULL AS N_NroSIAF, det.Eliminado,
+		NULL AS D_FecCre, NULL AS I_UsuarioCre, NULL AS D_FecMod, NULL AS I_UsuarioMod, alu_det.I_ObligacionAluDetID AS I_ObligacionAluDetID, NULL AS B_Migrado, @I_MigracionTablaDetID, 
+		det.I_RowID AS I_MigracionRowID, det.cuota_pago, cdp.I_ProcesoID, DET.B_Migrable
+FROM	#temp_pagos_conceptos det
+		INNER JOIN #temp_pagos_banco pagos_det ON det.I_OblRowID = pagos_det.I_OblRowID
+		LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet alu_det ON det.I_RowID = alu_det.I_MigracionRowID
+		LEFT JOIN  BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco pagos ON pagos_det.I_RowID = pagos.I_MigracionRowID -- AND pagos.I_MigracionTablaID = 5
+		LEFT JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
+WHERE det.B_Migrable = 1 
+	  AND DET.I_OblRowID = 239174 

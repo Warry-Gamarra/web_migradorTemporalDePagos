@@ -1270,6 +1270,8 @@ BEGIN
 	DECLARE @I_Det_Actualizados int = 0
 	DECLARE @I_Det_Insertados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE()
+	DECLARE @I_MigracionTablaOblID tinyint = 5
+	DECLARE @I_MigracionTablaDetID tinyint = 4
 	DECLARE @T_Moneda varchar(3) = 'PEN'
 	DECLARE @I_CondicionPagoID int = 131
 	DECLARE @I_TipoPagoID int = 133
@@ -1286,13 +1288,14 @@ BEGIN
 		SELECT * INTO #temp_pagos_conceptos FROM TR_Ec_Det WHERE Pagado = 1 AND Concepto_f = 0 AND Concepto NOT IN (0, 4788)			
 
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco AS TRG
-		USING (SELECT  distinct CASE det.Cod_cajero WHEN 'BCP' THEN 2 ELSE 1 END AS I_EntidadFinanID, det.nro_recibo, det.cod_alu, null AS T_NomDepositante, det.fch_pago, 
-					   det.cantidad, det.monto, det.id_lug_pag, det.eliminado, null AS T_Observacion, cast(det.documento as varchar(max)) AS documento,cdp.I_CtaDepositoID,
-					   det.Fch_ec, 131 AS I_CondicionPagoID, 133 AS I_TipoPagoID
-				FROM #temp_det_migrados det
-					 INNER JOIN  #temp_pagos_interes_mora mora ON det.Ano = mora.Ano AND det.P = mora.P AND det.Cuota_pago = mora.Cuota_pago 
+		USING (SELECT distinct CASE det.Cod_cajero WHEN 'BCP' THEN 2 ELSE 1 END AS I_EntidadFinanID, det.Nro_recibo, det.Cod_alu, null AS T_NomDepositante, det.Fch_pago, 
+					  det.Cantidad, det.Monto, det.Id_lug_pag, det.Eliminado, null AS T_Observacion, cast(det.Documento as varchar(max)) AS Documento, cdp.I_CtaDepositoID,
+					  det.Fch_ec, 131 AS I_CondicionPagoID, 133 AS I_TipoPagoID, ISNULL(mora.Monto, 0) AS Interes_mora, det.I_RowID
+				FROM  #temp_pagos_banco det
+					  LEFT JOIN  #temp_pagos_interes_mora mora ON det.Ano = mora.Ano AND det.P = mora.P AND det.Cuota_pago = mora.Cuota_pago 
 																  AND det.Cod_Alu = mora.Cod_Alu AND det.Cod_rc = mora.Cod_rc
-					 INNER JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID) AS SRC
+					  LEFT JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
+			  ) AS SRC
 		ON
 			TRG.I_EntidadFinanID = SRC.I_EntidadFinanID
 		WHEN MATCHED THEN
@@ -1302,11 +1305,29 @@ BEGIN
 					I_UsuarioCre, D_FecCre, T_Observacion, T_InformacionAdicional, I_CondicionPagoID, I_TipoPagoID, I_CtaDepositoID, I_InteresMora, T_MotivoCoreccion, I_UsuarioMod, 
 					D_FecMod, C_CodigoInterno, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
 			VALUES (SRC.I_EntidadFinanID, SRC.nro_recibo, SRC.cod_alu, SRC.T_NomDepositante, SRC.nro_recibo, SRC.fch_pago, SRC.cantidad, 'PEN', SRC.monto, SRC.id_lug_pag, SRC.eliminado, 
-					NULL, SRC.Fch_ec, NULL, NULL, SRC.I_CondicionPagoID, SRC.I_TipoPagoID, SRC.I_CtaDepositoID, )
+					NULL, SRC.Fch_ec, NULL, NULL, SRC.I_CondicionPagoID, SRC.I_TipoPagoID, SRC.I_CtaDepositoID, SRC.Interes_mora, NULL, NULL, NULL, NULL, 1, @I_MigracionTablaDetID, SRC.I_RowID);
 
 
-
-
+		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv AS TRG
+		USING (SELECT  distinct pagos.I_PagoBancoID, cdp.I_CtaDepositoID, NULL AS I_TasaUnfvID, det.Monto, 0 AS I_SaldoAPagar, 0 AS I_PagoDemas, 0 AS B_PagoDemas, 
+						NULL AS N_NroSIAF, det.Eliminado, NULL AS D_FecCre, NULL AS I_UsuarioCre, NULL AS D_FecMod, NULL AS I_UsuarioMod, alu_det.I_ObligacionAluDetID, 
+						1 AS B_Migrado, @I_MigracionTablaDetID AS I_MigracionTablaID, det.I_RowID AS I_MigracionRowID
+				FROM	#temp_pagos_conceptos det
+						INNER JOIN #temp_pagos_banco pagos_det ON det.I_OblRowID = pagos_det.I_OblRowID
+						LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet alu_det ON det.I_RowID = alu_det.I_MigracionRowID
+						LEFT JOIN  BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco pagos ON pagos_det.I_RowID = pagos.I_MigracionRowID
+						LEFT JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
+				WHERE   det.B_Migrable = 1) AS SRC
+		ON
+			TRG.I_PagoBancoID = SRC.I_PagoBancoID
+			AND TRG.I_ObligacionAluDetID = SRC.I_ObligacionAluDetID
+		WHEN MATCHED THEN
+			UPDATE SET TRG.B_Migrado = 1
+		WHEN NOT MATCHED THEN
+			INSERT (I_PagoBancoID, I_CtaDepositoID, I_TasaUnfvID, I_MontoPagado, I_SaldoAPagar, I_PagoDemas, B_PagoDemas, N_NroSIAF, B_Anulado,  D_FecCre, 
+					I_UsuarioCre, D_FecMod, I_UsuarioMod, I_ObligacionAluDetID, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
+			VALUES (SRC.I_PagoBancoID, SRC.I_CtaDepositoID, SRC.I_TasaUnfvID, SRC.Monto, SRC.I_SaldoAPagar, SRC.I_PagoDemas, SRC.B_PagoDemas, SRC.N_NroSIAF, SRC.Eliminado,
+					SRC.D_FecCre, SRC.I_UsuarioCre, SRC.D_FecMod, SRC.I_UsuarioMod,SRC.I_ObligacionAluDetID, SRC.B_Migrado, SRC.I_MigracionTablaID, SRC.I_MigracionRowID);
 
 		SET @B_Resultado = 1
 		SET @T_Message = 'Obligaciones migradas:' + CAST(@I_Obl_Insertados AS varchar(10))  + ' | Detalle de obligaciones migradas: ' + CAST(@I_Det_Insertados AS varchar(10))

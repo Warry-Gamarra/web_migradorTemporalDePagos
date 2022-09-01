@@ -86,7 +86,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             Response result = _conceptoPagoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
 
-            return PartialView("_CopiarRegistrosResultado", result);
+            return PartialView("_ResultadoCopiarRegistros", result);
         }
 
         [HttpPost]

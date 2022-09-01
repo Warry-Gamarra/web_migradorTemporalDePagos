@@ -506,23 +506,23 @@ BEGIN
 			LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CategoriaPago c ON d.CODIGO_BNC = c.N_CodBanco
 			WHERE Eliminado = 0 AND I_ProcedenciaID = @I_ProcedenciaID
 
-		UPDATE	TR_Cp_Des
-		SET		B_Migrable = 0,
-				D_FecEvalua = @D_FecProceso
-		WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM @categoria_pago GROUP BY cuota_pago HAVING COUNT(*) > 1)
-				AND I_ProcedenciaID = @I_ProcedenciaID
+		--UPDATE	TR_Cp_Des
+		--SET		B_Migrable = 0,
+		--		D_FecEvalua = @D_FecProceso
+		--WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM @categoria_pago GROUP BY cuota_pago HAVING COUNT(*) > 1)
+		--		AND I_ProcedenciaID = @I_ProcedenciaID
 
-		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObsMasUnCategoria AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
-				  WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM @categoria_pago GROUP BY cuota_pago HAVING COUNT(*) > 1) AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
-		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsMasUnCategoria THEN
-			DELETE;
+		--MERGE TI_ObservacionRegistroTabla AS TRG
+		--USING 	(SELECT	@I_ObsMasUnCategoria AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+		--		  WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM @categoria_pago GROUP BY cuota_pago HAVING COUNT(*) > 1) AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
+		--ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		--WHEN MATCHED THEN
+		--	UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		--WHEN NOT MATCHED BY TARGET THEN
+		--	INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
+		--	VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
+		--WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsMasUnCategoria THEN
+		--	DELETE;
 
 		UPDATE	tb_des  
 		SET		I_CatPagoID = cat1.I_CatPagoID,
@@ -531,6 +531,16 @@ BEGIN
 				INNER JOIN @categoria_pago cat1 ON tb_des.CUOTA_PAGO = cat1.cuota_pago
 				INNER JOIN (SELECT cuota_pago FROM @categoria_pago GROUP BY cuota_pago HAVING COUNT(*) = 1) cat2
 				ON cat1.CUOTA_PAGO = cat2.cuota_pago
+		WHERE	I_ProcedenciaID = @I_ProcedenciaID
+
+		UPDATE	tb_des  
+		SET		I_CatPagoID = CASE WHEN(tb_des.Descripcio) LIKE '%REG%' THEN 18 
+								   WHEN(tb_des.Descripcio) LIKE '%ING%' THEN 17 
+								   ELSE NULL END,
+				D_FecEvalua = @D_FecProceso
+		FROM	TR_Cp_Des tb_des
+				INNER JOIN (SELECT DISTINCT cuota_pago FROM @categoria_pago WHERE N_CodBanco = '0685') cat2
+				ON tb_des.Cuota_pago = cat2.cuota_pago
 		WHERE	I_ProcedenciaID = @I_ProcedenciaID
 			
 		UPDATE	TR_Cp_Des
