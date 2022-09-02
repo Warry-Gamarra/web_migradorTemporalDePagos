@@ -11,15 +11,32 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 {
     public class ObservacionRepository
     {
+        public static IEnumerable<Observacion> Obtener(int tablaID)
+        {
+            IEnumerable<Observacion> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<Observacion>("SELECT DISTINCT I_ObservID, I_TablaID, T_TablaNom, T_ObservDesc, T_ObservCod " +
+                                                       "FROM dbo.VW_ObservacionesTabla WHERE I_TablaID = @I_TablaID"
+                                                       , new { I_TablaID = tablaID }
+                                                       , commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+
         public static IEnumerable<Observacion> Obtener(int filaID, int tablaID)
         {
             IEnumerable<Observacion> result;
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.Query<Observacion>("SELECT * FROM dbo.VW_ObservacionesTabla WHERE I_FilaTablaID = @I_FilaTablaID AND I_TablaID = @I_TablaID"
-                                                        , new { I_FilaTablaID = filaID, I_TablaID = tablaID }
-                                                        , commandType: CommandType.Text);
+                result = connection.Query<Observacion>("SELECT * FROM dbo.VW_ObservacionesTabla " +
+                                                       "WHERE I_FilaTablaID = @I_FilaTablaID AND I_TablaID = @I_TablaID"
+                                                       , new { I_FilaTablaID = filaID, I_TablaID = tablaID }
+                                                       , commandType: CommandType.Text);
             }
 
             return result;

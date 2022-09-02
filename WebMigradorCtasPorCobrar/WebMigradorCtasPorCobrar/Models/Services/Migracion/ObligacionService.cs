@@ -149,13 +149,21 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         public Response MigrarDatosTemporalPagos(Procedencia procedencia)
         {
             Response result = new Response();
+            Response result2 = new Response();
             string schemaDb = Schema.SetSchema(procedencia);
 
             ObligacionRepository obligacionRepository = new ObligacionRepository();
 
-            result = obligacionRepository.MigrarDataObligacionesCtasPorCobrar((int)procedencia, null, null, null);
+            for (int anio = 2005; anio < 2023; anio++)
+            {
+                result = obligacionRepository.MigrarDataObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
+                result2 = obligacionRepository.MigrarDataPagoObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
 
-            if (result.IsDone)
+                result.Message += "\r\n" + result2.Message;
+            }
+
+
+            if (result.IsDone && result2.IsDone)
             {
                 result.Success(false);
             }

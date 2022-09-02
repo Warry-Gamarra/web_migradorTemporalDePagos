@@ -40,6 +40,23 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
+        public static IEnumerable<CuotaPago> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
+        {
+            IEnumerable<CuotaPago> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<CuotaPago>("SELECT * FROM dbo.TR_Cp_Des cp_des " +
+                                                     "INNER JOIN TI_ObservacionRegistroTabla obs ON cp_des.I_RowID = obs.I_FilaTablaID AND obs.I_TablaID = @I_TablaID " +
+                                                     "WHERE cp_des.I_ProcedenciaID = @I_ProcedenciaID AND obs.I_ObservID = @I_ObservID"
+                                                        , new { I_ProcedenciaID = procedenciaID, I_TablaID = tablaID, I_ObservID = observacionID }
+                                                        , commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+
 
         public Response CopiarRegistros(int procedenciaID, string schemaDB, string codigos_bnc)
         {

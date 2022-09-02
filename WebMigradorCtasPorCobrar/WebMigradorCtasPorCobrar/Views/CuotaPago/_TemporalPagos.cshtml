@@ -4,16 +4,20 @@
 
 <div class="table-responsive" style="min-height:300px">
     @Html.Grid(Model).Columns(columns =>
-        {
-            columns.Add(c => c.Cuota_pago).Titled("Codigo").Filterable(true);
-            columns.Add(c => c.N_cta_cte).Titled("Nro. Cuenta").Filterable(true);
-            columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
-            columns.Add(c => c.Eliminado).Css("text-center").Titled("Eliminado").Filterable(true);
-            columns.Add(c => c.Codigo_bnc).Css("text-center").Titled("Codigo BNC").Filterable(true);
-            columns.Add(c => c.Fch_venc).Css("text-center").Titled("Fec. Venc").Filterable(true);
-            columns.Add(c => c.Prioridad).Css("text-center").Titled("Prioridad").Filterable(true);
-            columns.Add(c => c.C_mora).Css("text-center").Titled("Mora").Filterable(true);
-        }
+{
+    columns.Add(c => c.Cuota_pago).Titled("Codigo").Filterable(true);
+    columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
+    columns.Add(c => c.Fch_venc).Css("text-center").Titled("Fec. Venc").Filterable(true);
+    columns.Add(c => c.N_cta_cte).Titled("Nro. Cuenta").Filterable(true);
+    columns.Add(c => c.Codigo_bnc).Css("text-center").Titled("Codigo BNC").Filterable(true);
+    columns.Add(c => c.Prioridad).Css("text-center").Titled("Prioridad").Filterable(true);
+    columns.Add(c => c.C_mora).Css("text-center").Encoded(false).Sanitized(false)
+            .RenderValueAs(model => model.C_mora ? Html.Raw("<span class=\"badge badge-pill badge-info\">Si</span>") : Html.Raw("<span class=\"badge badge-pill badge-secondary\">No</span>"))
+            .Titled("Mora").Filterable(true);
+    columns.Add(c => c.Eliminado).Css("text-center").Encoded(false).Sanitized(false)
+            .RenderValueAs(model => model.Eliminado ? Html.Raw("<span class=\"badge badge-pill badge-warning\">Si</span>") : Html.Raw("<span class=\"badge badge-pill badge-secondary\">No</span>"))
+            .Titled("Eliminado").Filterable(true);
+}
     ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
 </div>
 

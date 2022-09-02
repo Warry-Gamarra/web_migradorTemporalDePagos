@@ -10,6 +10,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
     public class ObservacionService
     {
+        public IEnumerable<Observacion> Obtener_TipoObservacionesTabla(Tablas tabla)
+        {
+            return ObservacionRepository.Obtener((int)tabla);
+        }
+
         public IEnumerable<Observacion> Obtener_ObservacionesAlumno(int filaId)
         {
             int tablaId = (int)Tablas.TR_Alumnos;

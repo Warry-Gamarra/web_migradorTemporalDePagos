@@ -11,8 +11,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
     public class CuotaPagoService
     {
-        public IEnumerable<CuotaPago> Obtener(Procedencia procedencia)
+        public IEnumerable<CuotaPago> Obtener(Procedencia procedencia, int? tipo_obsID)
         {
+            if (tipo_obsID.HasValue)
+            {
+                return CuotaPagoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Des);
+            }
+
             return CuotaPagoRepository.Obtener((int)procedencia);
         }
 
@@ -21,7 +26,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             return CuotaPagoRepository.ObtenerPorId(cuotaID);
         }
-
 
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {

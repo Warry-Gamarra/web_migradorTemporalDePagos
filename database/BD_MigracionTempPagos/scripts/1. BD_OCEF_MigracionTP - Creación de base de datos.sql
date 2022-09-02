@@ -7,10 +7,10 @@ CREATE DATABASE [BD_OCEF_MigracionTP]
  CONTAINMENT = NONE
  ON  PRIMARY 
 --( NAME = N'BD_OCEF_MigracionTP', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL13.SQLEXPRESS\MSSQL\DATA\BD_OCEF_MigracionTP.mdf' , SIZE = 10240KB , FILEGROWTH = 1024KB )
-( NAME = N'BD_OCEF_MigracionTP', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL13.SQL_2016E\MSSQL\DATA\BD_OCEF_MigracionTP.mdf' , SIZE = 10240KB , FILEGROWTH = 1024KB )
+( NAME = N'BD_OCEF_MigracionTP', FILENAME = N'D:\Program Files\Microsoft SQL Server\MSSQL13.SQL_2016E\MSSQL\DATA\BD_OCEF_MigracionTP.mdf' , SIZE = 10240KB , FILEGROWTH = 1024KB )
  LOG ON 
 --( NAME = N'BD_OCEF_MigracionTP_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL13.SQLEXPRESS\MSSQL\DATA\BD_OCEF_MigracionTP.ldf' , SIZE = 6144KB , FILEGROWTH = 10%)
-( NAME = N'BD_OCEF_MigracionTP_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL13.SQL_2016E\MSSQL\DATA\BD_OCEF_MigracionTP.ldf' , SIZE = 6144KB , FILEGROWTH = 10%)
+( NAME = N'BD_OCEF_MigracionTP_log', FILENAME = N'D:\Program Files\Microsoft SQL Server\MSSQL13.SQL_2016E\MSSQL\DATA\BD_OCEF_MigracionTP.ldf' , SIZE = 6144KB , FILEGROWTH = 10%)
  COLLATE Modern_Spanish_CI_AS
 GO
 

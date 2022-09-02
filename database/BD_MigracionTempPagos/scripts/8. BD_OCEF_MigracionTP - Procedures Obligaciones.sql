@@ -1242,11 +1242,11 @@ GO
 
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_PagoObligacionesCtasPorCobrar')
-	DROP PROCEDURE [dbo].[USP_IU_PagoObligacionesCtasPorCobrar]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarPagoObligacionesCtasPorCobrar')
+	DROP PROCEDURE [dbo].[USP_IU_MigrarPagoObligacionesCtasPorCobrar]
 GO
 
-CREATE PROCEDURE [dbo].[USP_IU_PagoObligacionesCtasPorCobrar]	
+CREATE PROCEDURE [dbo].[USP_IU_MigrarPagoObligacionesCtasPorCobrar]	
 	@I_ProcedenciaID tinyint,
 	@I_ProcesoID		int = NULL,
 	@I_AnioIni			int = NULL,
@@ -1260,7 +1260,7 @@ AS
 --			@T_AnioFin varchar(4) = null, 
 --			@B_Resultado  bit, 
 --			@T_Message nvarchar(4000)
---exec USP_IU_PagoObligacionesCtasPorCobrar @I_ProcedenciaID, @I_ProcesoID, @I_AnioIni, @I_AnioFin, @B_Resultado output, @T_Message output
+--exec USP_IU_MigrarPagoObligacionesCtasPorCobrar @I_ProcedenciaID, @I_ProcesoID, @I_AnioIni, @I_AnioFin, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Obl_Removidos int = 0
@@ -1331,6 +1331,12 @@ BEGIN
 
 		SET @B_Resultado = 1
 		SET @T_Message = 'Obligaciones migradas:' + CAST(@I_Obl_Insertados AS varchar(10))  + ' | Detalle de obligaciones migradas: ' + CAST(@I_Det_Insertados AS varchar(10))
+
+		DROP TABLE #temp_obl_migrados 
+		DROP TABLE #temp_det_migrados
+		DROP TABLE #temp_pagos_interes_mora
+		DROP TABLE #temp_pagos_banco
+		DROP TABLE #temp_pagos_conceptos 
 
 		COMMIT TRANSACTION;
 	END TRY
