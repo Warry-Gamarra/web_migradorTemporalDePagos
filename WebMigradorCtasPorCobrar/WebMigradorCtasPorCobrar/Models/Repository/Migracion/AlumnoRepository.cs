@@ -25,6 +25,22 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
+        internal static IEnumerable<Alumno> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
+        {
+            IEnumerable<Alumno> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<Alumno>("SELECT * FROM dbo.TR_Alumnos alu " +
+                                                     "INNER JOIN TI_ObservacionRegistroTabla obs ON alu.I_RowID = obs.I_FilaTablaID AND obs.I_TablaID = @I_TablaID " +
+                                                     "WHERE alu.I_ProcedenciaID = @I_ProcedenciaID AND obs.I_ObservID = @I_ObservID"
+                                                        , new { I_ProcedenciaID = procedenciaID, I_TablaID = tablaID, I_ObservID = observacionID }
+                                                        , commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
         public static Alumno ObtenerPorId(int id)
         {
             Alumno result;

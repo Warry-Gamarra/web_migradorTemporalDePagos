@@ -68,7 +68,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult DatosMigracion(Procedencia procedencia, int? tipo_obs)
         {
             var model = _cuotaPagoServiceMigracion.Obtener(procedencia, tipo_obs);
-            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Cp_Des), 
+            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Cp_Des, procedencia), 
                                                     "I_ObservID", "T_ObservDesc", tipo_obs);
 
             return PartialView("_DatosMigracion", model);

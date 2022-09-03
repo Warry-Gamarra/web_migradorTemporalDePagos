@@ -11,8 +11,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
     public class AlumnoService
     {
-        public IEnumerable<Alumno> Obtener(Procedencia procedencia)
+        public IEnumerable<Alumno> Obtener(Procedencia procedencia, int? tipo_obsID)
         {
+            if (tipo_obsID.HasValue)
+            {
+                return AlumnoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Alumnos);
+            }
+
             return AlumnoRepository.Obtener((int)procedencia);
         }
 

@@ -282,6 +282,7 @@ CREATE TABLE dbo.TI_ObservacionRegistroTabla
 	I_ObservID		tinyint,
 	I_TablaID		tinyint,
 	I_FilaTablaID	int,
+	I_ProcedenciaID int,
 	D_FecRegistro	datetime,
 	CONSTRAINT PK_ObservacionRegistroTabla PRIMARY KEY (I_ObsTablaID),
 	CONSTRAINT FK_CatalogoObservacion_ObservacionRegistroTabla FOREIGN KEY (I_ObservID) REFERENCES TC_CatalogoObservacion (I_ObservID),

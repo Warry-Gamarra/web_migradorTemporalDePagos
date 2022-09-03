@@ -2,6 +2,14 @@
 @model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Migracion.Alumno>
 @using GridMvc.Html
 
+<div class="row mb-5 mt-3 form-inline">
+    <div class="col-md-2 col-sm-3">
+        <label class="control-label">Filtro observación</label>
+    </div>
+    <div class="col-md-4">
+        @Html.DropDownList("cboTipoObs", ViewBag.Observaciones as SelectList, "- SIN FILTRO -", new { @class = "form-control" })
+    </div>
+</div>
 
 <div class="table-responsive" style="min-height:300px">
     @Html.Grid(Model).Columns(columns =>
@@ -38,4 +46,11 @@
     $('#btn-tp').removeClass('active');
     $('#btn-mg').addClass('active');
     $('#btn-proc').removeClass('active');
+
+    $('#cboTipoObs').on('change', function () {
+        let id_procedencia = $('#cbo-procedencia').val();
+
+        location.href = '@Url.Action("Index", "Estudiante", new { area = "", partial = "DatosMigracion" })' + '&procedencia=' + id_procedencia + '&tipo_obs=' + this.value;
+    })
+
 </script>

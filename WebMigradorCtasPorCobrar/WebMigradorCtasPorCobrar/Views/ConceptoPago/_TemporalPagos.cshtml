@@ -4,16 +4,22 @@
 
 <div class="table-responsive" style="min-height:300px">
     @Html.Grid(Model).Columns(columns =>
-        {
-            columns.Add(c => c.Id_cp).Titled("Codigo").Filterable(true);
-            columns.Add(c => c.Cuota_pago).Titled("Cuota de pago").Filterable(true);
-            columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
-            columns.Add(c => c.Ano).Titled("Año").Filterable(true);
-            columns.Add(c => c.Tipo_oblig).Titled("Obligación").Filterable(true);
-            columns.Add(c => c.Clasificad).Titled("Clasificador").Filterable(true);
-            columns.Add(c => c.Nro_pagos).Titled("Nro Pagos").Filterable(true);
-            columns.Add(c => c.Monto).Titled("Monto").Filterable(true);
-        }
+{
+    columns.Add(c => c.Id_cp).Titled("Codigo").Filterable(true);
+    columns.Add(c => c.Cuota_pago).Titled("Cuota pago").Filterable(true);
+    columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
+    columns.Add(c => c.Ano).Titled("Año").Filterable(true);
+    columns.Add(c => c.P).Titled("Periodo").Filterable(true);
+    columns.Add(c => c.Clasificad).Titled("Clasificador").Filterable(true);
+    columns.Add(c => c.Nro_pagos).Titled("Nro Pagos").Filterable(true);
+    columns.Add(c => c.Monto).Titled("Monto").Filterable(true);
+    columns.Add(c => c.Tipo_oblig).Css("text-center").Encoded(false).Sanitized(false)
+           .RenderValueAs(model => model.Tipo_oblig ? Html.Raw("<span class=\"badge badge-pill badge-success\">Si</span>") : Html.Raw("<span class=\"badge badge-pill badge-danger\">No</span>"))
+           .Titled("Obligación").Filterable(true);
+    columns.Add(c => c.Eliminado).Css("text-center").Encoded(false).Sanitized(false)
+            .RenderValueAs(model => model.Eliminado ? Html.Raw("<span class=\"badge badge-pill badge-warning\">Si</span>") : Html.Raw("<span class=\"badge badge-pill badge-secondary\">No</span>"))
+            .Titled("Eliminado").Filterable(true);
+}
     ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
 </div>
 

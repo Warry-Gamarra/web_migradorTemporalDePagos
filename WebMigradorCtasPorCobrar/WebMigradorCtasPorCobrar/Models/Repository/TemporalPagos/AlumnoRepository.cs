@@ -17,9 +17,11 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
 
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
-                result = connection.Query<Alumno>($"SELECT A.* FROM dbo.alumnos A " +
-                                                             $"INNER JOIN (SELECT DISTINCT cod_alu, cod_rc " +
-                                                             $"            FROM {schemaDb}.ec_obl) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc;"
+                result = connection.Query<Alumno>($"SELECT DISTINCT A.* FROM dbo.alumnos A " +
+                                                             $"INNER JOIN {schemaDb}.ec_pri O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc " +
+                                                  $"UNION " +
+                                                  $"SELECT DISTINCT A.* FROM dbo.alumnos A " +
+                                                             $"INNER JOIN {schemaDb}.ec_obl O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc;"
                                                   , commandType: CommandType.Text);
             }
 

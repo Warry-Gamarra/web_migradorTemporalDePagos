@@ -9,7 +9,7 @@ CREATE VIEW VW_ObservacionesTabla
 AS
 (
 	SELECT  I_ObsTablaID, ORT.D_FecRegistro, ORT.I_TablaID, T_TablaNom, ORT.I_ObservID, CO.T_ObservDesc,
-			ORT.I_FilaTablaID, CO.T_ObservCod, CO.I_Severidad
+			ORT.I_FilaTablaID, CO.T_ObservCod, CO.I_Severidad, ORT.I_ProcedenciaID
 	FROM	TI_ObservacionRegistroTabla ORT
 			INNER JOIN TC_CatalogoTabla CT ON ORT.I_TablaID = CT.I_TablaID
 			INNER JOIN TC_CatalogoObservacion CO ON ORT.I_ObservID = CO.I_ObservID

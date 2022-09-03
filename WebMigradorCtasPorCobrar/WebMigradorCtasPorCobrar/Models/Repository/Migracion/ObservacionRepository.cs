@@ -17,8 +17,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.Query<Observacion>("SELECT DISTINCT I_ObservID, I_TablaID, T_TablaNom, T_ObservDesc, T_ObservCod " +
-                                                       "FROM dbo.VW_ObservacionesTabla WHERE I_TablaID = @I_TablaID"
+                result = connection.Query<Observacion>("SELECT DISTINCT I_ObservID, I_TablaID, T_TablaNom, T_ObservDesc, T_ObservCod, I_ProcedenciaID " +
+                                                       "FROM dbo.VW_ObservacionesTabla " +
+                                                       "WHERE I_TablaID = @I_TablaID"
                                                        , new { I_TablaID = tablaID }
                                                        , commandType: CommandType.Text);
             }

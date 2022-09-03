@@ -363,7 +363,8 @@ BEGIN
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObsSinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
-				  WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd LEFT JOIN ##cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago WHERE anio_cuota IS NULL)
+				  WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd LEFT JOIN ##cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago WHERE anio_cuota IS NULL
+										AND cd.I_ProcedenciaID = @I_ProcedenciaID)
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -424,11 +425,14 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	I_Periodo IS NULL
+				AND Cuota_pago NOT IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
 				AND I_ProcedenciaID = @I_ProcedenciaID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObsSinPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
-				 WHERE I_Periodo IS NULL) AS SRC
+				 WHERE I_Periodo IS NULL 
+					   AND Cuota_pago NOT IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
+					   AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -454,8 +458,8 @@ BEGIN
 		END
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_cant_MasUnAnio AS varchar) + ' | ' + CAST(@I_cant_SinAnio AS varchar) + ' | ' + 
-						 CAST(@I_cant_MasUnPeriodo AS varchar) + ' | ' + CAST(@I_cant_SinPeriodo AS varchar)
+		SET @T_Message = CAST(@I_cant_MasUnAnio AS varchar) + ' más de un año | ' + CAST(@I_cant_SinAnio AS varchar) + '  sin año| ' + 
+						 CAST(@I_cant_MasUnPeriodo AS varchar) + ' más de un periodo| ' + CAST(@I_cant_SinPeriodo AS varchar) + ' Sin periodo.' 
 	END TRY
 	BEGIN CATCH
 		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##cuota_anio')
