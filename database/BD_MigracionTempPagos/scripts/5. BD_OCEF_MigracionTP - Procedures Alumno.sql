@@ -135,13 +135,13 @@ BEGIN
 		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE()			 
 
 					  MERGE TR_Alumnos AS TRG
-					  USING (SELECT DISTINCT C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO 
+					  USING (SELECT C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO 
 					  		 FROM BD_OCEF_TemporalPagos.dbo.alumnos A
-					  			  INNER JOIN BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_pri O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc 
+					  			  INNER JOIN (SELECT DISTINCT Cod_alu, Cod_rc FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_pri) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc 
 							 UNION 
-							 SELECT DISTINCT C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO 
+							 SELECT C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO 
 					  		 FROM BD_OCEF_TemporalPagos.dbo.alumnos A
-					  			  INNER JOIN BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc 
+					  			  INNER JOIN (SELECT DISTINCT Cod_alu, Cod_rc FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc 
 					  	     GROUP BY C_RCCOD, C_CODALU, T_APEPATER, T_APEMATER, T_NOMBRE, C_NUMDNI, C_CODTIPDO, C_CODMODIN, C_ANIOINGR, D_FECNAC, C_SEXO) AS SRC
 					  ON TRG.C_CodAlu = SRC.C_CodAlu 
 					  	 AND TRG.C_RcCod = SRC.C_RcCod
@@ -198,11 +198,11 @@ BEGIN
 		SET @I_Actualizados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
 		SET @I_Removidos = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
 		
-		SET @T_SQL = 'SELECT DISTINCT A.* FROM BD_OCEF_TemporalPagos.dbo.alumnos A 
-					  INNER JOIN BD_OCEF_TemporalPagos.' + @T_schemaDb + '.ec_pri O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc 
+		SET @T_SQL = 'SELECT A.* FROM BD_OCEF_TemporalPagos.dbo.alumnos A 
+					  INNER JOIN (SELECT DISTINCT Cod_alu, Cod_rc FROM BD_OCEF_TemporalPagos.' + @T_schemaDb + '.ec_pri) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc 
 					  UNION 
-					  SELECT DISTINCT A.* FROM BD_OCEF_TemporalPagos.dbo.alumnos A 
-					  INNER JOIN BD_OCEF_TemporalPagos.' + @T_schemaDb + '.ec_obl O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc '
+					  SELECT A.* FROM BD_OCEF_TemporalPagos.dbo.alumnos A 
+					  INNER JOIN (SELECT DISTINCT Cod_alu, Cod_rc FROM BD_OCEF_TemporalPagos.' + @T_schemaDb + '.ec_obl) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc '
 
 		exec sp_executesql @T_SQL
 		SET @I_CantAlu_schema = @@ROWCOUNT
@@ -819,7 +819,7 @@ BEGIN
 		--SELECT IDENT_CURRENT('##TEMP_AlumnoPersona')
 
 		INSERT INTO ##TEMP_AlumnoPersona (I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc)
-		SELECT	I_RowID, TA.C_RcCod, TA.C_CodAlu, TA.C_NumDNI, TA.C_CodTipDoc
+		SELECT	I_RowID, TA.C_RcCod, TA.C_CodAlu, TA.C_NumDNI, TA.C_CodTipDoc 
 		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
 				RIGHT JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod  
 		WHERE ((A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
@@ -846,8 +846,8 @@ BEGIN
 						TRG.I_UsuarioMod = 1,
 						TRG.D_FecMod	 = @D_FecProceso
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Habilitado, B_Eliminado)
-			VALUES (SRC.I_PersonaID,SRC.C_NUMDNI, SRC.C_CodTipDoc, SRC.T_ApePaterno, SRC.T_ApeMaterno, SRC.T_Nombre, SRC.C_Sexo, SRC.D_FecNac, 1, 0)
+			INSERT (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Habilitado, B_Eliminado, D_FecCre)
+			VALUES (SRC.I_PersonaID,SRC.C_NUMDNI, SRC.C_CodTipDoc, SRC.T_ApePaterno, SRC.T_ApeMaterno, SRC.T_Nombre, SRC.C_Sexo, SRC.D_FecNac, 1, 0, @D_FecProceso)
 		OUTPUT	$ACTION, inserted.C_NumDNI, inserted.C_CodTipDoc, inserted.T_ApePaterno, inserted.T_ApeMaterno, inserted.T_Nombre, 
 				inserted.C_Sexo, inserted.D_FecNac, deleted.C_NumDNI, deleted.C_CodTipDoc, deleted.T_ApePaterno, deleted.T_ApeMaterno, 
 				deleted.T_Nombre, deleted.C_Sexo, deleted.D_FecNac, inserted.I_PersonaID, 0 INTO #Tbl_output_persona;		
@@ -869,8 +869,8 @@ BEGIN
 						TRG.I_UsuarioMod = 1,
 						TRG.D_FecMod	 = @D_FecProceso
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (C_RcCod, C_CodAlu, I_PersonaID, C_CodModIng, C_AnioIngreso, B_Habilitado, B_Eliminado)
-			VALUES (SRC.C_RcCod, SRC.C_CodAlu, SRC.I_PersonaID, SRC.C_CodModIng, SRC.C_AnioIngreso, 1, 0)
+			INSERT (C_RcCod, C_CodAlu, I_PersonaID, C_CodModIng, C_AnioIngreso, B_Habilitado, B_Eliminado, D_FecCre)
+			VALUES (SRC.C_RcCod, SRC.C_CodAlu, SRC.I_PersonaID, SRC.C_CodModIng, SRC.C_AnioIngreso, 1, 0, @D_FecProceso)
 		OUTPUT	$ACTION, inserted.C_RcCod, inserted.C_CodAlu, inserted.C_AnioIngreso, inserted.C_CodModIng, 
 				inserted.I_PersonaID, deleted.I_PersonaID, 0 INTO #Tbl_output_alumno;
 		
