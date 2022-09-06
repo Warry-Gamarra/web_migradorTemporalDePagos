@@ -175,6 +175,7 @@ BEGIN
 
 		UPDATE	TR_Alumnos 
 				SET	B_Actualizado = 0, B_Migrable = 0, D_FecMigrado = NULL, B_Migrado = 0
+		WHERE  I_ProcedenciaID = @I_ProcedenciaID
 
 		UPDATE	t_Alu
 		SET		t_Alu.B_Actualizado = 1,
@@ -811,7 +812,8 @@ BEGIN
 		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
 				INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID AND P.B_Eliminado = 0 AND A.B_Eliminado = 0
 				INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
-		WHERE (A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
+		WHERE	(A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
+				AND I_ProcedenciaID = @I_ProcedenciaID
 		ORDER BY A.I_PersonaID
 		
 		SET IDENTITY_INSERT ##TEMP_AlumnoPersona OFF
@@ -824,6 +826,7 @@ BEGIN
 				RIGHT JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod  
 		WHERE ((A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
 			  AND A.I_PersonaID IS NULL
+			  AND I_ProcedenciaID = @I_ProcedenciaID
 
 		--SELECT * FROM ##TEMP_AlumnoPersona ORDER BY I_PersonaID
 
@@ -861,7 +864,7 @@ BEGIN
 					INNER JOIN TR_Alumnos A ON AP.I_RowID = A.I_RowID AND A.B_Migrable = 1) AS SRC
 		ON	TRG.C_RcCod = SRC.C_RcCod 
 			AND TRG.C_CodAlu = SRC.C_CodAlu
-			AND TRG.C_CodModIng	 = SRC.C_CodModIng
+			AND ISNULL(TRG.C_CodModIng, '')	= ISNULL(SRC.C_CodModIng, '')
 			--AND TRG.C_AnioIngreso = SRC.C_AnioIngreso		
 		WHEN MATCHED AND SRC.B_Migrado = 0 THEN
 			UPDATE SET	TRG.I_PersonaID	 = SRC.I_PersonaID,
@@ -880,7 +883,7 @@ BEGIN
 				t_Alumnos.D_FecMigrado = @D_FecProceso
 		FROM TR_Alumnos AS t_Alumnos
 		INNER JOIN 	#Tbl_output_alumno as t_out_a ON t_out_a.C_RcCod = t_Alumnos.C_RcCod AND t_out_a.C_CodAlu = t_Alumnos.C_CodAlu
-					AND t_out_a.C_CodModIng = t_Alumnos.C_CodModIng
+					AND ISNULL(t_out_a.C_CodModIng, '') = ISNULL(t_Alumnos.C_CodModIng, '')
 		INNER JOIN 	#Tbl_output_persona as t_out_p ON t_out_p.I_PersonaID = t_out_a.INS_I_PersonaID
 
 

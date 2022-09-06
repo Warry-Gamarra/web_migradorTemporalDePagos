@@ -86,7 +86,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             result_CodigoCarreraAlumno = alumnoRepository.ValidarCodigoCarreraAlumno((int)procedencia);
             result_CodigosAlumnoRepetidos = alumnoRepository.ValidarCodigosAlumnoRepetidos((int)procedencia);
             result_AnioIngresoAlumno = alumnoRepository.ValidarAnioIngresoAlumno((int)procedencia);
-            result_ModIngresoAlumno = alumnoRepository.ValidarModalidadIngresoAlumno((int)procedencia);
+            //result_ModIngresoAlumno = alumnoRepository.ValidarModalidadIngresoAlumno((int)procedencia);
             result_CorrespondenciaNumDoc = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona((int)procedencia);
             result_SexoDiferenteMismoDoc = alumnoRepository.ValidarSexoDiferenteMismoDocumento((int)procedencia);
 
@@ -94,7 +94,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                             result_CodigoCarreraAlumno.IsDone &&
                             result_CodigosAlumnoRepetidos.IsDone &&
                             result_AnioIngresoAlumno.IsDone &&
-                            result_ModIngresoAlumno.IsDone &&
+                            //result_ModIngresoAlumno.IsDone &&
                             result_CorrespondenciaNumDoc.IsDone &&
                             result_SexoDiferenteMismoDoc.IsDone;
 
@@ -115,10 +115,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_AnioIngresoAlumno.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Modalidades de ingreso</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_ModIngresoAlumno.Message}</p>" +
-                             $"        </dd>" +
+                             //$"        <dt class=\"col-md-4 col-sm-6\">Observados por Modalidades de ingreso</dt>" +
+                             //$"        <dd class=\"col-md-8 col-sm-6\">" +
+                             //$"            <p>{result_ModIngresoAlumno.Message}</p>" +
+                             //$"        </dd>" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_CorrespondenciaNumDoc.Message}</p>" +
