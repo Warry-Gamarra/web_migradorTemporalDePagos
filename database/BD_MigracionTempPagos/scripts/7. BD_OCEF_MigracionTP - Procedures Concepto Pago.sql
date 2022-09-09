@@ -253,7 +253,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_activo THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_activo AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 
@@ -269,7 +269,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_eliminado THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_eliminado AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 
@@ -327,7 +327,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinAnio THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinAnio AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 		UPDATE	TR_Cp_Pri
@@ -405,7 +405,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinPer THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinPer AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 		UPDATE	TR_Cp_Pri
@@ -427,7 +427,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_PerDif THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_PerDif AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 		SET @I_Observados_sinPer = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_sinPer AND I_TablaID = @I_TablaID)
@@ -506,7 +506,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_CuotaNoM THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_CuotaNoM AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 		SET @I_Observados_sinCuota = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_sinCuota AND I_TablaID = @I_TablaID)
@@ -730,8 +730,6 @@ BEGIN
 					 --B_EsPagoMatricula = NULL, 
 					 --B_EsPagoExtmp = NULL, 
 					 D_FecMod = @D_FecProceso
-		--WHEN NOT MATCHED BY SOURCE AND TRG.B_Migrado = 1 AND TRG.I_UsuarioMod IS NULL AND TRG.B_EsPagoMatricula IS NULL AND TRG.B_EsPagoExtmp IS NULL  THEN
-		--	DELETE  		 
 		OUTPUT $action, SRC.I_RowID INTO @Tbl_outputConceptosPago;
 
 		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago OFF;
@@ -762,7 +760,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 		SET @I_ConceptoPago_Inserted = (SELECT COUNT(*) FROM @Tbl_outputConceptosPago WHERE T_Action = 'INSERT')

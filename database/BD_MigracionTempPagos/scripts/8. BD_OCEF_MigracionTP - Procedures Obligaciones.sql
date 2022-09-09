@@ -480,7 +480,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM #Numeric_Year_Ec_Obl OBL
@@ -543,7 +543,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM TR_Ec_Obl OBL
@@ -585,19 +585,20 @@ BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 26
 	DECLARE @I_TablaID int = 4
+	DECLARE @I_TablaOblID int = 5
 
 	BEGIN TRANSACTION
-	BEGIN TRY 
+	BEGIN TRY
+	 
 		UPDATE	TR_Ec_Det
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	ISNUMERIC(ANO) = 0
 				AND I_ProcedenciaID = @I_ProcedenciaID
-
 				
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM	TR_Ec_Obl 
+				 FROM	TR_Ec_Det 
 				 WHERE	ISNUMERIC(ANO) = 0 
 						AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
@@ -606,13 +607,37 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TR_Ec_Obl OBL
+		SET @I_Observados = (SELECT COUNT(*) FROM TR_Ec_Det OBL
 												  INNER JOIN (SELECT * FROM TI_ObservacionRegistroTabla 
 															  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID) OBS 
 															  ON OBS.I_FilaTablaID = OBL.I_RowID)
+
+		UPDATE	Ec_obl
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		FROM    TR_Ec_Obl Ec_obl 
+				INNER JOIN TR_Ec_Det Ec_det ON Ec_obl.I_RowID = Ec_det.I_OblRowID
+		WHERE	ISNUMERIC(Ec_det.ANO) = 0
+				AND Ec_det.I_ProcedenciaID = @I_ProcedenciaID
+
+		MERGE   TI_ObservacionRegistroTabla AS TRG
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaOblID AS I_TablaID, Ec_obl.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM   TR_Ec_Obl Ec_obl 
+						INNER JOIN TR_Ec_Det Ec_det ON Ec_obl.I_RowID = Ec_det.I_OblRowID
+				 WHERE	ISNUMERIC(Ec_det.ANO) = 0
+						AND Ec_det.I_ProcedenciaID = @I_ProcedenciaID) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			DELETE;
+
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
@@ -651,6 +676,7 @@ BEGIN
 	BEGIN TRY 
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 27
+
 		UPDATE	TR_Ec_Obl
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
@@ -669,14 +695,16 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET AND SRC.I_ProcedenciaID = @I_ProcedenciaID THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							 WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
-		COMMIT TRANSACTION				
+		COMMIT TRANSACTION
+					
 		SET @B_Resultado = 1
 		SET @T_Message = CAST(@I_Observados AS varchar)
 	END TRY
@@ -745,10 +773,11 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							 WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
@@ -806,10 +835,11 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							 WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
@@ -867,10 +897,11 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
@@ -928,10 +959,11 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
@@ -956,8 +988,8 @@ GO
 
 CREATE PROCEDURE [dbo].[USP_U_ValidarDetalleObligacionConceptoPago]	
 	@I_ProcedenciaID tinyint,
-	@B_Resultado  bit output,
-	@T_Message	  nvarchar(4000) OUTPUT	
+	@B_Resultado	bit output,
+	@T_Message		nvarchar(4000) OUTPUT	
 AS
 --declare @I_ProcedenciaID	tinyint = 3, 
 --		  @B_Resultado  bit,
@@ -999,7 +1031,8 @@ BEGIN
 		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
