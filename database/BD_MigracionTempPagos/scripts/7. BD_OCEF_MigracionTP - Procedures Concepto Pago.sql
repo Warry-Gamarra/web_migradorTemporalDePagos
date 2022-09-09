@@ -694,7 +694,7 @@ BEGIN
 					CAST(REPLACE(SRC.MONTO_MIN, ',', '.') as float), SRC.DESCRIP_L, SRC.DOCUMENTO, 
 					SRC.OBLIG_MORA,
 					1, 1, SRC.ELIMINADO, NULL, NULL, NULL)
-		WHEN MATCHED AND TRG.B_Migrado = 1 AND TRG.I_UsuarioMod IS NULL THEN 
+		WHEN MATCHED AND TRG.B_Migrado = 1 AND TRG.I_UsuarioCre IS NULL THEN 
 			 UPDATE SET T_ConceptoPagoDesc = SRC.DESCRIPCIO, 
 					 B_Fraccionable = SRC.FRACCIONAB, 
 					 B_ConceptoGeneral = SRC.CONCEPTO_G,

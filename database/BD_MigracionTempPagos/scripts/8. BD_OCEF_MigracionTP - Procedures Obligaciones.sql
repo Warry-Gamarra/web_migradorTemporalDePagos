@@ -243,7 +243,7 @@ BEGIN
 													 		  AND obl1.I_ProcedenciaID = obl2.I_ProcedenciaID
 										) obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
 							  			 		 AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
-							  			 		 AND det.fch_venc = obl.fch_venc AND det.pagado = obl.Pagado '
+							  			 		 AND det.fch_venc = obl.fch_venc --AND det.pagado = obl.Pagado '
 							  			 							   
 		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
 		BEGIN
@@ -339,6 +339,8 @@ GO
 
 CREATE PROCEDURE USP_U_InicializarEstadoValidacionObligacionPago	
 	@I_ProcedenciaID tinyint,
+	@T_AnioIni	  varchar(4) = NULL,
+	@T_AnioFin	  varchar(4) = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
@@ -348,6 +350,9 @@ AS
 --exec USP_U_InicializarEstadoValidacionObligacionPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
+	SET @T_AnioIni = (SELECT ISNULL(@T_AnioIni, '0'))
+	SET @T_AnioIni = (SELECT ISNULL(@T_AnioIni, '3000'))
+
 	BEGIN TRANSACTION
 	BEGIN TRY 
 		UPDATE	TR_Ec_Obl 
@@ -356,6 +361,7 @@ BEGIN
 				D_FecMigrado = NULL, 
 				B_Migrado = 0
 		 WHERE I_ProcedenciaID = @I_ProcedenciaID
+			   AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
 
 		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
 		SET @B_Resultado = 1
@@ -377,6 +383,8 @@ GO
 
 CREATE PROCEDURE USP_U_InicializarEstadoValidacionDetalleObligacionPago	
 	@I_ProcedenciaID tinyint,
+	@T_AnioIni	  varchar(4) = NULL,
+	@T_AnioFin	  varchar(4) = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
@@ -386,6 +394,9 @@ AS
 --exec USP_U_InicializarEstadoValidacionDetalleObligacionPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
+	SET @T_AnioIni = (SELECT ISNULL(@T_AnioIni, '0'))
+	SET @T_AnioIni = (SELECT ISNULL(@T_AnioIni, '3000'))
+
 	BEGIN TRANSACTION
 	BEGIN TRY 
 		UPDATE	TR_Ec_Det 
@@ -394,6 +405,7 @@ BEGIN
 				D_FecMigrado = NULL, 
 				B_Migrado = 0
 		 WHERE I_ProcedenciaID = @I_ProcedenciaID
+			   AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
 
 		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
 		SET @B_Resultado = 1
@@ -452,6 +464,7 @@ BEGIN
 		WHERE	NOT EXISTS (SELECT * FROM TR_Alumnos b WHERE ec_obl.COD_ALU = C_CodAlu and ec_obl.COD_RC = C_RcCod)
 				AND CAST(num_ec_obl.Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin
 			    AND ec_obl.I_ProcedenciaID = @I_ProcedenciaID
+				AND (ec_obl.Ano BETWEEN @I_AnioIni AND @I_AnioFin)
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, ec_obl.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
@@ -459,7 +472,8 @@ BEGIN
 						INNER JOIN #Numeric_Year_Ec_Obl num_ec_obl ON ec_obl.I_RowID = num_ec_obl.I_RowID
 				 WHERE	NOT EXISTS (SELECT * FROM TR_Alumnos b WHERE ec_obl.COD_ALU = C_CodAlu and ec_obl.COD_RC = C_RcCod)
 						AND CAST(num_ec_obl.Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin
-						AND ec_obl.I_ProcedenciaID = @I_ProcedenciaID) AS SRC
+						AND ec_obl.I_ProcedenciaID = @I_ProcedenciaID
+						AND (ec_obl.Ano BETWEEN @I_AnioIni AND @I_AnioFin)) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -512,6 +526,69 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY 
 		UPDATE	TR_Ec_Obl
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	ISNUMERIC(ANO) = 0
+				AND I_ProcedenciaID = @I_ProcedenciaID
+
+				
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM	TR_Ec_Obl 
+				 WHERE	ISNUMERIC(ANO) = 0 
+						AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+			DELETE;
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TR_Ec_Obl OBL
+												  INNER JOIN (SELECT * FROM TI_ObservacionRegistroTabla 
+															  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID) OBS 
+															  ON OBS.I_FilaTablaID = OBL.I_RowID)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
+
+		COMMIT TRANSACTION				
+		SET @B_Resultado = 1
+		SET @T_Message = CAST(@I_Observados AS varchar)
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarAnioEnDetalleObligacion')
+	DROP PROCEDURE [dbo].[USP_U_ValidarAnioEnDetalleObligacion]
+GO
+
+CREATE PROCEDURE [dbo].[USP_U_ValidarAnioEnDetalleObligacion]	
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare @I_ProcedenciaID	tinyint = 3, 
+--		@B_Resultado  bit,
+--		@T_Message	  nvarchar(4000)
+--exec USP_U_ValidarAnioEnCabeceraObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 26
+	DECLARE @I_TablaID int = 4
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		UPDATE	TR_Ec_Det
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	ISNUMERIC(ANO) = 0
@@ -835,28 +912,15 @@ BEGIN
 		UPDATE	TR_Ec_Det
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	TIPO_OBLIG = 1 AND
-				NOT EXISTS (SELECT * FROM TR_Ec_Obl b 
-							WHERE	TR_Ec_Det.ANO = b.ANO 
-									AND TR_Ec_Det.P = b.P
-									AND TR_Ec_Det.CUOTA_PAGO = b.CUOTA_PAGO
-									AND TR_Ec_Det.COD_ALU = b.COD_ALU
-									AND TR_Ec_Det.COD_RC = b.COD_RC
-									AND CONVERT(DATE, FCH_VENC, 102) = b.FCH_VENC
-							)
+		WHERE	TIPO_OBLIG IS NOT NULL
+				AND I_OblRowID IS NULL
 				AND TR_Ec_Det.I_ProcedenciaID = @I_ProcedenciaID
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Ec_Det
-				  WHERE	TIPO_OBLIG = 1 AND
-						NOT EXISTS (SELECT * FROM TR_Ec_Obl b 
-									WHERE	TR_Ec_Det.ANO = b.ANO 
-											AND TR_Ec_Det.P = b.P
-											AND TR_Ec_Det.CUOTA_PAGO = b.CUOTA_PAGO
-											AND TR_Ec_Det.COD_ALU = b.COD_ALU
-											AND TR_Ec_Det.COD_RC = b.COD_RC
-											AND CONVERT(DATE, FCH_VENC, 102) = b.FCH_VENC
-						AND TR_Ec_Det.I_ProcedenciaID = @I_ProcedenciaID)
+				  WHERE	TIPO_OBLIG IS NOT NULL
+						AND I_OblRowID IS NULL
+						AND TR_Ec_Det.I_ProcedenciaID = @I_ProcedenciaID
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -872,8 +936,10 @@ BEGIN
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
 		COMMIT TRANSACTION				
+
 		SET @B_Resultado = 1
 		SET @T_Message = CAST(@I_Observados AS varchar)
+
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -907,25 +973,30 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		UPDATE	TR_Ec_Det
+		UPDATE	Det
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	Concepto NOT IN (SELECT Id_cp FROM TR_Cp_Pri WHERE I_ProcedenciaID = TR_Ec_Det.I_ProcedenciaID)
-				AND I_ProcedenciaID = @I_ProcedenciaID
+		FROM    TR_Ec_Det Det
+				LEFT JOIN (SELECT Id_cp, I_ProcedenciaID FROM TR_Cp_Pri) Pri ON Det.Concepto = Pri.Id_cp and Det.I_ProcedenciaID = Pri.I_ProcedenciaID
+		WHERE	Pri.Id_cp is null
+			AND Det.I_ProcedenciaID = @I_ProcedenciaID
+			AND Concepto_f = 0 
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM	TR_Ec_Det
-				 WHERE	Concepto NOT IN (SELECT Id_cp FROM TR_Cp_Pri WHERE I_ProcedenciaID = TR_Ec_Det.I_ProcedenciaID)
-						AND I_ProcedenciaID = @I_ProcedenciaID
+				 FROM TR_Ec_Det Det
+						LEFT JOIN (SELECT Id_cp, I_ProcedenciaID FROM TR_Cp_Pri) Pri ON Det.Concepto = Pri.Id_cp AND Det.I_ProcedenciaID = Pri.I_ProcedenciaID
+				 WHERE	Pri.Id_cp is null
+						AND Det.I_ProcedenciaID = @I_ProcedenciaID
+						AND Concepto_f = 0 
 				 ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID)
@@ -968,25 +1039,33 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		UPDATE	TR_Ec_Det
+		UPDATE	Det
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	Concepto NOT IN (SELECT Id_cp FROM TR_Cp_Pri WHERE B_Migrado = 0 AND I_ProcedenciaID = @I_ProcedenciaID)
-				AND I_ProcedenciaID = @I_ProcedenciaID
+		FROM    TR_Ec_Det Det
+				LEFT JOIN (SELECT Id_cp, I_ProcedenciaID FROM TR_Cp_Pri WHERE B_Migrado = 1) Pri 
+						  ON Det.Concepto = Pri.Id_cp AND Det.I_ProcedenciaID = Pri.I_ProcedenciaID
+		WHERE	Pri.Id_cp is null
+			AND Det.I_ProcedenciaID = @I_ProcedenciaID
+			AND Concepto_f = 0 
+
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_Ec_Det
-				 WHERE	Concepto IN (SELECT Id_cp FROM TR_Cp_Pri WHERE B_Migrado = 0 AND I_ProcedenciaID = @I_ProcedenciaID)
-						AND I_ProcedenciaID = @I_ProcedenciaID 
+				 FROM   TR_Ec_Det Det
+						LEFT JOIN (SELECT Id_cp, I_ProcedenciaID FROM TR_Cp_Pri WHERE B_Migrado = 1) Pri 
+								  ON Det.Concepto = Pri.Id_cp AND Det.I_ProcedenciaID = Pri.I_ProcedenciaID
+				 WHERE	Pri.Id_cp is null
+					AND Det.I_ProcedenciaID = @I_ProcedenciaID
+					AND Concepto_f = 0 
 				 ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID)
@@ -1166,69 +1245,8 @@ BEGIN
 		SET @I_Det_Insertados = (SELECT COUNT(*) FROM @Tbl_outputDet WHERE T_Action = 'INSERT')
 		SET @I_Det_Actualizados = (SELECT COUNT(*) FROM @Tbl_outputDet WHERE T_Action = 'UPDATE')
 
-
-		--DECLARE CUR_OBL CURSOR
-		--FOR
-		--SELECT obl.I_RowID, obl.Ano, obl.P, obl.I_Periodo, obl.Cod_alu, obl.Cod_rc, obl.Cuota_pago, obl.Tipo_oblig, 
-		--	   obl.Fch_venc, obl.Monto, obl.Pagado, mat.I_MatAluID
-		--FROM TR_Ec_Obl obl
-		--	 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno mat ON 
-		--				obl.cod_alu = mat.C_CodAlu AND obl.cod_rc = mat.C_CodRc 
-		--				AND obl.ano = CAST(mat.I_Anio as varchar(4)) AND obl.I_Periodo = mat.I_Periodo
-		--WHERE I_ProcedenciaID = @I_ProcedenciaID
-		--	  AND (Cuota_pago = @I_ProcesoID OR @I_ProcesoID IS NULL)
-		--	  AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
-		--	  AND B_Migrable = 1;
-
-
-		--OPEN CUR_OBL
-		--FETCH NEXT FROM	CUR_OBL INTO @I_RowID, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, @Cuota_pago, @Tipo_oblig, @Fch_venc, 
-		--							 @Monto, @Pagado, @I_MatAluID;
-
-		--	WHILE @@FETCH_STATUS = 0
-		--	BEGIN
-
-		--		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab (I_ProcesoID, I_MatAluID, C_Moneda, I_MontoOblig, D_FecVencto, B_Pagado, B_Habilitado, 
-		--																	B_Eliminado, I_UsuarioCre, D_FecCre, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
-		--														   VALUES (@Cuota_pago, @I_MatAluID, @T_Moneda, @Monto, @Fch_venc, @Pagado, 1, 
-		--																	0, 1, @D_FecProceso, 1, @I_MigracionTablaOblID, @I_RowID)
-
-		--		UPDATE TR_Ec_Obl 
-		--		   SET B_Migrado = 1,
-		--			   D_FecMigrado = @D_FecProceso
-		--		WHERE
-		--			   I_RowID = @I_RowID
-				
-		--		SET @I_Obl_Insertados = @I_Obl_Insertados + 1
-
-		--		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet (I_ObligacionAluID, I_ConcPagID, I_Monto, B_Pagado, D_FecVencto, I_TipoDocumento, T_DescDocumento, 
-		--																   B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, B_Mora, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
-		--		SELECT I_OblRowID, Concepto, Monto, Pagado, Fch_venc, CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, 
-		--			   CAST(Documento as varchar(max)) AS T_DescDocumento, 1 AS Habilitado, Eliminado, 1, @D_FecProceso, 0 AS Mora, 1 AS Migrado, @I_MigracionTablaDetID, I_RowID
-		--		FROM  TR_Ec_Det
-		--		WHERE I_OblRowID = @I_RowID
-		--			  AND Concepto_f = 1
-		--			  AND B_Migrable = 1
-
-		--		UPDATE TR_Ec_Det
-		--		   SET B_Migrado = 1,
-		--			   D_FecMigrado = @D_FecProceso
-		--		WHERE
-		--			  I_OblRowID = @I_RowID
-		--			  AND Concepto_f = 1
-		--			  AND B_Migrable = 1
-
-		--		SET @I_Det_Insertados = @I_Det_Insertados + @@ROWCOUNT
-
-		--		FETCH NEXT FROM	CUR_OBL INTO @I_RowID, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, @Cuota_pago, @Tipo_oblig, @Fch_venc, 
-		--									 @Monto, @Pagado, @I_MatAluID;
-		--	END;
-			
-		--	CLOSE CUR_OBL;
-		--	DEALLOCATE CUR_OBL;
-
-			SET @B_Resultado = 1
-			SET @T_Message = 'Obligaciones migradas:' + CAST(@I_Obl_Insertados AS varchar(10))  + ' | Detalle de obligaciones migradas: ' + CAST(@I_Det_Insertados AS varchar(10))
+		SET @B_Resultado = 1
+		SET @T_Message = 'Obligaciones migradas:' + CAST(@I_Obl_Insertados AS varchar(10))  + ' | Detalle de obligaciones migradas: ' + CAST(@I_Det_Insertados AS varchar(10))
 			
 		COMMIT TRANSACTION;
 	END TRY
@@ -1301,19 +1319,22 @@ BEGIN
 		WHERE Pagado = 1 AND Concepto_f = 0 AND Concepto NOT IN (0, 4788) AND (CAST(Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin);		
 
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco AS TRG
-		USING (SELECT distinct CASE det.Cod_cajero WHEN 'BCP' THEN 2 ELSE 1 END AS I_EntidadFinanID, det.Nro_recibo, det.Cod_alu, null AS T_NomDepositante, det.Fch_pago, 
-					  det.Cantidad, det.Monto, det.Id_lug_pag, det.Eliminado, null AS T_Observacion, cast(det.Documento as varchar(max)) AS Documento, cdp.I_CtaDepositoID,
-					  det.Fch_ec, 131 AS I_CondicionPagoID, 133 AS I_TipoPagoID, ISNULL(mora.Monto, 0) AS Interes_mora, det.I_RowID
+		USING (SELECT distinct CASE det.Cod_cajero WHEN 'BCP' THEN 2 ELSE 1 END AS I_EntidadFinanID, det.Nro_recibo, det.Cod_alu, det.Cod_rc, null AS T_NomDepositante, 
+					  det.Fch_pago, det.Cantidad, det.Monto, det.Id_lug_pag, det.Eliminado, null AS T_Observacion, cast(det.Documento as varchar(max)) AS Documento, 
+					  cdp.I_CtaDepositoID, det.Fch_ec, 131 AS I_CondicionPagoID, 133 AS I_TipoPagoID, ISNULL(mora.Monto, 0) AS Interes_mora, det.I_RowID
 				FROM  #temp_pagos_banco det
+					  INNER JOIN  TR_Alumnos a ON det.Cod_alu = a.C_CodAlu AND det.Cod_rc = a.C_RcCod
+					  INNER JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
 					  LEFT JOIN  #temp_pagos_interes_mora mora ON det.Ano = mora.Ano AND det.P = mora.P AND det.Cuota_pago = mora.Cuota_pago 
 																  AND det.Cod_Alu = mora.Cod_Alu AND det.Cod_rc = mora.Cod_rc
-					  LEFT JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
 			  ) AS SRC
 		ON
 			TRG.C_CodOperacion = SRC.Nro_recibo
 			AND TRG.C_CodDepositante = SRC.Cod_alu
-		WHEN MATCHED THEN
-			UPDATE SET C_CodOperacion = SRC.nro_recibo
+			AND CAST(TRG.D_FecPago AS date) = CAST(SRC.Fch_pago AS date)
+		WHEN MATCHED AND TRG.B_Migrado = 1 THEN
+			UPDATE SET T_NomDepositante = 
+				
 		WHEN NOT MATCHED THEN
 			INSERT (I_EntidadFinanID, C_CodOperacion, C_CodDepositante, T_NomDepositante, C_Referencia, D_FecPago, I_Cantidad, C_Moneda, I_MontoPago, T_LugarPago, B_Anulado, 
 					I_UsuarioCre, D_FecCre, T_Observacion, T_InformacionAdicional, I_CondicionPagoID, I_TipoPagoID, I_CtaDepositoID, I_InteresMora, T_MotivoCoreccion, I_UsuarioMod, 

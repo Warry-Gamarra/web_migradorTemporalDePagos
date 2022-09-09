@@ -154,7 +154,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             ObligacionRepository obligacionRepository = new ObligacionRepository();
 
-            for (int anio = 2005; anio < 2007; anio++)
+            for (int anio = 2005; anio < 2023; anio++)
             {
                 result = obligacionRepository.MigrarDataObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
                 result2 = obligacionRepository.MigrarDataPagoObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);

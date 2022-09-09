@@ -41,10 +41,11 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (27, 'El PERIODO de la obligacion no tiene equivalencia en base de datos de Ctas por cobrar.', 'SIN PERIODO', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (28, 'La fecha de vencimiento se encuentra repetida para la misma cuota de pago y codigo de alumno.', 'SIN PERIODO', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (29, 'La obligación ya existe en la base de datos de destino con otro monto.', 'EXISTE', NULL)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (36, 'La obligación tiene conceptos que no pueden ser migrados.', 'SIN CONCEPTO DE PAGO MIGRABLE', NULL)
 
 
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (32, 'La obligación tiene una cuota de pago sin migrar.', 'SIN CUOTA DE PAGO', NULL)
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (33, 'El detalle de pago tiene un concepto de pago sin migrar.', 'SIN CONCEPTO DE PAGO', NULL)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (33, 'El detalle de pago tiene un concepto de pago sin migrar.', 'SIN CONCEPTO DE PAGO MIGRADO', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (34, 'La procedencia de la obligación no coincide con la procedencia de la cuota de pago.', 'SIN CUOTA DE PAGO', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (35, 'El concepto en el detalle de la obligación no existe en el catálogo de conceptos.', 'SIN CONCEPTO DE PAGO', NULL)
 
