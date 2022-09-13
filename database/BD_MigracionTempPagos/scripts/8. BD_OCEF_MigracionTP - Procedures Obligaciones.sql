@@ -1549,11 +1549,13 @@ BEGIN
 		DECLARE @I_RowID  int
 					
 		--SELECT * INTO #temp_obl_migrados FROM TR_Ec_Obl 
-		--WHERE	I_ProcedenciaID = @I_ProcedenciaID AND B_Migrable = 1
+		--WHERE	ISDATE(CAST(Fch_pago as varchar)) = 1 
+		--		AND I_ProcedenciaID = @I_ProcedenciaID AND B_Migrable = 1
 		--		AND (CAST(Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin)
 
 		SELECT * INTO #temp_det_migrados FROM TR_Ec_Det 
-		WHERE	I_ProcedenciaID = @I_ProcedenciaID AND B_Migrable = 1
+		WHERE	ISDATE(CAST(Fch_pago as varchar)) = 1 
+				AND I_ProcedenciaID = @I_ProcedenciaID AND B_Migrable = 1
 				AND (CAST(Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin);
 	
 		SELECT * INTO #temp_pagos_interes_mora FROM	#temp_det_migrados --TR_Ec_Det 
