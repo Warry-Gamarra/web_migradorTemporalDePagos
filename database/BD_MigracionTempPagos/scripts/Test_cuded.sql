@@ -1,9 +1,7 @@
 declare @B_Resultado  bit,
-		@I_ProcedenciaID	tinyint = 2,
-		@T_SchemaDB			varchar(20) = 'eupg',
-		@T_Codigo_bnc		varchar(250) = '''0670'', ''0671'', ''0672'', ''0673'', ''0674'', ''0675'',
-										   ''0676'', ''0677'', ''0678'', ''0679'', ''0680'', ''0681'',
-										   ''0682'', ''0683'', ''0695'', ''0696'', ''0697'', ''0698''',
+		@I_ProcedenciaID	tinyint = 3,
+		@T_SchemaDB			varchar(20) = 'euded',
+		@T_Codigo_bnc		varchar(250) = '''0658'', ''0685'', ''0687'', ''0688'', ''0689'', ''0690'', ''0691'', ''0692''',
 		@T_Message			nvarchar(4000)
 exec USP_IU_CopiarTablaCuotaDePago @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -11,7 +9,7 @@ go
 
 
 declare @B_Resultado  bit,
-		@I_ProcedenciaID tinyint = 2,
+		@I_ProcedenciaID tinyint = 3,
 		@T_Message	  nvarchar(4000)
 exec USP_U_MarcarRepetidosCuotaDePago @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -19,8 +17,8 @@ go
 
 
 declare @B_Resultado  bit,
-		@I_ProcedenciaID tinyint = 2,
-		@T_SchemaDB		 varchar(20) = 'eupg',
+		@I_ProcedenciaID tinyint = 3,
+		@T_SchemaDB		 varchar(20) = 'euded',
 		@T_Message	  nvarchar(4000)
 exec USP_U_AsignarAnioPeriodoCuotaPago @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -28,7 +26,7 @@ go
 
 
 declare @B_Resultado  bit,
-		@I_ProcedenciaID tinyint = 2,
+		@I_ProcedenciaID tinyint = 3,
 		@T_Message	  nvarchar(4000)
 exec USP_U_AsignarCategoriaCuotaPago  @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -39,7 +37,7 @@ declare	@B_Resultado  bit,
 			@I_ProcesoID int = NULL,
 			@I_AnioIni int = NULL, 
 			@I_AnioFin int = NULL,
-			@I_ProcedenciaID tinyint = 2,
+			@I_ProcedenciaID tinyint = 3,
 			@T_Message nvarchar(4000)
 exec USP_IU_MigrarDataCuotaDePagoCtasPorCobrar @I_ProcesoID, @I_AnioIni, @I_AnioFin, @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -48,11 +46,9 @@ GO
 
 
 declare @B_Resultado  bit,
-		@I_ProcedenciaID	tinyint = 2,
-		@T_SchemaDB			varchar(20) = 'eupg',
-		@T_Codigo_bnc		varchar(250) = '''0670'', ''0671'', ''0672'', ''0673'', ''0674'', ''0675'',
-										   ''0676'', ''0677'', ''0678'', ''0679'', ''0680'', ''0681'',
-										   ''0682'', ''0683'', ''0695'', ''0696'', ''0697'', ''0698''',
+		@I_ProcedenciaID	tinyint = 3,
+		@T_SchemaDB			varchar(20) = 'euded',
+		@T_Codigo_bnc		varchar(250) = '''0658'', ''0685'', ''0687'', ''0688'', ''0689'', ''0690'', ''0691'', ''0692''',
 		@T_Message	  nvarchar(4000)
 exec USP_IU_CopiarTablaConceptoDePago @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -60,7 +56,7 @@ go
 
 
 declare @B_Resultado  bit,
-		@I_ProcedenciaID tinyint = 2,
+		@I_ProcedenciaID tinyint = 3,
 		@T_Message	  nvarchar(4000)
 exec USP_U_MarcarConceptosPagoRepetidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -68,7 +64,7 @@ go
 
 
 declare @B_Resultado  bit,
-		@I_ProcedenciaID tinyint = 2,
+		@I_ProcedenciaID tinyint = 3,
 		@T_Message	  nvarchar(4000)
 exec USP_U_MarcarConceptosPagoObligSinAnioAsignado @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -76,7 +72,7 @@ go
 
 
 declare @B_Resultado  bit,
-		@I_ProcedenciaID tinyint = 2,
+		@I_ProcedenciaID tinyint = 3,
 		@T_Message	  nvarchar(4000)
 exec USP_U_MarcarConceptosPagoObligSinPeriodoAsignado @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -84,7 +80,7 @@ go
 
 
 declare @B_Resultado  bit,
-		@I_ProcedenciaID tinyint = 2,
+		@I_ProcedenciaID tinyint = 3,
 		@T_Message	  nvarchar(4000)
 exec USP_U_MarcarConceptosPagoObligSinCuotaPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -92,7 +88,7 @@ go
 
 
 declare @B_Resultado  bit,
-		@I_ProcedenciaID tinyint = 2,
+		@I_ProcedenciaID tinyint = 3,
 		@T_Message	  nvarchar(4000)
 exec USP_U_AsignarIdEquivalenciasConceptoPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -110,7 +106,7 @@ declare	@B_Resultado  bit,
 			@I_ProcesoID int = NULL,
 			@I_AnioIni int = NULL, 
 			@I_AnioFin int = NULL,
-			@I_ProcedenciaID tinyint = 2,
+			@I_ProcedenciaID tinyint = 3,
 			@T_Message nvarchar(4000)
 exec USP_IU_MigrarDataConceptoPagoObligacionesCtasPorCobrar @I_ProcesoID, @I_AnioIni, @I_AnioFin, @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
@@ -120,8 +116,8 @@ go
 
 
 
-declare @I_ProcedenciaID tinyint = 2,
-		@T_SchemaDB   varchar(20) = 'eupg',
+declare @I_ProcedenciaID tinyint = 3,
+		@T_SchemaDB   varchar(20) = 'euded',
 		@T_AnioIni	  varchar(4) = null,
 		@T_AnioFin	  varchar(4) = null,
 		@B_Resultado  bit,
@@ -131,8 +127,8 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2,
-		@T_SchemaDB   varchar(20) = 'eupg',
+declare @I_ProcedenciaID tinyint = 3,
+		@T_SchemaDB   varchar(20) = 'euded',
 		@T_AnioIni	  varchar(4) = 2017,
 		@T_AnioFin	  varchar(4) = 2022,
 		@B_Resultado  bit,
@@ -143,7 +139,7 @@ go
 
 
 declare	@B_Resultado  bit,
-		@I_ProcedenciaID tinyint = 2,
+		@I_ProcedenciaID tinyint = 3,
 		@T_AnioIni	  varchar(4) = NULL,
 		@T_AnioFin	  varchar(4) = NULL,
 		@T_Message	  nvarchar(4000)
@@ -153,7 +149,7 @@ go
 
 
 declare	@B_Resultado  bit,
-		@I_ProcedenciaID	tinyint = 2,
+		@I_ProcedenciaID	tinyint = 3,
 		@T_AnioIni	  varchar(4) = NULL,
 		@T_AnioFin	  varchar(4) = NULL,
 		@T_Message	  nvarchar(4000)
@@ -162,7 +158,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2,
+declare @I_ProcedenciaID tinyint = 3,
 		@I_AnioIni	  int = null,
 		@I_AnioFin	  int = null,
 		@B_Resultado  bit,
@@ -172,7 +168,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 3, 
 		@B_Resultado  bit,
 		@T_Message	  nvarchar(4000)
 exec USP_U_ValidarAnioEnCabeceraObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -180,7 +176,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 3, 
 		@B_Resultado  bit,
 		@T_Message	  nvarchar(4000)
 exec USP_U_ValidarAnioEnDetalleObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -188,7 +184,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 3, 
 		@B_Resultado  bit,
 		@T_Message	  nvarchar(4000)
 exec USP_U_ValidarPeriodoEnCabeceraObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -196,7 +192,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 3, 
 		@B_Resultado  bit,
 		@T_Message	  nvarchar(4000)
 exec USP_U_ValidarPeriodoEnDetalleObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -204,7 +200,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 3, 
 		  @B_Resultado  bit,
 		  @T_Message    nvarchar(4000)
 exec USP_U_ValidarFechaVencimientoCuotaObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -212,7 +208,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 3, 
 		  @B_Resultado  bit,
 		  @T_Message    nvarchar(4000)
 exec USP_U_ValidarObligacionCuotaPagoMigrada @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -220,7 +216,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 3, 
 		  @B_Resultado  bit,
 		  @T_Message    nvarchar(4000)
 exec USP_U_ValidarProcedenciaObligacionCuotaPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -228,7 +224,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 3, 
 		  @B_Resultado  bit,
  		  @T_Message	nvarchar(4000)
 exec USP_U_ValidarDetalleObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -236,7 +232,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 3, 
 		  @B_Resultado  bit,
 		  @T_Message    nvarchar(4000)
 exec USP_U_ValidarDetalleObligacionConceptoPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -244,7 +240,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 3, 
 		  @B_Resultado  bit,
 		  @T_Message    nvarchar(4000)
 exec USP_U_ValidarDetalleObligacionConceptoPagoMigrado @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -253,7 +249,7 @@ go
 
 
 
-declare   @I_ProcedenciaID tinyint = 2,
+declare   @I_ProcedenciaID tinyint = 3,
 			@I_ProcesoID int = null, 
 			@I_AnioIni	 int = null, 
 			@I_AnioFin	 int = null, 
@@ -264,7 +260,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare   @I_ProcedenciaID tinyint = 2,
+declare   @I_ProcedenciaID tinyint = 3,
 			@I_ProcesoID int = null, 
 			@I_AnioIni	 int = null, 
 			@I_AnioFin	 int = null, 
