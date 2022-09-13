@@ -112,7 +112,7 @@ go
 
 
 
-declare @I_ProcedenciaID	tinyint = 1,
+declare @I_ProcedenciaID tinyint = 1,
 		@T_SchemaDB   varchar(20) = 'pregrado',
 		@T_AnioIni	  varchar(4) = null,
 		@T_AnioFin	  varchar(4) = null,
@@ -123,7 +123,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID	tinyint = 1,
+declare @I_ProcedenciaID tinyint = 1,
 		@T_SchemaDB   varchar(20) = 'pregrado',
 		@T_AnioIni	  varchar(4) = 2017,
 		@T_AnioFin	  varchar(4) = 2022,
@@ -134,7 +134,27 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID	tinyint = 1,
+declare	@B_Resultado  bit,
+		@I_ProcedenciaID tinyint = 1,
+		@T_AnioIni	  varchar(4) = NULL,
+		@T_AnioFin	  varchar(4) = NULL,
+		@T_Message	  nvarchar(4000)
+exec USP_U_InicializarEstadoValidacionObligacionPago @I_ProcedenciaID, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
+select @B_Resultado as resultado, @T_Message as mensaje
+go
+
+
+declare	@B_Resultado  bit,
+		@I_ProcedenciaID	tinyint = 1,
+		@T_AnioIni	  varchar(4) = NULL,
+		@T_AnioFin	  varchar(4) = NULL,
+		@T_Message	  nvarchar(4000)
+exec USP_U_InicializarEstadoValidacionDetalleObligacionPago @I_ProcedenciaID, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
+select @B_Resultado as resultado, @T_Message as mensaje
+go
+
+
+declare @I_ProcedenciaID tinyint = 1,
 		@I_AnioIni	  int = null,
 		@I_AnioFin	  int = null,
 		@B_Resultado  bit,
@@ -155,7 +175,23 @@ go
 declare @I_ProcedenciaID tinyint = 1, 
 		@B_Resultado  bit,
 		@T_Message	  nvarchar(4000)
+exec USP_U_ValidarAnioEnDetalleObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
+select @B_Resultado as resultado, @T_Message as mensaje
+go
+
+
+declare @I_ProcedenciaID tinyint = 1, 
+		@B_Resultado  bit,
+		@T_Message	  nvarchar(4000)
 exec USP_U_ValidarPeriodoEnCabeceraObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
+select @B_Resultado as resultado, @T_Message as mensaje
+go
+
+
+declare @I_ProcedenciaID tinyint = 1, 
+		@B_Resultado  bit,
+		@T_Message	  nvarchar(4000)
+exec USP_U_ValidarPeriodoEnDetalleObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
 go
 
@@ -192,7 +228,7 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 1, 
 		  @B_Resultado  bit,
 		  @T_Message    nvarchar(4000)
 exec USP_U_ValidarDetalleObligacionConceptoPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -200,17 +236,19 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID tinyint = 2, 
+declare @I_ProcedenciaID tinyint = 1, 
 		  @B_Resultado  bit,
 		  @T_Message    nvarchar(4000)
 exec USP_U_ValidarDetalleObligacionConceptoPagoMigrado @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
 go
 
+
+
 declare   @I_ProcedenciaID tinyint = 1,
 			@I_ProcesoID int = null, 
-			@I_AnioIni	 int = 2011, 
-			@I_AnioFin	 int = 2022, 
+			@I_AnioIni	 int = null, 
+			@I_AnioFin	 int = null, 
 			@B_Resultado  bit, 
 			@T_Message nvarchar(4000)
 exec USP_IU_MigrarObligacionesCtasPorCobrar @I_ProcedenciaID, @I_ProcesoID, @I_AnioIni, @I_AnioFin, @B_Resultado output, @T_Message output
@@ -218,39 +256,12 @@ select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
-declare @I_ProcedenciaID	tinyint = 1,
-		@T_SchemaDB   varchar(20) = 'pregrado',
-		@T_AnioIni	  varchar(4) = null,
-		@T_AnioFin	  varchar(4) = null,
-		@B_Resultado  bit,
-		@T_Message	  nvarchar(4000)
-exec USP_IU_CopiarTablaObligacionesPago @I_ProcedenciaID, @T_SchemaDB, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
-select @B_Resultado as resultado, @T_Message as mensaje
-go
-
-declare @I_ProcedenciaID	tinyint = 1,
-		@T_SchemaDB   varchar(20) = 'pregrado',
-		@T_AnioIni	  varchar(4) = null,
-		@T_AnioFin	  varchar(4) = null,
-		@B_Resultado  bit,
-		@T_Message	  nvarchar(4000)
-exec USP_IU_CopiarTablaDetalleObligacionesPago @I_ProcedenciaID, @T_SchemaDB, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
-select @B_Resultado as resultado, @T_Message as mensaje
-go
-
-declare @I_ProcedenciaID	tinyint = 1,
-		@I_AnioIni	  int = null,
-		@I_AnioFin	  int = null,
-		@B_Resultado  bit,
-		@T_Message	  nvarchar(4000)
-exec USP_U_ValidarExisteAlumnoCabeceraObligacion @I_ProcedenciaID, @I_AnioIni, @I_AnioFin, @B_Resultado output, @T_Message output
-select @B_Resultado as resultado, @T_Message as mensaje
-go
-
-
-declare @I_ProcedenciaID tinyint = 1, 
-		@B_Resultado  bit,
-		@T_Message	  nvarchar(4000)
-exec USP_U_ValidarAnioEnCabeceraObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
+declare   @I_ProcedenciaID tinyint = 1,
+			@I_ProcesoID int = null, 
+			@I_AnioIni	 int = null, 
+			@I_AnioFin	 int = null, 
+			@B_Resultado  bit, 
+			@T_Message nvarchar(4000)
+exec USP_IU_MigrarPagoObligacionesCtasPorCobrar @I_ProcedenciaID, @I_ProcesoID, @I_AnioIni, @I_AnioFin, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
 go
