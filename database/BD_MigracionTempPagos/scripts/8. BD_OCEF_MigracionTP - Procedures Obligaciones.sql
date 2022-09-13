@@ -1534,13 +1534,13 @@ BEGIN
 
 	CREATE TABLE #Tbl_output_pago_obl  
 	(
-		accion		varchar(20), 
+		T_Action		varchar(20), 
 		I_rowID		float,
 	)
 
 	CREATE TABLE #Tbl_output_pago_det  
 	(
-		accion		varchar(20), 
+		T_Action		varchar(20), 
 		I_rowID		float,
 	)
 
@@ -1596,7 +1596,7 @@ BEGIN
 					I_UsuarioCre, D_FecCre, T_Observacion, T_InformacionAdicional, I_CondicionPagoID, I_TipoPagoID, I_CtaDepositoID, I_InteresMora, T_MotivoCoreccion, I_UsuarioMod, 
 					D_FecMod, C_CodigoInterno, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
 			VALUES (SRC.I_EntidadFinanID, SRC.nro_recibo, SRC.cod_alu, SRC.T_NomDepositante, SRC.nro_recibo, SRC.fch_pago, SRC.cantidad, 'PEN', SRC.monto, SRC.id_lug_pag, SRC.eliminado, 
-					NULL, SRC.Fch_ec, NULL, NULL, SRC.I_CondicionPagoID, SRC.I_TipoPagoID, SRC.I_CtaDepositoID, SRC.Interes_mora, NULL, NULL, 
+					NULL, IIF(ISDATE(CAST(SRC.Fch_ec as varchar)) = 0, NULL,SRC.Fch_ec), NULL, NULL, SRC.I_CondicionPagoID, SRC.I_TipoPagoID, SRC.I_CtaDepositoID, SRC.Interes_mora, NULL, NULL, 
 					NULL, NULL, 1, @I_MigracionTablaDetID, SRC.I_OblRowID)
 		OUTPUT	$ACTION, inserted.I_MigracionRowID INTO #Tbl_output_pago_obl;
 
@@ -1612,9 +1612,9 @@ BEGIN
 						1 AS B_Migrado, @I_MigracionTablaDetID AS I_MigracionTablaID, det.I_RowID AS I_MigracionRowID
 				FROM   #temp_pagos_conceptos det
 						INNER JOIN #temp_pagos_banco pagos_det ON det.I_OblRowID = pagos_det.I_OblRowID
-						LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet alu_det ON det.I_RowID = alu_det.I_MigracionRowID
-						LEFT JOIN  BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco pagos ON pagos_det.I_RowID = pagos.I_MigracionRowID
-						LEFT JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
+						INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet alu_det ON det.I_RowID = alu_det.I_MigracionRowID
+						INNER JOIN  BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco pagos ON pagos_det.I_RowID = pagos.I_MigracionRowID
+						INNER JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
 				WHERE  det.B_Migrable = 1) AS SRC
 		ON
 			TRG.I_PagoBancoID = SRC.I_PagoBancoID
@@ -1635,6 +1635,8 @@ BEGIN
 		FROM   BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet OblDet
 			   INNER JOIN #Tbl_output_pago_det O_pagos ON OblDet.I_MigracionRowID = O_pagos.I_rowID
 
+		SET @I_Obl_Insertados = (SELECT COUNT(*) FROM #Tbl_output_pago_obl)
+		SET @I_Det_Insertados = (SELECT COUNT(*) FROM #Tbl_output_pago_det)
 
 		SET @B_Resultado = 1
 		SET @T_Message = 'Obligaciones migradas:' + CAST(@I_Obl_Insertados AS varchar(10))  + ' | Detalle de obligaciones migradas: ' + CAST(@I_Det_Insertados AS varchar(10))
