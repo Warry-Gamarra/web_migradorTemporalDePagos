@@ -55,6 +55,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
             ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Alumnos, procedencia),
                                                     "I_ObservID", "T_ObservDesc", tipo_obs);
 
+            ViewBag.IdObservacion = tipo_obs;
+            ViewBag.Procedencia = procedencia;
+
             return PartialView("_DatosMigracion", model);
         }
 
@@ -142,6 +145,15 @@ namespace WebMigradorCtasPorCobrar.Controllers
             }
 
             return PartialView("_MsgPartialWR", result);
+        }
+
+
+
+        public ActionResult ExportarObservaciones(int? id, Procedencia procedencia)
+        {
+            var model = _alumnoServiceMigracion.ObtenerDatosObservaciones(procedencia, id);
+
+            return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Observaciones-Alumnos.xlsx");
         }
 
     }

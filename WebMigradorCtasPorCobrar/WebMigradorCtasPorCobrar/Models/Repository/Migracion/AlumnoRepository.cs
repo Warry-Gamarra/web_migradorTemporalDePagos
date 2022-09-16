@@ -25,7 +25,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-        internal static IEnumerable<Alumno> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
+        public static IEnumerable<Alumno> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
         {
             IEnumerable<Alumno> result;
 
@@ -33,13 +33,42 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 result = connection.Query<Alumno>("SELECT * FROM dbo.TR_Alumnos alu " +
                                                      "INNER JOIN TI_ObservacionRegistroTabla obs ON alu.I_RowID = obs.I_FilaTablaID AND obs.I_TablaID = @I_TablaID " +
-                                                     "WHERE alu.I_ProcedenciaID = @I_ProcedenciaID AND obs.I_ObservID = @I_ObservID"
+                                                     "WHERE obs.I_ProcedenciaID = @I_ProcedenciaID AND obs.I_ObservID = @I_ObservID"
                                                         , new { I_ProcedenciaID = procedenciaID, I_TablaID = tablaID, I_ObservID = observacionID }
                                                         , commandType: CommandType.Text);
             }
 
             return result;
         }
+
+        public static DataTable ObtenerReporteObservados(int procedenciaID, int observacionID, int tablaID)
+        {
+            DataTable result = new DataTable();
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                string query = "SELECT C_RcCod AS 'COD RC', C_CodAlu AS 'COD ALU', T_ApePaterno AS 'AP. PATERNO', T_ApeMaterno AS 'AP MATERNO', T_Nombre AS 'NOMBRE', " +
+                                      "C_NumDNI AS 'NUM DOC', C_Sexo AS 'SEXO', C_CodModIng AS 'MOD INGR', C_AnioIngreso AS 'AÑO INGR', T_ObservCod AS 'OBSERVACION'  " +
+                               "FROM dbo.TR_Alumnos alu " +
+                                   "INNER JOIN TI_ObservacionRegistroTabla obs ON alu.I_RowID = obs.I_FilaTablaID AND obs.I_TablaID = @I_TablaID " +
+                                   "INNER JOIN TC_CatalogoObservacion co ON obs.I_ObservID = co.I_ObservID " +
+                               "WHERE obs.I_ProcedenciaID = @I_ProcedenciaID AND obs.I_ObservID = IIF(@I_ObservID = 0, obs.I_ObservID, @I_ObservID)" +
+                               "ORDER BY C_NumDNI;";
+
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("I_ProcedenciaID", procedenciaID);
+                command.Parameters.AddWithValue("I_ObservID", observacionID);
+                command.Parameters.AddWithValue("I_TablaID", tablaID);
+
+                using (SqlDataAdapter dataAdapter = new SqlDataAdapter(command))
+                {
+                    dataAdapter.Fill(result);
+                }
+            }
+
+            return result;
+        }
+
 
         public static Alumno ObtenerPorId(int id)
         {

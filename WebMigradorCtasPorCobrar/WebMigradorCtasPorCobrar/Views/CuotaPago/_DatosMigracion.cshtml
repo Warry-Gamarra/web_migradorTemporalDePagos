@@ -2,13 +2,21 @@
 @model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Migracion.CuotaPago>
 @using GridMvc.Html
 
-
+@{ 
+    string str_procedencia = ViewBag.Procedencia.ToString();
+}
 <div class="row mb-5 form-inline">
     <div class="col-md-2 col-sm-3">
         <label class="control-label">Filtro observación</label>
     </div>
-    <div class="col-md-4">
+    <div class="">
         @Html.DropDownList("cboTipoObs", ViewBag.Observaciones as SelectList, "- SIN FILTRO -", new { @class = "form-control" })
+    </div>
+
+    <div class="col-md-2 col-sm-3">
+        <a href="@Url.Action("ExportarObservaciones", "CuotaPago", new { id = ViewBag.IdObservacion, procedencia = ViewBag.Procedencia })">
+            <i class="fa fa-file-excel-o"></i> Exportar Observaciones
+        </a>
     </div>
 </div>
 
@@ -52,7 +60,7 @@
     $('#btn-proc').removeClass('active');
 
     $('#cboTipoObs').on('change', function () {
-        location.href = '@Url.Action("Cuded", "CuotaPago", new { area = "", partial = "DatosMigracion" })' + '&tipo_obs=' + this.value;
+        location.href = '@Url.Action(str_procedencia, "CuotaPago", new { area = "", partial = "DatosMigracion" })' + '&tipo_obs=' + this.value;
     })
 
 </script>

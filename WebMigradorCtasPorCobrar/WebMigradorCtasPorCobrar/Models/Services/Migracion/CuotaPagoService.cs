@@ -6,6 +6,8 @@ using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
@@ -65,6 +67,23 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             return result;
+        }
+
+
+        public byte[] ObtenerDatosObservaciones(Procedencia procedencia, int? tipo_obsID)
+        {
+            XLWorkbook excel_book = new XLWorkbook();
+            MemoryStream result = new MemoryStream();
+
+            tipo_obsID = tipo_obsID.HasValue ? tipo_obsID : 0;
+            var data = CuotaPagoRepository.ObtenerReporteObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Des);
+
+            var sheet = excel_book.Worksheets.Add(data, "Observaciones");
+            sheet.ColumnsUsed().AdjustToContents();
+
+            excel_book.SaveAs(result);
+
+            return result.ToArray();
         }
 
 
