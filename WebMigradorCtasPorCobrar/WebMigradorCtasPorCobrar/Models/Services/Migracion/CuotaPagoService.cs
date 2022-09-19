@@ -23,11 +23,27 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return CuotaPagoRepository.Obtener((int)procedencia);
         }
 
-
         public CuotaPago Obtener(int cuotaID)
         {
             return CuotaPagoRepository.ObtenerPorId(cuotaID);
         }
+
+        public byte[] ObtenerDatosObservaciones(Procedencia procedencia, int? tipo_obsID)
+        {
+            XLWorkbook excel_book = new XLWorkbook();
+            MemoryStream result = new MemoryStream();
+
+            tipo_obsID = tipo_obsID.HasValue ? tipo_obsID : 0;
+            var data = CuotaPagoRepository.ObtenerReporteObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Des);
+
+            var sheet = excel_book.Worksheets.Add(data, "Observaciones");
+            sheet.ColumnsUsed().AdjustToContents();
+
+            excel_book.SaveAs(result);
+
+            return result.ToArray();
+        }
+
 
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {
@@ -68,24 +84,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             return result;
         }
-
-
-        public byte[] ObtenerDatosObservaciones(Procedencia procedencia, int? tipo_obsID)
-        {
-            XLWorkbook excel_book = new XLWorkbook();
-            MemoryStream result = new MemoryStream();
-
-            tipo_obsID = tipo_obsID.HasValue ? tipo_obsID : 0;
-            var data = CuotaPagoRepository.ObtenerReporteObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Des);
-
-            var sheet = excel_book.Worksheets.Add(data, "Observaciones");
-            sheet.ColumnsUsed().AdjustToContents();
-
-            excel_book.SaveAs(result);
-
-            return result.ToArray();
-        }
-
 
         public Response EjecutarValidaciones(Procedencia procedencia)
         {

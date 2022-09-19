@@ -6,14 +6,43 @@ using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
+using ClosedXML.Excel;
+using System.IO;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
     public class ConceptoPagoService
     {
-        public IEnumerable<ConceptoPago> Obtener(Procedencia procedencia)
+        public IEnumerable<ConceptoPago> Obtener(Procedencia procedencia, int? tipo_obsID)
         {
+            if (tipo_obsID.HasValue)
+            {
+                return ConceptoPagoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Pri);
+            }
+
             return ConceptoPagoRepository.Obtener((int)procedencia);
+        }
+
+        public ConceptoPago Obtener(int cuotaID)
+        {
+            return ConceptoPagoRepository.ObtenerPorId(cuotaID);
+        }
+
+
+        public byte[] ObtenerDatosObservaciones(Procedencia procedencia, int? tipo_obsID)
+        {
+            XLWorkbook excel_book = new XLWorkbook();
+            MemoryStream result = new MemoryStream();
+
+            tipo_obsID = tipo_obsID.HasValue ? tipo_obsID : 0;
+            var data = ConceptoPagoRepository.ObtenerReporteObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Pri);
+
+            var sheet = excel_book.Worksheets.Add(data, "Observaciones");
+            sheet.ColumnsUsed().AdjustToContents();
+
+            excel_book.SaveAs(result);
+
+            return result.ToArray();
         }
 
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)

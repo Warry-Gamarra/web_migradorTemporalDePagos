@@ -10,7 +10,7 @@
         @Html.DropDownList("cboTipoObs", ViewBag.Observaciones as SelectList, "- SIN FILTRO -", new { @class = "form-control" })
     </div>
 
-    <div class="col-md-2 col-sm-3">
+    <div class="col-md-2 col-sm-3" id="link-exportar">
         <a href="@Url.Action("ExportarObservaciones", "Estudiante", new { id = ViewBag.IdObservacion, procedencia = ViewBag.Procedencia })">
             <i class="fa fa-file-excel-o"></i> Exportar Observaciones
         </a>
@@ -57,6 +57,7 @@
     $('#cboTipoObs').on('change', function () {
         let id_procedencia = $('#cbo-procedencia').val();
 
+        $('#link-exportar').hide();
         location.href = '@Url.Action("Index", "Estudiante", new { area = "", partial = "DatosMigracion" })' + '&procedencia=' + id_procedencia + '&tipo_obs=' + this.value;
     })
 

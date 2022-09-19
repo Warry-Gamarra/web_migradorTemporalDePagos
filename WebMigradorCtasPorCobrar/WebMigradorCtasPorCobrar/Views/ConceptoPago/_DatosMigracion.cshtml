@@ -2,6 +2,24 @@
 @model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Migracion.ConceptoPago>
 @using GridMvc.Html
 
+@{
+    string str_procedencia = ViewBag.Procedencia.ToString();
+}
+
+<div class="row mb-5 form-inline">
+    <div class="col-md-2 col-sm-3">
+        <label class="control-label">Filtro observación</label>
+    </div>
+    <div class="">
+        @Html.DropDownList("cboTipoObs", ViewBag.Observaciones as SelectList, "- SIN FILTRO -", new { @class = "form-control" })
+    </div>
+
+    <div class="col-md-2 col-sm-3" id="link-exportar">
+        <a href="@Url.Action("ExportarObservaciones", "ConceptoPago", new { id = ViewBag.IdObservacion, procedencia = ViewBag.Procedencia })">
+            <i class="fa fa-file-excel-o"></i> Exportar Observaciones
+        </a>
+    </div>
+</div>
 
 <div class="table-responsive" style="min-height:300px">
     @Html.Grid(Model).Columns(columns =>
@@ -39,4 +57,10 @@
     $('#btn-tp').removeClass('active');
     $('#btn-mg').addClass('active');
     $('#btn-proc').removeClass('active');
+
+    $('#cboTipoObs').on('change', function () {
+        $('#link-exportar').hide();
+        location.href = '@Url.Action(str_procedencia, "ConceptoPago", new { area = "", partial = "DatosMigracion" })' + '&tipo_obs=' + this.value;
+    })
+
 </script>

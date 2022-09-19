@@ -863,3 +863,14 @@ FROM	#temp_pagos_conceptos det
 		LEFT JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
 WHERE det.B_Migrable = 1 
 	  AND DET.I_OblRowID = 239174 
+
+
+
+select * from VW_ObservacionesTabla
+
+SELECT C_RcCod AS 'COD RC', C_CodAlu AS 'COD ALU', T_ApePaterno AS 'AP. PATERNO', T_ApeMaterno AS 'AP MATERNO', T_Nombre AS 'NOMBRE', 
+	   C_NumDNI AS 'NUM DOC', C_Sexo AS 'SEXO', C_CodModIng AS 'MOD INGR', C_AnioIngreso AS 'AÑO INGR', T_ObservCod AS 'OBSERVACION' 
+	   FROM dbo.TR_Alumnos alu 
+INNER JOIN TI_ObservacionRegistroTabla obs ON alu.I_RowID = obs.I_FilaTablaID AND obs.I_TablaID = 1
+INNER JOIN TC_CatalogoObservacion co ON obs.I_ObservID = co.I_ObservID
+WHERE alu.I_ProcedenciaID = 1 AND obs.I_ObservID = 30

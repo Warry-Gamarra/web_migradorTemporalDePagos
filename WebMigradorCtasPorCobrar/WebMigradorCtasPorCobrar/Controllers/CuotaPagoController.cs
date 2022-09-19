@@ -74,7 +74,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
             ViewBag.IdObservacion = tipo_obs;
             ViewBag.Procedencia = procedencia;
 
-
             return PartialView("_DatosMigracion", model);
         }
 

@@ -67,9 +67,16 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
-        public ActionResult DatosMigracion(Procedencia procedencia)
+        public ActionResult DatosMigracion(Procedencia procedencia, int? tipo_obs)
         {
-            var model = _conceptoPagoServiceMigracion.Obtener(procedencia);
+            var model = _conceptoPagoServiceMigracion.Obtener(procedencia, tipo_obs);
+
+            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Cp_Pri, procedencia),
+                                                "I_ObservID", "T_ObservDesc", tipo_obs);
+
+            ViewBag.IdObservacion = tipo_obs;
+            ViewBag.Procedencia = procedencia;
+
             return PartialView("_DatosMigracion", model);
         }
 
@@ -127,6 +134,15 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             return PartialView("_ProcesoMigracion");
         }
+
+
+        public ActionResult ExportarObservaciones(int? id, Procedencia procedencia)
+        {
+            var model = _conceptoPagoServiceMigracion.ObtenerDatosObservaciones(procedencia, id);
+
+            return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Observaciones-ConceptoPago.xlsx");
+        }
+
 
     }
 }
