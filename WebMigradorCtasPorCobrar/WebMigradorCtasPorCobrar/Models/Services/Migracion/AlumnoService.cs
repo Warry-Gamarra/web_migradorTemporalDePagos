@@ -46,9 +46,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
 
 
-        public Response Save(Alumno alumno)
+        public Response Save(Alumno alumno, Procedencia procedencia)
         {
             Response result = new Response();
+
+            alumno.I_ProcedenciaID = (byte)procedencia;
 
             result = AlumnoRepository.Save(alumno);
 

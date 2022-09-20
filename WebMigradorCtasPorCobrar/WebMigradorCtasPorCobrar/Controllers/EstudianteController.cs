@@ -115,19 +115,21 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             var model = _alumnoServiceMigracion.Obtener(id);
 
+            ViewBag.Procedencia = (Procedencia)model.I_ProcedenciaID;
+
             return PartialView("_Editar", model);
         }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Save(Alumno model)
+        public ActionResult Save(Alumno model, Procedencia procedencia)
         {
             Response result = new Response();
 
             if (ModelState.IsValid)
             {
-                result = _alumnoServiceMigracion.Save(model);
+                result = _alumnoServiceMigracion.Save(model, procedencia);
             }
             else
             {
@@ -153,7 +155,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             var model = _alumnoServiceMigracion.ObtenerDatosObservaciones(procedencia, id);
 
-            return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Observaciones-Alumnos.xlsx");
+            return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Observaciones-Alumnos " + procedencia + ".xlsx");
         }
 
     }

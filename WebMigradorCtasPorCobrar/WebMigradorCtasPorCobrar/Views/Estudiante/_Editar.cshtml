@@ -1,10 +1,13 @@
 ﻿
 @model WebMigradorCtasPorCobrar.Models.Entities.Migracion.Alumno
 
-@{ 
+@{
     var pregrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Pregrado;
     var posgrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Posgrado;
     var cuded = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Cuded;
+
+    var procedencia_value = ViewBag.Procedencia;
+
 }
 
 @Scripts.Render("~/bundles/jqueryval")
@@ -59,19 +62,19 @@
             <div class="form-row">
                 @Html.Label("Fec Nacimiento", new { @class = "col-md-4 col-form-label" })
                 <div class="col-md-4">
-                    @Html.TextBoxFor(model => model.D_FecNac, new { @class = "form-control" })
-                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.D_FecNac)</p>
+                    @Html.TextBox("FecNac", Model.D_FecNac, new { @class = "form-control" })
+                    <p class="text-danger small"></p>
                 </div>
             </div>
             <div class="form-row">
                 @Html.Label("Procedencia", new { @class = "col-md-4 col-form-label" })
                 <div class="col-md-4">
-                    <select class="form-control" id="cbo-procedencia">
+                    <select class="form-control" id="cbo-procedencia" name="procedencia">
                         <option value="@pregrado">PREGRADO</option>
                         <option value="@posgrado">POSGRADO</option>
                         <option value="@cuded">CUDED</option>
                     </select>
-                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.I_ProcedenciaID)</p>
+                    <p class="text-danger small">&nbsp;</p>
                 </div>
             </div>
             <div class="form-row">
@@ -124,6 +127,20 @@
     $(document).on('ready', function () {
         $('#btnsubmit').removeClass('disabled');
     });
+
+    if ('@procedencia_value' === 'Pregrado') {
+        $('#cbo-procedencia option[value=Pregrado]').prop('selected', true)
+    }
+    else if ('@procedencia_value' === 'Posgrado') {
+        $('#cbo-procedencia option[value=Posgrado]').prop('selected', true)
+    }
+    else if ('@procedencia_value' === 'Cuded') {
+        $('#cbo-procedencia option[value=Cuded]').prop('selected', true)
+    }
+    else {
+        $('#cbo-procedencia option[value=""]').prop('selected', true)
+    }
+
 
     $("form").submit(function () {
         if (parseInt($("#submited").val()) > 0) {
