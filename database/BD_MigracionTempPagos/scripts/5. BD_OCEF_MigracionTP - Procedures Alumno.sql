@@ -886,9 +886,9 @@ BEGIN
 	END 
 
 	CREATE TABLE ##TEMP_AlumnoPersona (
-		I_PersonaID		int IDENTITY (1, 1),
 		C_RcCod			varchar(3), 
 		C_CodAlu		varchar(20),
+		I_PersonaID		int,
 		C_NumDNI		varchar(20),
 		C_CodTipDoc		varchar(5),
 		T_ApePaterno	varchar(50),
@@ -899,38 +899,80 @@ BEGIN
 		B_Migrado		bit	 
 	)
 
+	CREATE TABLE ##TEMP_Persona (
+		I_PersonaID		int IDENTITY (1, 1),
+		C_NumDNI		varchar(20),
+		C_CodTipDoc		varchar(5),
+		T_ApePaterno	varchar(50),
+		T_ApeMaterno	varchar(50),
+		T_Nombre		varchar(50),
+		C_Sexo			char(1),
+		D_FecNac		date
+	)
+
+
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		SET IDENTITY_INSERT ##TEMP_AlumnoPersona ON
+		--SET IDENTITY_INSERT ##TEMP_AlumnoPersona ON
 
-		INSERT INTO ##TEMP_AlumnoPersona (I_PersonaID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Migrado)
-		SELECT	A.I_PersonaID, A.C_RcCod, A.C_CodAlu, P.C_NumDNI, P.C_CodTipDoc, P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo), 
-				IIF(P.D_FecNac IS NULL, TA.D_FecNac, P.D_FecNac), TA.B_Migrado
+		--INSERT INTO ##TEMP_AlumnoPersona (I_PersonaID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Migrado)
+		--SELECT	A.I_PersonaID, A.C_RcCod, A.C_CodAlu, P.C_NumDNI, P.C_CodTipDoc, P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo), 
+		--		IIF(P.D_FecNac IS NULL, TA.D_FecNac, P.D_FecNac), TA.B_Migrado
+		--FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
+		--		INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID AND P.B_Eliminado = 0 AND A.B_Eliminado = 0
+		--		INNER JOIN (SELECT DISTINCT C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, 
+		--									I_ProcedenciaID, B_Migrado
+		--					 FROM TR_Alumnos) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+		--WHERE	(A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
+		--		AND I_ProcedenciaID = @I_ProcedenciaID
+		--ORDER BY A.I_PersonaID
+		
+		--SET IDENTITY_INSERT ##TEMP_AlumnoPersona OFF
+
+		SET IDENTITY_INSERT ##TEMP_Persona ON
+
+		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
+		SELECT	A.I_PersonaID, P.C_NumDNI, P.C_CodTipDoc, P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, 
+				IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo), IIF(P.D_FecNac IS NULL, TA.D_FecNac, P.D_FecNac)
 		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
 				INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID AND P.B_Eliminado = 0 AND A.B_Eliminado = 0
-				INNER JOIN (SELECT DISTINCT C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, 
-											I_ProcedenciaID, B_Migrado
-							 FROM TR_Alumnos) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+				INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
 		WHERE	(A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
 				AND I_ProcedenciaID = @I_ProcedenciaID
 		ORDER BY A.I_PersonaID
 		
-		SET IDENTITY_INSERT ##TEMP_AlumnoPersona OFF
+		SET IDENTITY_INSERT ##TEMP_Persona OFF
 
-		--SELECT IDENT_CURRENT('##TEMP_AlumnoPersona')
 
-		INSERT INTO ##TEMP_AlumnoPersona (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Migrado)
-		SELECT	TA.C_RcCod, TA.C_CodAlu, TA.C_NumDNI, IIF(TA.C_CodTipDoc IS NULL, IIF(LEN(TA.C_NumDNI) = 8, 'DI', NULL), TA.C_CodTipDoc), 
-				TA.T_ApePaterno, TA.T_ApeMaterno, TA.T_Nombre, TA.C_Sexo, TA.D_FecNac, TA.B_Migrado
+		DECLARE @I_TempPersonaID int
+		SET @I_TempPersonaID = IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona')
+
+		SET IDENTITY_INSERT ##TEMP_Persona ON
+
+		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
+		SELECT	DISTINCT @I_TempPersonaID + ROW_NUMBER() OVER(ORDER BY TA.T_ApePaterno) AS I_PersonaID, TA.C_NumDNI, 
+				IIF(TA.C_CodTipDoc IS NULL, IIF(LEN(TA.C_NumDNI) = 8, 'DI', NULL), TA.C_CodTipDoc) AS C_CodTipDoc, 
+				TA.T_ApePaterno, TA.T_ApeMaterno, TA.T_Nombre, TA.C_Sexo, TA.D_FecNac
 		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
-				RIGHT JOIN (SELECT DISTINCT C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, 
-											I_ProcedenciaID, B_Migrado
-							 FROM TR_Alumnos
-							 WHERE B_Migrable = 1) TA 
-							ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod  
-		WHERE ((A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
-			  AND A.I_PersonaID IS NULL
-			  AND I_ProcedenciaID = @I_ProcedenciaID
+				RIGHT JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod AND TA.B_Migrable = 1 
+		WHERE	(A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
+				AND I_ProcedenciaID = @I_ProcedenciaID
+
+		SET IDENTITY_INSERT ##TEMP_Persona OFF
+
+
+		--INSERT INTO ##TEMP_AlumnoPersona (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Migrado)
+		--SELECT	TA.C_RcCod, TA.C_CodAlu, TA.C_NumDNI, IIF(TA.C_CodTipDoc IS NULL, IIF(LEN(TA.C_NumDNI) = 8, 'DI', NULL), TA.C_CodTipDoc), 
+		--		TA.T_ApePaterno, TA.T_ApeMaterno, TA.T_Nombre, TA.C_Sexo, TA.D_FecNac, TA.B_Migrado
+		--FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
+		--		RIGHT JOIN (SELECT DISTINCT C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, 
+		--									I_ProcedenciaID, B_Migrado
+		--					 FROM TR_Alumnos
+		--					 WHERE B_Migrable = 1) TA 
+		--					ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod  
+		--WHERE ((A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
+		--	  AND A.I_PersonaID IS NULL
+		--	  AND I_ProcedenciaID = @I_ProcedenciaID
 
 		--SELECT * FROM ##TEMP_AlumnoPersona ORDER BY I_PersonaID
 
@@ -1005,8 +1047,8 @@ BEGIN
 
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1
-		SET @T_Message =  'Total: ' + CAST(@I_CantAlu AS varchar) + '|Insertados Persona: ' + CAST(@I_Insertados_persona AS varchar) + '|Insertados Alumno: ' + CAST(@I_Insertados_alumno AS varchar)
-						+ '|Actualizados Persona: ' + CAST(@I_Actualizados_persona AS varchar) + '|Actualizados Alumno: ' + CAST(@I_Actualizados_alumno AS varchar)
+		SET @T_Message =  'Total: ' + CAST(@I_CantAlu AS varchar) + ' | Insertados Persona: ' + CAST(@I_Insertados_persona AS varchar) + ' | Insertados Alumno: ' + CAST(@I_Insertados_alumno AS varchar)
+						+ ' | Actualizados Persona: ' + CAST(@I_Actualizados_persona AS varchar) + ' | Actualizados Alumno: ' + CAST(@I_Actualizados_alumno AS varchar)
 
 	END TRY
 	BEGIN CATCH
