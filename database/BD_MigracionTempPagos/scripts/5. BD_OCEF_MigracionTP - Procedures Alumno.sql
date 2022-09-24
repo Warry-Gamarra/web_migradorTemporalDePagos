@@ -887,17 +887,17 @@ BEGIN
 
 	CREATE TABLE ##TEMP_AlumnoPersona (
 		C_RcCod			varchar(3), 
-		C_CodAlu		varchar(20),
+		C_CodAlu		varchar(20), 
 		I_PersonaID		int,
-		C_NumDNI		varchar(20),
-		C_CodTipDoc		varchar(5),
-		T_ApePaterno	varchar(50),
-		T_ApeMaterno	varchar(50),
-		T_Nombre		varchar(50),
-		C_Sexo			char(1),
-		D_FecNac		date, 
+		C_CodModIng		varchar(3),
+		C_AnioIngreso	varchar(4),
 		B_Migrado		bit	 
 	)
+
+	IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_Persona')
+	BEGIN
+		DROP TABLE ##TEMP_Persona
+	END 
 
 	CREATE TABLE ##TEMP_Persona (
 		I_PersonaID		int IDENTITY (1, 1),
@@ -960,29 +960,13 @@ BEGIN
 
 		SET IDENTITY_INSERT ##TEMP_Persona OFF
 
-
-		--INSERT INTO ##TEMP_AlumnoPersona (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Migrado)
-		--SELECT	TA.C_RcCod, TA.C_CodAlu, TA.C_NumDNI, IIF(TA.C_CodTipDoc IS NULL, IIF(LEN(TA.C_NumDNI) = 8, 'DI', NULL), TA.C_CodTipDoc), 
-		--		TA.T_ApePaterno, TA.T_ApeMaterno, TA.T_Nombre, TA.C_Sexo, TA.D_FecNac, TA.B_Migrado
-		--FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
-		--		RIGHT JOIN (SELECT DISTINCT C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, 
-		--									I_ProcedenciaID, B_Migrado
-		--					 FROM TR_Alumnos
-		--					 WHERE B_Migrable = 1) TA 
-		--					ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod  
-		--WHERE ((A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
-		--	  AND A.I_PersonaID IS NULL
-		--	  AND I_ProcedenciaID = @I_ProcedenciaID
-
-		--SELECT * FROM ##TEMP_AlumnoPersona ORDER BY I_PersonaID
-
 		SET IDENTITY_INSERT BD_UNFV_Repositorio.dbo.TC_Persona ON
 
 		MERGE BD_UNFV_Repositorio.dbo.TC_Persona AS TRG
 		USING (SELECT DISTINCT  AP.I_PersonaID, AP.C_NumDNI, AP.C_CodTipDoc, AP.T_ApePaterno COLLATE Latin1_General_CI_AI as T_ApePaterno, 
 								AP.T_ApeMaterno COLLATE Latin1_General_CI_AI as T_ApeMaterno, AP.T_Nombre COLLATE Latin1_General_CI_AI as T_Nombre, 
-								AP.C_Sexo, AP.D_FecNac, AP.B_Migrado
-			   FROM ##TEMP_AlumnoPersona AP) AS SRC
+								AP.C_Sexo, AP.D_FecNac, 1 AS B_Migrado
+			   FROM ##TEMP_Persona AP) AS SRC
 		ON TRG.I_PersonaID = SRC.I_PersonaID
 		WHEN MATCHED AND SRC.B_Migrado = 0 THEN
 			UPDATE SET	TRG.C_NumDNI	 = SRC.C_NumDNI,
@@ -1002,10 +986,31 @@ BEGIN
 		
 		SET IDENTITY_INSERT BD_UNFV_Repositorio.dbo.TC_Persona OFF
 
+		
+		INSERT INTO ##TEMP_AlumnoPersona (I_PersonaID, C_RcCod, C_CodAlu, C_CodModIng, C_AnioIngreso, B_Migrado)
+		SELECT A.I_PersonaID, A.C_RcCod, A.C_CodAlu, A.C_CodModIng, IIF(A.C_AnioIngreso IS NULL, TA.C_AnioIngreso, A.C_AnioIngreso), 1 AS B_Migrado
+		FROM   BD_UNFV_Repositorio.dbo.TC_Alumno A 
+			   INNER JOIN (SELECT * FROM TR_Alumnos WHERE B_Migrable = 1) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+		WHERE  ((A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
+			   AND TA.I_ProcedenciaID = @I_ProcedenciaID
+		UNION
+		SELECT A.I_PersonaID, TA.C_RcCod, TA.C_CodAlu, TA.C_CodModIng, TA.C_AnioIngreso, TA.B_Migrado
+		FROM   BD_UNFV_Repositorio.dbo.TC_Alumno A 
+			   RIGHT JOIN (SELECT * 
+							FROM TR_Alumnos AL
+								 INNER JOIN ##TEMP_Persona TP ON AL.C_NumDNI = TP.C_NumDNI AND AL.T_ApePaterno = TP.T_ApePaterno 
+											AND AL.T_ApeMaterno = TP.T_ApeMaterno AND AL.T_Nombre = TP.T_Nombre AND AL.D_FecNac = TP.D_FecNac
+							WHERE B_Migrable = 1) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+		WHERE  ((TA.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (TA.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
+			   AND A.I_PersonaID IS NULL
+			   AND TA.I_ProcedenciaID = @I_ProcedenciaID
+			  
+
+
 
 		MERGE BD_UNFV_Repositorio.dbo.TC_Alumno AS TRG
 		USING (SELECT DISTINCT AP.I_PersonaID, A.C_RcCod, A.C_CodAlu,A.C_CodModIng, A.C_AnioIngreso, A.B_Migrado 
-				FROM ##TEMP_AlumnoPersona AP 
+				FROM ##TEMP_Persona AP 
 					INNER JOIN TR_Alumnos A ON AP.C_CodAlu = A.C_CodAlu AND AP.C_RcCod = A.C_RcCod AND A.B_Migrable = 1) AS SRC
 		ON	TRG.C_RcCod = SRC.C_RcCod 
 			AND TRG.C_CodAlu = SRC.C_CodAlu
