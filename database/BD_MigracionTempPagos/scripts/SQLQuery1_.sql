@@ -953,3 +953,8 @@ WHERE alu.I_ProcedenciaID = 1 AND obs.I_ObservID = 30
 						WHERE B_Migrable = 1) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
 	WHERE  A.I_PersonaID IS NULL
 		AND TA.I_ProcedenciaID = @I_ProcedenciaID
+
+
+exec sp_change_users_login 'report'
+exec sp_change_users_login 'auto_fix', 'UserOCEF'
+exec sp_change_users_login 'auto_fix', 'UserUNFV'

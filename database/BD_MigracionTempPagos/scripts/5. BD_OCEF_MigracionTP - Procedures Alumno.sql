@@ -913,26 +913,11 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		--SET IDENTITY_INSERT ##TEMP_AlumnoPersona ON
-
-		--INSERT INTO ##TEMP_AlumnoPersona (I_PersonaID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Migrado)
-		--SELECT	A.I_PersonaID, A.C_RcCod, A.C_CodAlu, P.C_NumDNI, P.C_CodTipDoc, P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo), 
-		--		IIF(P.D_FecNac IS NULL, TA.D_FecNac, P.D_FecNac), TA.B_Migrado
-		--FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
-		--		INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID AND P.B_Eliminado = 0 AND A.B_Eliminado = 0
-		--		INNER JOIN (SELECT DISTINCT C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, 
-		--									I_ProcedenciaID, B_Migrado
-		--					 FROM TR_Alumnos) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
-		--WHERE	(A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
-		--		AND I_ProcedenciaID = @I_ProcedenciaID
-		--ORDER BY A.I_PersonaID
-		
-		--SET IDENTITY_INSERT ##TEMP_AlumnoPersona OFF
 
 		SET IDENTITY_INSERT ##TEMP_Persona ON
 
 		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
-		SELECT	A.I_PersonaID, P.C_NumDNI, P.C_CodTipDoc, P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, 
+		SELECT	DISTINCT A.I_PersonaID, LTRIM(RTRIM(REPLACE(P.C_NumDNI,' ', ' '))), P.C_CodTipDoc, P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, 
 				IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo), IIF(P.D_FecNac IS NULL, TA.D_FecNac, P.D_FecNac)
 		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
 				INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID AND P.B_Eliminado = 0 AND A.B_Eliminado = 0
@@ -945,9 +930,33 @@ BEGIN
 
 
 		DECLARE @I_TempPersonaID int
-		SET @I_TempPersonaID = IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona')
+		SET @I_TempPersonaID = IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona') 
 
 		SET IDENTITY_INSERT ##TEMP_Persona ON
+
+		;WITH alumnos_no_persona (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, I_ProcedenciaID, 
+								 C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, D_FecCarga, B_Migrado, B_Migrable)
+		AS
+		(SELECT AL.C_RcCod, AL.C_CodAlu, AL.C_NumDNI, AL.C_CodTipDoc, AL.T_ApePaterno, AL.T_ApeMaterno, AL.T_Nombre, AL.I_ProcedenciaID, 
+				AL.C_Sexo, AL.D_FecNac, AL.C_CodModIng, AL.C_AnioIngreso, AL.D_FecCarga, AL.B_Migrado, AL.B_Migrable 
+		 FROM TR_Alumnos AL
+			  LEFT JOIN ##TEMP_Persona TP ON ISNULL(LTRIM(RTRIM(REPLACE(AL.C_NumDNI,' ', ' '))), '')= ISNULL(LTRIM(RTRIM(REPLACE(TP.C_NumDNI,' ', ' '))), '')
+			  AND AL.T_ApePaterno = TP.T_ApePaterno AND AL.T_ApeMaterno = TP.T_ApeMaterno 
+			  AND AL.T_Nombre = TP.T_Nombre AND ISNULL(AL.D_FecNac, '') = ISNULL(TP.D_FecNac, '') 
+			  AND ISNULL(AL.C_Sexo, '') = ISNULL(TP.C_Sexo, '') 
+		WHERE TP.I_PersonaID IS NULL)
+
+		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
+		SELECT DISTINCT (@I_TempPersonaID + ROW_NUMBER() OVER(ORDER BY T_ApePaterno)) AS I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac
+		FROM   (SELECT	DISTINCT LTRIM(RTRIM(REPLACE(TA.C_NumDNI,' ', ' '))) C_NumDNI, 
+						IIF(TA.C_CodTipDoc IS NULL, IIF(LEN(TA.C_NumDNI) = 8, 'DI', NULL), TA.C_CodTipDoc) AS C_CodTipDoc, 
+						TA.T_ApePaterno, TA.T_ApeMaterno, TA.T_Nombre, TA.C_Sexo, TA.D_FecNac
+				  FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
+						RIGHT JOIN alumnos_no_persona TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod AND TA.B_Migrable = 1					 
+				 WHERE	(A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
+						AND A.I_PersonaID IS NULL
+						AND I_ProcedenciaID = @I_ProcedenciaID
+			) AS T
 
 		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
 		SELECT	DISTINCT @I_TempPersonaID + ROW_NUMBER() OVER(ORDER BY TA.T_ApePaterno) AS I_PersonaID, TA.C_NumDNI, 
@@ -959,6 +968,7 @@ BEGIN
 				AND I_ProcedenciaID = @I_ProcedenciaID
 
 		SET IDENTITY_INSERT ##TEMP_Persona OFF
+
 
 		SET IDENTITY_INSERT BD_UNFV_Repositorio.dbo.TC_Persona ON
 
@@ -990,28 +1000,25 @@ BEGIN
 		INSERT INTO ##TEMP_AlumnoPersona (I_PersonaID, C_RcCod, C_CodAlu, C_CodModIng, C_AnioIngreso, B_Migrado)
 		SELECT A.I_PersonaID, A.C_RcCod, A.C_CodAlu, A.C_CodModIng, IIF(A.C_AnioIngreso IS NULL, TA.C_AnioIngreso, A.C_AnioIngreso), 1 AS B_Migrado
 		FROM   BD_UNFV_Repositorio.dbo.TC_Alumno A 
-			   INNER JOIN (SELECT * FROM TR_Alumnos WHERE B_Migrable = 1) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
-		WHERE  ((A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
-			   AND TA.I_ProcedenciaID = @I_ProcedenciaID
+				INNER JOIN (SELECT * FROM TR_Alumnos WHERE B_Migrable = 1) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+		WHERE  TA.I_ProcedenciaID = @I_ProcedenciaID
 		UNION
-		SELECT A.I_PersonaID, TA.C_RcCod, TA.C_CodAlu, TA.C_CodModIng, TA.C_AnioIngreso, TA.B_Migrado
+		SELECT TA.I_PersonaID, TA.C_RcCod, TA.C_CodAlu, TA.C_CodModIng, TA.C_AnioIngreso, TA.B_Migrado
 		FROM   BD_UNFV_Repositorio.dbo.TC_Alumno A 
-			   RIGHT JOIN (SELECT * 
+				RIGHT JOIN (SELECT TP.I_PersonaID , AL.C_RcCod, AL.C_CodAlu, AL.C_CodModIng, AL.C_AnioIngreso, AL.B_Migrado, AL.I_ProcedenciaID
 							FROM TR_Alumnos AL
-								 INNER JOIN ##TEMP_Persona TP ON AL.C_NumDNI = TP.C_NumDNI AND AL.T_ApePaterno = TP.T_ApePaterno 
-											AND AL.T_ApeMaterno = TP.T_ApeMaterno AND AL.T_Nombre = TP.T_Nombre AND AL.D_FecNac = TP.D_FecNac
-							WHERE B_Migrable = 1) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
-		WHERE  ((TA.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (TA.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL))
-			   AND A.I_PersonaID IS NULL
-			   AND TA.I_ProcedenciaID = @I_ProcedenciaID
+								  INNER JOIN ##TEMP_Persona TP ON ISNULL(LTRIM(RTRIM(REPLACE(AL.C_NumDNI,' ', ' '))), '') = ISNULL(LTRIM(RTRIM(REPLACE(TP.C_NumDNI,' ', ' '))), '')
+								  AND AL.T_ApePaterno = TP.T_ApePaterno AND AL.T_ApeMaterno = TP.T_ApeMaterno 
+								  AND AL.T_Nombre = TP.T_Nombre AND ISNULL(AL.D_FecNac, '') = ISNULL(TP.D_FecNac, '')
+								  AND ISNULL(AL.C_Sexo, '') = ISNULL(TP.C_Sexo, '') 
+						   ) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+		WHERE  A.I_PersonaID IS NULL
+			AND TA.I_ProcedenciaID = @I_ProcedenciaID
 			  
 
-
-
 		MERGE BD_UNFV_Repositorio.dbo.TC_Alumno AS TRG
-		USING (SELECT DISTINCT AP.I_PersonaID, A.C_RcCod, A.C_CodAlu,A.C_CodModIng, A.C_AnioIngreso, A.B_Migrado 
-				FROM ##TEMP_Persona AP 
-					INNER JOIN TR_Alumnos A ON AP.C_CodAlu = A.C_CodAlu AND AP.C_RcCod = A.C_RcCod AND A.B_Migrable = 1) AS SRC
+		USING (SELECT DISTINCT AP.I_PersonaID, AP.C_RcCod, AP.C_CodAlu, AP.C_CodModIng, AP.C_AnioIngreso, AP.B_Migrado 
+				FROM ##TEMP_AlumnoPersona AP) AS SRC
 		ON	TRG.C_RcCod = SRC.C_RcCod 
 			AND TRG.C_CodAlu = SRC.C_CodAlu
 			AND ISNULL(TRG.C_CodModIng, '')	= ISNULL(SRC.C_CodModIng, '')
@@ -1025,8 +1032,7 @@ BEGIN
 			INSERT (C_RcCod, C_CodAlu, I_PersonaID, C_CodModIng, C_AnioIngreso, B_Habilitado, B_Eliminado, D_FecCre)
 			VALUES (SRC.C_RcCod, SRC.C_CodAlu, SRC.I_PersonaID, SRC.C_CodModIng, SRC.C_AnioIngreso, 1, 0, @D_FecProceso)
 		OUTPUT	$ACTION, inserted.C_RcCod, inserted.C_CodAlu, inserted.C_AnioIngreso, inserted.C_CodModIng, 
-				inserted.I_PersonaID, deleted.I_PersonaID, 0 INTO #Tbl_output_alumno;
-		
+				inserted.I_PersonaID, deleted.I_PersonaID, 0 INTO #Tbl_output_alumno;		
 
 		UPDATE	t_Alumnos
 		SET		t_Alumnos.B_Migrado = 1,
