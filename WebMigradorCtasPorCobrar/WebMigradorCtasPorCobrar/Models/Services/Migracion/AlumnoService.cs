@@ -98,6 +98,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             Response result_AnioIngresoAlumno = new Response();
             Response result_ModIngresoAlumno = new Response();
             Response result_CorrespondenciaNumDoc = new Response();
+            Response result_CorrespondenciaNumDocRepo = new Response();
             Response result_SexoDiferenteMismoDoc = new Response();
 
             AlumnoRepository alumnoRepository = new AlumnoRepository();
@@ -109,6 +110,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             result_AnioIngresoAlumno = alumnoRepository.ValidarAnioIngresoAlumno((int)procedencia);
             //result_ModIngresoAlumno = alumnoRepository.ValidarModalidadIngresoAlumno((int)procedencia);
             result_CorrespondenciaNumDoc = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona((int)procedencia);
+            result_CorrespondenciaNumDocRepo = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo((int)procedencia);
             result_SexoDiferenteMismoDoc = alumnoRepository.ValidarSexoDiferenteMismoDocumento((int)procedencia);
 
             result.IsDone = result_CaracteresEspeciales.IsDone &&
@@ -143,6 +145,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_CorrespondenciaNumDoc.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento Repositorio</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_CorrespondenciaNumDocRepo.Message}</p>" +
                              $"        </dd>" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Observados por Sexo duplicado</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
