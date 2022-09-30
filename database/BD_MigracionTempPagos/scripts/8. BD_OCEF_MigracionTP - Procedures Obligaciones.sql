@@ -165,8 +165,8 @@ CREATE PROCEDURE USP_IU_CopiarTablaDetalleObligacionesPago
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 3,
---		@T_SchemaDB   varchar(20) = 'euded',
+--declare @I_ProcedenciaID	tinyint = 2,
+--		@T_SchemaDB   varchar(20) = 'eupg',
 --		@T_AnioIni	  varchar(4) = null,
 --		@T_AnioFin	  varchar(4) = null,
 --		@B_Resultado  bit,
@@ -243,7 +243,8 @@ BEGIN
 													 		  AND obl1.I_ProcedenciaID = obl2.I_ProcedenciaID
 										) obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
 							  			 		 AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
-							  			 		 AND det.fch_venc = obl.fch_venc --AND det.pagado = obl.Pagado '
+							  			 		 AND det.fch_venc = obl.fch_venc --AND det.pagado = obl.Pagado 
+						'
 							  			 							   
 		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
 		BEGIN
@@ -1370,8 +1371,6 @@ BEGIN
 		WHERE ISNUMERIC(ANO) = 1
 			  AND I_ProcedenciaID = @I_ProcedenciaID
 
-		--SELECT * FROM #Numeric_Year_Ec_Obl
-
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno AS TRG
 		USING (SELECT DISTINCT Cod_alu, Cod_rc, Ano, P, I_Periodo FROM  #Numeric_Year_Ec_Obl
 				WHERE CAST(Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin) AS SRC
@@ -1396,11 +1395,10 @@ BEGIN
 						AND CAST(obl.ano AS int) = mat.I_Anio 
 						AND obl.I_Periodo = mat.I_Periodo
 		WHERE obl.I_ProcedenciaID = @I_ProcedenciaID
-			  AND (obl.Cuota_pago = @I_ProcesoID OR @I_ProcesoID IS NULL)
+			  AND obl.Cuota_pago = IIF(@I_ProcesoID IS NULL, obl.Cuota_pago, @I_ProcesoID)
 			  AND (CAST(obl.Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin)
 			  AND B_Migrable = 1;
 
-		--select * from #tmp_obl_migra
 
 		SET @I_RowID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet')
 
@@ -1411,13 +1409,11 @@ BEGIN
 		FROM  TR_Ec_Det det
 			  INNER JOIN TR_Ec_Obl obl ON det.I_OblRowID = obl.I_RowID
 		WHERE det.I_ProcedenciaID = @I_ProcedenciaID
-			  AND (det.Cuota_pago = @I_ProcesoID OR @I_ProcesoID IS NULL)
+			  AND det.Cuota_pago = IIF(@I_ProcesoID IS NULL, det.Cuota_pago, @I_ProcesoID)
 			  AND (CAST(det.Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin)
 			  AND det.Concepto_f = 0
 			  AND det.B_Migrable = 1
 
-
-		--select * from #tmp_det_migra
 
 		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab ON
 

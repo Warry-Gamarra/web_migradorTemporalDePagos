@@ -958,3 +958,55 @@ WHERE alu.I_ProcedenciaID = 1 AND obs.I_ObservID = 30
 exec sp_change_users_login 'report'
 exec sp_change_users_login 'auto_fix', 'UserOCEF'
 exec sp_change_users_login 'auto_fix', 'UserUNFV'
+
+
+
+
+select count(*) from ##TEMP_Persona
+select distinct C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac from ##TEMP_Persona
+select C_NumDNI, count(*) from ##TEMP_Persona where C_NumDNI is not null group by C_NumDNI having COUNT(*) > 1
+select  C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, COUNT(*) FROM ##TEMP_Persona 
+group by C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
+having COUNT(*) > 1
+
+
+select  C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, COUNT(*) FROM TR_Alumnos 
+where C_NumDNI is not null
+group by C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
+having COUNT(*) > 1
+order by C_NumDNI
+
+
+select  C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, COUNT(*) FROM ##TEMP_Persona 
+where C_NumDNI is not null
+group by C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
+having COUNT(*) > 1
+order by C_NumDNI
+
+select  I_PersonaID, COUNT(*) FROM ##TEMP_Persona 
+group by I_PersonaID
+having COUNT(*) > 1
+
+
+
+select p.* from ##TEMP_Persona p 
+inner join (select C_NumDNI, count(*) cantidad from ##TEMP_Persona 
+			where C_NumDNI is not null group by C_NumDNI having COUNT(*) > 1) as a on p.C_NumDNI = a.C_NumDNI 
+			
+order by p.C_NumDNI
+
+SELECT * FROM ##TEMP_Persona where C_NUMDNI = '73240463'
+select * from BD_OCEF_TemporalPagos.dbo.alumnos where C_NUMDNI = '73240463'
+select * from TR_Alumnos WHERE C_NumDNI = '46037558'
+SELECT * FROM BD_UNFV_Repositorio..TC_Persona WHERE C_NumDNI = '73240463'
+
+
+select * from TR_Alumnos where C_RcCod = '001'and C_CodAlu = '0008100789'
+select * from BD_UNFV_Repositorio..TC_Alumno where C_RcCod = '001'and C_CodAlu = '0008100789'
+
+select * from ##TEMP_AlumnoPersona where C_RcCod = '001'and C_CodAlu = '0008100789'
+
+SELECT PER.* FROM  BD_UNFV_Repositorio..TC_Persona PER INNER JOIN (
+SELECT C_NumDNI, count(*) cantidad FROM BD_UNFV_Repositorio..TC_Persona where C_NumDNI is not null group by C_NumDNI having COUNT(*) > 1
+) REP ON PER.C_NumDNI = REP.C_NumDNI 
+ORDER BY PER.C_NumDNI
