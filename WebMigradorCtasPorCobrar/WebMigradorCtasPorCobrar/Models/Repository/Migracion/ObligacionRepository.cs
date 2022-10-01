@@ -26,6 +26,21 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
+        public IEnumerable<DetalleObligacion> Obtener(int procedenciaID, int ObligacionID)
+        {
+            IEnumerable<DetalleObligacion> result;
+
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+            {
+                result = connection.Query<DetalleObligacion>("SELECT * FROM TR_Ec_det WHERE I_OblRowID = @I_OblRowID AND I_ProcedenciaID = @I_ProcedenciaID", 
+                                                              new { I_OblRowID = ObligacionID, I_ProcedenciaID = procedenciaID }, 
+                                                              commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+
         public Response CopiarRegistrosCabecera(int procedenciaID, string schemaDB, int? anioIni, int? anioFin)
         {
             Response result = new Response();
