@@ -153,12 +153,15 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Databases.cs" />
+    <Compile Include="Models\Entities\Config\Password.cs" />
+    <Compile Include="Models\Entities\Config\User.cs" />
     <Compile Include="Models\Entities\Migracion\DatosResultados.cs" />
     <Compile Include="Models\Entities\Migracion\DetalleObligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Obligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Observacion.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tabla.cs" />
     <Compile Include="Models\Helpers\Tablas.cs" />
+    <Compile Include="Models\Repository\Config\UserServices.cs" />
     <Compile Include="Models\Repository\Migracion\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Configuracion.cs" />
@@ -483,6 +486,10 @@
     <Content Include="Views\Reportes\Pregrado.cshtml" />
     <Content Include="Views\Reportes\Posgrado.cshtml" />
     <Content Include="Views\Reportes\Cuded.cshtml" />
+    <Content Include="Views\CuotaPago\_Editar.cshtml" />
+    <Content Include="Views\Account\_ChangePassword.cshtml" />
+    <Content Include="Views\Account\_ResetPassword.cshtml" />
+    <Content Include="Views\Obligaciones\_TemporalPagosDetalle.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -18,7 +18,7 @@
 
 </div>
 
-<div class="table-responsive" style="min-height:300px">
+<div class="table-responsive" style="min-height:300px; font-size: 13px;">
     @Html.Grid(Model).Columns(columns =>
     {
         columns.Add(c => c.C_CodAlu).Titled("Codigo").Filterable(true);
@@ -39,11 +39,7 @@
         columns.Add().Css("text-right").Encoded(false).Sanitized(false)
                      .RenderValueAs(model => model.B_Migrable ?
                                             Html.Raw("")
-                                            : Html.Raw($"<a href=\"{ Url.Action("Observaciones", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span></a>"));
-        columns.Add().Css("text-right").Encoded(false).Sanitized(false)
-               .RenderValueAs(model => model.B_Migrable ?
-                                            Html.Raw("")
-                                            : Html.Raw($"<a href=\"{ Url.Action("Editar", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Corregir</span></a>"));
+                                            : Html.Raw($"<a href=\"{ Url.Action("Observaciones", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\"><i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span></a>"));
     }
     ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
 </div>

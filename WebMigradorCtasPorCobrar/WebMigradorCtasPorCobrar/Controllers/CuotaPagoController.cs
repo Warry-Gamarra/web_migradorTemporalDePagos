@@ -120,7 +120,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_Observaciones", model);
         }
 
-        public ActionResult Editar(int id)
+        public ActionResult Editar(int id, int obsID)
         {
             var model = _cuotaPagoServiceMigracion.Obtener(id);
 
@@ -128,8 +128,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
         [HttpPost]
-        public ActionResult Save(int id)
+        public ActionResult Save(int Id, int I_PeriodoID)
         {
+            _cuotaPagoServiceMigracion.Save(Id, I_PeriodoID);
 
             return PartialView("_ProcesoMigracion");
         }

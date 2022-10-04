@@ -41,31 +41,34 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
         }
 
 
-        public IEnumerable<DetalleObligacion> ObtenerPosgrado(string anio, string per, string codAlu, string cuotaPago, DateTime? fecVenc)
+        public static IEnumerable<DetalleObligacion> ObtenerDetalle(string schemaDb, string cuotaPago, string anio, string per, 
+                                                             string codAlu, string codRc, DateTime fecVenc)
         {
             IEnumerable<DetalleObligacion> result;
 
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
-                string str_query = $"SELECT * FROM EUPG.ec_det WHERE ano = @ano AND p = @p AND cod_alu = @cod_alu AND cuota_pago = @cuota_pago";
-                str_query += fecVenc.HasValue ? " AND fhc_venc = @fch_venc;" : ";";
+                string str_query = $"SELECT * FROM {schemaDb}.ec_det WHERE ano = @ano AND p = @p AND cod_alu = @cod_alu " +
+                                   $"                                      AND cuota_pago = @cuota_pago AND cod_rc = @cod_rc " +
+                                   $"                                      AND fch_venc = @fch_venc;";
 
                 result = connection.Query<DetalleObligacion>(str_query,
-                                                       new
-                                                       {
-                                                           ano = anio,
-                                                           p = per,
-                                                           cod_alu = codAlu,
-                                                           cuota_pago = cuotaPago,
-                                                           fch_venc = fecVenc
-                                                       }, commandType: CommandType.Text);
+                                                             new
+                                                             {
+                                                                 ano = anio,
+                                                                 p = per,
+                                                                 cod_alu = codAlu,
+                                                                 cod_rc = codRc,
+                                                                 cuota_pago = cuotaPago,
+                                                                 fch_venc = fecVenc.ToString("yyyyMMdd")
+                                                             }, commandType: CommandType.Text);
             }
 
             return result;
         }
 
 
-        public int ObtenerCantidadFilas(string schemaDB, string tableName)
+        public static int ObtenerCantidadFilas(string schemaDB, string tableName)
         {
             int result = 0;
 
@@ -73,10 +76,10 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             {
                 using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
                 {
-                    result = connection.Execute($"SELECT COUNT(*) FROM {schemaDB}.{ tableName };", commandType: CommandType.Text);
+                    result = connection.ExecuteScalar<int>($"SELECT COUNT(*) FROM {schemaDB}.{ tableName };", commandType: CommandType.Text);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result = 0;
             }
@@ -85,26 +88,30 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
         }
 
 
-
-        public int ObtenerCantidadFilasEliminadas(string schemaDB, string tableName)
+        public static int ObtenerCantidadFilasEliminadas(string schemaDB, string tableName)
         {
             int result = 0;
-
+            bool exists_column = false;
             try
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    string command = $"IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '{schemaDB}' AND TABLE_NAME = '{tableName}' AND COLUMN_NAME = 'Eliminado') " +
+                    string command = $"IF EXISTS(SELECT * FROM INFORMATION_SCHEMA.COLUMNS " +
+                                                $"WHERE TABLE_SCHEMA = '{schemaDB}' AND TABLE_NAME = '{tableName}' AND COLUMN_NAME = 'Eliminado') " +
                                       "    SELECT 1 " +
                                       "ELSE " +
                                       "    SELECT 0 ";
 
-                    result = connection.ExecuteScalar<int>(command, commandType: CommandType.Text);
+                    exists_column = connection.ExecuteScalar<bool>(command, commandType: CommandType.Text);
 
+                    string command_cols = "SELECT 0;";
 
-                    string command2 = $"    SELECT COUNT(*) FROM {schemaDB}.{tableName} WHERE Eliminado = 1";
+                    if (exists_column)
+                    {
+                        command_cols = $"SELECT COUNT(*) FROM {schemaDB}.{tableName} WHERE Eliminado = 1";                       
+                    }
 
-//result = connection.Execute(command, commandType: CommandType.Text);
+                    result = connection.ExecuteScalar<int>(command_cols, commandType: CommandType.Text);
                 }
             }
             catch (Exception)

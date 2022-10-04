@@ -42,6 +42,11 @@
                                 <i class="fa fa-user-circle-o">&nbsp;</i> @User.Identity.Name
                             </a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                @if (User.Identity.Name == "administrador")
+                                {
+                                    <a class="dropdown-item modal-link" href="@Url.Action("ResetPassword", "Account")"><i class="fa fa-fw fa-user-secret">&nbsp;</i>Reiniciar Contraseña (admin)</a>
+                                }
+                                <a class="dropdown-item modal-link" href="@Url.Action("ChangePassword", "Account")"><i class="fa fa-fw fa-refresh">&nbsp;</i>Cambiar Contraseña</a>
                                 <a class="dropdown-item" href="@Url.Action("Index", "Help")"><i class="fa fa-fw fa-life-ring">&nbsp;</i>Ayuda</a>
                                 <div class="dropdown-divider"></div>
                                 @using (Html.BeginForm("LogOut", "Account", new { area = "" }, FormMethod.Post, new { id = "LogOutForm", @class = "text-center" }))

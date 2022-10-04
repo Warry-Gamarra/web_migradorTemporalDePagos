@@ -19,7 +19,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new  SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    connection.Execute($"TRUNCATE TABLE { tableName };");
+                    connection.Execute($"TRUNCATE TABLE {tableName};");
                 }
             }
             catch (Exception ex)
@@ -30,8 +30,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return response;
         }
-
-
 
     }
 }
