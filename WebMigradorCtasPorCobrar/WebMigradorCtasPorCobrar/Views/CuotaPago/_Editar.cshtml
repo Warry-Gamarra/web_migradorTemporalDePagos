@@ -1,0 +1,111 @@
+﻿
+
+@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.CuotaPago
+
+@Scripts.Render("~/bundles/jqueryval")
+
+@using (Ajax.BeginForm("Save", "Estudiante", new { area = "" }, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "div_msg", OnBegin = "Load", OnSuccess = "Submited", OnComplete = "Stop" }))
+{
+    @Html.Hidden("submited", 0)
+    @Html.AntiForgeryToken()
+    <div class="modal-body">
+        <div class="container-fluid">
+            @Html.HiddenFor(model => model.I_RowID)
+
+            <div class="form-row">
+                @Html.Label("Cod. Cuota", new { @class = "col-md-4 col-form-label", @for = "Cuota_pago" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.Cuota_pago, new { @class = "form-control" })
+                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.Cuota_pago)</p>
+                </div>
+            </div>
+            <div class="form-row">
+                @Html.Label("Descripción", new { @class = "col-md-4 col-form-label", @for = "Descripción" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.Descripcio, new { @class = "form-control" })
+                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.Descripcio)</p>
+                </div>
+            </div>
+            <div class="form-row">
+                @Html.Label("Codigo bnc", new { @class = "col-md-4 col-form-label", @for = "I_Periodo" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.Codigo_bnc, new { @class = "form-control" })
+                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.Codigo_bnc)</p>
+                </div>
+            </div>
+            <div class="form-row">
+                @Html.Label("Prioridad", new { @class = "col-md-4 col-form-label", @for = "Prioridad" })
+                <div class="col-md-8">
+                    @Html.TextBoxFor(model => model.Prioridad, new { @class = "form-control" })
+                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.Prioridad)</p>
+                </div>
+            </div>
+            <div class="form-row">
+                @Html.Label("Año", new { @class = "col-md-4 col-form-label" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.I_Anio, new { @class = "form-control", @for = "I_Anio" })
+                    <p class="text-danger small">@Html.ValidationMessageFor(model => model.I_Anio)</p>
+                </div>
+            </div>
+            <div class="form-row">
+                @Html.Label("Periodo", new { @class = "col-md-4 col-form-label", @for = "I_Periodo" })
+                <div class="col-md-4">
+                    @Html.TextBoxFor(model => model.I_Periodo, new { @class = "form-control" })
+                    <p class="text-danger small"></p>
+                </div>
+            </div>
+            @*<div class="form-row">
+                    @Html.Label("Código", new { @class = "col-md-4 col-form-label" })
+                    <div class="col-md-4">
+                        @Html.TextBoxFor(model => model.C_CodAlu, new { @class = "form-control" })
+                        <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_CodAlu)</p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    @Html.Label("Año de ingreso", new { @class = "col-md-4 col-form-label" })
+                    <div class="col-md-4">
+                        @Html.TextBoxFor(model => model.C_AnioIngreso, new { @class = "form-control" })
+                        <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_AnioIngreso)</p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    @Html.Label("Mod ingreso", new { @class = "col-md-4 col-form-label" })
+                    <div class="col-md-4">
+                        @Html.TextBoxFor(model => model.C_CodModIng, new { @class = "form-control" })
+                        <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_CodModIng)</p>
+                    </div>
+                </div>
+                <div class="form-row">
+                    @Html.Label("Carrera", new { @class = "col-md-4 col-form-label" })
+                    <div class="col-md-4">
+                        @Html.TextBoxFor(model => model.C_RcCod, new { @class = "form-control" })
+                        <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_RcCod)</p>
+                    </div>
+                </div>*@
+
+        </div>
+    </div>
+    <div class="col-md-12" style="display:none" id="loading">
+        <h6>Actualizando los datos...</h6>
+
+        <div class="progress">
+            <div class="indeterminate"></div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary" id="btnsubmit"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+}
+
+<script>
+    $(document).on('ready', function () {
+        $('#btnsubmit').removeClass('disabled');
+    });
+
+    $("form").submit(function () {
+        if (parseInt($("#submited").val()) > 0) {
+            return false;
+        }
+    });
+
+</script>
+

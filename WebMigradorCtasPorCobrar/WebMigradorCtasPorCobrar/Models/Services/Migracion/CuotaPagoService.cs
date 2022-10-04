@@ -149,6 +149,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result;
         }
 
+        public Response Save(int Id, int I_PeriodoID)
+        {
+            Response result = new Response();
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            //result = cuotaPagoRepository.Save(Id, I_PeriodoID);
+
+            return result;
+        }
 
         public Response MigrarDatosTemporalPagos(Procedencia procedencia)
         {

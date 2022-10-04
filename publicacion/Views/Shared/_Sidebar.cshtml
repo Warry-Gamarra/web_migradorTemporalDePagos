@@ -1,0 +1,112 @@
+﻿
+
+<div class="main-sidebar">
+    <ul class="nav side-nav">
+        <li class="nav-item"><a href="@Url.Action("Index", "Home")" class="nav-link"><i class="fa fa-fw fa-home"></i> Dashboard</a></li>
+
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" data-target="#repositorio">
+                <i class="fa fa-fw fa-database"></i> Repositorio<span class="pull-right"><i class="fa fa-fw fa-caret-down"></i></span>
+            </a>
+            <ul id="repositorio" class="collapse">
+                <li><a href="@Url.Action("Index", "Estudiante", new { area = "" })"><i class="fa bi-person-lines-fill"></i>&nbsp; Estudiantes</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" data-target="#cuotas-pago">
+                <i class="fa fa-fw bi-calendar-week"></i> Cuotas de pago<span class="pull-right"><i class="fa fa-fw fa-caret-down"></i></span>
+            </a>
+            <ul id="cuotas-pago" class="collapse">
+                <li><a href="@Url.Action("Pregrado", "CuotaPago", new { area = "" })"><i class="fa fa-fw bi-person-lines-fill"></i>&nbsp; Pregrado</a></li>
+                <li><a href="@Url.Action("Posgrado", "CuotaPago", new { area = "" })"><i class="fa fa-fw fa-graduation-cap"></i>&nbsp; Posgrado</a></li>
+                <li><a href="@Url.Action("Cuded", "CuotaPago", new { area = "" })"><i class="fa fa-fw bi-globe2"></i>&nbsp; CUDED</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" data-target="#concepto-pago">
+                <i class="fa fa-fw bi-card-checklist"></i> Conceptos de pago<span class="pull-right"><i class="fa fa-fw fa-caret-down"></i></span>
+            </a>
+            <ul id="concepto-pago" class="collapse">
+                <li><a href="@Url.Action("Pregrado", "ConceptoPago", new { area = "" })"><i class="fa fa-fw bi-person-lines-fill"></i>&nbsp; Pregrado</a></li>
+                <li><a href="@Url.Action("Posgrado", "ConceptoPago", new { area = "" })"><i class="fa fa-fw fa-graduation-cap"></i>&nbsp; Posgrado</a></li>
+                <li><a href="@Url.Action("Cuded", "ConceptoPago", new { area = "" })"><i class="fa fa-fw bi-globe2"></i>&nbsp; CUDED</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" data-target="#obligaciones">
+                <i class="fa fa-fw bi-calculator"></i> Obligaciones y pagos<span class="pull-right"><i class="fa fa-fw fa-caret-down"></i></span>
+            </a>
+            <ul id="obligaciones" class="collapse">
+                <li><a href="@Url.Action("Pregrado", "Obligaciones", new { area = "" })"><i class="fa fa-fw bi-person-lines-fill"></i>&nbsp; Pregrado</a></li>
+                <li><a href="@Url.Action("Posgrado", "Obligaciones", new { area = "" })"><i class="fa fa-fw fa-graduation-cap"></i>&nbsp; Posgrado</a></li>
+                <li><a href="@Url.Action("Cuded", "Obligaciones", new { area = "" })"><i class="fa fa-fw bi-globe2"></i>&nbsp; CUDED</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" data-target="#reportes">
+                <i class="fa fa-fw bi-clipboard-data"></i> Reportes<span class="pull-right"><i class="fa fa-fw fa-caret-down"></i></span>
+            </a>
+            <ul id="reportes" class="collapse">
+                <li><a href="@Url.Action("Pregrado", "Reportes", new { area = "" })"><i class="fa fa-fw bi-person-lines-fill"></i>&nbsp; Pregrado</a></li>
+                <li><a href="@Url.Action("Posgrado", "Reportes", new { area = "" })"><i class="fa fa-fw fa-graduation-cap"></i>&nbsp; Posgrado</a></li>
+                <li><a href="@Url.Action("Cuded", "Reportes", new { area = "" })"><i class="fa fa-fw bi-globe2"></i>&nbsp; CUDED</a></li>
+            </ul>
+        </li>
+
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" data-target="#help">
+                <i class="fa fa-fw fa-life-ring"></i> Ayuda<span class="pull-right"><i class="fa fa-fw fa-caret-down"></i></span>
+            </a>
+            <ul id="help" class="collapse">
+                <li><a href="@Url.Action("Manual", "Help")"><i class="fa fa-fw fa-book"></i>&nbsp; Manual de usuario</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<div class="hidden-sidebar">
+    <ul class="nav hidden-side-nav hdn-sidebar">
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" title="Dashboard">
+                <i class="fa fa-3x fa-home"></i><br />Dashboard
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" title="Repositorio" data-target="#repositorio">
+                <i class="fa fa-3x fa-database"></i><br />Repositorio
+            </a>
+        </li>
+
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" title="Cuotas de Pago" data-target="#cuotas-pago">
+                <i class="fa fa-3x bi-calendar-week"></i><br />Cuotas de pago
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" title="Conceptos de Pago" data-target="#concepto-pago">
+                <i class="fa fa-3x fa-fw bi-card-checklist"></i><br />Conceptos de pago
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" title="Obligaciones y pagos" data-target="#obligaciones">
+                <i class="fa fa-3x fa-fw bi-calculator"></i><br />Obligaciones y pagos
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" title="Reportes" data-target="#reportes">
+                <i class="fa fa-3x bi-clipboard-data"></i><br />Reportes
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link" data-toggle="collapse" title="Ayuda" data-target="#help">
+                <i class="fa fa-3x fa-life-ring"></i><br />Ayuda
+            </a>
+        </li>
+    </ul>
+</div>
+
