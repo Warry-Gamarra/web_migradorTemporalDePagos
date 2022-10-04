@@ -1,0 +1,26 @@
+﻿
+@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos.Alumno>
+@using GridMvc.Html
+
+<div class="table-responsive" style="min-height:300px">
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(c => c.C_CodAlu).Titled("Codigo").Filterable(true);
+        columns.Add(c => c.C_RcCod).Titled("Cod RC").Filterable(true);
+        columns.Add(c => c.T_NomCompleto).Titled("Nombre Completo").Filterable(true);
+        columns.Add(c => c.C_NumDNI).Titled("Num. Doc.").Filterable(true);
+        columns.Add(c => c.C_CodTipDo).Css("text-center").Titled("Tipo Doc.").Filterable(true);
+        columns.Add(c => c.C_Sexo).Css("text-center").Titled("Sexo").Filterable(true);
+        columns.Add(c => c.D_FecNac).Css("text-center").Titled("Fec. Nac").Filterable(true);
+        columns.Add(c => c.C_CodModIn).Css("text-center").Titled("Mod. Ingreso").Filterable(true);
+        columns.Add(c => c.C_AnioIngr).Css("text-center").Titled("Año Ingreso").Filterable(true);
+    }
+    ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+</div>
+
+
+<script>
+    $('#btn-tp').addClass('active');
+    $('#btn-mg').removeClass('active');
+    $('#btn-proc').removeClass('active');
+</script>

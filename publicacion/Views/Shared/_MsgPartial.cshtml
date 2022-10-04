@@ -1,0 +1,16 @@
+﻿@model WebMigradorCtasPorCobrar.Models.Helpers.Response
+
+<div class="col-md-12" style="display:none" id="loading">
+    <h6>Espere un momento...</h6>
+    <div class="progress">
+        <div class="indeterminate"></div>
+    </div>
+</div>
+
+<div id="div-alert" class="col-12">
+    <div class="text-center alert alert-@Model.Color"><i class="fa @Model.Icon">&nbsp;</i>@Html.Raw(Model.Message)</div>
+</div>
+
+<button type="submit" class="btn btn-primary" style="@Model.CurrentID"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+<button type="button" class="btn btn-secondary  pull-right" data-dismiss="modal" id="btn_cerrar"><i class="fa fa-sign-out">&nbsp;</i>Finalizar</button>
+

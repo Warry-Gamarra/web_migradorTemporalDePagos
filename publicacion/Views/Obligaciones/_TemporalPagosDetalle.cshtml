@@ -1,0 +1,52 @@
+﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos.DetalleObligacion>
+
+<div class="modal-header">
+    <h5 class="modal-title">Detalle de la obligación:</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12" id="tabla-errores">
+            <table class="table table-sm table-hover" style="font">
+                <thead class="thead-light"> 
+                    <tr>
+                        <th>Concepto</th>
+                        <th>Fch_venc</th>
+                        <th>Cantidad</th>
+                        <th>Monto</th>
+                        <th>Pagado</th>
+                        <th>Cod_cajero</th>
+                        <th>Pag_demas</th>
+                        <th>Tipo_pago</th>
+                        <th>No_banco</th>
+                        <th>Id_lug_pag</th>
+                        <th>Eliminado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr style="font-size:13px;">
+                            <td>@item.Concepto</td>
+                            <td>@item.Fch_venc.ToShortDateString()</td>
+                            <td>@item.Cantidad</td>
+                            <td>@item.Monto</td>
+                            <td>@item.Pagado</td>
+                            <td>@item.Cod_cajero</td>
+                            <td>@item.Pag_demas</td>
+                            <td>@item.Tipo_pago</td>
+                            <td>@item.No_banco</td>
+                            <td>@item.Id_lug_pag</td>
+                            <td>@item.Eliminado</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+</div>

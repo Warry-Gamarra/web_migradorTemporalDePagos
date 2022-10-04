@@ -1,0 +1,69 @@
+﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Migracion.Observacion>
+
+<div class="modal-header">
+    <h5 class="modal-title">Observaciones:</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-12" id="tabla-errores">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Descripción</th>
+                        <th>Fec. Registro</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr style="font-size:13px;">
+                            <td style="min-width:100px">@item.T_ObservCod</td>
+                            <td style="width:450px">@item.T_ObservDesc</td>
+                            <td style="width:180px">@item.D_FecRegistro</td>
+                            <td style="width:90px" class="text-right">
+                                <a class="link-editar" href="javascript:;" data-url="@Url.Action("Editar","CuotaPago", new { id = item.I_FilaTablaID, obsID = item.I_ObservID})"><i class="fa fa-pencil-square-o"></i> Corregir</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12" id="edit-target" style="display:none;"> 
+            <button type="button" class="btn btn-secondary" id="btnCancel"><i class="fa fa-times-circle-o">&nbsp;</i>Cancelar</button>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+</div>
+
+<script>
+    $('.link-editar').on('click', function () {
+        debugger;
+        $.ajax({
+            url: $(this).data('url'),
+            type: 'GET',
+            cache: false,
+            beforeSend: function () {
+                $('#tabla-errores').hide()
+            },
+            success: function (data) {
+                $('#edit-target').html(data);
+                $('#edit-target').show()
+            },
+            error: function () {
+                $('#tabla-errores').show()
+            }
+        })
+    })
+
+    $('#btnCancel').on('click', function () {
+        $('#edit-target').hide()
+        $('#tabla-errores').show()
+    })
+</script>

@@ -1,0 +1,109 @@
+﻿@{
+    var procedencia = ViewBag.Procedencia;
+}
+
+<h2>Proceso de migración</h2>
+<div class="row my-2">
+    <div class="col-md-4 py-1"><button id="btn-copy" class="btn btn-warning btn-block">1. Copiar datos desde Temporal de pagos</button></div>
+    <div class="col-md-4 py-1"><button id="btn-validate" class="btn btn-info btn-block">2. Validar consistencia de datos</button></div>
+    <div class="col-md-4 py-1"><button id="btn-migrate" class="btn btn-primary btn-block">3. Migrar a Recaudacion de ingresos</button></div>
+</div>
+
+<div class="col-md-12 my-4">
+    <div class="jumbotron" style="min-height: 450px">
+        <div id="processing" class="container-fluid" style="display:none;">
+            <div class="d-flex justify-content-center">
+                <div class="spinner-border text-info" role="status" style="width: 5rem; height: 5rem;">
+                    <span class="sr-only" id="sr-message"></span>
+                </div>
+                <div class="d-flex justify-content-center">
+                    <span id="load-message" class="h5 mt-4"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card text-center">
+            <div id="result-message" class="container-fluid">
+                <div class="card-body">
+                    <h5 class="card-title">Seleccione una opción del proceso</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $('#btn-tp').removeClass('active');
+    $('#btn-mg').removeClass('active');
+    $('#btn-proc').addClass('active');
+
+    $('#btn-copy').on('click', function () {
+        $.ajax({
+            url: '@Url.Action("CopiarRegistros", "ConceptoPago", new { area = "" })' + '?procedencia=' + '@procedencia',
+            type: 'POST',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#result-message').hide();
+            },
+            success: function (data) {
+                $('#result-message').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').html(jqXHR.responseText)
+                $('#result-message').show();
+            },
+            complete: function () {
+                $('#processing').hide();
+                $('#result-message').show();
+            }
+        })
+    })
+
+    $('#btn-validate').on('click', function () {
+        $.ajax({
+            url: '@Url.Action("ValidarRegistros", "ConceptoPago", new { area = "" })' + '?procedencia=' + '@procedencia',
+            type: 'POST',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#result-message').hide();
+            },
+            success: function (data) {
+                $('#result-message').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').html(jqXHR.responseText)
+                $('#result-message').show();
+            },
+            complete: function () {
+                $('#processing').hide();
+                $('#result-message').show();
+            }
+        })
+    })
+
+    $('#btn-migrate').on('click', function () {
+        $.ajax({
+            url: '@Url.Action("MigrarDatosTemporalPagos", "ConceptoPago", new { area = "" })' + '?procedencia=' + '@procedencia',
+            type: 'POST',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#result-message').hide();
+            },
+            success: function (data) {
+                $('#result-message').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').html(jqXHR.responseText)
+                $('#result-message').show();
+            },
+            complete: function () {
+                $('#processing').hide();
+                $('#result-message').show();
+            }
+        })
+    })
+
+</script>

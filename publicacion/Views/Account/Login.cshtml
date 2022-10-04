@@ -1,0 +1,95 @@
+﻿@model WebMigradorCtasPorCobrar.Models.ViewModels.LoginViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="shortcut icon" href="~/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="favicon.ico">
+    <title>OCGTI - Migrador Temporal de pagos</title>
+
+    <link href="@Url.Content("~/Assets/bootstrap/css/bootstrap.min.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Assets/font-awesome/css/font-awesome.css")" rel="stylesheet" />
+    <link href="@Url.Content("~/Assets/application/css/login.css")" rel="stylesheet" />
+
+    <script src="@Url.Content("~/Assets/jquery/jquery-3.3.1.min.js")"></script>
+</head>
+<body>
+    <div class="container col-md-offset-3">
+        <span class="col-md-offset-2 hidden-xs"><img src="~/Assets/Images/logo.png" width="150" style="margin-top:5px; position:absolute" /></span>
+        <div class="card card-container">
+            <p id="profile-name" class="profile-name-card">Aplicativo para migracion del<br />Recaudación de ingresos </p>
+            <br />
+            <br />
+            <img id="profile-img" class="profile-img-card" src="~/Assets/Images/avatar_2x.png" />
+
+            @using (Html.BeginForm("Login", "Account", new { returnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-signin" }))
+            {
+
+                <div class="text-danger text-center">
+                    @Html.ValidationSummary(true)
+                </div>
+                <span id="reauth-email" class="reauth-email"></span>
+                @Html.TextBoxFor(model => model.UserName, new { @class = "form-control", placeholder = "Usuario", required = "true", autofocus = "true" })
+                <p class="text-danger">@Html.ValidationMessageFor(model => model.UserName)</p>
+                <br />
+                @Html.PasswordFor(model => model.Password, new { @class = "form-control", placeholder = "Contraseña", required = "true" })
+                <p class="text-danger">@Html.ValidationMessageFor(model => model.Password)</p>
+
+                <div id="remember" class="checkbox">
+                    <label>
+                        @Html.CheckBoxFor(model => model.RememberMe) Recordar Cuenta
+                    </label>
+                </div>
+                <br />
+                <br />
+                <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Ingresar</button>
+
+            }
+            <!-- /form -->
+            <div class="lds-css" style="display: none">
+                <div class="lds-microsoft" style="100%;height:100%"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+            </div>
+        </div>
+        <!-- /card-container -->
+    </div>
+
+    <div class="modal fade" id="modal-container" tabindex="-1" role="dialog" aria-labelledby="modal-container-label" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content" style="color:black">
+            </div>
+        </div>
+    </div>
+
+    <!-- /container -->
+    <script>
+        $('form').on('submit', function () {
+            $(".lds-css").show();
+        });
+
+        $(document).on('ready', function () {
+            $('body').on('click', '.modal-link', function (e) {
+                e.preventDefault();
+                $(this).attr('data-target', '#modal-container');
+                $(this).attr('data-toggle', 'modal');
+            });
+
+            $('#modal-container').on('hidden.bs.modal', function () {
+                $(this).removeData('bs.modal');
+            });
+        });
+    </script>
+
+    <script src="@Url.Content("~/Assets/bootstrap/js/bootstrap.min.js")"></script>
+    <script src="@Url.Content("~/Assets/jquery/jquery.validate.js")"></script>
+    <script src="@Url.Content("~/Assets/jquery/jquery.validate.unobtrusive.js")"></script>
+    <script src="@Url.Content("~/Assets/jquery/jquery.unobtrusive-ajax.js")"></script>
+</body>
+</html>

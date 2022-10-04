@@ -1,0 +1,25 @@
+﻿
+<div class="container-fluid">
+    <div class="col-12">
+        <section class="content-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb float-right small d-none d-sm-inline-flex">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")"><i class="fa fa-home">&nbsp;</i>Inicio</a></li>
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Help")"><i class="fa fa-life-ring">&nbsp;</i>Ayuda</a></li>
+                    <li class="breadcrumb-item active"><span><i class="fa fa-book">&nbsp;</i>@ViewBag.Title </span></li>
+                </ol>
+            </nav>
+            <h1 class="">@ViewBag.Title <small></small></h1>
+        </section>
+    </div>
+    <br />
+
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header"><h5>Esta vista le permite descargar y/o visualizar el manual de usuario para un mejor uso de la aplicación.</h5></div>
+            <div class="card-body">
+                <a href="~/Files/Help/ManualUsuario.pdf" target="_blank" rel="help">Descargar manual de usuario <i class="fa fa-file-pdf-o"></i></a>
+            </div>
+        </div>
+    </div>
+</div>

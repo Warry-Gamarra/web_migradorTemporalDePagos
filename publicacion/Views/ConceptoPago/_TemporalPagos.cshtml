@@ -1,0 +1,52 @@
+﻿
+@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos.ConceptoPago>
+@using GridMvc.Html
+
+<div class="table-responsive" style="min-height:300px; font-size:12px;">
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(c => c.Id_cp).Filterable(true);
+        columns.Add(c => c.Cuota_pago).Filterable(true);
+        columns.Add(c => c.Descripcio).Encoded(false).Sanitized(false).Filterable(true);
+        columns.Add(c => c.Ano).Titled("Año").Filterable(true);
+        columns.Add(c => c.P).Filterable(true);
+        columns.Add(c => c.Clasificad).Filterable(true);
+        columns.Add(c => c.Clasific_5).Filterable(true);
+        columns.Add(c => c.Nro_pagos).Filterable(true);
+        columns.Add(c => c.Monto).Filterable(true);
+        columns.Add(c => c.Porcentaje).Filterable(true);
+        columns.Add(c => c.Tipo_oblig).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
+               .RenderValueAs(model => model.Tipo_oblig ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                                        : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+        columns.Add(c => c.Cod_dep_pl).Filterable(true);
+        columns.Add(c => c.Descrip_l).Encoded(false).Sanitized(false).Filterable(true);
+        columns.Add(c => c.Documento).Encoded(false).Sanitized(false).Filterable(true);
+        columns.Add(c => c.Grupo_rc).Filterable(true);
+        columns.Add(c => c.Cod_rc).Filterable(true);
+        columns.Add(c => c.Cod_ing).Filterable(true);
+        columns.Add(c => c.Tip_alumno).Filterable(true);
+        columns.Add(c => c.Grado).Filterable(true);
+        columns.Add(c => c.Calcular).Filterable(true);
+        columns.Add(c => c.Agrupa).Css("text-center").Encoded(false).Sanitized(false).Filterable(true).Filterable(true)
+                .RenderValueAs(model => model.Agrupa ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                                     : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+        columns.Add(c => c.Id_cp_agrp).Filterable(true);
+        columns.Add(c => c.Concepto_g).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
+                .RenderValueAs(model => model.Concepto_g ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                                         : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+                ;
+        columns.Add(c => c.Fraccionable).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
+                .RenderValueAs(model => model.Fraccionable ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                                           : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+        columns.Add(c => c.Eliminado).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
+                .RenderValueAs(model => model.Eliminado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>") : Html.Raw(""));
+    }
+    ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+</div>
+
+
+<script>
+    $('#btn-tp').addClass('active');
+    $('#btn-mg').removeClass('active');
+    $('#btn-proc').removeClass('active');
+</script>
