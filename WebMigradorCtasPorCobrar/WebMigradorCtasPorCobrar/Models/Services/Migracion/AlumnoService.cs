@@ -45,7 +45,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         }
 
 
-
         public Response Save(Alumno alumno, Procedencia procedencia)
         {
             Response result = new Response();
@@ -54,16 +53,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             result = AlumnoRepository.Save(alumno);
 
-            if (result.IsDone)
-            {
-                result.Success(false);
-            }
-            else
-            {
-                result.Error(false);
-            }
-
-            return result;
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
@@ -75,16 +65,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             result = alumnoRepository.CopiarRegistros((int)procedencia, schemaDb);
 
-            if (result.IsDone)
-            {
-                result.Success(false);
-            }
-            else
-            {
-                result.Error(false);
-            }
-
-            return result;
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
         public Response EjecutarValidaciones(Procedencia procedencia)
@@ -156,16 +137,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        </dd>" +
                              $"    </dl>";
 
-            if (result.IsDone)
-            {
-                result.Success(false);
-            }
-            else
-            {
-                result.Warning(false);
-            }
-
-            return result;
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
 
@@ -178,16 +150,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             result = alumnoRepository.MigrarDataAlumnosUnfvRepositorio((int)procedencia);
 
-            if (result.IsDone)
-            {
-                result.Success(false);
-            }
-            else
-            {
-                result.Error(false);
-            }
-
-            return result;
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
     }
 }

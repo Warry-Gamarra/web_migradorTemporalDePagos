@@ -133,16 +133,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"    </dl>";
 
 
-            if (result.IsDone)
-            {
-                result.Success(false);
-            }
-            else
-            {
-                result.Warning(false);
-            }
-
-            return result;
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
 
@@ -162,17 +153,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                 result.Message += "\r\n" + result2.Message;
             }
 
-
-            if (result.IsDone && result2.IsDone)
-            {
-                result.Success(false);
-            }
-            else
-            {
-                result.Error(false);
-            }
-
-            return result;
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
     }
 }

@@ -73,16 +73,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             result = cuotaPagoRepository.CopiarRegistros((int)procedencia, schemaDb, codigos_bnc);
 
-            if (result.IsDone)
-            {
-                result.Success(false);
-            }
-            else
-            {
-                result.Error(false);
-            }
-
-            return result;
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
         public Response EjecutarValidaciones(Procedencia procedencia)
@@ -137,16 +128,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"    </dl>";
 
 
-            if (result.IsDone)
-            {
-                result.Success(false);
-            }
-            else
-            {
-                result.Warning(false);
-            }
-
-            return result;
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
         public Response Save(int Id, int I_PeriodoID)
@@ -168,16 +150,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             result = cuotaPagoRepository.MigrarDataCuotaPagoCtasPorCobrar((int)procedencia, null, null, null);
 
-            if (result.IsDone)
-            {
-                result.Success(false);
-            }
-            else
-            {
-                result.Error(false);
-            }
-
-            return result;
+            return result.IsDone ? result.Success(false): result.Error(false);
         }
     }
 }

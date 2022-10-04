@@ -267,5 +267,36 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
+        //public Response ActualizarDatosCuotaPago(int procedenciaID, CuotaPago cuotaPago)
+        //{
+        //    Response result = new Response();
+        //    DynamicParameters parameters = new DynamicParameters();
+
+        //    try
+        //    {
+        //        using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+        //        {
+        //            parameters.Add(name: "I_ProcesoID", dbType: DbType.Int32, value: procesoID);
+        //            parameters.Add(name: "I_AnioIni", dbType: DbType.Int16, value: anioIni);
+        //            parameters.Add(name: "I_AnioFin", dbType: DbType.Int16, value: anioFin);
+        //            parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Int32, value: procedenciaID);
+        //            parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+        //            parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+        //            connection.Execute("USP_IU_MigrarDataCuotaDePagoCtasPorCobrar", parameters, commandType: CommandType.StoredProcedure);
+
+        //            result.IsDone = parameters.Get<bool>("B_Resultado");
+        //            result.Message = parameters.Get<string>("T_Message");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result.IsDone = false;
+        //        result.Message = ex.Message;
+        //    }
+
+        //    return result;
+        //}
+
     }
 }
