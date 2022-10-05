@@ -204,7 +204,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-
         public Response AsignarAnioPeriodoCuotaPago(int procedenciaID, string schemaBD)
         {
             Response result = new Response();
@@ -267,36 +266,124 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        //public Response ActualizarDatosCuotaPago(int procedenciaID, CuotaPago cuotaPago)
-        //{
-        //    Response result = new Response();
-        //    DynamicParameters parameters = new DynamicParameters();
+        public Response SaveCategoria(CuotaPago cuotaPago)
+        {
+            Response result = new Response();
+            int rowCount = 0;
 
-        //    try
-        //    {
-        //        using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
-        //        {
-        //            parameters.Add(name: "I_ProcesoID", dbType: DbType.Int32, value: procesoID);
-        //            parameters.Add(name: "I_AnioIni", dbType: DbType.Int16, value: anioIni);
-        //            parameters.Add(name: "I_AnioFin", dbType: DbType.Int16, value: anioFin);
-        //            parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Int32, value: procedenciaID);
-        //            parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
-        //            parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET I_CatPagoID = @I_CatPagoID WHERE I_RowID = @I_RowID;", 
+                                                  new { I_CatPagoID = cuotaPago.I_CatPagoID, I_RowID = cuotaPago.I_RowID}, 
+                                                  commandType: CommandType.StoredProcedure);
 
-        //            connection.Execute("USP_IU_MigrarDataCuotaDePagoCtasPorCobrar", parameters, commandType: CommandType.StoredProcedure);
+                    if (rowCount > 0)
+                    {
+                        result.IsDone = true;
+                        result.Message = "Categoría actualizado correctamente";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
 
-        //            result.IsDone = parameters.Get<bool>("B_Resultado");
-        //            result.Message = parameters.Get<string>("T_Message");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.IsDone = false;
-        //        result.Message = ex.Message;
-        //    }
+            return result;
+        }
 
-        //    return result;
-        //}
+
+        public Response SavePeriodo(CuotaPago cuotaPago)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET I_Periodo = @I_Periodo WHERE I_RowID = @I_RowID;",
+                                                  new { I_Periodo = cuotaPago.I_Periodo, I_RowID = cuotaPago.I_RowID },
+                                                  commandType: CommandType.Text);
+
+                    if (rowCount > 0)
+                    {
+                        result.IsDone = true;
+                        result.Message = "Categoría actualizado correctamente";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response SaveAnio(CuotaPago cuotaPago)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET I_Anio = @I_Anio WHERE I_RowID = @I_RowID;",
+                                                  new { I_Anio = cuotaPago.I_Anio, I_RowID = cuotaPago.I_RowID },
+                                                  commandType: CommandType.Text);
+
+                    if (rowCount > 0)
+                    {
+                        result.IsDone = true;
+                        result.Message = "Año actualizado correctamente";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response SaveRepetido(CuotaPago cuotaPago)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET I_Periodo = @I_Periodo WHERE I_RowID = @I_RowID;",
+                                                  new { I_Periodo = cuotaPago.I_Periodo, I_RowID = cuotaPago.I_RowID },
+                                                  commandType: CommandType.Text);
+
+                    if (rowCount > 0)
+                    {
+                        result.IsDone = true;
+                        result.Message = "Periodo actualizado correctamente";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
 
     }
 }

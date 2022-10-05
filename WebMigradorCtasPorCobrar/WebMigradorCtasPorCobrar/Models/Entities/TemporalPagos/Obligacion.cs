@@ -16,5 +16,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos
         public DateTime Fch_venc { get; set; }
         public decimal Monto { get; set; }
         public bool Pagado { get; set; }
+
+        public string Descripcio { get; set; }
     }
 }

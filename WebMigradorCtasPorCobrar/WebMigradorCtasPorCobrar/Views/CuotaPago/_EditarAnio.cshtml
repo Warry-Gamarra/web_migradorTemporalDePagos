@@ -5,125 +5,153 @@
 @{
     string tipoObs = ViewBag.TipoObserv;
 }
-<div class="container-fluid">
-    @using (Ajax.BeginForm("Save", "CuotaPago", new { area = "" }, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "div_msg", OnBegin = "Load", OnSuccess = "Submited", OnComplete = "Stop" }))
-    {
-        @Html.Hidden("submited", 0)
-        @Html.AntiForgeryToken()
-        @Html.HiddenFor(model => model.I_RowID)
-        @Html.Hidden("tipoObserv", tipoObs)
+<div class="col-12">
+    <div class="row">
+        <div class="col-12">
+            @using (Ajax.BeginForm("Save", "CuotaPago", new { area = "" }, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "div_msg", OnBegin = "Load", OnSuccess = "Submited", OnComplete = "Stop" }))
+            {
+                @Html.Hidden("submited", 0)
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.I_RowID)
+                @Html.Hidden("tipoObserv", tipoObs)
 
-        <div class="form-row">
-            <div class="form-group col-md-3 col-4">
-                @Html.Label("Código Cuota", new { @class = "col-form-label", @for = "Cuota_pago" })
-                @Html.TextBoxFor(model => model.Cuota_pago, new { @class = "form-control", @readonly = "true" })
-            </div>
-            <div class="form-group col-md-6 col-5">
-                @Html.Label("Descripción", new { @class = "col-form-label", @for = "Descripción" })
-                @Html.TextBoxFor(model => model.Descripcio, new { @class = "form-control", @readonly = "true" })
-            </div>
-            <div class="form-group col-md-3 col-3">
-                @Html.Label("Código bnc", new { @class = "col-form-label", @for = "Codigo_bnc" })
-                @Html.TextBoxFor(model => model.Codigo_bnc, new { @class = "form-control", @readonly = "true" })
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-3 col-4">
-                @Html.Label("Fecha Vencto", new { @class = "col-form-label", @for = "Fch_venc" })
-                @Html.TextBoxFor(model => model.Fch_venc, Model.Fch_venc.ToShortDateString(), new { @class = "form-control", @readonly = "true" })
-            </div>
-            <div class="form-group col-md-6 col-5">
-                @Html.Label("Categoría (Equivalencia)", new { @class = "col-form-label", @for = "I_CatPagoID" })
-                @Html.TextBoxFor(model => model.I_CatPagoID, new { @class = "form-control", @readonly = "true" })
-            </div>
-            <div class="form-group col-md-3 col-3">
-                <label>&nbsp;</label>
-                <div class="form-check px-5 pt-2">
-                    @Html.CheckBoxFor(model => model.C_mora, new { @class = "form-check-input", disabled = "true" })
-                    @Html.Label("Mora", new { @class = "col-check-label" })
+                <div class="form-row">
+                    <div class="form-group col-md-3 col-4">
+                        @Html.Label("Código Cuota", new { @class = "col-form-label", @for = "Cuota_pago" })
+                        @Html.TextBoxFor(model => model.Cuota_pago, new { @class = "form-control form-control-sm-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-md-6 col-5">
+                        @Html.Label("Descripción", new { @class = "col-form-label", @for = "Descripción" })
+                        @Html.TextBoxFor(model => model.Descripcio, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-md-3 col-3">
+                        @Html.Label("Código bnc", new { @class = "col-form-label", @for = "Codigo_bnc" })
+                        @Html.TextBoxFor(model => model.Codigo_bnc, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-3">
-                @Html.Label("Año", new { @class = "col-form-label" })
-                @Html.TextBoxFor(model => model.I_Anio, new { @class = "form-control", @for = "I_Anio" })
-            </div>
-            <div class="form-group col-3">
-                @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_Periodo" })
-                @Html.TextBoxFor(model => model.I_Periodo, new { @class = "form-control", @readonly = "true" })
-            </div>
-            <div class="form-group col-3">
-                @Html.Label("Prioridad", new { @class = "col-md-4 col-form-label", @for = "Prioridad" })
-                @Html.TextBoxFor(model => model.Prioridad, new { @class = "form-control", @readonly = "true" })
-            </div>
-            <div class="form-group col-3">
-                @Html.Label("Procedencia", new { @class = "col-md-4 col-form-label" })
-                @Html.TextBoxFor(model => model.I_ProcedenciaID, new { @class = "form-control", @readonly = "true" })
-            </div>
-        </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3 col-4">
+                        @Html.Label("Fecha Vencto", new { @class = "col-form-label", @for = "Fch_venc" })
+                        @Html.TextBoxFor(model => model.Fch_venc, Model.Fch_venc.ToShortDateString(), new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-md-6 col-5">
+                        @Html.Label("Categoría (Equivalencia)", new { @class = "col-form-label", @for = "I_CatPagoID" })
+                        @Html.TextBoxFor(model => model.I_CatPagoID, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-md-3 col-3">
+                        <label>&nbsp;</label>
+                        <div class="form-check px-5 pt-2">
+                            @Html.CheckBoxFor(model => model.C_mora, new { @class = "form-check-input", disabled = "true" })
+                            @Html.Label("Mora", new { @class = "col-check-label" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-3">
+                        @Html.Label("Año", new { @class = "col-form-label" })
+                        @Html.TextBoxFor(model => model.I_Anio, new { @class = "form-control form-control-sm", @for = "I_Anio" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_Periodo" })
+                        @Html.TextBoxFor(model => model.I_Periodo, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Prioridad", new { @class = "col-md-4 col-form-label", @for = "Prioridad" })
+                        @Html.TextBoxFor(model => model.Prioridad, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Procedencia", new { @class = "col-md-4 col-form-label" })
+                        @Html.TextBoxFor(model => model.I_ProcedenciaID, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                </div>
 
-        <div class="col-md-12" style="display:none" id="loading">
-            <h6>Actualizando los datos...</h6>
+                <div class="col-md-12" style="display:none" id="loading">
+                    <h6>Actualizando los datos...</h6>
 
-            <div class="progress">
-                <div class="indeterminate"></div>
-            </div>
-        </div>
-        <div class="d-inline my-3">
-            <a id="btnCancel" href="javascript:;" class="btn btn-outline-secondary float-left"><i class="fa fa-arrow-circle-left"></i>&nbsp;Atrás</a>
-            <button type="submit" class="btn btn-primary float-right" id="btnsubmit"><i class="fa fa-save"></i>&nbsp;Guardar</button>
-        </div>
-    }
-</div>
-<div class="container-fluid mt-4">
-    <p class="h5 mt-4">Temporal de Pagos - cp_pri</p>
-    <table class="table table-sm table-hover">
-        <thead class="thead-light">
-            <tr>
-                <td>Cuota Pago</td>
-                <td>Concepto</td>
-                <td>Año</td>
-                <td>Periodo</td>
-                <td>Monto</td>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.ConceptosPago)
-            {
-                <tr>
-                    <td>@item.Cuota_pago</td>
-                    <td>@item.Id_cp - @item.Descripcio</td>
-                    <td>@item.Ano</td>
-                    <td>@item.P</td>
-                    <td>@item.Monto</td>
-                </tr>
+                    <div class="progress">
+                        <div class="indeterminate"></div>
+                    </div>
+                </div>
+                <div class="d-inline my-3">
+                    <a id="btnCancel" href="javascript:;" class="btn btn-outline-secondary float-left"><i class="fa fa-arrow-circle-left"></i>&nbsp;Atrás</a>
+                    <button type="submit" class="btn btn-primary float-right" id="btnsubmit"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+                </div>
             }
-        </tbody>
-    </table>
-    <p class="h5 mt-4">Temporal de Pagos - ec_det</p>
-    <table class="table table-sm table-hover">
-        <thead class="thead-light">
-            <tr>
-                <td>Cuota Pago</td>
-                <td>Concepto</td>
-                <td>Año</td>
-                <td>Periodo</td>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.ConceptosPago_EcDet)
-            {
-                <tr>
-                    <td>@item.Cuota_pago</td>
-                    <td>@item.Id_cp</td>
-                    <td>@item.Ano</td>
-                    <td>@item.P</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-12">
+            <p class="h6 mt-3">Temporal de Pagos - cp_pri</p>
+            <table class="table table-sm table-hover" style="font-size:12px;">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Cuota Pago</th>
+                        <th>Concepto</th>
+                        <th>Año</th>
+                        <th>Periodo</th>
+                        <th>Monto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ConceptosPago)
+                    {
+                        <tr>
+                            <td>@item.Cuota_pago</td>
+                            <td>@item.Id_cp - @item.Descripcio</td>
+                            <td>@item.Ano</td>
+                            <td>@item.P</td>
+                            <td>@item.Monto</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <p class="h6 mt-3">Temporal de Pagos - ec_obl</p>
+            <table class="table table-sm table-hover" style="font-size:12px;">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Cuota Pago</th>
+                        <th>Año</th>
+                        <th>Periodo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Obligaciones)
+                    {
+                        <tr>
+                            <td>@item.Cuota_pago - @item.Descripcio</td>
+                            <td>@item.Ano</td>
+                            <td>@item.P</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <p class="h6 mt-3">Temporal de Pagos - ec_det</p>
+            <table class="table table-sm table-hover" style="font-size:12px;">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Cuota Pago</th>
+                        <th>Concepto</th>
+                        <th>Año</th>
+                        <th>Periodo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DetalleObligaciones)
+                    {
+                        <tr>
+                            <td>@item.Cuota_pago</td>
+                            <td>@item.Concepto - @item.Descripcio</td>
+                            <td>@item.Ano</td>
+                            <td>@item.P</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
 
 <script>
     $(document).on('ready', function () {

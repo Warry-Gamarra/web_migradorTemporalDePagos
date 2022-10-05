@@ -9,6 +9,7 @@ using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using ClosedXML.Excel;
 using System.IO;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
@@ -33,29 +34,46 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             var cuotaPago = CuotaPagoRepository.ObtenerPorId(cuotaID);
             cuotaPago.ConceptosPago = new List<ConceptoPago>();
-            cuotaPago.ConceptosPago_EcDet = new List<ConceptoPago>();
+            cuotaPago.Obligaciones = new List<Obligacion>();
+            cuotaPago.DetalleObligaciones = new List<DetalleObligacion>();
 
             string schema = Schema.SetSchema((Procedencia)cuotaPago.I_ProcedenciaID);
 
-            foreach (var Temp_conceptoPago in Temporal.ConceptoPagoRepository.ObtenerPorCuotaPago(schema,cuotaPago.Cuota_pago.ToString()))
+            foreach (var Temp_conceptoPago in Temporal.ConceptoPagoRepository.ObtenerPorCuotaPago(schema, cuotaPago.Cuota_pago.ToString()))
             {
                 cuotaPago.ConceptosPago.Add(new ConceptoPago(Temp_conceptoPago));
             }
 
-            foreach (var Temp_item in Temporal.ObligacionRepository.ObtenerPorCuotaPago(schema, cuotaPago.Cuota_pago.ToString())
-                                                                   .Select(x => new { x.Ano, x.P, x.Concepto, x.Cuota_pago })
+            foreach (var Temp_item in Temporal.ObligacionRepository.ObtenerObligacionPorCuotaPago(schema, cuotaPago.Cuota_pago.ToString())
+                                                                   .Select(x => new { x.Ano, x.P, x.Cuota_pago, x.Descripcio })
                                                                    .Distinct())
             {
-                var Temp_conceptoPago = new Entities.TemporalPagos.ConceptoPago() {
-                    Id_cp = Temp_item.Concepto,
-                    Cuota_pago = Temp_item.Cuota_pago,
+                var obligacion = new Entities.TemporalPagos.Obligacion()
+                {
                     Ano = Temp_item.Ano,
-                    P = Temp_item.P
+                    P = Temp_item.P,
+                    Cuota_pago = Temp_item.Cuota_pago,
+                    Descripcio = Temp_item.Descripcio
                 };
 
-                cuotaPago.ConceptosPago_EcDet.Add(new ConceptoPago(Temp_conceptoPago));
+                cuotaPago.Obligaciones.Add(new Obligacion(obligacion));
             }
 
+            foreach (var Temp_item in Temporal.ObligacionRepository.ObtenerDetallePorCuotaPago(schema, cuotaPago.Cuota_pago.ToString())
+                                                                   .Select(x => new { x.Ano, x.P, x.Cuota_pago, x.Concepto, x.Descripcio })
+                                                                   .Distinct())
+            {
+                var detalle = new Entities.TemporalPagos.DetalleObligacion()
+                {
+                    Ano = Temp_item.Ano,
+                    P = Temp_item.P,
+                    Cuota_pago = Temp_item.Cuota_pago,
+                    Concepto = Temp_item.Concepto,
+                    Descripcio = Temp_item.Descripcio
+                };
+
+                cuotaPago.DetalleObligaciones.Add(new DetalleObligacion(detalle));
+            }
 
             return cuotaPago;
         }
@@ -128,7 +146,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             result.IsDone = result_duplicados.IsDone &&
                             result_categorias.IsDone &&
                             result_anioPeriodo.IsDone;
-            
+
             result.Message = $"    <dl class=\"row text-justify\">" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Con código de cuota duplicado</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
@@ -164,16 +182,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
-        public Response Save(int Id, int I_PeriodoID)
-        {
-            Response result = new Response();
-            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
-
-            //result = cuotaPagoRepository.Save(Id, I_PeriodoID);
-
-            return result;
-        }
-
         public Response MigrarDatosTemporalPagos(Procedencia procedencia)
         {
             Response result = new Response();
@@ -183,7 +191,41 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             result = cuotaPagoRepository.MigrarDataCuotaPagoCtasPorCobrar((int)procedencia, null, null, null);
 
-            return result.IsDone ? result.Success(false): result.Error(false);
+            return result.IsDone ? result.Success(false) : result.Error(false);
+        }
+
+
+        public Response Save(CuotaPago cuotaPago, int tipoObsID)
+        {
+            Response result = new Response();
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            switch ((CuotaPagoObs)tipoObsID)
+            {
+                case CuotaPagoObs.Repetido:
+                    result = cuotaPagoRepository.SaveRepetido(cuotaPago);
+                    break;
+                case CuotaPagoObs.MasDeUnAnio:
+                    result = cuotaPagoRepository.SaveAnio(cuotaPago);
+                    break;
+                case CuotaPagoObs.SinAnio:
+                    result = cuotaPagoRepository.SaveAnio(cuotaPago);
+                    break;
+                case CuotaPagoObs.MasDeUnPeriodo:
+                    result = cuotaPagoRepository.SavePeriodo(cuotaPago);
+                    break;
+                case CuotaPagoObs.SinPeriodo:
+                    result = cuotaPagoRepository.SavePeriodo(cuotaPago);
+                    break;
+                case CuotaPagoObs.MásDeUnaCategoría:
+                    result = cuotaPagoRepository.SaveCategoria(cuotaPago);
+                    break;
+                case CuotaPagoObs.SinCategoria:
+                    result = cuotaPagoRepository.SaveCategoria(cuotaPago);
+                    break;
+            }
+
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
     }
 }

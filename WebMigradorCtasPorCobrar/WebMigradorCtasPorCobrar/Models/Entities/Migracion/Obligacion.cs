@@ -11,7 +11,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public string Ano { get; set; }
         public string P { get; set; }
         public string Cod_alu { get; set; }
-        public string  Cod_RC { get; set; }
+        public string Cod_RC { get; set; }
         public int Cuota_pago { get; set; }
         public bool Tipo_oblig { get; set; }
         public DateTime Fch_venc { get; set; }
@@ -26,5 +26,26 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public DateTime D_FecMigrado { get; set; }
         public bool B_Removido { get; set; }
         public DateTime D_FecRemovido { get; set; }
+
+        public string Descripcio { get; set; }
+
+        public Obligacion()
+        {
+
+        }
+
+        public Obligacion(TemporalPagos.Obligacion obligacion)
+        {
+            this.Ano = obligacion.Ano;
+            this.P = obligacion.P;
+            this.Cod_alu = obligacion.Cod_alu;
+            this.Cod_RC = obligacion.Cod_RC;
+            this.Cuota_pago = obligacion.Cuota_pago;
+            this.Tipo_oblig = obligacion.Tipo_oblig;
+            this.Fch_venc = obligacion.Fch_venc;
+            this.Monto = obligacion.Monto;
+            this.Pagado = obligacion.Pagado;
+            this.Descripcio = obligacion.Descripcio;
+        }
     }
 }

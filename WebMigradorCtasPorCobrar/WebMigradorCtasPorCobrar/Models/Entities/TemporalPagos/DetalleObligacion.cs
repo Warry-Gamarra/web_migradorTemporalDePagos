@@ -31,5 +31,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos
         public bool Tipo_pago { get; set; }
         public bool No_banco { get; set; }
         public string Cod_dep { get; set; }
+
+        public string Descripcio { get; set; }
     }
 }

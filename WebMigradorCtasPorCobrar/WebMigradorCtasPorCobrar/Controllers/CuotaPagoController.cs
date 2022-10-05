@@ -8,6 +8,7 @@ using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
+using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -35,7 +36,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             return View();
         }
-        
+
         public ActionResult Posgrado(string partial)
         {
             if (!string.IsNullOrEmpty(partial))
@@ -46,7 +47,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             return View();
         }
-        
+
         public ActionResult Cuded(string partial)
         {
             if (!string.IsNullOrEmpty(partial))
@@ -69,7 +70,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult DatosMigracion(Procedencia procedencia, int? tipo_obs)
         {
             var model = _cuotaPagoServiceMigracion.Obtener(procedencia, tipo_obs);
-            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Cp_Des, procedencia), 
+            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Cp_Des, procedencia),
                                                     "I_ObservID", "T_ObservDesc", tipo_obs);
 
             ViewBag.IdObservacion = tipo_obs;
@@ -125,17 +126,18 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult Editar(int id, int obsID)
         {
             var model = _cuotaPagoServiceMigracion.ObtenerConConceptos(id);
+            ViewBag.TipoObserv = obsID.ToString();
             string viewName = ObtenerVistaEdicion(obsID);
 
             return PartialView(viewName, model);
         }
 
         [HttpPost]
-        public ActionResult Save(int Id, int I_PeriodoID)
+        public ActionResult Save(CuotaPago model, int tipoObserv)
         {
-            _cuotaPagoServiceMigracion.Save(Id, I_PeriodoID);
+            var result = _cuotaPagoServiceMigracion.Save(model, tipoObserv);
 
-            return PartialView("_ProcesoMigracion");
+            return PartialView("_MsgPartialWR", result);
         }
 
 
