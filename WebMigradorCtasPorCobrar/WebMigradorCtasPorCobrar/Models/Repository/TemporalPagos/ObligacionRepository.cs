@@ -41,7 +41,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
         }
 
 
-        public static IEnumerable<DetalleObligacion> ObtenerDetalle(string schemaDb, string cuotaPago, string anio, string per, 
+        public static IEnumerable<DetalleObligacion> ObtenerDetalle(string schemaDb, string cuotaPago, string anio, string per,
                                                              string codAlu, string codRc, DateTime fecVenc)
         {
             IEnumerable<DetalleObligacion> result;
@@ -62,6 +62,20 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
                                                                  cuota_pago = cuotaPago,
                                                                  fch_venc = fecVenc.ToString("yyyyMMdd")
                                                              }, commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<DetalleObligacion> ObtenerPorCuotaPago(string schemaDb, string cuotaPago)
+        {
+            IEnumerable<DetalleObligacion> result;
+
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+            {
+                string str_query = $"SELECT * FROM {schemaDb}.ec_det WHERE cuota_pago = @cuota_pago;";
+
+                result = connection.Query<DetalleObligacion>(str_query, new { cuota_pago = cuotaPago }, commandType: CommandType.Text);
             }
 
             return result;
@@ -108,7 +122,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
 
                     if (exists_column)
                     {
-                        command_cols = $"SELECT COUNT(*) FROM {schemaDB}.{tableName} WHERE Eliminado = 1";                       
+                        command_cols = $"SELECT COUNT(*) FROM {schemaDB}.{tableName} WHERE Eliminado = 1";
                     }
 
                     result = connection.ExecuteScalar<int>(command_cols, commandType: CommandType.Text);

@@ -9,7 +9,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos
     {
         public string Cod_alu { get; set; }
         public string Cod_rc { get; set; }
-        public string Cuota_pago { get; set; }
+        public int Cuota_pago { get; set; }
         public string Ano { get; set; }
         public string P { get; set; }
         public bool Tipo_oblig { get; set; }

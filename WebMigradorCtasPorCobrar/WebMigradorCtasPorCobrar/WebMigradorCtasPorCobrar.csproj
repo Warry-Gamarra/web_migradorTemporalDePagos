@@ -160,6 +160,7 @@
     <Compile Include="Models\Entities\Migracion\Obligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Observacion.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tabla.cs" />
+    <Compile Include="Models\Helpers\Observaciones.cs" />
     <Compile Include="Models\Helpers\Tablas.cs" />
     <Compile Include="Models\Repository\Config\UserServices.cs" />
     <Compile Include="Models\Repository\Migracion\AlumnoRepository.cs" />
@@ -486,11 +487,13 @@
     <Content Include="Views\Reportes\Pregrado.cshtml" />
     <Content Include="Views\Reportes\Posgrado.cshtml" />
     <Content Include="Views\Reportes\Cuded.cshtml" />
-    <Content Include="Views\CuotaPago\_Editar.cshtml" />
+    <Content Include="Views\CuotaPago\_EditarPeriodo.cshtml" />
     <Content Include="Views\Account\_ChangePassword.cshtml" />
     <Content Include="Views\Account\_ResetPassword.cshtml" />
     <Content Include="Views\Obligaciones\_TemporalPagosDetalle.cshtml" />
     <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
+    <Content Include="Views\CuotaPago\_EditarAnio.cshtml" />
+    <Content Include="Views\CuotaPago\_EditarEquivalencia.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

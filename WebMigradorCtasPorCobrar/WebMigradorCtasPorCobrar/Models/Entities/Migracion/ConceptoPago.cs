@@ -45,5 +45,42 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public DateTime D_FecMigrado { get; set; }
         public bool B_Removido { get; set; }
         public DateTime D_FecRemovido { get; set; }
+
+        public ConceptoPago()
+        {
+
+        }
+
+        public ConceptoPago(TemporalPagos.ConceptoPago conceptoPago)
+        {
+            this.Id_cp = conceptoPago.Id_cp;
+            this.Cuota_pago = conceptoPago.Cuota_pago;
+            this.Ano = conceptoPago.Ano;
+            this.P = conceptoPago.P;
+            this.Cod_rc = conceptoPago.Cod_rc;
+            this.Cod_ing = conceptoPago.Cod_ing;
+            this.Tipo_oblig = conceptoPago.Tipo_oblig;
+            this.Clasificad = conceptoPago.Clasificad;
+            this.Clasific_5 = conceptoPago.Clasific_5;
+            this.Id_cp_agrp = conceptoPago.Id_cp_agrp;
+            this.Agrupa = conceptoPago.Agrupa;
+            this.Nro_pagos = conceptoPago.Nro_pagos;
+            this.Id_cp_afec = conceptoPago.Id_cp_afec;
+            this.Porcentaje = conceptoPago.Porcentaje;
+            this.Monto = conceptoPago.Monto;
+            this.Eliminado = conceptoPago.Eliminado;
+            this.Descripcio = conceptoPago.Descripcio;
+            this.Calcular = conceptoPago.Calcular;
+            this.Grado = conceptoPago.Grado;
+            this.Tip_alumno = conceptoPago.Tip_alumno;
+            this.Grupo_rc = conceptoPago.Grupo_rc;
+            this.Fraccionable = conceptoPago.Fraccionable;
+            this.Concepto_g = conceptoPago.Concepto_g;
+            this.Documento = conceptoPago.Documento;
+            this.Monto_min = conceptoPago.Monto_min;
+            this.Descrip_l = conceptoPago.Descrip_l;
+            this.Cod_dep_pl = conceptoPago.Cod_dep_pl;
+            this.Oblig_mora = conceptoPago.Oblig_mora;
+        }
     }
 }

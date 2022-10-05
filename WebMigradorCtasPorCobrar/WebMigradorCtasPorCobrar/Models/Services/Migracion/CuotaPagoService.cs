@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
@@ -27,6 +28,38 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             return CuotaPagoRepository.ObtenerPorId(cuotaID);
         }
+
+        public CuotaPago ObtenerConConceptos(int cuotaID)
+        {
+            var cuotaPago = CuotaPagoRepository.ObtenerPorId(cuotaID);
+            cuotaPago.ConceptosPago = new List<ConceptoPago>();
+            cuotaPago.ConceptosPago_EcDet = new List<ConceptoPago>();
+
+            string schema = Schema.SetSchema((Procedencia)cuotaPago.I_ProcedenciaID);
+
+            foreach (var Temp_conceptoPago in Temporal.ConceptoPagoRepository.ObtenerPorCuotaPago(schema,cuotaPago.Cuota_pago.ToString()))
+            {
+                cuotaPago.ConceptosPago.Add(new ConceptoPago(Temp_conceptoPago));
+            }
+
+            foreach (var Temp_item in Temporal.ObligacionRepository.ObtenerPorCuotaPago(schema, cuotaPago.Cuota_pago.ToString())
+                                                                   .Select(x => new { x.Ano, x.P, x.Concepto, x.Cuota_pago })
+                                                                   .Distinct())
+            {
+                var Temp_conceptoPago = new Entities.TemporalPagos.ConceptoPago() {
+                    Id_cp = Temp_item.Concepto,
+                    Cuota_pago = Temp_item.Cuota_pago,
+                    Ano = Temp_item.Ano,
+                    P = Temp_item.P
+                };
+
+                cuotaPago.ConceptosPago_EcDet.Add(new ConceptoPago(Temp_conceptoPago));
+            }
+
+
+            return cuotaPago;
+        }
+
 
         public byte[] ObtenerDatosObservaciones(Procedencia procedencia, int? tipo_obsID)
         {

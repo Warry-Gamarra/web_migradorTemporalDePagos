@@ -18,6 +18,8 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public bool C_mora { get; set; }
         public int I_Anio { get; set; }
         public int I_Periodo { get; set; }
+        public int I_CatPagoID { get; set; }
+        public int I_ProcedenciaID { get; set; }
         public DateTime D_FecCarga { get; set; }
         public string B_Actualizado { get; set; }
         public DateTime D_FecActualiza { get; set; }
@@ -27,5 +29,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public DateTime D_FecMigrado { get; set; }
         public bool B_Removido { get; set; }
         public DateTime D_FecRemovido { get; set; }
+        public IList<ConceptoPago> ConceptosPago { get; set; }
+        public IList<ConceptoPago> ConceptosPago_EcDet { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -116,15 +117,17 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult Observaciones(int id)
         {
             var model = _observacionService.Obtener_ObservacionesCuotaPago(id);
+            ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
             return PartialView("_Observaciones", model);
         }
 
         public ActionResult Editar(int id, int obsID)
         {
-            var model = _cuotaPagoServiceMigracion.Obtener(id);
+            var model = _cuotaPagoServiceMigracion.ObtenerConConceptos(id);
+            string viewName = ObtenerVistaEdicion(obsID);
 
-            return PartialView("_Editar", model);
+            return PartialView(viewName, model);
         }
 
         [HttpPost]
@@ -143,5 +146,39 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Observaciones-CuotaPago.xlsx");
         }
 
+        private string ObtenerVistaEdicion(int obsID)
+        {
+            string viewName = "_MensajeSinEditar";
+
+            switch ((CuotaPagoObs)obsID)
+            {
+                case CuotaPagoObs.Repetido:
+                    viewName = "_EditarRepetido";
+                    break;
+                case CuotaPagoObs.Eliminado:
+                    viewName = "_MensajeSinEditar";
+                    break;
+                case CuotaPagoObs.MasDeUnAnio:
+                    viewName = "_EditarAnio";
+                    break;
+                case CuotaPagoObs.SinAnio:
+                    viewName = "_EditarAnio";
+                    break;
+                case CuotaPagoObs.MasDeUnPeriodo:
+                    viewName = "_EditarPeriodo";
+                    break;
+                case CuotaPagoObs.SinPeriodo:
+                    viewName = "_EditarPeriodo";
+                    break;
+                case CuotaPagoObs.MásDeUnaCategoría:
+                    viewName = "_EditarEquivalencia";
+                    break;
+                case CuotaPagoObs.SinCategoria:
+                    viewName = "_EditarEquivalencia";
+                    break;
+            }
+
+            return viewName;
+        }
     }
 }

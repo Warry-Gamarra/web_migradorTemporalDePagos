@@ -41,6 +41,21 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
+        public static IEnumerable<ConceptoPago> ObtenerPorCuotaPago(int cuotaPagoID)
+        {
+            IEnumerable<ConceptoPago> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<ConceptoPago>("SELECT * FROM dbo.TR_Cp_Pri WHERE cuota_pago = @cuota_pago"
+                                                        , new { cuota_pago = cuotaPagoID }
+                                                        , commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+
 
         public static IEnumerable<ConceptoPago> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
         {

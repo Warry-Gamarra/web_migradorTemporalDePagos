@@ -39,6 +39,5 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             return ObservacionRepository.Obtener(filaId, (int)Tablas.TR_Ec_Det);
         }
-
     }
 }
