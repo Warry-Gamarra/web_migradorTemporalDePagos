@@ -4,7 +4,9 @@
 
 @{
     string tipoObs = ViewBag.TipoObserv;
+    string observ_descrip = ViewBag.Observacion;
 }
+
 <div class="col-12">
     <div class="row">
         <div class="col-12">
@@ -32,11 +34,11 @@
                 <div class="form-row">
                     <div class="form-group col-md-3 col-4">
                         @Html.Label("Fecha Vencto", new { @class = "col-form-label", @for = "Fch_venc" })
-                        @Html.TextBoxFor(model => model.Fch_venc, Model.Fch_venc.ToShortDateString(), new { @class = "form-control form-control-sm", @readonly = "true" })
+                        @Html.TextBoxFor(model => model.Fch_venc_s, new { @class = "form-control form-control-sm", @readonly = "true" })
                     </div>
                     <div class="form-group col-md-6 col-5">
                         @Html.Label("Categoría (Equivalencia)", new { @class = "col-form-label", @for = "I_CatPagoID" })
-                        @Html.TextBoxFor(model => model.I_CatPagoID, new { @class = "form-control form-control-sm", @readonly = "true" })
+                        @Html.DropDownListFor(model => model.I_CatPagoID, ViewBag.CategoriasBnc as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
                     </div>
                     <div class="form-group col-md-3 col-3">
                         <label>&nbsp;</label>
@@ -48,8 +50,8 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-3">
-                        @Html.Label("Año", new { @class = "col-form-label" })
-                        @Html.TextBoxFor(model => model.I_Anio, new { @class = "form-control form-control-sm", @for = "I_Anio" })
+                        @Html.Label("Año", new { @class = "col-form-label", @for = "I_Anio" })
+                        @Html.TextBoxFor(model => model.I_Anio, new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group col-3">
                         @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_Periodo" })
@@ -80,93 +82,28 @@
         </div>
     </div>
     <div class="row mt-4">
-        <div class="col-12">
-            <p class="h6 mt-3">Temporal de Pagos - cp_pri</p>
-            <table class="table table-sm table-hover" style="font-size:12px;">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Cuota Pago</th>
-                        <th>Concepto</th>
-                        <th>Año</th>
-                        <th>Periodo</th>
-                        <th>Monto</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.ConceptosPago)
-                    {
-                        <tr>
-                            <td>@item.Cuota_pago</td>
-                            <td>@item.Id_cp - @item.Descripcio</td>
-                            <td>@item.Ano</td>
-                            <td>@item.P</td>
-                            <td>@item.Monto</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-            <p class="h6 mt-3">Temporal de Pagos - ec_obl</p>
-            <table class="table table-sm table-hover" style="font-size:12px;">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Cuota Pago</th>
-                        <th>Año</th>
-                        <th>Periodo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.Obligaciones)
-                    {
-                        <tr>
-                            <td>@item.Cuota_pago - @item.Descripcio</td>
-                            <td>@item.Ano</td>
-                            <td>@item.P</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-
-            <p class="h6 mt-3">Temporal de Pagos - ec_det</p>
-            <table class="table table-sm table-hover" style="font-size:12px;">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Cuota Pago</th>
-                        <th>Concepto</th>
-                        <th>Año</th>
-                        <th>Periodo</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.DetalleObligaciones)
-                    {
-                        <tr>
-                            <td>@item.Cuota_pago</td>
-                            <td>@item.Concepto - @item.Descripcio</td>
-                            <td>@item.Ano</td>
-                            <td>@item.P</td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+        @Html.Partial("_OtrasTablas", Model);
     </div>
 </div>
 
 
 <script>
-    $(document).on('ready', function () {
-        $('#btnsubmit').removeClass('disabled');
-    });
+    $('#error_descrip').html('@observ_descrip');
 
     $("form").submit(function () {
         if (parseInt($("#submited").val()) > 0) {
             return false;
+        }
+        else {
+            $('#error_descrip').html('');
         }
     });
 
     $('#btnCancel').on('click', function () {
         $('#edit-target').hide()
         $('#tabla-errores').show()
+        $('#error_descrip').html('');
     })
+
 </script>
 

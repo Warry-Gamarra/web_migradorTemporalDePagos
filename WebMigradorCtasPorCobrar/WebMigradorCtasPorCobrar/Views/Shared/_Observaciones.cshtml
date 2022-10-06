@@ -1,7 +1,9 @@
 ﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Migracion.Observacion>
 
 <div class="modal-header">
-    <h5 class="modal-title">Observaciones:</h5>
+    <h5 class="modal-title">
+        Observaciones: <span id="error_descrip" class="d-inline-block text-truncate1" style="font-size:1rem; vertical-align: text-bottom;"></span>
+    </h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
         <span aria-hidden="true">&times;</span>
     </button>
@@ -36,6 +38,10 @@
         <div class="col-12" id="edit-target" style="display:none;">
         </div>
     </div>
+    <div id="processing" class="container-fluid" style="display:none;">
+        <p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>
+    </div>
+
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
@@ -49,6 +55,7 @@
             type: 'GET',
             cache: false,
             beforeSend: function () {
+                $('#processing').show();
                 $('#tabla-errores').hide()
             },
             success: function (data) {
@@ -57,7 +64,11 @@
             },
             error: function () {
                 $('#tabla-errores').show()
+            },
+            complete: function () {
+                $('#processing').hide();
             }
+
         })
     })
 </script>

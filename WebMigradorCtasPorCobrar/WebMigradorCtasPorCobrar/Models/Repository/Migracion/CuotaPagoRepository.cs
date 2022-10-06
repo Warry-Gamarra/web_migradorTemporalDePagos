@@ -277,7 +277,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                 {
                     rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET I_CatPagoID = @I_CatPagoID WHERE I_RowID = @I_RowID;", 
                                                   new { I_CatPagoID = cuotaPago.I_CatPagoID, I_RowID = cuotaPago.I_RowID}, 
-                                                  commandType: CommandType.StoredProcedure);
+                                                  commandType: CommandType.Text);
 
                     if (rowCount > 0)
                     {
@@ -312,7 +312,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     if (rowCount > 0)
                     {
                         result.IsDone = true;
-                        result.Message = "Categoría actualizado correctamente";
+                        result.Message = "Periodo actualizado correctamente";
                     }
                 }
             }
@@ -365,14 +365,14 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET I_Periodo = @I_Periodo WHERE I_RowID = @I_RowID;",
-                                                  new { I_Periodo = cuotaPago.I_Periodo, I_RowID = cuotaPago.I_RowID },
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET Eliminado = 1 WHERE I_RowID = @I_RowID;",
+                                                  new { I_RowID = cuotaPago.I_RowID },
                                                   commandType: CommandType.Text);
 
                     if (rowCount > 0)
                     {
                         result.IsDone = true;
-                        result.Message = "Periodo actualizado correctamente";
+                        result.Message = "La cuota de pago se desactivó actualizado correctamente";
                     }
                 }
             }

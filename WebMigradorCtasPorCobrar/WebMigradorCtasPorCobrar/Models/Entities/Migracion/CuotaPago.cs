@@ -14,11 +14,13 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public bool Eliminado { get; set; }
         public string Codigo_bnc { get; set; }
         public DateTime Fch_venc { get; set; }
+        public string Fch_venc_s { get; set; }
         public string Prioridad { get; set; }
         public bool C_mora { get; set; }
         public int I_Anio { get; set; }
         public int I_Periodo { get; set; }
         public int I_CatPagoID { get; set; }
+        public string CatPagoDesc { get; set; }
         public int I_ProcedenciaID { get; set; }
         public DateTime D_FecCarga { get; set; }
         public string B_Actualizado { get; set; }
@@ -32,5 +34,10 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public IList<ConceptoPago> ConceptosPago { get; set; }
         public IList<Obligacion> Obligaciones { get; set; }
         public IList<DetalleObligacion> DetalleObligaciones { get; set; }
+
+        public CuotaPago()
+        {
+            this.Fch_venc_s = Fch_venc.ToShortDateString();
+        }
     }
 }

@@ -5,11 +5,13 @@ using System.Web;
 using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
+using WebMigradorCtasPorCobrar.Models.Entities.CtasPorCobrar;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using ClosedXML.Excel;
 using System.IO;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
+using WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
@@ -27,6 +29,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
         public CuotaPago Obtener(int cuotaID)
         {
+            var result = CuotaPagoRepository.ObtenerPorId(cuotaID);
+            result.CatPagoDesc = CategoriaPagoRepository.Obtener(result.I_CatPagoID).T_CatPagoDesc;
             return CuotaPagoRepository.ObtenerPorId(cuotaID);
         }
 
@@ -53,14 +57,14 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                     Ano = Temp_item.Ano,
                     P = Temp_item.P,
                     Cuota_pago = Temp_item.Cuota_pago,
-                    Descripcio = Temp_item.Descripcio
+                    Descripcio = Temp_item.Descripcio,
                 };
 
                 cuotaPago.Obligaciones.Add(new Obligacion(obligacion));
             }
 
             foreach (var Temp_item in Temporal.ObligacionRepository.ObtenerDetallePorCuotaPago(schema, cuotaPago.Cuota_pago.ToString())
-                                                                   .Select(x => new { x.Ano, x.P, x.Cuota_pago, x.Concepto, x.Descripcio })
+                                                                   .Select(x => new { x.Ano, x.P, x.Cuota_pago, x.Concepto, x.Descripcio, x.Eliminado })
                                                                    .Distinct())
             {
                 var detalle = new Entities.TemporalPagos.DetalleObligacion()
@@ -78,6 +82,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return cuotaPago;
         }
 
+        public IEnumerable<TC_CategoriaPago> ObtenerCategoriasPago(string cod_bnc)
+        {
+            return CategoriaPagoRepository.Obtener().Where(x => x.N_CodBanco == cod_bnc);
+        }
 
         public byte[] ObtenerDatosObservaciones(Procedencia procedencia, int? tipo_obsID)
         {
@@ -198,6 +206,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         public Response Save(CuotaPago cuotaPago, int tipoObsID)
         {
             Response result = new Response();
+            cuotaPago.Fch_venc = !string.IsNullOrEmpty(cuotaPago.Fch_venc_s) ? DateTime.Parse(cuotaPago.Fch_venc_s): cuotaPago.Fch_venc;
+
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
             switch ((CuotaPagoObs)tipoObsID)

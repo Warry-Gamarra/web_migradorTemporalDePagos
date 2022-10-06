@@ -127,6 +127,10 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             var model = _cuotaPagoServiceMigracion.ObtenerConConceptos(id);
             ViewBag.TipoObserv = obsID.ToString();
+            ViewBag.Observacion = _observacionService.ObtenerCatalogo(obsID).T_ObservDesc;
+            ViewBag.CategoriasBnc = new SelectList(_cuotaPagoServiceMigracion.ObtenerCategoriasPago(model.Codigo_bnc),
+                                                    "I_CatPagoID", "T_CatPagoDesc", model.I_CatPagoID);
+
             string viewName = ObtenerVistaEdicion(obsID);
 
             return PartialView(viewName, model);
@@ -137,7 +141,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             var result = _cuotaPagoServiceMigracion.Save(model, tipoObserv);
 
-            return PartialView("_MsgPartialWR", result);
+            return PartialView("_Message", result);
         }
 
 
