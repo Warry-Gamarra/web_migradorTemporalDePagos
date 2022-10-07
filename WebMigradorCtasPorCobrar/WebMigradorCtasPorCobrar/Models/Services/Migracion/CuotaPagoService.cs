@@ -82,11 +82,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return cuotaPago;
         }
 
-        public IEnumerable<TC_CategoriaPago> ObtenerCategoriasPago(string cod_bnc)
-        {
-            return CategoriaPagoRepository.Obtener().Where(x => x.N_CodBanco == cod_bnc);
-        }
-
         public byte[] ObtenerDatosObservaciones(Procedencia procedencia, int? tipo_obsID)
         {
             XLWorkbook excel_book = new XLWorkbook();

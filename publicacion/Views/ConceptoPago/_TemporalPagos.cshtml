@@ -2,7 +2,7 @@
 @model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos.ConceptoPago>
 @using GridMvc.Html
 
-<div class="table-responsive" style="min-height:300px; font-size:12px;">
+<div class="table-responsive" style="min-height:300px; font-size:13px;">
     @Html.Grid(Model).Columns(columns =>
     {
         columns.Add(c => c.Id_cp).Filterable(true);

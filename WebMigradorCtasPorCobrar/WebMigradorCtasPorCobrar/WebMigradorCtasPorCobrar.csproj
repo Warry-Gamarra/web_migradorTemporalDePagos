@@ -155,6 +155,7 @@
     <Compile Include="Models\Databases.cs" />
     <Compile Include="Models\Entities\Config\Password.cs" />
     <Compile Include="Models\Entities\Config\User.cs" />
+    <Compile Include="Models\Entities\CtasPorCobrar\TC_CatalogoOpcion.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\TC_CategoriaPago.cs" />
     <Compile Include="Models\Entities\Migracion\DatosResultados.cs" />
     <Compile Include="Models\Entities\Migracion\DetalleObligacion.cs" />
@@ -162,8 +163,10 @@
     <Compile Include="Models\Entities\Migracion\Observacion.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tabla.cs" />
     <Compile Include="Models\Helpers\Observaciones.cs" />
+    <Compile Include="Models\Helpers\CtasPorCobrar.cs" />
     <Compile Include="Models\Helpers\Tablas.cs" />
     <Compile Include="Models\Repository\Config\UserServices.cs" />
+    <Compile Include="Models\Repository\CtasPorCobrar\CatalogoOpcionRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\CategoriaPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\ConceptoPagoRepository.cs" />
@@ -188,6 +191,7 @@
     <Compile Include="Models\Helpers\Constant.cs" />
     <Compile Include="Models\Helpers\Procedencia.cs" />
     <Compile Include="Models\Helpers\Response.cs" />
+    <Compile Include="Models\Services\CtasPorCobrar\EquivalenciasServices.cs" />
     <Compile Include="Models\Services\Migracion\AlumnoService.cs" />
     <Compile Include="Models\Services\Migracion\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\Migracion\CuotaPagoService.cs" />

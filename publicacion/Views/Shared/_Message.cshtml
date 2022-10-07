@@ -1,0 +1,17 @@
+﻿@model WebMigradorCtasPorCobrar.Models.Helpers.Response
+
+<div></div>
+<div class="col-md-12" style="display:none" id="loading">
+    <h6>Espere un momento...</h6>
+    <div class="progress">
+        <div class="indeterminate"></div>
+    </div>
+</div>
+
+<div class="col-12">
+    <div id="div-alert" class="mt-3">
+        <div class="text-center alert alert-@Model.Color"><i class="fa @Model.Icon">&nbsp;</i>@Html.Raw(Model.Message)</div>
+    </div>
+</div>
+
+

@@ -9,6 +9,7 @@ using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
+using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -17,6 +18,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
     {
         private readonly TemporalPagos.CuotaPagoService _cuotaPagoServiceTemporalPagos;
         private readonly Migracion.CuotaPagoService _cuotaPagoServiceMigracion;
+        private readonly EquivalenciasServices _equivalenciasServices;
         private readonly ObservacionService _observacionService;
 
         public CuotaPagoController()
@@ -24,6 +26,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             _cuotaPagoServiceTemporalPagos = new TemporalPagos.CuotaPagoService();
             _cuotaPagoServiceMigracion = new Migracion.CuotaPagoService();
             _observacionService = new ObservacionService();
+            _equivalenciasServices = new EquivalenciasServices();
         }
 
         public ActionResult Pregrado(string partial)
@@ -128,9 +131,10 @@ namespace WebMigradorCtasPorCobrar.Controllers
             var model = _cuotaPagoServiceMigracion.ObtenerConConceptos(id);
             ViewBag.TipoObserv = obsID.ToString();
             ViewBag.Observacion = _observacionService.ObtenerCatalogo(obsID).T_ObservDesc;
-            ViewBag.CategoriasBnc = new SelectList(_cuotaPagoServiceMigracion.ObtenerCategoriasPago(model.Codigo_bnc),
+            ViewBag.CategoriasBnc = new SelectList(_equivalenciasServices.ObtenerCategoriasPago(model.Codigo_bnc),
                                                     "I_CatPagoID", "T_CatPagoDesc", model.I_CatPagoID);
-
+            ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
+                                                    "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
             string viewName = ObtenerVistaEdicion(obsID);
 
             return PartialView(viewName, model);

@@ -2,7 +2,7 @@
 @model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos.Alumno>
 @using GridMvc.Html
 
-<div class="table-responsive" style="min-height:300px">
+<div class="table-responsive" style="min-height:300px; font-size:13px;">
     @Html.Grid(Model).Columns(columns =>
     {
         columns.Add(c => c.C_CodAlu).Titled("Codigo").Filterable(true);
