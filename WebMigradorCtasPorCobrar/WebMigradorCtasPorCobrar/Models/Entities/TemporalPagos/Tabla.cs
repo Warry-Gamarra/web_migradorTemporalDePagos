@@ -8,11 +8,12 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos
 {
     public class Tabla
     {
-        public string Nombre { get; set; }
-        public int CantFilas { get; set; }
-        public int CantEliminados { get; set; }
-        public DateTime FecArchivo { get; set; }
-        public Procedencia ProcedenciaData { get; set; }
-        public string Condicion { get; set; }
+        public int I_TablaID { get; set; }
+        public string T_Nombre { get; set; }
+        public int I_CantFilas { get; set; }
+        public int I_CantEliminados { get; set; }
+        public DateTime D_FecArchivo { get; set; }
+        public Procedencia I_Procedencia { get; set; }
+        public bool B_Copiado { get; set; }
     }
 }

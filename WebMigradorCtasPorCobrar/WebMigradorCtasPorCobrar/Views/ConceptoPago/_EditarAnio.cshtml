@@ -1,0 +1,109 @@
+﻿
+@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.ConceptoPago
+@Scripts.Render("~/bundles/jqueryval")
+
+@{
+    string tipoObs = ViewBag.TipoObserv;
+    string observ_descrip = ViewBag.Observacion;
+}
+
+<div class="col-12">
+    <div class="row">
+        <div class="col-12">
+            @using (Ajax.BeginForm("Save", "ConceptoPago", new { area = "" }, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "div_msg", OnBegin = "Load", OnSuccess = "Submited", OnComplete = "Stop" }))
+            {
+                @Html.Hidden("submited", 0)
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.I_RowID)
+                @Html.Hidden("tipoObserv", tipoObs)
+
+                <div class="form-row">
+                    <div class="form-group col-md-3 col-4">
+                        @Html.Label("Código concepto", new { @class = "col-form-label", @for = "Id_cp" })
+                        @Html.TextBoxFor(model => model.Id_cp, new { @class = "form-control form-control-sm-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-md-3 col-4">
+                        @Html.Label("Código cuota", new { @class = "col-form-label", @for = "Cuota_pago" })
+                        @Html.TextBoxFor(model => model.Cuota_pago, new { @class = "form-control form-control-sm-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-md-6 col-5">
+                        @Html.Label("Descripción", new { @class = "col-form-label", @for = "Descripción" })
+                        @Html.TextBoxFor(model => model.Descripcio, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-3 col-4">
+                        @Html.Label("Fecha Vencto", new { @class = "col-form-label", @for = "Fch_venc" })
+                        @Html.TextBoxFor(model => model.Fch_venc_s, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-md-6 col-5">
+                        @Html.Label("Categoría (Equivalencia)", new { @class = "col-form-label", @for = "I_CatPagoID" })
+                        @Html.DropDownListFor(model => model.I_CatPagoID, ViewBag.CategoriasBnc as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
+                    </div>
+                    <div class="form-group col-md-3 col-3">
+                        <label>&nbsp;</label>
+                        <div class="form-check px-5 pt-2">
+                            @Html.CheckBoxFor(model => model.C_mora, new { @class = "form-check-input", disabled = "true" })
+                            @Html.Label("Mora", new { @class = "col-check-label" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-3">
+                        @Html.Label("Año", new { @class = "col-form-label", @for = "I_Anio" })
+                        @Html.TextBoxFor(model => model.I_Anio, new { @class = "form-control form-control-sm" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_Periodo" })
+                        @Html.DropDownListFor(model => model.I_Periodo, ViewBag.Periodos as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Prioridad", new { @class = "col-md-4 col-form-label", @for = "Prioridad" })
+                        @Html.TextBoxFor(model => model.Prioridad, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Procedencia", new { @class = "col-md-4 col-form-label" })
+                        @Html.TextBoxFor(model => model.I_ProcedenciaID, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                </div>
+
+                <div class="col-md-12" style="display:none" id="loading">
+                    <h6>Actualizando los datos...</h6>
+
+                    <div class="progress">
+                        <div class="indeterminate"></div>
+                    </div>
+                </div>
+                <div class="d-inline my-3">
+                    <a id="btnCancel" href="javascript:;" class="btn btn-outline-secondary float-left"><i class="fa fa-arrow-circle-left"></i>&nbsp;Atrás</a>
+                    <button type="submit" class="btn btn-primary float-right" id="btnsubmit"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="row mt-4">
+        @Html.Partial("_OtrasTablas", Model);
+    </div>
+</div>
+
+
+<script>
+    $('#error_descrip').html('@observ_descrip');
+
+    $("form").submit(function () {
+        if (parseInt($("#submited").val()) > 0) {
+            return false;
+        }
+        else {
+            $('#error_descrip').html('');
+        }
+    });
+
+    $('#btnCancel').on('click', function () {
+        $('#edit-target').hide()
+        $('#tabla-errores').show()
+        $('#error_descrip').html('');
+    })
+
+</script>
+

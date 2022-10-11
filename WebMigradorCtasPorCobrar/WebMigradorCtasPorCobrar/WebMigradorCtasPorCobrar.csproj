@@ -502,6 +502,10 @@
     <Content Include="Views\CuotaPago\_EditarEquivalencia.cshtml" />
     <Content Include="Views\Shared\_Message.cshtml" />
     <Content Include="Views\CuotaPago\_OtrasTablas.cshtml" />
+    <Content Include="Views\ConceptoPago\_EditarAnio.cshtml" />
+    <Content Include="Views\ConceptoPago\_OtrasTablas.cshtml" />
+    <Content Include="Views\ConceptoPago\_EditarRepetido.cshtml" />
+    <Content Include="Views\ConceptoPago\_EditarCuotaPago.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

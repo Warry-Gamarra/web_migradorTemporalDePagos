@@ -9,7 +9,14 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
     {
         public enum AlumnoObs
         {
-
+            Caracteres = 1,
+            Repetido = 2,
+            SinAnioIngres0 = 22,
+            SinCarrera = 21,
+            SinModIng = 23,
+            DniRepetido = 30,
+            SexoErrado = 31,
+            DniExiste = 41
         }
 
         public enum CuotaPagoObs
@@ -26,14 +33,40 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
 
         public enum ConceptoPagoObs
         {
-            SinPeriodo = 1,
-            SinAnio = 2
+            Repetido = 12,
+            SinAnio = 14,
+            ErrorConAnioCuota = 15,
+            SinPeriodo = 16,
+            ErroConPeriodoCuota = 17,
+            SinCuotaPago = 18,
+            SinCuotaMigrada = 19,
+            Externo = 20
         }
 
         public enum ObligacionesPagoObs
         {
-            SinPeriodo = 1,
-            SinAnio = 2
+            SinAlumno = 24,
+            AnioNoValido = 26,
+            SinPeriodo = 27,
+            FchVencRepetido = 28,
+            ExisteConOtroMonto = 29,
+            SinCuotaPagoMigrable= 32,
+            SinConceptoMigrable = 36,
+            ObsAnioDetalle =37,
+            ObsPeriodoDetalle =38,
+            ObsConceptoDetalle =38,
+            SinDetalle =40
+        }
+
+        public enum DetalleObligacionObs
+        {
+            SinObligacionMigrada = 25,
+            SinConceptoMigrado = 33,
+            ProcedenciaNoCoincide = 34,
+            ConceptoNoExiste = 35,
+            CuotaConceptoNoCoincide = 42,
+            AnioConceptoNoCoincide = 43,
+            PeriodoConceptoNoCoincide = 44
         }
 
     }

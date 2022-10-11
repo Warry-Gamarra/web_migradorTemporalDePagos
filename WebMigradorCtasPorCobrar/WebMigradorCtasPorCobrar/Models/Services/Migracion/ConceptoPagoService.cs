@@ -8,6 +8,7 @@ using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using ClosedXML.Excel;
 using System.IO;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
@@ -137,6 +138,41 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              //$"        </dd>" +
                              $"    </dl>";
 
+
+            return result.IsDone ? result.Success(false) : result.Error(false);
+        }
+
+        public Response Save(ConceptoPago conceptoPago, int tipoObserv)
+        {
+            Response result = new Response();
+
+            switch ((ConceptoPagoObs)tipoObserv)
+            {
+                case ConceptoPagoObs.Repetido:
+                    result = ConceptoPagoRepository.Save();
+                    break;
+                case ConceptoPagoObs.SinCuotaPago:
+                    result = ConceptoPagoRepository.Save();
+                    break;
+                case ConceptoPagoObs.SinCuotaMigrada:
+                    result = ConceptoPagoRepository.Save();
+                    break;
+                case ConceptoPagoObs.SinAnio:
+                    result = ConceptoPagoRepository.Save();
+                    break;
+                case ConceptoPagoObs.Externo:
+                    result = ConceptoPagoRepository.Save();
+                    break;
+                case ConceptoPagoObs.SinPeriodo:
+                    result = ConceptoPagoRepository.Save();
+                    break;
+                case ConceptoPagoObs.ErrorConAnioCuota:
+                    result = ConceptoPagoRepository.Save();
+                    break;
+                case ConceptoPagoObs.ErroConPeriodoCuota:
+                    result = ConceptoPagoRepository.Save();
+                    break;
+            }
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }

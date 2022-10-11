@@ -370,5 +370,12 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
+
+
+        public static Response Save()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

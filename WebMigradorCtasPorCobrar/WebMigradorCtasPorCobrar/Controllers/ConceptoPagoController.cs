@@ -7,6 +7,8 @@ using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
+using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -129,10 +131,11 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
         [HttpPost]
-        public ActionResult Save(int id)
+        public ActionResult Save(ConceptoPago model, int tipoObserv)
         {
+            var result = _conceptoPagoServiceMigracion.Save(model, tipoObserv);
 
-            return PartialView("_ProcesoMigracion");
+            return PartialView("_Message", result);
         }
 
 
@@ -143,6 +146,40 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Observaciones-ConceptoPago.xlsx");
         }
 
+        private string ObtenerVistaEdicion(int obsID)
+        {
+            string viewName = "_Message";
+
+            switch ((ConceptoPagoObs)obsID)
+            {
+                case ConceptoPagoObs.Repetido:
+                    viewName = "_EditarRepetido";
+                    break;
+                case ConceptoPagoObs.SinCuotaPago:
+                    viewName = "_EditarCuotaPago";
+                    break;
+                case ConceptoPagoObs.SinCuotaMigrada:
+                    viewName = "_Message";
+                    break;
+                case ConceptoPagoObs.SinAnio:
+                    viewName = "_EditarAnio";
+                    break;
+                case ConceptoPagoObs.Externo:
+                    viewName = "_Message";
+                    break;
+                case ConceptoPagoObs.SinPeriodo:
+                    viewName = "_EditarPeriodo";
+                    break;
+                case ConceptoPagoObs.ErrorConAnioCuota:
+                    viewName = "_EditarAnio";
+                    break;
+                case ConceptoPagoObs.ErroConPeriodoCuota:
+                    viewName = "_EditarPeriodo";
+                    break;
+            }
+
+            return viewName;
+        }
 
     }
 }

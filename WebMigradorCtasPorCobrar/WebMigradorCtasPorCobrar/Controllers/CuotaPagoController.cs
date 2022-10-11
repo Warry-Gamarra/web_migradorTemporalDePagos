@@ -158,7 +158,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         private string ObtenerVistaEdicion(int obsID)
         {
-            string viewName = "_MensajeSinEditar";
+            string viewName = "_Message";
 
             switch ((CuotaPagoObs)obsID)
             {
@@ -166,7 +166,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
                     viewName = "_EditarRepetido";
                     break;
                 case CuotaPagoObs.Eliminado:
-                    viewName = "_MensajeSinEditar";
+                    viewName = "_Message";
                     break;
                 case CuotaPagoObs.MasDeUnAnio:
                     viewName = "_EditarAnio";
