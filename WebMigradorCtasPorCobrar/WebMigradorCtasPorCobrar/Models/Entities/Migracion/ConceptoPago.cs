@@ -46,6 +46,11 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public bool B_Removido { get; set; }
         public DateTime D_FecRemovido { get; set; }
 
+        public int I_Periodo { get; set; }
+        public IList<CuotaPago> CuotasPago { get; set; }
+        public IList<DetalleObligacion> DetalleObligaciones { get; set; }
+
+
         public ConceptoPago()
         {
 

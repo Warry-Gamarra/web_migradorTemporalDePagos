@@ -142,6 +142,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
+        public ConceptoPago ObtenerConRelaciones(int conceptoPagoID)
+        {
+            ConceptoPago conceptoPago = ConceptoPagoRepository.ObtenerPorId(conceptoPagoID);
+
+            return conceptoPago;
+        }
+
         public Response Save(ConceptoPago conceptoPago, int tipoObserv)
         {
             Response result = new Response();

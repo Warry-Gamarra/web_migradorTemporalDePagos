@@ -128,7 +128,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult Editar(int id, int obsID)
         {
-            var model = _cuotaPagoServiceMigracion.ObtenerConConceptos(id);
+            var model = _cuotaPagoServiceMigracion.ObtenerConRelaciones(id);
             ViewBag.TipoObserv = obsID.ToString();
             ViewBag.Observacion = _observacionService.ObtenerCatalogo(obsID).T_ObservDesc;
             ViewBag.CategoriasBnc = new SelectList(_equivalenciasServices.ObtenerCategoriasPago(model.Codigo_bnc),

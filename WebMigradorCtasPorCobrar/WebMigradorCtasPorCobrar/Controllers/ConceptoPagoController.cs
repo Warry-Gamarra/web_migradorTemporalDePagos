@@ -9,6 +9,7 @@ using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
+using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -17,6 +18,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
     {
         private readonly TemporalPagos.ConceptoPagoService  _conceptoPagoServiceTemporalPagos;
         private readonly Migracion.ConceptoPagoService _conceptoPagoServiceMigracion;
+        private readonly EquivalenciasServices _equivalenciasServices;
         private readonly ObservacionService _observacionService;
 
         public ConceptoPagoController()
@@ -24,6 +26,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             _conceptoPagoServiceTemporalPagos = new TemporalPagos.ConceptoPagoService();
             _conceptoPagoServiceMigracion = new Migracion.ConceptoPagoService();
             _observacionService = new ObservacionService();
+            _equivalenciasServices = new EquivalenciasServices();
         }
 
         public ActionResult Pregrado(string partial)
@@ -124,10 +127,15 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_Observaciones", model);
         }
 
-        public ActionResult Editar(int id)
+        public ActionResult Editar(int id, int obsID)
         {
+            var model = _conceptoPagoServiceMigracion.ObtenerConRelaciones(id);
+            ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
+                                        "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
 
-            return PartialView("_ProcesoMigracion");
+            string viewName = ObtenerVistaEdicion(obsID);
+
+            return PartialView(viewName, model);
         }
 
         [HttpPost]

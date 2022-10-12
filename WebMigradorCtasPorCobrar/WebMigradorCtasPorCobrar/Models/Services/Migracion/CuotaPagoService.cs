@@ -34,7 +34,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return CuotaPagoRepository.ObtenerPorId(cuotaID);
         }
 
-        public CuotaPago ObtenerConConceptos(int cuotaID)
+        public CuotaPago ObtenerConRelaciones(int cuotaID)
         {
             var cuotaPago = CuotaPagoRepository.ObtenerPorId(cuotaID);
             cuotaPago.ConceptosPago = new List<ConceptoPago>();
