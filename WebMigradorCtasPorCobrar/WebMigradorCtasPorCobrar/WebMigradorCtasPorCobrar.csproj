@@ -157,6 +157,7 @@
     <Compile Include="Models\Entities\Config\User.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\TC_CatalogoOpcion.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\TC_CategoriaPago.cs" />
+    <Compile Include="Models\Entities\CtasPorCobrar\TC_ProgramaUnfv.cs" />
     <Compile Include="Models\Entities\Migracion\DatosResultados.cs" />
     <Compile Include="Models\Entities\Migracion\DetalleObligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Obligacion.cs" />
