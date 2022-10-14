@@ -10,13 +10,14 @@ using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.ViewModels;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
     [Authorize]
     public class ConceptoPagoController : Controller
     {
-        private readonly TemporalPagos.ConceptoPagoService  _conceptoPagoServiceTemporalPagos;
+        private readonly TemporalPagos.ConceptoPagoService _conceptoPagoServiceTemporalPagos;
         private readonly Migracion.ConceptoPagoService _conceptoPagoServiceMigracion;
         private readonly EquivalenciasServices _equivalenciasServices;
         private readonly ObservacionService _observacionService;
@@ -129,13 +130,20 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult Editar(int id, int obsID)
         {
-            var model = _conceptoPagoServiceMigracion.ObtenerConRelaciones(id);
-            ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
-                                        "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
+            Response viewResult = ObtenerVistaEdicion(obsID);
 
-            string viewName = ObtenerVistaEdicion(obsID);
+            if (viewResult.CurrentID == "_Message")
+            {
+                return PartialView(viewResult.CurrentID, viewResult);
+            }
+            else
+            {
+                var model = _conceptoPagoServiceMigracion.ObtenerConRelaciones(id);
+                ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
+                                            "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
 
-            return PartialView(viewName, model);
+                return PartialView(viewResult.CurrentID, model);
+            }
         }
 
         [HttpPost]
@@ -154,9 +162,11 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Observaciones-ConceptoPago.xlsx");
         }
 
-        private string ObtenerVistaEdicion(int obsID)
+        private Response ObtenerVistaEdicion(int obsID)
         {
+            Response model = new Response();
             string viewName = "_Message";
+            model.Warning(false);
 
             switch ((ConceptoPagoObs)obsID)
             {
@@ -168,12 +178,15 @@ namespace WebMigradorCtasPorCobrar.Controllers
                     break;
                 case ConceptoPagoObs.SinCuotaMigrada:
                     viewName = "_Message";
+                    model.Warning(false);
+                    model.Message = "Debe migrarse primero la cuota de pago para poder migrar el concepto asociado.";
                     break;
                 case ConceptoPagoObs.SinAnio:
                     viewName = "_EditarAnio";
                     break;
                 case ConceptoPagoObs.Externo:
                     viewName = "_Message";
+                    model.Message = "Los datos no pueden ser modificados por que ya existen en la base de datos de destino"; ;
                     break;
                 case ConceptoPagoObs.SinPeriodo:
                     viewName = "_EditarPeriodo";
@@ -186,7 +199,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
                     break;
             }
 
-            return viewName;
+            model.CurrentID = viewName;
+
+            return model;
         }
 
     }

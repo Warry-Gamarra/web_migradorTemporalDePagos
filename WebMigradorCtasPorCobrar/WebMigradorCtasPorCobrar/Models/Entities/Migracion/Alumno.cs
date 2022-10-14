@@ -9,6 +9,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
     {
         public int I_RowID { get; set; }
         public string C_RcCod { get; set; }
+        public string T_Carrera { get; set; }
         public string C_CodAlu { get; set; }
         public string C_NumDNI { get; set; }
         public string C_CodTipDoc { get; set; }
@@ -18,6 +19,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public string C_Sexo { get; set; }
         public DateTime? D_FecNac { get; set; }
         public string C_CodModIng { get; set; }
+        public string T_ModalidadIng { get; set; }
         public string C_AnioIngreso { get; set; }
         public byte I_ProcedenciaID { get; set; }
         public DateTime D_FecCarga { get; set; }

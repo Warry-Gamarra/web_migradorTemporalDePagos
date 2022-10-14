@@ -157,7 +157,7 @@
     <Compile Include="Models\Entities\Config\User.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\TC_CatalogoOpcion.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\TC_CategoriaPago.cs" />
-    <Compile Include="Models\Entities\CtasPorCobrar\TC_ProgramaUnfv.cs" />
+    <Compile Include="Models\Entities\CtasPorCobrar\VW_CarreraProfesional.cs" />
     <Compile Include="Models\Entities\Migracion\DatosResultados.cs" />
     <Compile Include="Models\Entities\Migracion\DetalleObligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Obligacion.cs" />
@@ -168,6 +168,7 @@
     <Compile Include="Models\Helpers\Tablas.cs" />
     <Compile Include="Models\Repository\Config\UserServices.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\CatalogoOpcionRepository.cs" />
+    <Compile Include="Models\Repository\CtasPorCobrar\CarreraProfesionalRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\CategoriaPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\ConceptoPagoRepository.cs" />
@@ -507,6 +508,7 @@
     <Content Include="Views\ConceptoPago\_OtrasTablas.cshtml" />
     <Content Include="Views\ConceptoPago\_EditarRepetido.cshtml" />
     <Content Include="Views\ConceptoPago\_EditarCuotaPago.cshtml" />
+    <Content Include="Views\ConceptoPago\_EditarPeriodo.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

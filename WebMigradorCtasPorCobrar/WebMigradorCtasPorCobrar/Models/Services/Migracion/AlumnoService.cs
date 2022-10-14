@@ -8,11 +8,20 @@ using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using System.IO;
 using ClosedXML.Excel;
+using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
     public class AlumnoService
     {
+        private readonly EquivalenciasServices _equivalenciasServices;
+
+        public AlumnoService()
+        {
+            _equivalenciasServices = new EquivalenciasServices();
+        }
+
+
         public IEnumerable<Alumno> Obtener(Procedencia procedencia, int? tipo_obsID)
         {
             if (tipo_obsID.HasValue)
@@ -25,7 +34,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
         public Alumno Obtener(int alumnoId)
         {
-            return AlumnoRepository.ObtenerPorId(alumnoId);
+            var result = AlumnoRepository.ObtenerPorId(alumnoId);
+
+            result.T_Carrera = _equivalenciasServices.ObtenerCarreraProfesional(result.C_RcCod).T_CarProfDesc;
+            result.T_ModalidadIng = _equivalenciasServices.ObtenerModalidadIngreso(result.C_CodModIng).T_OpcionDesc;
+            return result;
         }
 
         public byte[] ObtenerDatosObservaciones(Procedencia procedencia, int? tipo_obsID)

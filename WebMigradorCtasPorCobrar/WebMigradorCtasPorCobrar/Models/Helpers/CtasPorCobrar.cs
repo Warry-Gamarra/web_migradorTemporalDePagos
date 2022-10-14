@@ -9,7 +9,8 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
     {
         public enum Parametro
         {
-            PeriodoAcademico = 5
+            PeriodoAcademico = 5,
+            CodigoIngreso = 7,
         }
     }
 }

@@ -20,5 +20,30 @@ namespace WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar
             return CatalogoOpcionRepository.Obtener((int)Parametro.PeriodoAcademico);
         }
 
+        public IEnumerable<TC_CatalogoOpcion> ObtenerModalidadIngreso()
+        {
+            return CatalogoOpcionRepository.Obtener((int)Parametro.CodigoIngreso);
+        }
+
+        public TC_CatalogoOpcion ObtenerModalidadIngreso(string codIng)
+        {
+            var result = CatalogoOpcionRepository.Obtener((int)Parametro.CodigoIngreso)
+                                                 .SingleOrDefault(x => x.T_OpcionCod == codIng);
+
+            return result ?? new TC_CatalogoOpcion();
+        }
+
+
+
+        public IEnumerable<VW_CarreraProfesional> ObtenerCarreraProfesional()
+        {
+            return CarreraProfesionalRepository.Obtener();
+        }
+
+        public VW_CarreraProfesional ObtenerCarreraProfesional(string cod_rc)
+        {
+            return CarreraProfesionalRepository.Obtener(cod_rc);
+        }
+
     }
 }

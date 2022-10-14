@@ -146,6 +146,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             ConceptoPago conceptoPago = ConceptoPagoRepository.ObtenerPorId(conceptoPagoID);
 
+            conceptoPago.CuotasPago = new List<CuotaPago>();
+
             return conceptoPago;
         }
 

@@ -338,7 +338,7 @@ BEGIN
 				AND I_ProcedenciaID = @I_ProcedenciaID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID_sinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		USING (SELECT @I_ObservID_AnioDif AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE I_Anio = TR_Cp_Pri.Ano AND Cuota_pago = TR_Cp_Pri.Cuota_pago) 
 					  AND Tipo_oblig = 1 
 					  AND I_ProcedenciaID = @I_ProcedenciaID
