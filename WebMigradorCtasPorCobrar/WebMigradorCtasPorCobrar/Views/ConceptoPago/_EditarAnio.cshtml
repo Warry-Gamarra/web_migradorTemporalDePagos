@@ -31,6 +31,24 @@
                         @Html.TextBoxFor(model => model.Descripcio, new { @class = "form-control form-control-sm", @readonly = "true" })
                     </div>
                 </div>
+                <div class="form-row">
+                    <div class="form-group col-3">
+                        @Html.Label("Año", new { @class = "col-form-label", @for = "I_Anio" })
+                        @Html.TextBoxFor(model => model.Ano, new { @class = "form-control form-control-sm" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_Periodo" })
+                        @Html.DropDownListFor(model => model.I_Periodo, ViewBag.Periodos as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Monto", new { @class = "col-form-label", @for = "Monto" })
+                        @Html.TextBoxFor(model => model.Monto, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Procedencia", new { @class = "col-form-label" })
+                        @Html.DropDownListFor(model => model.I_ProcedenciaID, ViewBag.Procedencia as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
+                    </div>
+                </div>
                 @*<div class="form-row">
                     <div class="form-group col-md-3 col-4">
                         @Html.Label("Fecha Vencto", new { @class = "col-form-label", @for = "Fch_venc" })
@@ -46,24 +64,6 @@
                             @Html.CheckBoxFor(model => model.C_mora, new { @class = "form-check-input", disabled = "true" })
                             @Html.Label("Mora", new { @class = "col-check-label" })
                         </div>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-3">
-                        @Html.Label("Año", new { @class = "col-form-label", @for = "I_Anio" })
-                        @Html.TextBoxFor(model => model.I_Anio, new { @class = "form-control form-control-sm" })
-                    </div>
-                    <div class="form-group col-3">
-                        @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_Periodo" })
-                        @Html.DropDownListFor(model => model.I_Periodo, ViewBag.Periodos as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
-                    </div>
-                    <div class="form-group col-3">
-                        @Html.Label("Prioridad", new { @class = "col-md-4 col-form-label", @for = "Prioridad" })
-                        @Html.TextBoxFor(model => model.Prioridad, new { @class = "form-control form-control-sm", @readonly = "true" })
-                    </div>
-                    <div class="form-group col-3">
-                        @Html.Label("Procedencia", new { @class = "col-md-4 col-form-label" })
-                        @Html.TextBoxFor(model => model.I_ProcedenciaID, new { @class = "form-control form-control-sm", @readonly = "true" })
                     </div>
                 </div>*@
 

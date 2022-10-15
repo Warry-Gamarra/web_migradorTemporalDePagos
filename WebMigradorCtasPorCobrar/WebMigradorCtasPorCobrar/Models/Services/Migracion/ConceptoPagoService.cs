@@ -9,11 +9,19 @@ using WebMigradorCtasPorCobrar.Models.ViewModels;
 using ClosedXML.Excel;
 using System.IO;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
+using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
     public class ConceptoPagoService
     {
+        private readonly EquivalenciasServices _equivalenciaServices;
+
+        public ConceptoPagoService()
+        {
+            _equivalenciaServices = new EquivalenciasServices();
+        }
+
         public IEnumerable<ConceptoPago> Obtener(Procedencia procedencia, int? tipo_obsID)
         {
             if (tipo_obsID.HasValue)
@@ -145,6 +153,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         public ConceptoPago ObtenerConRelaciones(int conceptoPagoID)
         {
             ConceptoPago conceptoPago = ConceptoPagoRepository.ObtenerPorId(conceptoPagoID);
+            conceptoPago.I_Periodo = _equivalenciaServices.ObtenerPeriodosAcademicos(conceptoPago.P).I_OpcionID;
 
             conceptoPago.CuotasPago = new List<CuotaPago>();
 

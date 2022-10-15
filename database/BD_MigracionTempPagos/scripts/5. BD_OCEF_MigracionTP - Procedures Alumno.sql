@@ -20,6 +20,7 @@ CREATE PROCEDURE USP_U_ActualizarRegistroAlumno
 	@C_CodModIng  varchar(2), 	 
 	@C_AnioIngreso	 smallint,
 	@I_ProcedenciaID tinyint,
+	@B_Correcto  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
@@ -36,6 +37,7 @@ AS
 --		  @C_CodModIng  varchar(2), 
 --		  @C_AnioIngreso	 smallint,
 --		  @I_ProcedenciaID tinyint,
+--		  @B_Correcto  bit,
 --		  @B_Resultado  bit output,
 --		  @T_Message	nvarchar(4000)
 --exec USP_U_ActualizarRegistroAlumno @B_Resultado output, @T_Message output
@@ -58,7 +60,8 @@ BEGIN
 			D_FecNac = @D_FecNac,
 			C_AnioIngreso = @C_AnioIngreso,
 			C_CodModIng = @C_CodModIng,
-			I_ProcedenciaID = @I_ProcedenciaID
+			I_ProcedenciaID = @I_ProcedenciaID,
+			B_Correcto = @B_Correcto
 		WHERE 
 			I_RowID = @I_RowID
 

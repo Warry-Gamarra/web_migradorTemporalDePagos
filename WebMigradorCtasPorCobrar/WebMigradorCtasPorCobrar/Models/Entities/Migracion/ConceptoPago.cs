@@ -47,6 +47,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public DateTime D_FecRemovido { get; set; }
 
         public int I_Periodo { get; set; }
+        public int I_ProcedenciaID { get; set; }
         public IList<CuotaPago> CuotasPago { get; set; }
         public IList<DetalleObligacion> DetalleObligaciones { get; set; }
 

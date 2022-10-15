@@ -20,6 +20,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar
             return CatalogoOpcionRepository.Obtener((int)Parametro.PeriodoAcademico);
         }
 
+        public TC_CatalogoOpcion ObtenerPeriodosAcademicos(string cod_per)
+        {
+            var result = CatalogoOpcionRepository.Obtener((int)Parametro.PeriodoAcademico)
+                                                 .SingleOrDefault(x => x.T_OpcionCod == cod_per);
+
+            return result ?? new TC_CatalogoOpcion();
+        }
+
+
         public IEnumerable<TC_CatalogoOpcion> ObtenerModalidadIngreso()
         {
             return CatalogoOpcionRepository.Obtener((int)Parametro.CodigoIngreso);

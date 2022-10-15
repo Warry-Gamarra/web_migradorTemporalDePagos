@@ -19,6 +19,7 @@
         @Html.Hidden("submited", 0)
         @Html.AntiForgeryToken()
         @Html.HiddenFor(model => model.I_RowID)
+        @Html.HiddenFor(model => model.C_CodTipDoc)
 
         <div class="form-row">
             @Html.Label("Apellido paterno", new { @class = "col-md-4 col-form-label" })
@@ -90,7 +91,8 @@
         <div class="form-row">
             @Html.Label("Mod ingreso", new { @class = "col-md-4 col-form-label" })
             <div class="col-md-4">
-                @Html.TextBoxFor(model => model.C_CodModIng, new { @class = "form-control" })
+                @*@Html.TextBoxFor(model => model.C_CodModIng, new { @class = "form-control" })*@
+                @Html.DropDownListFor(model => model.C_CodModIng, ViewBag.ModalidadIngreso as SelectList, "[ SELECCIONAR ]", new { @class = "form-control" })
                 <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_CodModIng)</p>
             </div>
         </div>
@@ -101,9 +103,15 @@
                 <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_RcCod)</p>
             </div>
         </div>
+        <div class="form-row">
+            @Html.Label("Corregir en BD", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-4">
+                @Html.CheckBoxFor(model => model.B_Correcto, new { @class = "" })
+            </div>
+        </div>
 
 
-        <div class="" id="div_msg">
+        <div class="text-center" id="div_msg">
             <div class="col-md-12" style="display:none" id="loading">
                 <h6>Actualizando los datos...</h6>
 

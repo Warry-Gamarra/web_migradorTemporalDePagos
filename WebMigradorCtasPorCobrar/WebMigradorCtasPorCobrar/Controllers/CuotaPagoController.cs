@@ -135,6 +135,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
                                                     "I_CatPagoID", "T_CatPagoDesc", model.I_CatPagoID);
             ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
                                                     "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
+            ViewBag.Procedencia = new SelectList(ListEnums.Procedencias(), "Value", "Descripcion",
+                                         model.I_ProcedenciaID);
+
             string viewName = ObtenerVistaEdicion(obsID);
 
             return PartialView(viewName, model);

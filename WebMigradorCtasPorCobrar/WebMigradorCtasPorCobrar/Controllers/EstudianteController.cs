@@ -9,6 +9,7 @@ using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
+using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -18,12 +19,14 @@ namespace WebMigradorCtasPorCobrar.Controllers
         private readonly TemporalPagos.AlumnoService _alumnoServiceTemporalPagos;
         private readonly Migracion.AlumnoService _alumnoServiceMigracion;
         private readonly ObservacionService _observacionService;
-
+        private readonly EquivalenciasServices _equivalenciaService;
+        
         public EstudianteController()
         {
             _alumnoServiceTemporalPagos = new TemporalPagos.AlumnoService();
             _alumnoServiceMigracion = new Migracion.AlumnoService();
             _observacionService = new ObservacionService();
+            _equivalenciaService = new EquivalenciasServices();
         }
 
 
@@ -116,6 +119,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             var model = _alumnoServiceMigracion.Obtener(id);
 
             ViewBag.Procedencia = (Procedencia)model.I_ProcedenciaID;
+            ViewBag.ModalidadIngreso = new SelectList(_equivalenciaService.ObtenerModalidadIngreso(), "T_OpcionCod", "T_OpcionDesc", model.C_CodModIng);
 
             return PartialView("_Editar", model);
         }

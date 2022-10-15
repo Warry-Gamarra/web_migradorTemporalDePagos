@@ -57,12 +57,12 @@
                         @Html.DropDownListFor(model => model.I_Periodo, ViewBag.Periodos as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group col-3">
-                        @Html.Label("Prioridad", new { @class = "col-md-4 col-form-label", @for = "Prioridad" })
+                        @Html.Label("Prioridad", new { @class = "col-form-label", @for = "Prioridad" })
                         @Html.TextBoxFor(model => model.Prioridad, new { @class = "form-control form-control-sm", @readonly = "true" })
                     </div>
                     <div class="form-group col-3">
-                        @Html.Label("Procedencia", new { @class = "col-md-4 col-form-label" })
-                        @Html.TextBoxFor(model => model.I_ProcedenciaID, new { @class = "form-control form-control-sm", @readonly = "true" })
+                        @Html.Label("Procedencia", new { @class = "col-form-label" })
+                        @Html.DropDownListFor(model => model.I_ProcedenciaID, ViewBag.Procedencia as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
                     </div>
                 </div>
 

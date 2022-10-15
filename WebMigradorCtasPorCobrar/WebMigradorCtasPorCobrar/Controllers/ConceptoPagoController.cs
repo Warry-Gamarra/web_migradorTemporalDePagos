@@ -139,8 +139,12 @@ namespace WebMigradorCtasPorCobrar.Controllers
             else
             {
                 var model = _conceptoPagoServiceMigracion.ObtenerConRelaciones(id);
+
                 ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
-                                            "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
+                                                  "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
+
+                ViewBag.Procedencia = new SelectList(ListEnums.Procedencias(), "Value", "Descripcion", 
+                                                     model.I_ProcedenciaID);
 
                 return PartialView(viewResult.CurrentID, model);
             }
