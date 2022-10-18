@@ -104,9 +104,17 @@
             </div>
         </div>
         <div class="form-row">
-            @Html.Label("Corregir en BD", new { @class = "col-md-4 col-form-label" })
-            <div class="col-md-4">
-                @Html.CheckBoxFor(model => model.B_Correcto, new { @class = "" })
+            <div class="form-group offset-sm-4 col-sm-3">
+                <div class="form-check">
+                    @Html.CheckBoxFor(model => model.B_Correcto, new { @class = "form-check-input" })
+                    @Html.Label("Omitir validación", new { @for = "B_Correcto", @class = "col-check-label" })
+                </div>
+            </div>
+            <div class="form-group col-sm-3">
+                <div class="form-check">
+                    @Html.CheckBoxFor(model => model.B_Removido, new { @class = "form-check-input" })
+                    @Html.Label("Remover registro", new { @for= "B_Removido", @class = "col-check-label" })
+                </div>
             </div>
         </div>
 

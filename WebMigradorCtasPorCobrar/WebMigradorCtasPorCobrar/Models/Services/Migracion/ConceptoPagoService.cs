@@ -163,32 +163,26 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         public Response Save(ConceptoPago conceptoPago, int tipoObserv)
         {
             Response result = new Response();
-
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
             switch ((ConceptoPagoObs)tipoObserv)
             {
                 case ConceptoPagoObs.Repetido:
-                    result = ConceptoPagoRepository.Save();
+                    result = conceptoPagoRepository.SaveRepetido(conceptoPago);
                     break;
                 case ConceptoPagoObs.SinCuotaPago:
-                    result = ConceptoPagoRepository.Save();
-                    break;
-                case ConceptoPagoObs.SinCuotaMigrada:
-                    result = ConceptoPagoRepository.Save();
+                    result = conceptoPagoRepository.SaveCuotaPago(conceptoPago);
                     break;
                 case ConceptoPagoObs.SinAnio:
-                    result = ConceptoPagoRepository.Save();
-                    break;
-                case ConceptoPagoObs.Externo:
-                    result = ConceptoPagoRepository.Save();
+                    result = conceptoPagoRepository.SaveAnio(conceptoPago);
                     break;
                 case ConceptoPagoObs.SinPeriodo:
-                    result = ConceptoPagoRepository.Save();
+                    result = conceptoPagoRepository.SavePeriodo(conceptoPago);
                     break;
                 case ConceptoPagoObs.ErrorConAnioCuota:
-                    result = ConceptoPagoRepository.Save();
+                    result = conceptoPagoRepository.SaveAnio(conceptoPago);
                     break;
                 case ConceptoPagoObs.ErroConPeriodoCuota:
-                    result = ConceptoPagoRepository.Save();
+                    result = conceptoPagoRepository.SavePeriodo(conceptoPago);
                     break;
             }
 

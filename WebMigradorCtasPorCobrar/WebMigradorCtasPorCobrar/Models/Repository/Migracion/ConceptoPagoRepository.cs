@@ -372,10 +372,126 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public static Response Save()
+        public Response SavePeriodo(ConceptoPago conceptoPago)
         {
-            throw new NotImplementedException();
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri SET I_Anio = @I_Anio WHERE I_RowID = @I_RowID;",
+                                                  new { I_Anio = conceptoPago.P, I_RowID = conceptoPago.I_RowID },
+                                                  commandType: CommandType.Text);
+
+                    if (rowCount > 0)
+                    {
+                        result.IsDone = true;
+                        result.Message = "Año actualizado correctamente";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
         }
+
+
+        public Response SaveAnio(ConceptoPago conceptoPago)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri SET I_Anio = @I_Anio WHERE I_RowID = @I_RowID;",
+                                                  new { I_Anio = conceptoPago.P, I_RowID = conceptoPago.I_RowID },
+                                                  commandType: CommandType.Text);
+
+                    if (rowCount > 0)
+                    {
+                        result.IsDone = true;
+                        result.Message = "Año actualizado correctamente";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response SaveCuotaPago(ConceptoPago conceptoPago)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri SET I_Anio = @I_Anio WHERE I_RowID = @I_RowID;",
+                                                  new { I_Anio = conceptoPago.P, I_RowID = conceptoPago.I_RowID },
+                                                  commandType: CommandType.Text);
+
+                    if (rowCount > 0)
+                    {
+                        result.IsDone = true;
+                        result.Message = "Año actualizado correctamente";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+
+            return result;
+        }
+
+
+        public Response SaveRepetido(ConceptoPago conceptoPago)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri SET I_Anio = @I_Anio WHERE I_RowID = @I_RowID;",
+                                                  new { I_Anio = conceptoPago.P, I_RowID = conceptoPago.I_RowID },
+                                                  commandType: CommandType.Text);
+
+                    if (rowCount > 0)
+                    {
+                        result.IsDone = true;
+                        result.Message = "Año actualizado correctamente";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
 
     }
 }

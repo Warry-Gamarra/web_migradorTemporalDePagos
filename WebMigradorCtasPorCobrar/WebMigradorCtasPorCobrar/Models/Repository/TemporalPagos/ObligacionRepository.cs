@@ -83,6 +83,23 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             return result;
         }
 
+        public static IEnumerable<DetalleObligacion> ObtenerObligacionPorConceptoPago(string schemaDb, string cuotaPago)
+        {
+            IEnumerable<DetalleObligacion> result;
+
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+            {
+                string str_query = $"SELECT ec_obl.*, cp_pri.descripcio FROM {schemaDb}.ec_obl " +
+                                   $"       INNER JOIN {schemaDb}.cp_pri ON ec_obl.cuota_pago = cp_pri.cuota_pago " +
+                                   $"WHERE cp_pri.id_cp = @id_cp;";
+
+                result = connection.Query<DetalleObligacion>(str_query, new { cuota_pago = cuotaPago }, commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+
 
         public static IEnumerable<DetalleObligacion> ObtenerDetallePorCuotaPago(string schemaDb, string cuotaPago)
         {
@@ -99,6 +116,23 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
 
             return result;
         }
+
+        public static IEnumerable<DetalleObligacion> ObtenerDetallePorConceptoPago(string schemaDb, string cuotaPago)
+        {
+            IEnumerable<DetalleObligacion> result;
+
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+            {
+                string str_query = $"SELECT ec_det.*, cp_pri.descripcio FROM {schemaDb}.ec_det " +
+                                   $"       LEFT JOIN {schemaDb}.cp_pri ON ec_det.cuota_pago = cp_pri.cuota_pago AND ec_det.concepto = cp_pri.id_cp " +
+                                   $"WHERE ec_det.cuota_pago = @cuota_pago;";
+
+                result = connection.Query<DetalleObligacion>(str_query, new { cuota_pago = cuotaPago }, commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
 
 
         public static int ObtenerCantidadFilas(string schemaDB, string tableName)

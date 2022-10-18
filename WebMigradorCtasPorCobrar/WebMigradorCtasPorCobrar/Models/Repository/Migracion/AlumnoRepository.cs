@@ -437,6 +437,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: alumno.I_ProcedenciaID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: alumno.I_ProcedenciaID);
                     parameters.Add(name: "B_Correcto", dbType: DbType.Boolean, value: alumno.B_Correcto);
+                    parameters.Add(name: "B_Removido", dbType: DbType.Boolean, value: alumno.B_Removido);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);

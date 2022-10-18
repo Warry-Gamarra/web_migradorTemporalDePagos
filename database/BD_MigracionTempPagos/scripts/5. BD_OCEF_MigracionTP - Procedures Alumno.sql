@@ -21,6 +21,7 @@ CREATE PROCEDURE USP_U_ActualizarRegistroAlumno
 	@C_AnioIngreso	 smallint,
 	@I_ProcedenciaID tinyint,
 	@B_Correcto  bit,
+	@B_Removido  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
@@ -38,6 +39,7 @@ AS
 --		  @C_AnioIngreso	 smallint,
 --		  @I_ProcedenciaID tinyint,
 --		  @B_Correcto  bit,
+--		  @B_Removido  bit,
 --		  @B_Resultado  bit output,
 --		  @T_Message	nvarchar(4000)
 --exec USP_U_ActualizarRegistroAlumno @B_Resultado output, @T_Message output
@@ -45,6 +47,9 @@ AS
 BEGIN
 
 	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ProcedenciaID_Old int
+
+	SET @I_ProcedenciaID_Old = (SELECT I_ProcedenciaID  FROM TR_Alumnos WHERE I_RowID = @I_RowID)
 
 	BEGIN TRANSACTION;
 	BEGIN TRY 
@@ -64,6 +69,24 @@ BEGIN
 			B_Correcto = @B_Correcto
 		WHERE 
 			I_RowID = @I_RowID
+
+		IF (@B_Removido = 1)
+		BEGIN
+			UPDATE TR_Alumnos
+			SET	B_Removido = @B_Removido,
+				D_FecRemovido = @D_FecProceso
+			WHERE 
+				I_RowID = @I_RowID
+		END
+
+		IF (@I_ProcedenciaID_Old <> @I_ProcedenciaID)
+		BEGIN
+			UPDATE TI_ObservacionRegistroTabla 
+			   SET I_ProcedenciaID = @I_ProcedenciaID
+			WHERE 
+				I_FilaTablaID = @I_RowID
+				AND I_TablaID = 1
+		END
 
 		COMMIT TRANSACTION;
 		
@@ -357,7 +380,8 @@ BEGIN
 		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	I_ProcedenciaID = @I_ProcedenciaID 
+		WHERE	I_ProcedenciaID = @I_ProcedenciaID
+				AND B_Removido <> 1
 				AND EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
 							WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod
 							GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)
@@ -365,6 +389,7 @@ BEGIN
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	I_ProcedenciaID = @I_ProcedenciaID 
+						AND B_Removido <> 1
 						AND EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
 									WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod
 									GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)
@@ -805,11 +830,14 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres WHERE C_NumDNI = LTRIM(RTRIM(REPLACE(TR_Alumnos.C_NumDNI,' ', ' '))))
 				AND I_ProcedenciaID = @I_ProcedenciaID
+				AND ISNULL(B_Correcto, 0) <> 1
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres WHERE C_NumDNI = TR_Alumnos.C_NumDNI)
-						AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
+						AND I_ProcedenciaID = @I_ProcedenciaID 
+						AND ISNULL(B_Correcto, 0) <> 1
+				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN

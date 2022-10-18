@@ -140,6 +140,8 @@ namespace WebMigradorCtasPorCobrar.Controllers
             {
                 var model = _conceptoPagoServiceMigracion.ObtenerConRelaciones(id);
 
+                ViewBag.TipoObserv = obsID.ToString();
+                ViewBag.Observacion = _observacionService.ObtenerCatalogo(obsID).T_ObservDesc;
                 ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
                                                   "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
 

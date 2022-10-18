@@ -40,6 +40,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
+
         public static IEnumerable<CuotaPago> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
         {
             IEnumerable<CuotaPago> result;

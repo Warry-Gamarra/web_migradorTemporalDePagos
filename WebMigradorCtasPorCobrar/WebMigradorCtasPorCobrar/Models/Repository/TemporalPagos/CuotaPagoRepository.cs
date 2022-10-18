@@ -22,5 +22,22 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
 
             return result;
         }
+
+        public static IEnumerable<CuotaPago> ObtenerPorConceptoPago(string schemaDb, int conceptoPagoID)
+        {
+            IEnumerable<CuotaPago> result;
+
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+            {
+                result = connection.Query<CuotaPago>($"SELECT cp_des.* FROM {schemaDb}.cp_pri " +
+                                                     $"    INNER JOIN {schemaDb}.cp_des ON cp_pri.cuota_pago = cp_des.cuota_pago" +
+                                                     $"WHERE cp_pri.id_cp = @id_cp"
+                                                     , new { id_cp = conceptoPagoID }
+                                                     , commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
     }
 }
