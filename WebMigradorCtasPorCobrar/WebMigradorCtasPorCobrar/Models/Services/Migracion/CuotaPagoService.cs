@@ -30,7 +30,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         public CuotaPago Obtener(int cuotaID)
         {
             var result = CuotaPagoRepository.ObtenerPorId(cuotaID);
-            result.CatPagoDesc = CategoriaPagoRepository.Obtener(result.I_CatPagoID).T_CatPagoDesc;
+
+            if (result.I_CatPagoID.HasValue)
+            {
+                result.CatPagoDesc = CategoriaPagoRepository.Obtener(result.I_CatPagoID.Value).T_CatPagoDesc;
+            }
+
             return CuotaPagoRepository.ObtenerPorId(cuotaID);
         }
 

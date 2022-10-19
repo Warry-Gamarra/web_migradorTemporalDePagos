@@ -276,8 +276,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET I_CatPagoID = @I_CatPagoID WHERE I_RowID = @I_RowID;", 
-                                                  new { I_CatPagoID = cuotaPago.I_CatPagoID, I_RowID = cuotaPago.I_RowID}, 
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET Codigo_bnc = @Codigo_bnc, I_CatPagoID = @I_CatPagoID WHERE I_RowID = @I_RowID;", 
+                                                  new { Codigo_bnc = cuotaPago.Codigo_bnc, I_CatPagoID = cuotaPago.I_CatPagoID, I_RowID = cuotaPago.I_RowID}, 
                                                   commandType: CommandType.Text);
 
                     if (rowCount > 0)
