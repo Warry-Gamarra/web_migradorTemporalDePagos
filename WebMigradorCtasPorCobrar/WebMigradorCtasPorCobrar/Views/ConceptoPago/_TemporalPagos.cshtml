@@ -17,7 +17,7 @@
            columns.Add(c => c.Porcentaje).Filterable(true);
            columns.Add(c => c.Tipo_oblig).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
                   .RenderValueAs(model => model.Tipo_oblig ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
-                                                           : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+                                                           : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
            columns.Add(c => c.Cod_dep_pl).Filterable(true);
            columns.Add(c => c.Descrip_l).Css("min-width-180").Encoded(false).Sanitized(false).Filterable(true);
            columns.Add(c => c.Documento).Css("min-width-180").Encoded(false).Sanitized(false).Filterable(true);
@@ -29,16 +29,16 @@
            columns.Add(c => c.Calcular).Filterable(true);
            columns.Add(c => c.Agrupa).Css("text-center").Encoded(false).Sanitized(false).Filterable(true).Filterable(true)
                    .RenderValueAs(model => model.Agrupa ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
-                                                        : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+                                                        : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
            columns.Add(c => c.Id_cp_agrp).Filterable(true);
            columns.Add(c => c.Concepto_g).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
                    .RenderValueAs(model => model.Concepto_g ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
-                                                            : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+                                                            : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
            columns.Add(c => c.Fraccionable).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
                    .RenderValueAs(model => model.Fraccionable ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
-                                                              : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+                                                              : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
            columns.Add(c => c.Eliminado).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
-                   .RenderValueAs(model => model.Eliminado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>") : Html.Raw(""));
+                   .RenderValueAs(model => model.Eliminado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-warning\"></i></span>") : Html.Raw(""));
        }
     ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
 </div>

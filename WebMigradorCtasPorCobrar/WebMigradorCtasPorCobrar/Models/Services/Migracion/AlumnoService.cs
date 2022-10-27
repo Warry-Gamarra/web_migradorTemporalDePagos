@@ -94,6 +94,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             Response result_CorrespondenciaNumDoc = new Response();
             Response result_CorrespondenciaNumDocRepo = new Response();
             Response result_SexoDiferenteMismoDoc = new Response();
+            Response result_CodigosAlumnoRemovidos = new Response();
 
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
@@ -106,6 +107,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             result_CorrespondenciaNumDoc = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona((int)procedencia);
             result_CorrespondenciaNumDocRepo = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo((int)procedencia);
             result_SexoDiferenteMismoDoc = alumnoRepository.ValidarSexoDiferenteMismoDocumento((int)procedencia);
+            result_CodigosAlumnoRemovidos = alumnoRepository.ValidarCodigosAlumnoRemovidos((int)procedencia);
 
             result.IsDone = result_CaracteresEspeciales.IsDone &&
                             result_CodigoCarreraAlumno.IsDone &&

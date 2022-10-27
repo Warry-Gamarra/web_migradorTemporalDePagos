@@ -31,10 +31,10 @@
         columns.Add(c => c.Prioridad).Css("text-center").Titled("Prioridad").Filterable(true);
         columns.Add(c => c.C_mora).Css("text-center").Encoded(false).Sanitized(false).Titled("Mora").Filterable(true)
                 .RenderValueAs(model => model.C_mora ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-info\"></i></span>")
-                                                     : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+                                                     : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
         columns.Add(c => c.Eliminado).Css("text-center").Encoded(false).Sanitized(false).Titled("Eliminado").Filterable(true)
                 .RenderValueAs(model => model.Eliminado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-warning\"></i></span>")
-                                                        : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+                                                        : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
         columns.Add(c => c.B_Migrable).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrable").Filterable(true)
                 .RenderValueAs(model => model.B_Migrable ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
                                                          : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));

@@ -70,7 +70,7 @@ BEGIN
 		WHERE 
 			I_RowID = @I_RowID
 
-		IF (@B_Removido = 1)
+		IF (@B_Removido <> (SELECT B_Removido FROM TR_Alumnos WHERE I_RowID = @I_RowID))
 		BEGIN
 			UPDATE TR_Alumnos
 			SET	B_Removido = @B_Removido,
@@ -381,18 +381,76 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	I_ProcedenciaID = @I_ProcedenciaID
-				AND B_Removido <> 1
 				AND EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
-							WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod
+							WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod AND B_Removido <> 1
 							GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)
 				
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	I_ProcedenciaID = @I_ProcedenciaID 
-						AND B_Removido <> 1
 						AND EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
-									WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod
+									WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod AND B_Removido <> 1
 									GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)
+				) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
+			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			DELETE;
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
+				
+		COMMIT TRANSACTION
+		SET @B_Resultado = 1
+		SET @T_Message = CAST(@I_Observados AS varchar)
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarCodigosAlumnoRemovidos')
+	DROP PROCEDURE [dbo].[USP_U_ValidarCodigosAlumnoRemovidos]
+GO
+
+CREATE PROCEDURE USP_U_ValidarCodigosAlumnoRemovidos	
+	@I_ProcedenciaID tinyint,
+	@B_Resultado	 bit output,
+	@T_Message		 nvarchar(4000) OUTPUT	
+AS
+--declare @B_Resultado  bit,
+--		@I_ProcedenciaID tinyint = 3,
+--		@T_Message	  nvarchar(4000)
+--exec USP_U_ValidarCodigosAlumnoRemovidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 45
+	DECLARE @I_TablaID int = 1
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		UPDATE	TR_Alumnos
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	I_ProcedenciaID = @I_ProcedenciaID
+				AND B_Removido = 1
+				
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
+				  WHERE	I_ProcedenciaID = @I_ProcedenciaID
+						AND B_Removido = 1
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
@@ -781,7 +839,7 @@ CREATE PROCEDURE USP_U_ValidarCorrespondenciaNumDocRepositorioPersona
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
+--		@I_ProcedenciaID tinyint = 2,
 --		@T_Message	  nvarchar(4000)
 --exec USP_U_ValidarCorrespondenciaNumDocRepositorioPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje

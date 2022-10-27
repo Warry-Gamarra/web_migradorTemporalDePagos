@@ -13,10 +13,10 @@
     columns.Add(c => c.Prioridad).Css("text-center").Filterable(true);
     columns.Add(c => c.C_mora).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
             .RenderValueAs(model => model.C_mora ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
-                                                 : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+                                                 : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
     columns.Add(c => c.Eliminado).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
             .RenderValueAs(model => model.Eliminado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-warning\"></i></span>")
-                                                    : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+                                                    : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
 }
     ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
 </div>
