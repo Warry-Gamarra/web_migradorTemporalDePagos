@@ -408,6 +408,12 @@
     <Content Include="Assets\select2\js\select2.full.min.js" />
     <Content Include="Assets\select2\js\select2.js" />
     <Content Include="Assets\select2\js\select2.min.js" />
+    <Content Include="Assets\sweetalert2\css\sweetalert2.css" />
+    <Content Include="Assets\sweetalert2\css\sweetalert2.min.css" />
+    <Content Include="Assets\sweetalert2\js\sweetalert2.all.js" />
+    <Content Include="Assets\sweetalert2\js\sweetalert2.all.min.js" />
+    <Content Include="Assets\sweetalert2\js\sweetalert2.js" />
+    <Content Include="Assets\sweetalert2\js\sweetalert2.min.js" />
     <Content Include="Assets\toastr\css\toastr.min.css" />
     <Content Include="Assets\toastr\js\toastr.config.js" />
     <Content Include="Assets\toastr\js\toastr.min.js" />
@@ -448,7 +454,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\CajaPeriferica\" />
-    <Folder Include="Views\Reporte\" />
     <Folder Include="Views\Tasas\" />
   </ItemGroup>
   <ItemGroup>
