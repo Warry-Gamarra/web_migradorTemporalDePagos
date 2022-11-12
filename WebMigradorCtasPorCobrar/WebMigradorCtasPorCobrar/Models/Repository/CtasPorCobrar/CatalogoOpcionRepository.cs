@@ -18,7 +18,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar
 
             try
             {
-                string s_command = @"select p.* from TC_CatalogoOpcion p where p.I_ParametroID = @I_ParametroID and p.B_Eliminado = 0 ORDER BY p.T_OpcionDesc";
+                string s_command = "SELECT p.*, (T_OpcionDesc + ' (' + T_OpcionCod + ')') AS T_OpcionCodDesc " +
+                                   "FROM TC_CatalogoOpcion p WHERE p.I_ParametroID = @I_ParametroID AND p.B_Eliminado = 0 ORDER BY p.T_OpcionDesc";
 
                 using (var _dbConnection = new SqlConnection(Databases.CtasPorCobrarConnectionString))
                 {

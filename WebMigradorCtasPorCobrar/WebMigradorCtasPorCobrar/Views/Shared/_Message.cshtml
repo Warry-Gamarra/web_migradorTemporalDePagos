@@ -14,4 +14,11 @@
     </div>
 </div>
 
-
+@if (bool.Parse(ViewBag.Reload.ToString()))
+{
+    <script>
+        $(".modal").on('hide.bs.modal', function () {
+            location.reload();
+        })
+    </script>
+}

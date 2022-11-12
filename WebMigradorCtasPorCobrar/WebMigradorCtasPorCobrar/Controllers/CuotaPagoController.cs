@@ -134,7 +134,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             ViewBag.CategoriasBnc = new SelectList(_equivalenciasServices.ObtenerCategoriasPago(model.Codigo_bnc),
                                                     "I_CatPagoID", "T_CatPagoDesc", model.I_CatPagoID);
             ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
-                                                    "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
+                                                    "I_OpcionID", "T_OpcionCodDesc", model.I_Periodo);
             ViewBag.Procedencia = new SelectList(ListEnums.Procedencias(), "Value", "Descripcion",
                                          model.I_ProcedenciaID);
 
@@ -147,6 +147,8 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult Save(CuotaPago model, int tipoObserv)
         {
             var result = _cuotaPagoServiceMigracion.Save(model, tipoObserv);
+
+            ViewBag.Reload = true;
 
             return PartialView("_Message", result);
         }

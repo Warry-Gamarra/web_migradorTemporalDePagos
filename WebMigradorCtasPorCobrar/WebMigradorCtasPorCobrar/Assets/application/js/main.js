@@ -34,7 +34,7 @@ function onComplete() {
 }
 
 function FormatearNumero(number, decimals = 2, round = true) {
-    if (isNaN(number) || number.lenght == 0) number = 0;
+    if (isNaN(number) || number.lenght === 0) number = 0;
 
     if (round) {
         return parseFloat(number).toFixed(decimals);

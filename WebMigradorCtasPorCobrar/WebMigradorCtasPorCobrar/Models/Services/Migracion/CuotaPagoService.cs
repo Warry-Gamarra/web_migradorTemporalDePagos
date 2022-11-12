@@ -206,6 +206,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         public Response Save(CuotaPago cuotaPago, int tipoObsID)
         {
             Response result = new Response();
+            string schemaDb = Schema.SetSchema((Procedencia)cuotaPago.I_ProcedenciaID);
             cuotaPago.Fch_venc = !string.IsNullOrEmpty(cuotaPago.Fch_venc_s) ? DateTime.Parse(cuotaPago.Fch_venc_s): cuotaPago.Fch_venc;
 
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
@@ -223,6 +224,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                     break;
                 case CuotaPagoObs.MasDeUnPeriodo:
                     result = cuotaPagoRepository.SavePeriodo(cuotaPago);
+                    cuotaPagoRepository.AsignarAnioPeriodoCuotaPago(cuotaPago.I_ProcedenciaID, schemaDb);
                     break;
                 case CuotaPagoObs.SinPeriodo:
                     result = cuotaPagoRepository.SavePeriodo(cuotaPago);

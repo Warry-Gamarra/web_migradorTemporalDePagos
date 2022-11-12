@@ -20,26 +20,26 @@ CREATE PROCEDURE USP_U_ActualizarRegistroAlumno
 	@C_CodModIng  varchar(2), 	 
 	@C_AnioIngreso	 smallint,
 	@I_ProcedenciaID tinyint,
-	@B_Correcto  bit,
-	@B_Removido  bit,
+	@B_Correcto   bit,
+	@B_Removido   bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_RowID	  int,
---		  @C_RcCod	  varchar(3),
---		  @C_CodAlu	  varchar(20),
---		  @C_NumDNI	  varchar(20),
+--declare @I_RowID		int,
+--		  @C_RcCod		varchar(3),
+--		  @C_CodAlu		varchar(20),
+--		  @C_NumDNI		varchar(20),
 --		  @C_CodTipDoc  varchar(5), 
 --		  @T_ApePaterno varchar(50),
 --		  @T_ApeMaterno varchar(50),
---		  @T_Nombre	  varchar(50),
---		  @C_Sexo		  char(1), 
---		  @D_FecNac	  date, 
+--		  @T_Nombre		varchar(50),
+--		  @C_Sexo		char(1), 
+--		  @D_FecNac		date, 
 --		  @C_CodModIng  varchar(2), 
---		  @C_AnioIngreso	 smallint,
---		  @I_ProcedenciaID tinyint,
---		  @B_Correcto  bit,
---		  @B_Removido  bit,
+--		  @C_AnioIngreso	smallint,
+--		  @I_ProcedenciaID	tinyint,
+--		  @B_Correcto   bit,
+--		  @B_Removido   bit,
 --		  @B_Resultado  bit output,
 --		  @T_Message	nvarchar(4000)
 --exec USP_U_ActualizarRegistroAlumno @B_Resultado output, @T_Message output
@@ -115,7 +115,7 @@ CREATE PROCEDURE USP_IU_CopiarTablaAlumno
 AS
 --declare @B_Resultado  bit,
 --		  @I_ProcedenciaID	tinyint = 1,
---		  @T_SchemaDB		varchar(20) = 'pregrado',
+--		  @T_SchemaDB	varchar(20) = 'pregrado',
 --		  @T_Message	nvarchar(4000)
 --exec USP_IU_CopiarTablaAlumno @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje

@@ -276,7 +276,12 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET Codigo_bnc = @Codigo_bnc, I_CatPagoID = @I_CatPagoID WHERE I_RowID = @I_RowID;", 
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des " +
+                                                  "SET Codigo_bnc = @Codigo_bnc, " +
+                                                      "I_CatPagoID = @I_CatPagoID, " +
+                                                      "B_Actualizado = 1, " +
+                                                      "D_FecActualiza = GETDATE() " +
+                                                  "WHERE I_RowID = @I_RowID;", 
                                                   new { Codigo_bnc = cuotaPago.Codigo_bnc, I_CatPagoID = cuotaPago.I_CatPagoID, I_RowID = cuotaPago.I_RowID}, 
                                                   commandType: CommandType.Text);
 
@@ -306,7 +311,11 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET I_Periodo = @I_Periodo WHERE I_RowID = @I_RowID;",
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des " +
+                                                  "SET I_Periodo = @I_Periodo, " +
+                                                      "B_Actualizado = 1, " +
+                                                      "D_FecActualiza = GETDATE() " +
+                                                  "WHERE I_RowID = @I_RowID;",
                                                   new { I_Periodo = cuotaPago.I_Periodo, I_RowID = cuotaPago.I_RowID },
                                                   commandType: CommandType.Text);
 
@@ -336,7 +345,11 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET I_Anio = @I_Anio WHERE I_RowID = @I_RowID;",
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des " +
+                                                  "SET I_Anio = @I_Anio, " +
+                                                      "B_Actualizado = 1, " +
+                                                      "D_FecActualiza = GETDATE() " +
+                                                  "WHERE I_RowID = @I_RowID;",
                                                   new { I_Anio = cuotaPago.I_Anio, I_RowID = cuotaPago.I_RowID },
                                                   commandType: CommandType.Text);
 
@@ -385,6 +398,37 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
+
+
+        //public Response SaveCuotaPago(CuotaPago cuotaPago)
+        //{
+        //    Response result = new Response();
+        //    DynamicParameters parameters = new DynamicParameters();
+
+        //    try
+        //    {
+        //        using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+        //        {
+        //            parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: cuotaPago.I_RowID);
+        //            parameters.Add(name: "Cuota_pago", dbType: DbType.Byte, value: cuotaPago.Cuota_pago);
+
+        //            parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+        //            parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+        //            connection.Execute("USP_U_CambiarCodigoCuotaPago", parameters, commandType: CommandType.StoredProcedure);
+
+        //            result.IsDone = parameters.Get<bool>("B_Resultado");
+        //            result.Message = parameters.Get<string>("T_Message");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result.IsDone = false;
+        //        result.Message = ex.Message;
+        //    }
+
+        //    return result;
+        //}
 
     }
 }
