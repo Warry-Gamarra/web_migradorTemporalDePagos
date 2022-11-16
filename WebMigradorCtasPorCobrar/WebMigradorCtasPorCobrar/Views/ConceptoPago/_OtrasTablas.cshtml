@@ -6,10 +6,9 @@
         <thead class="thead-dark">
             <tr>
                 <th>Cuota Pago</th>
-                <th>Concepto</th>
                 <th>Año</th>
                 <th>Periodo</th>
-                <th>Monto</th>
+                <th>Categoría</th>
                 <th>Eliminado</th>
             </tr>
         </thead>
@@ -17,38 +16,16 @@
             @foreach (var item in Model.CuotasPago)
             {
                 <tr>
-                    <td>@item.Id_cp</td>
                     <td>@item.Cuota_pago - @item.Descripcio</td>
-                    <td>@item.Ano</td>
-                    <td>@item.P</td>
-                    <td>@item.Monto</td>
+                    <td>@item.I_Anio</td>
+                    <td>@item.PeriodoDesc</td>
+                    <td>@item.CatPagoDesc</td>
                     <td>@item.Eliminado</td>
                 </tr>
             }
         </tbody>
     </table>
-    <p class="h6 mt-3">Cuota de pago @Model.Cuota_pago y periodo @Model.I_Periodo en ec_obl</p>
-    <table class="table table-sm table-hover" style="font-size:12px;">
-        <thead class="thead-dark">
-            <tr>
-                <th>Cuota Pago</th>
-                <th>Año</th>
-                <th>Periodo</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model.Obligaciones)
-            {
-                <tr>
-                    <td>@item.Cuota_pago - @item.Descripcio</td>
-                    <td>@item.Ano</td>
-                    <td>@item.P</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-
-    <p class="h6 mt-3">Concepto de pago @Model.ConceptosPago en ec_det</p>
+    <p class="h6 mt-3">Cconcepto de Pago @Model.Id_cp - @Model.Descripcio en ec_det</p>
     <table class="table table-sm table-hover" style="font-size:12px;">
         <thead class="thead-dark">
             <tr>

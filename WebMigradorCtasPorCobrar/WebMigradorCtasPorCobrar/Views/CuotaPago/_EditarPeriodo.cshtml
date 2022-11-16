@@ -134,6 +134,15 @@
         });
     });
 
+    $("form").submit(function () {
+        if (parseInt($("#submited").val()) > 0) {
+            return false;
+        }
+        else {
+            $('#error_descrip').html('');
+        }
+    });
+
     $('#btnCancel').on('click', function () {
         $('#edit-target').hide()
         $('#tabla-errores').show()

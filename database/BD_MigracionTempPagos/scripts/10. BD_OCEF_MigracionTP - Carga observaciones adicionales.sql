@@ -5,6 +5,8 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (43, 'El año del detalle no coincide con el año del concepto en cp_pri.', 'DIF. AÑO CP_PRI', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (44, 'El periodo del detalle no coincide con el año del concepto en cp_pri.', 'DIF. PERIODO CP_PRI', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (45, 'El registro se encuentra con estado Eliminado y no será parte de la migración.', 'REMOVIDO', NULL)
+
+
 GO
 
 

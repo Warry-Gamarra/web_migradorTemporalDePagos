@@ -19,6 +19,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public bool C_mora { get; set; }
         public int I_Anio { get; set; }
         public int I_Periodo { get; set; }
+        public string PeriodoDesc { get; set; }
         public int? I_CatPagoID { get; set; }
         public string CatPagoDesc { get; set; }
         public int I_ProcedenciaID { get; set; }

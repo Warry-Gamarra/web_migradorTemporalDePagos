@@ -103,7 +103,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
 
-            Response result = _cuotaPagoServiceMigracion.EjecutarValidaciones(procedencia);
+            Response result = _cuotaPagoServiceMigracion.EjecutarValidaciones(procedencia, null);
 
             return PartialView("_ResultadoValidarRegistros", result);
         }

@@ -17,6 +17,7 @@
                         <th>Tipo</th>
                         <th>Descripción</th>
                         <th>Fec. Registro</th>
+                        <th>Estado</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -27,8 +28,21 @@
                             <td style="min-width:100px">@item.T_ObservCod</td>
                             <td style="width:450px">@item.T_ObservDesc</td>
                             <td style="width:180px">@item.D_FecRegistro</td>
-                            <td style="width:90px" class="text-right">
-                                <a class="link-editar" href="javascript:;" data-url="@Url.Action("Editar",ViewBag.Controller, new { id = item.I_FilaTablaID, obsID = item.I_ObservID })"><i class="fa fa-pencil-square-o"></i> Corregir</a>
+                            <td style="width:90px">
+                                @if (item.B_Resuelto)
+                                {
+                                    <span class="badge badge-pill badge-success"><i class="fa fa-check-circle"></i> Corregido</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-pill badge-warning"><i class="fa fa-exclamation-circle"></i> Pendiente</span>
+                                }
+                            </td>
+                            <td style="width:120px" class="text-right">
+                                @if (!item.B_Resuelto)
+                                {
+                                    <a class="link-editar" href="javascript:;" data-url="@Url.Action("Editar",ViewBag.Controller, new { id = item.I_FilaTablaID, obsID = item.I_ObservID })"><i class="fa fa-pencil-square-o"></i> Corregir</a>
+                                }
                             </td>
                         </tr>
                     }

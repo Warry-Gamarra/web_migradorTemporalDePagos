@@ -43,3 +43,14 @@ CREATE TABLE TS_DataOrigen (
 	D_FecCopia			datetime  NULL,
 )
 GO
+
+-- Cambio estructura para version 202211115
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TI_ObservacionRegistroTabla' AND COLUMN_NAME = 'B_Resuelto')
+BEGIN
+	ALTER TABLE [dbo].[TI_ObservacionRegistroTabla]
+		ADD B_Resuelto		bit	 NULL,
+			D_FecResuelto	datetime NULL
+END
+GO
+

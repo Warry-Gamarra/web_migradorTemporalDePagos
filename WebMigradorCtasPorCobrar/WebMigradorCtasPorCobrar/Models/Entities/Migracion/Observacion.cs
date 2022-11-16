@@ -17,5 +17,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public string T_ObservCod { get; set; }
         public int I_Severidad { get; set; }
         public int I_ProcedenciaID { get; set; }
+        public bool B_Resuelto { get; set; }
+        public DateTime D_FecResuelto { get; set; }
     }
 }

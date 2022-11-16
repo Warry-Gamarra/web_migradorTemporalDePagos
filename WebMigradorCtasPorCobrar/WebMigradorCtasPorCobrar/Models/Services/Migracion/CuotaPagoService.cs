@@ -135,7 +135,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
-        public Response EjecutarValidaciones(Procedencia procedencia)
+        public Response EjecutarValidaciones(Procedencia procedencia, int? cuotaPagoRowID)
         {
             Response result = new Response();
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
@@ -146,10 +146,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             Response result_anioPeriodo = new Response();
             string schemaDb = Schema.SetSchema(procedencia);
 
-            result_InicializarEstados = cuotaPagoRepository.InicializarEstadoValidacionCuotaPago((int)procedencia);
+            result_InicializarEstados = cuotaPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPagoRowID, (int)procedencia);
             result_duplicados = cuotaPagoRepository.MarcarDuplicadosCuotaPago((int)procedencia);
-            result_categorias = cuotaPagoRepository.AsignarCategoriaCuotaPago((int)procedencia);
-            result_anioPeriodo = cuotaPagoRepository.AsignarAnioPeriodoCuotaPago((int)procedencia, schemaDb);
+            result_categorias = cuotaPagoRepository.AsignarCategoriaCuotaPago(cuotaPagoRowID, (int)procedencia);
+            result_anioPeriodo = cuotaPagoRepository.AsignarAnioPeriodoCuotaPago(cuotaPagoRowID, (int)procedencia, schemaDb);
 
             result.IsDone = result_duplicados.IsDone &&
                             result_categorias.IsDone &&
@@ -210,6 +210,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             cuotaPago.Fch_venc = !string.IsNullOrEmpty(cuotaPago.Fch_venc_s) ? DateTime.Parse(cuotaPago.Fch_venc_s): cuotaPago.Fch_venc;
 
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+            cuotaPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID);
 
             switch ((CuotaPagoObs)tipoObsID)
             {
@@ -224,7 +225,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                     break;
                 case CuotaPagoObs.MasDeUnPeriodo:
                     result = cuotaPagoRepository.SavePeriodo(cuotaPago);
-                    cuotaPagoRepository.AsignarAnioPeriodoCuotaPago(cuotaPago.I_ProcedenciaID, schemaDb);
                     break;
                 case CuotaPagoObs.SinPeriodo:
                     result = cuotaPagoRepository.SavePeriodo(cuotaPago);
@@ -236,6 +236,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                     result = cuotaPagoRepository.SaveCategoria(cuotaPago);
                     break;
             }
+
+            EjecutarValidaciones((Procedencia)cuotaPago.I_ProcedenciaID, cuotaPago.I_RowID);
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
