@@ -103,7 +103,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
-
             Response result = _obligacionServiceMigracion.EjecutarValidaciones(procedencia);
 
             return PartialView("_ResultadoValidarRegistros", result);
@@ -112,7 +111,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
         {
-
             Response result = _obligacionServiceMigracion.MigrarDatosTemporalPagos(procedencia);
 
             return PartialView("_ResultadoMigrarRegistros", result);

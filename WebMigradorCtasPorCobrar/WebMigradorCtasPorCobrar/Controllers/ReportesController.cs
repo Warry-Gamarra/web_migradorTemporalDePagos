@@ -15,6 +15,17 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
+        public ActionResult ObligacionesAlumno()
+        {
+            return View();
+        }
+
+        public ActionResult ObligacionesAlumno(string codAlu)
+        {
+
+            return View();
+        }
+
         public ActionResult Pregrado()
         {
             return View();

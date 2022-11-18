@@ -25,6 +25,19 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
+        public static Alumno Obtener(string codAlu)
+        {
+            Alumno result = new Alumno();
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.QuerySingleOrDefault<Alumno>($"SELECT * FROM dbo.TR_Alumnos WHERE C_CodAlu = @C_CodAlu"
+                                                                , new { C_CodAlu = codAlu }, commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+
         public static IEnumerable<Alumno> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
         {
             IEnumerable<Alumno> result;

@@ -42,8 +42,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar
 
                 using (var _dbConnection = new SqlConnection(Databases.CtasPorCobrarConnectionString))
                 {
-                    result = _dbConnection.QuerySingleOrDefault<TC_CategoriaPago>(s_command, 
-                                                                                  new { I_CatPagoID = CatePagoID }, 
+                    result = _dbConnection.QuerySingleOrDefault<TC_CategoriaPago>(s_command,
+                                                                                  new { I_CatPagoID = CatePagoID },
                                                                                   commandType: CommandType.Text);
                 }
             }
@@ -55,5 +55,30 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar
             return result;
         }
 
+
+        public List<TI_ConceptoCategoriaPago> FindByCategoriaID(int categoriaPagoID)
+        {
+            List<TI_ConceptoCategoriaPago> result;
+
+            try
+            {
+                string s_command = @"SELECT CCP.*, CP.T_CatPagoDesc, C.T_ConceptoDesc, C.I_Monto, C.I_MontoMinimo, C.T_Clasificador 
+                                     FROM dbo.TC_CategoriaPago CP
+ 	                                     INNER JOIN dbo.TI_ConceptoCategoriaPago CCP ON CP.I_CatPagoID = CCP.I_CatPagoID
+ 	                                     INNER JOIN dbo.TC_Concepto C ON C.I_ConceptoID = CCP.I_ConceptoID
+                                     WHERE CCP.I_CatPagoID = @I_CatPagoID";
+
+                using (var _dbConnection = new SqlConnection(Databases.CtasPorCobrarConnectionString))
+                {
+                    result = _dbConnection.Query<TI_ConceptoCategoriaPago>(s_command, new { I_CatPagoID = categoriaPagoID }, commandType: CommandType.Text).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
     }
 }

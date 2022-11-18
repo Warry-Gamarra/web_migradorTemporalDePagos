@@ -18,7 +18,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.Query<Obligacion>($"SELECT * FROM TR_Ec_obl WHERE I_ProcedenciaID = @I_ProcedenciaID ORDER BY Ano, P, Cuota_pago", 
+                result = connection.Query<Obligacion>("SELECT * FROM TR_Ec_obl WHERE I_ProcedenciaID = @I_ProcedenciaID ORDER BY Ano, P, Cuota_pago", 
                                                         new { I_ProcedenciaID = procedenciaID },
                                                         commandType: CommandType.Text);
             }
@@ -26,7 +26,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-        public IEnumerable<DetalleObligacion> Obtener(int procedenciaID, int ObligacionID)
+        public IEnumerable<DetalleObligacion> ObtenerDetalle(int procedenciaID, int ObligacionID)
         {
             IEnumerable<DetalleObligacion> result;
 
@@ -34,6 +34,36 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 result = connection.Query<DetalleObligacion>("SELECT * FROM TR_Ec_det WHERE I_OblRowID = @I_OblRowID AND I_ProcedenciaID = @I_ProcedenciaID", 
                                                               new { I_OblRowID = ObligacionID, I_ProcedenciaID = procedenciaID }, 
+                                                              commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+
+        public static IEnumerable<Obligacion> ObtenerPorAlumno(string CodAlu, string CodRc)
+        {
+            IEnumerable<Obligacion> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<Obligacion>("SELECT * FROM TR_Ec_obl WHERE Cod_alu = @Cod_alu AND Cod_RC = @Cod_RC ORDER BY Ano, P, Cuota_pago",
+                                                        new { Cod_alu = CodAlu, Cod_Rc = CodRc },
+                                                        commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+
+        public static IEnumerable<DetalleObligacion> ObtenerDetallePorAlumno(string CodAlu, string CodRc, double ObligacionID)
+        {
+            IEnumerable<DetalleObligacion> result;
+
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+            {
+                result = connection.Query<DetalleObligacion>("SELECT * FROM TR_Ec_det WHERE I_OblRowID = @I_OblRowID AND Cod_alu = @Cod_alu AND Cod_RC = @Cod_RC",
+                                                              new { I_OblRowID = ObligacionID, Cod_alu = CodAlu, Cod_Rc = CodRc},
                                                               commandType: CommandType.Text);
             }
 

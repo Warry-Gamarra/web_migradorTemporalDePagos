@@ -25,7 +25,7 @@
             }
         </tbody>
     </table>
-    <p class="h6 mt-3">Cconcepto de Pago @Model.Id_cp - @Model.Descripcio en ec_det</p>
+    <p class="h6 mt-3">Cconcepto de Pago @Model.Id_cp @Model.Descripcio en ec_det</p>
     <table class="table table-sm table-hover" style="font-size:12px;">
         <thead class="thead-dark">
             <tr>
@@ -37,7 +37,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in Model.DetalleObligaciones)
+            @*@foreach (var item in Model.DetalleObligaciones)
             {
                 <tr>
                     <td>@item.Cuota_pago</td>
@@ -46,7 +46,7 @@
                     <td>@item.P</td>
                     <td>@item.Eliminado</td>
                 </tr>
-            }
+            }*@
         </tbody>
     </table>
 </div>

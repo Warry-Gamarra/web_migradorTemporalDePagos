@@ -28,6 +28,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public DateTime D_FecRemovido { get; set; }
 
         public string Descripcio { get; set; }
+        public IList<DetalleObligacion> DetalleObligaciones { get; set; }
 
         public Obligacion()
         {

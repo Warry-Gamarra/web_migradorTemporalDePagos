@@ -13,7 +13,22 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
     {
         public IEnumerable<Obligacion> ObtenerObligaciones(Procedencia procedencia)
         {
-            return ObligacionRepository.Obtener((int) procedencia);
+            return ObligacionRepository.Obtener((int)procedencia);
+        }
+
+
+        public IEnumerable<Obligacion> ObtenerPorAlumno(string codAlu, string codRc)
+        {
+            IEnumerable<Obligacion> obligaciones;
+
+            obligaciones = ObligacionRepository.ObtenerPorAlumno(codAlu, codRc);
+
+            foreach (var item in obligaciones)
+            {
+                item.DetalleObligaciones = ObligacionRepository.ObtenerDetallePorAlumno(codAlu, codRc, item.I_RowID).ToList();
+            }
+
+            return obligaciones;
         }
 
 
@@ -155,5 +170,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
+
     }
 }
