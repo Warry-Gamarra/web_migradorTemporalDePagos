@@ -420,6 +420,7 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM ##cuota_anio GROUP BY cuota_pago HAVING COUNT(*) > 1)
 				AND B_Actualizado = 0
+				AND Eliminado = 0
 				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
 				
 		UPDATE	TR_Cp_Des
@@ -430,13 +431,15 @@ BEGIN
 							  WHERE anio_cuota IS NULL
 									AND cd.I_ProcedenciaID = @I_ProcedenciaID)
 				AND B_Actualizado = 0
+				AND Eliminado = 0
 				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
 	
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObsMasUnAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				 WHERE CUOTA_PAGO IN (SELECT cuota_pago FROM ##cuota_anio GROUP BY cuota_pago HAVING COUNT(*) > 1)
-					   AND B_Actualizado = 0) AS SRC
+					   AND B_Actualizado = 0 
+					   AND Eliminado = 0) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -452,7 +455,8 @@ BEGIN
 		USING 	(SELECT	@I_ObsSinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				  WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd LEFT JOIN ##cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago WHERE anio_cuota IS NULL
 										AND cd.I_ProcedenciaID = @I_ProcedenciaID)
-					    AND B_Actualizado = 0) AS SRC
+					    AND B_Actualizado = 0 
+						AND Eliminado = 0) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -488,12 +492,14 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
 				AND I_ProcedenciaID = @I_ProcedenciaID
+				AND Eliminado = 0
 				AND B_Actualizado = 0
 	
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObsMasUnPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				 WHERE CUOTA_PAGO IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1) 
-					   AND B_Actualizado = 0) AS SRC
+					   AND B_Actualizado = 0 
+					   AND Eliminado = 0) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -520,13 +526,15 @@ BEGIN
 				AND Cuota_pago NOT IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
 				AND I_ProcedenciaID = @I_ProcedenciaID 
 				AND B_Actualizado = 0
+				AND Eliminado = 0
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObsSinPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				 WHERE I_Periodo IS NULL 
 					   AND Cuota_pago NOT IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
 					   AND I_ProcedenciaID = @I_ProcedenciaID					   
-					   AND B_Actualizado = 0) AS SRC
+					   AND B_Actualizado = 0 
+					   AND Eliminado = 0) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -607,8 +615,7 @@ BEGIN
 		INSERT INTO @categoria_pago (cuota_pago, I_CatPagoID, N_CodBanco)
 			SELECT	d.CUOTA_PAGO, c.I_CatPagoID, c.N_CodBanco FROM TR_Cp_Des d
 					LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CategoriaPago c ON d.CODIGO_BNC = c.N_CodBanco
-			WHERE	Eliminado = 0 
-					AND I_ProcedenciaID = @I_ProcedenciaID 
+			WHERE	I_ProcedenciaID = @I_ProcedenciaID 
 
 		UPDATE	tb_des  
 		SET		I_CatPagoID = cat1.I_CatPagoID,
