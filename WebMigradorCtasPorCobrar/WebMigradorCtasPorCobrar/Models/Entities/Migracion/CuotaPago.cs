@@ -26,6 +26,8 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public DateTime D_FecCarga { get; set; }
         public string B_Actualizado { get; set; }
         public DateTime D_FecActualiza { get; set; }
+        public bool B_MantenerAnio { get; set; }
+        public bool B_MantenerPeriodo { get; set; }
         public bool B_Migrable { get; set; }
         public DateTime D_FecEvalua { get; set; }
         public bool B_Migrado { get; set; }

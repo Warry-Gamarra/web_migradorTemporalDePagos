@@ -207,7 +207,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-        public Response AsignarAnioPeriodoCuotaPago(int? rowID, int procedenciaID, string schemaBD)
+        public Response AsignarAnioCuotaPago(int? rowID, int procedenciaID, string schemaBD)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -222,7 +222,38 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_AsignarAnioPeriodoCuotaPago", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_U_AsignarAnioCuotaPago", parameters, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response AsignarPeriodoCuotaPago(int? rowID, int procedenciaID, string schemaBD)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "T_SchemaDB", dbType: DbType.String, size: 20, value: schemaBD);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_U_AsignarPeriodoCuotaPago", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -317,6 +348,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des " +
                                                   "SET I_Periodo = @I_Periodo, " +
                                                       "B_Actualizado = 1, " +
+                                                      "B_MantenerPeriodo = 1, " +
                                                       "D_FecActualiza = GETDATE() " +
                                                   "WHERE I_RowID = @I_RowID;",
                                                   new { I_Periodo = cuotaPago.I_Periodo, I_RowID = cuotaPago.I_RowID },
@@ -351,6 +383,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des " +
                                                   "SET I_Anio = @I_Anio, " +
                                                       "B_Actualizado = 1, " +
+                                                      "B_MantenerAnio = 1, " +
                                                       "D_FecActualiza = GETDATE() " +
                                                   "WHERE I_RowID = @I_RowID;",
                                                   new { I_Anio = cuotaPago.I_Anio, I_RowID = cuotaPago.I_RowID },

@@ -143,17 +143,20 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             Response result_InicializarEstados = new Response();
             Response result_duplicados = new Response();
             Response result_categorias = new Response();
-            Response result_anioPeriodo = new Response();
+            Response result_anio = new Response();
+            Response result_periodo = new Response();
             string schemaDb = Schema.SetSchema(procedencia);
 
             result_InicializarEstados = cuotaPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPagoRowID, (int)procedencia);
             result_duplicados = cuotaPagoRepository.MarcarDuplicadosCuotaPago((int)procedencia);
             result_categorias = cuotaPagoRepository.AsignarCategoriaCuotaPago(cuotaPagoRowID, (int)procedencia);
-            result_anioPeriodo = cuotaPagoRepository.AsignarAnioPeriodoCuotaPago(cuotaPagoRowID, (int)procedencia, schemaDb);
+            result_anio = cuotaPagoRepository.AsignarAnioCuotaPago(cuotaPagoRowID, (int)procedencia, schemaDb);
+            result_periodo = cuotaPagoRepository.AsignarPeriodoCuotaPago(cuotaPagoRowID, (int)procedencia, schemaDb);
 
             result.IsDone = result_duplicados.IsDone &&
                             result_categorias.IsDone &&
-                            result_anioPeriodo.IsDone;
+                            result_anio.IsDone &&
+                            result_periodo.IsDone;
 
             result.Message = $"    <dl class=\"row text-justify\">" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Con código de cuota duplicado</dt>" +
@@ -164,9 +167,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_categorias.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">No se identificó Año de la cuota de pago</dt>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observaciones en Año de la cuota de pago</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_anioPeriodo.Message}</p>" +
+                             $"            <p>{result_anio.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observaciones en Periodo de la cuota de pago</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_periodo.Message}</p>" +
                              $"        </dd>" +
                              //$"        <dt class=\"col-md-4 col-sm-6\">Observados por Años de ingreso</dt>" +
                              //$"        <dd class=\"col-md-8 col-sm-6\">" +
@@ -239,7 +246,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             cuotaPagoRepository.MarcarDuplicadosCuotaPago(cuotaPago.I_ProcedenciaID);
             cuotaPagoRepository.AsignarCategoriaCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID);
-            cuotaPagoRepository.AsignarAnioPeriodoCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
+            cuotaPagoRepository.AsignarAnioCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
+            cuotaPagoRepository.AsignarPeriodoCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }

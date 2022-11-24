@@ -144,7 +144,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY 
 		UPDATE	TR_Cp_Des 
-		   SET	B_Actualizado = 0, 
+		   SET	B_Actualizado = IIF(B_Actualizado = 1, B_Actualizado, 0), 
 				B_Migrable = 1, 
 				D_FecMigrado = NULL
 		 WHERE	I_ProcedenciaID = @I_ProcedenciaID 
@@ -203,7 +203,8 @@ BEGIN
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
@@ -261,6 +262,7 @@ BEGIN
 							   --SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID AND ELIMINADO = 1 
 							   --GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1
 							   )
+				AND Eliminado = 0 
 				AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
 
 
@@ -285,7 +287,8 @@ BEGIN
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
@@ -302,7 +305,8 @@ BEGIN
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
@@ -320,7 +324,8 @@ BEGIN
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
@@ -347,7 +352,253 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_AsignarAnioPeriodoCuotaPago]
 GO
 
-CREATE PROCEDURE USP_U_AsignarAnioPeriodoCuotaPago
+--CREATE PROCEDURE USP_U_AsignarAnioPeriodoCuotaPago
+--	@I_RowID	  int = NULL,
+--	@I_ProcedenciaID tinyint,
+--	@T_SchemaDB		 varchar(20),
+--	@B_Resultado  bit output,
+--	@T_Message	  nvarchar(4000) OUTPUT	
+--AS
+----declare @B_Resultado  bit,
+----		@I_RowID	  int = NULL,
+----		@I_ProcedenciaID tinyint = 3,
+----		@T_SchemaDB		 varchar(20) = 'euded',
+----		@T_Message	  nvarchar(4000)
+----exec USP_U_AsignarAnioPeriodoCuotaPago @I_RowID, @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
+----select @B_Resultado as resultado, @T_Message as mensaje
+--BEGIN
+--	DECLARE @D_FecProceso datetime = GETDATE() 
+--	DECLARE @T_SQL nvarchar(max)
+	
+--	DECLARE @I_TablaID int = 2
+--	DECLARE @I_ObsMasUnAnio int = 5
+--	DECLARE @I_ObsSinAnio int = 6
+--	DECLARE @I_ObsMasUnPeriodo int = 7
+--	DECLARE @I_ObsSinPeriodo int = 8
+
+--	DECLARE @I_cant_MasUnAnio int = 0
+--	DECLARE @I_cant_SinAnio int = 0
+--	DECLARE @I_cant_MasUnPeriodo int = 0
+--	DECLARE @I_cant_SinPeriodo int = 0
+
+--	BEGIN TRY
+--		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##cuota_anio')
+--		BEGIN
+--			DROP TABLE ##cuota_anio
+--		END
+
+--		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##periodo')
+--		BEGIN
+--			DROP TABLE ##periodo
+--		END
+	 
+--		--1. ASIGNAR AÑO CUOTA PAGO
+--		CREATE TABLE ##cuota_anio (cuota_pago int, anio_cuota varchar(4))
+--		CREATE TABLE ##periodo (cuota_pago int, I_Periodo int, C_CodPeriodo varchar(5), T_Descripcion varchar(50))
+
+--			--CUOTAS DE PAGO CON AÑO EN CP_PRI
+--		INSERT INTO ##cuota_anio(cuota_pago, anio_cuota)
+--			SELECT DISTINCT D.CUOTA_PAGO, ISNULL(P.ANO, SUBSTRING(RTRIM(LTRIM(D.DESCRIPCIO)), 1,4)) AS ANO 
+--			  FROM TR_Cp_Des D LEFT JOIN TR_cp_pri P ON D.CUOTA_PAGO = P.CUOTA_PAGO
+--			 WHERE ISNUMERIC(ISNULL(P.ANO, SUBSTRING(D.DESCRIPCIO, 1,4))) = 1
+--				   AND D.I_ProcedenciaID = @I_ProcedenciaID
+
+--				   AND (D.I_RowID = IIF(@I_RowID IS NULL, D.I_RowID, @I_RowID));
+
+
+--			--CUOTAS DE PAGO SIN AÑO EN CP_PRI PERO CON AÑO EN EC_OBL
+
+--		SET @T_SQL = 'INSERT INTO ##cuota_anio(cuota_pago, anio_cuota)
+--					  SELECT DISTINCT o.CUOTA_PAGO, o.ANO FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl o 
+--							 INNER JOIN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd
+--											LEFT JOIN ##cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago 
+--											WHERE anio_cuota IS NULL
+--												  AND cd.I_ProcedenciaID = ' + CAST(@I_ProcedenciaID as varchar) + ' 
+--												  AND cd.I_RowID = ' + IIF(@I_RowID IS NULL, 'cd.I_RowID', CAST(@I_RowID as varchar))  + ') cdca
+--								ON cdca.CUOTA_PAGO = o.CUOTA_PAGO'
+			 
+--		PRINT @T_SQL
+--		EXEC sp_executesql @T_SQL
+
+--		UPDATE	TR_Cp_Des
+--		SET		B_Migrable = 0,
+--				D_FecEvalua = @D_FecProceso
+--		WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM ##cuota_anio GROUP BY cuota_pago HAVING COUNT(*) > 1)
+--				AND I_ProcedenciaID = @I_ProcedenciaID
+--				AND B_Actualizado = 0
+--				AND Eliminado = 0
+--				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
+				
+
+--		MERGE TI_ObservacionRegistroTabla AS TRG
+--		USING 	(SELECT	@I_ObsMasUnAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+--				 WHERE CUOTA_PAGO IN (SELECT cuota_pago FROM ##cuota_anio GROUP BY cuota_pago HAVING COUNT(*) > 1)
+--					   AND Eliminado = 0) AS SRC
+--		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+--		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID)  THEN
+--			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+--					   B_Resuelto = 0
+--		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
+--			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+--			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+--		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsMasUnAnio AND TRG.I_ProcedenciaID = @I_ProcedenciaID AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+--			UPDATE SET D_FecResuelto = GETDATE(),
+--					   B_Resuelto = 1;
+
+
+--		UPDATE	TR_Cp_Des
+--		SET		B_Migrable = 0,
+--				D_FecEvalua = @D_FecProceso
+--		WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd
+--							  LEFT JOIN ##cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago
+--							  WHERE anio_cuota IS NULL
+--									AND cd.I_ProcedenciaID = @I_ProcedenciaID)
+--				AND I_ProcedenciaID = @I_ProcedenciaID
+--				AND B_Actualizado = 0
+--				AND Eliminado = 0
+--				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
+		
+--		MERGE TI_ObservacionRegistroTabla AS TRG
+--		USING 	(SELECT	@I_ObsSinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+--				  WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd LEFT JOIN ##cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago WHERE anio_cuota IS NULL
+--										AND cd.I_ProcedenciaID = @I_ProcedenciaID)
+--					    AND B_Actualizado = 0 
+--						AND Eliminado = 0) AS SRC
+--		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+--		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+--			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+--					   B_Resuelto = 0
+--		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
+--			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+--			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+--		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsSinAnio AND TRG.I_ProcedenciaID = @I_ProcedenciaID AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+--			UPDATE SET D_FecResuelto = GETDATE(),
+--					   B_Resuelto = 1;
+
+
+--		UPDATE	tb_des  
+--		SET		I_Anio = a1.anio_cuota,
+--				D_FecEvalua = @D_FecProceso
+--		FROM	TR_Cp_Des tb_des
+--				INNER JOIN ##cuota_anio a1 ON tb_des.CUOTA_PAGO = a1.cuota_pago
+--				INNER JOIN (SELECT cuota_pago FROM ##cuota_anio GROUP BY cuota_pago HAVING COUNT(*) = 1) a2
+--				ON a1.cuota_pago= a2.cuota_pago
+
+--		--2. ASIGNAR PERIODO CUOTA PAGO
+--		SET @T_SQL = 'INSERT INTO ##periodo (cuota_pago, I_Periodo, C_CodPeriodo, T_Descripcion)
+--					  SELECT DISTINCT pri.CUOTA_PAGO, I_OpcionID, T_OpcionCod, T_OpcionDesc 
+--					  FROM	 BD_OCEF_CtasPorCobrar.dbo.TC_CatalogoOpcion per 
+--					  		 INNER JOIN BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_pri pri ON per.T_OpcionCod = pri.P
+--					  WHERE  I_ParametroID = 5'
+
+--		PRINT @T_SQL
+--		EXEC sp_executesql @T_SQL
+
+
+--		UPDATE	TR_Cp_Des
+--		SET		B_Migrable = 0,
+--				D_FecEvalua = @D_FecProceso
+--		WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
+--				AND I_ProcedenciaID = @I_ProcedenciaID
+--				AND Eliminado = 0
+--				AND B_Actualizado = 0
+	
+--		MERGE TI_ObservacionRegistroTabla AS TRG
+--		USING 	(SELECT	@I_ObsMasUnPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+--				 WHERE CUOTA_PAGO IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1) 
+--					   AND B_Actualizado = 0 
+--					   AND Eliminado = 0) AS SRC
+--		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+--		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+--			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+--					   B_Resuelto = 0
+--		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
+--			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+--			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+--		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsMasUnPeriodo AND TRG.I_ProcedenciaID = @I_ProcedenciaID AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+--			UPDATE SET D_FecResuelto = GETDATE(),
+--					   B_Resuelto = 1;
+
+
+--		UPDATE	tb_des  
+--		SET		I_Periodo = per1.I_Periodo,
+--				D_FecEvalua = @D_FecProceso
+--		FROM	TR_Cp_Des tb_des
+--				INNER JOIN ##periodo per1 ON tb_des.CUOTA_PAGO = per1.cuota_pago
+--				INNER JOIN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) = 1) per2
+--				ON per1.CUOTA_PAGO = per2.cuota_pago
+
+--		UPDATE	TR_Cp_Des
+--		SET		B_Migrable = 0,
+--				D_FecEvalua = @D_FecProceso
+--		WHERE	I_Periodo IS NULL
+--				AND Cuota_pago NOT IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
+--				AND I_ProcedenciaID = @I_ProcedenciaID 
+--				AND B_Actualizado = 0
+--				AND Eliminado = 0
+
+--		MERGE TI_ObservacionRegistroTabla AS TRG
+--		USING 	(SELECT	@I_ObsSinPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+--				 WHERE I_Periodo IS NULL 
+--					   AND Cuota_pago NOT IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
+--					   AND I_ProcedenciaID = @I_ProcedenciaID					   
+--					   AND B_Actualizado = 0 
+--					   AND Eliminado = 0) AS SRC
+--		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+--		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+--			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+--					   B_Resuelto = 0
+--		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
+--			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+--			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+--		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsSinPeriodo AND TRG.I_ProcedenciaID = @I_ProcedenciaID AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+--			UPDATE SET D_FecResuelto = GETDATE(),
+--					   B_Resuelto = 1;
+
+	
+--		SET @I_cant_MasUnAnio = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnAnio AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+--		SET @I_cant_SinAnio = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinAnio AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+--		SET @I_cant_MasUnPeriodo = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnPeriodo AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+--		SET @I_cant_SinPeriodo = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinPeriodo AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+
+--		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##cuota_anio')
+--		BEGIN
+--			DROP TABLE ##cuota_anio
+--		END
+
+--		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##periodo')
+--		BEGIN
+--			DROP TABLE ##periodo
+--		END
+
+--		SET @B_Resultado = 1
+--		SET @T_Message = CAST(@I_cant_MasUnAnio AS varchar) + ' más de un año | ' + CAST(@I_cant_SinAnio AS varchar) + '  sin año| ' + 
+--						 CAST(@I_cant_MasUnPeriodo AS varchar) + ' más de un periodo| ' + CAST(@I_cant_SinPeriodo AS varchar) + ' Sin periodo.' 
+--	END TRY
+--	BEGIN CATCH
+--		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##cuota_anio')
+--		BEGIN
+--			DROP TABLE ##cuota_anio
+--		END
+
+--		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##periodo')
+--		BEGIN
+--			DROP TABLE ##periodo
+--		END
+
+
+--		SET @B_Resultado = 0
+--		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+--	END CATCH
+--END
+--GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_AsignarAnioCuotaPago')
+	DROP PROCEDURE [dbo].[USP_U_AsignarAnioCuotaPago]
+GO
+
+CREATE PROCEDURE USP_U_AsignarAnioCuotaPago
 	@I_RowID	  int = NULL,
 	@I_ProcedenciaID tinyint,
 	@T_SchemaDB		 varchar(20),
@@ -359,7 +610,7 @@ AS
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_SchemaDB		 varchar(20) = 'euded',
 --		@T_Message	  nvarchar(4000)
---exec USP_U_AsignarAnioPeriodoCuotaPago @I_RowID, @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
+--exec USP_U_AsignarAnioCuotaPago @I_RowID, @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -368,30 +619,19 @@ BEGIN
 	DECLARE @I_TablaID int = 2
 	DECLARE @I_ObsMasUnAnio int = 5
 	DECLARE @I_ObsSinAnio int = 6
-	DECLARE @I_ObsMasUnPeriodo int = 7
-	DECLARE @I_ObsSinPeriodo int = 8
 
 	DECLARE @I_cant_MasUnAnio int = 0
 	DECLARE @I_cant_SinAnio int = 0
-	DECLARE @I_cant_MasUnPeriodo int = 0
-	DECLARE @I_cant_SinPeriodo int = 0
 
 	BEGIN TRY
 		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##cuota_anio')
 		BEGIN
 			DROP TABLE ##cuota_anio
 		END
-
-		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##periodo')
-		BEGIN
-			DROP TABLE ##periodo
-		END
 	 
-		--1. ASIGNAR AÑO CUOTA PAGO
 		CREATE TABLE ##cuota_anio (cuota_pago int, anio_cuota varchar(4))
-		CREATE TABLE ##periodo (cuota_pago int, I_Periodo int, C_CodPeriodo varchar(5), T_Descripcion varchar(50))
 
-			--CUOTAS DE PAGO CON AÑO EN CP_PRI
+		--CUOTAS DE PAGO CON AÑO EN CP_PRI
 		INSERT INTO ##cuota_anio(cuota_pago, anio_cuota)
 			SELECT DISTINCT D.CUOTA_PAGO, ISNULL(P.ANO, SUBSTRING(RTRIM(LTRIM(D.DESCRIPCIO)), 1,4)) AS ANO 
 			  FROM TR_Cp_Des D LEFT JOIN TR_cp_pri P ON D.CUOTA_PAGO = P.CUOTA_PAGO
@@ -400,7 +640,7 @@ BEGIN
 				   AND (D.I_RowID = IIF(@I_RowID IS NULL, D.I_RowID, @I_RowID));
 
 
-			--CUOTAS DE PAGO SIN AÑO EN CP_PRI PERO CON AÑO EN EC_OBL
+		--CUOTAS DE PAGO SIN AÑO EN CP_PRI PERO CON AÑO EN EC_OBL
 
 		SET @T_SQL = 'INSERT INTO ##cuota_anio(cuota_pago, anio_cuota)
 					  SELECT DISTINCT o.CUOTA_PAGO, o.ANO FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl o 
@@ -414,59 +654,65 @@ BEGIN
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
 
-		UPDATE	TR_Cp_Des
-		SET		B_Migrable = 0,
-				D_FecEvalua = @D_FecProceso
-		WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM ##cuota_anio GROUP BY cuota_pago HAVING COUNT(*) > 1)
-				AND B_Actualizado = 0
-				AND Eliminado = 0
-				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
-				
-		UPDATE	TR_Cp_Des
-		SET		B_Migrable = 0,
-				D_FecEvalua = @D_FecProceso
-		WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd
-							  LEFT JOIN ##cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago
-							  WHERE anio_cuota IS NULL
-									AND cd.I_ProcedenciaID = @I_ProcedenciaID)
-				AND B_Actualizado = 0
-				AND Eliminado = 0
-				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
-	
-
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObsMasUnAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				 WHERE CUOTA_PAGO IN (SELECT cuota_pago FROM ##cuota_anio GROUP BY cuota_pago HAVING COUNT(*) > 1)
-					   AND B_Actualizado = 0 
+					   AND I_ProcedenciaID = @I_ProcedenciaID
+					   AND B_MantenerAnio = 0
 					   AND Eliminado = 0) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
-		WHEN NOT MATCHED BY TARGET THEN
+		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID)  THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsMasUnAnio AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsMasUnAnio AND TRG.I_ProcedenciaID = @I_ProcedenciaID AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
 			UPDATE SET D_FecResuelto = GETDATE(),
 					   B_Resuelto = 1;
 
+
+		UPDATE	TR_Cp_Des
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	I_RowID IN (SELECT I_FilaTablaID FROM TI_ObservacionRegistroTabla 
+							WHERE I_TablaID = @I_TablaID 
+								  AND I_ProcedenciaID = @I_ProcedenciaID 
+								  AND B_Resuelto = 0 
+								  AND I_ObservID = @I_ObsMasUnAnio)
+				AND Eliminado = 0
+				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
+				
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObsSinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				  WHERE	CUOTA_PAGO IN (SELECT cd.CUOTA_PAGO FROM TR_Cp_Des cd LEFT JOIN ##cuota_anio ca ON cd.CUOTA_PAGO = ca.cuota_pago WHERE anio_cuota IS NULL
 										AND cd.I_ProcedenciaID = @I_ProcedenciaID)
-					    AND B_Actualizado = 0 
+					    AND I_ProcedenciaID = @I_ProcedenciaID
+					    AND B_MantenerAnio = 0
 						AND Eliminado = 0) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
-		WHEN NOT MATCHED BY TARGET THEN
+		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsSinAnio AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsSinAnio AND TRG.I_ProcedenciaID = @I_ProcedenciaID AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
 			UPDATE SET D_FecResuelto = GETDATE(),
 					   B_Resuelto = 1;
 
-
+		UPDATE	TR_Cp_Des
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	I_RowID IN (SELECT I_FilaTablaID FROM TI_ObservacionRegistroTabla 
+							WHERE I_TablaID = @I_TablaID 
+								  AND I_ProcedenciaID = @I_ProcedenciaID 
+								  AND B_Resuelto = 0 
+								  AND I_ObservID = @I_ObsSinAnio)
+				AND Eliminado = 0
+				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
+		
 		UPDATE	tb_des  
 		SET		I_Anio = a1.anio_cuota,
 				D_FecEvalua = @D_FecProceso
@@ -475,80 +721,9 @@ BEGIN
 				INNER JOIN (SELECT cuota_pago FROM ##cuota_anio GROUP BY cuota_pago HAVING COUNT(*) = 1) a2
 				ON a1.cuota_pago= a2.cuota_pago
 
-		--2. ASIGNAR PERIODO CUOTA PAGO
-		SET @T_SQL = 'INSERT INTO ##periodo (cuota_pago, I_Periodo, C_CodPeriodo, T_Descripcion)
-					  SELECT DISTINCT pri.CUOTA_PAGO, I_OpcionID, T_OpcionCod, T_OpcionDesc 
-					  FROM	 BD_OCEF_CtasPorCobrar.dbo.TC_CatalogoOpcion per 
-					  		 INNER JOIN BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_pri pri ON per.T_OpcionCod = pri.P
-					  WHERE  I_ParametroID = 5'
-
-		PRINT @T_SQL
-		EXEC sp_executesql @T_SQL
-
-
-		UPDATE	TR_Cp_Des
-		SET		B_Migrable = 0,
-				D_FecEvalua = @D_FecProceso
-		WHERE	CUOTA_PAGO IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
-				AND I_ProcedenciaID = @I_ProcedenciaID
-				AND Eliminado = 0
-				AND B_Actualizado = 0
-	
-		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObsMasUnPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
-				 WHERE CUOTA_PAGO IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1) 
-					   AND B_Actualizado = 0 
-					   AND Eliminado = 0) AS SRC
-		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsMasUnPeriodo AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
-			UPDATE SET D_FecResuelto = GETDATE(),
-					   B_Resuelto = 1;
-
-
-		UPDATE	tb_des  
-		SET		I_Periodo = per1.I_Periodo,
-				D_FecEvalua = @D_FecProceso
-		FROM	TR_Cp_Des tb_des
-				INNER JOIN ##periodo per1 ON tb_des.CUOTA_PAGO = per1.cuota_pago
-				INNER JOIN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) = 1) per2
-				ON per1.CUOTA_PAGO = per2.cuota_pago
-
-		UPDATE	TR_Cp_Des
-		SET		B_Migrable = 0,
-				D_FecEvalua = @D_FecProceso
-		WHERE	I_Periodo IS NULL
-				AND Cuota_pago NOT IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
-				AND I_ProcedenciaID = @I_ProcedenciaID 
-				AND B_Actualizado = 0
-				AND Eliminado = 0
-
-		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObsSinPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
-				 WHERE I_Periodo IS NULL 
-					   AND Cuota_pago NOT IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
-					   AND I_ProcedenciaID = @I_ProcedenciaID					   
-					   AND B_Actualizado = 0 
-					   AND Eliminado = 0) AS SRC
-		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsSinPeriodo AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
-			UPDATE SET D_FecResuelto = GETDATE(),
-					   B_Resuelto = 1;
-
 	
 		SET @I_cant_MasUnAnio = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnAnio AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
 		SET @I_cant_SinAnio = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinAnio AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
-		SET @I_cant_MasUnPeriodo = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnPeriodo AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
-		SET @I_cant_SinPeriodo = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinPeriodo AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
 
 		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##cuota_anio')
 		BEGIN
@@ -561,8 +736,146 @@ BEGIN
 		END
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_cant_MasUnAnio AS varchar) + ' más de un año | ' + CAST(@I_cant_SinAnio AS varchar) + '  sin año| ' + 
-						 CAST(@I_cant_MasUnPeriodo AS varchar) + ' más de un periodo| ' + CAST(@I_cant_SinPeriodo AS varchar) + ' Sin periodo.' 
+		SET @T_Message = CAST(@I_cant_MasUnAnio AS varchar) + ' más de un año | ' + CAST(@I_cant_SinAnio AS varchar) + '  sin año.'
+		
+	END TRY
+	BEGIN CATCH
+		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##cuota_anio')
+		BEGIN
+			DROP TABLE ##cuota_anio
+		END
+
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_AsignarPeriodoCuotaPago')
+	DROP PROCEDURE [dbo].[USP_U_AsignarPeriodoCuotaPago]
+GO
+
+CREATE PROCEDURE USP_U_AsignarPeriodoCuotaPago
+	@I_RowID	  int = NULL,
+	@I_ProcedenciaID tinyint,
+	@T_SchemaDB		 varchar(20),
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare @B_Resultado  bit,
+--		@I_RowID	  int = NULL,
+--		@I_ProcedenciaID tinyint = 3,
+--		@T_SchemaDB		 varchar(20) = 'euded',
+--		@T_Message	  nvarchar(4000)
+--exec USP_U_AsignarPeriodoCuotaPago @I_RowID, @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @T_SQL nvarchar(max)
+	
+	DECLARE @I_TablaID int = 2
+	DECLARE @I_ObsMasUnPeriodo int = 7
+	DECLARE @I_ObsSinPeriodo int = 8
+
+	DECLARE @I_cant_MasUnPeriodo int = 0
+	DECLARE @I_cant_SinPeriodo int = 0
+
+	BEGIN TRY
+		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##periodo')
+		BEGIN
+			DROP TABLE ##periodo
+		END
+	 
+		CREATE TABLE ##periodo (cuota_pago int, I_Periodo int, C_CodPeriodo varchar(5), T_Descripcion varchar(50))
+
+		SET @T_SQL = 'INSERT INTO ##periodo (cuota_pago, I_Periodo, C_CodPeriodo, T_Descripcion)
+					  SELECT DISTINCT pri.CUOTA_PAGO, I_OpcionID, T_OpcionCod, T_OpcionDesc 
+					  FROM	 BD_OCEF_CtasPorCobrar.dbo.TC_CatalogoOpcion per 
+					  		 INNER JOIN BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_pri pri ON per.T_OpcionCod = pri.P
+					  WHERE  I_ParametroID = 5'
+
+		PRINT @T_SQL
+		EXEC sp_executesql @T_SQL
+	
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING 	(SELECT	@I_ObsMasUnPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+				 WHERE CUOTA_PAGO IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1) 
+					   AND B_MantenerPeriodo = 0
+					   AND I_ProcedenciaID = @I_ProcedenciaID  
+					   AND Eliminado = 0) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsMasUnPeriodo AND TRG.I_ProcedenciaID = @I_ProcedenciaID AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+			UPDATE SET D_FecResuelto = GETDATE(),
+					   B_Resuelto = 1;
+
+
+		UPDATE	TR_Cp_Des
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	I_RowID IN (SELECT I_FilaTablaID FROM TI_ObservacionRegistroTabla 
+							WHERE I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID 
+									AND B_Resuelto = 0 
+									AND I_ObservID = @I_ObsMasUnPeriodo)
+				AND Eliminado = 0
+
+
+		UPDATE	tb_des  
+		SET		I_Periodo = per1.I_Periodo,
+				D_FecEvalua = @D_FecProceso
+		FROM	TR_Cp_Des tb_des
+				INNER JOIN ##periodo per1 ON tb_des.CUOTA_PAGO = per1.cuota_pago
+				INNER JOIN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) = 1) per2
+				ON per1.CUOTA_PAGO = per2.cuota_pago
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING 	(SELECT	@I_ObsSinPeriodo AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+				 WHERE I_Periodo IS NULL 
+					   AND Cuota_pago NOT IN (SELECT cuota_pago FROM ##periodo GROUP BY cuota_pago HAVING COUNT(*) > 1)
+					   AND I_ProcedenciaID = @I_ProcedenciaID					   
+					   AND B_Actualizado = 0 
+					   AND Eliminado = 0) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObsSinPeriodo AND TRG.I_ProcedenciaID = @I_ProcedenciaID AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+			UPDATE SET D_FecResuelto = GETDATE(),
+					   B_Resuelto = 1;
+
+		UPDATE	TR_Cp_Des
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	I_RowID IN (SELECT I_FilaTablaID FROM TI_ObservacionRegistroTabla 
+							WHERE I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID 
+									AND B_Resuelto = 0 
+									AND I_ObservID = @I_ObsSinPeriodo)
+				AND Eliminado = 0
+
+		SET @I_cant_MasUnPeriodo = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnPeriodo AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+		SET @I_cant_SinPeriodo = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinPeriodo AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+
+
+		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##periodo')
+		BEGIN
+			DROP TABLE ##periodo
+		END
+
+		SET @B_Resultado = 1
+		SET @T_Message = CAST(@I_cant_MasUnPeriodo AS varchar) + ' más de un periodo| ' + CAST(@I_cant_SinPeriodo AS varchar) + ' Sin periodo.' 
+
 	END TRY
 	BEGIN CATCH
 		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##cuota_anio')
@@ -763,8 +1076,8 @@ BEGIN
 
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso AS TRG
 		USING (SELECT CD.I_CtaDepositoID, TP_CD.* FROM TR_Cp_Des TP_CD
-					INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CuentaDeposito CD ON CD.C_NumeroCuenta COLLATE DATABASE_DEFAULT = TP_CD.N_CTA_CTE COLLATE DATABASE_DEFAULT
-					WHERE B_Migrable = 1 
+					  INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CuentaDeposito CD ON CD.C_NumeroCuenta COLLATE DATABASE_DEFAULT = TP_CD.N_CTA_CTE COLLATE DATABASE_DEFAULT
+				WHERE B_Migrable = 1 
 						AND (I_Anio BETWEEN @I_AnioIni AND @I_AnioFin) 
 						AND (CUOTA_PAGO = @I_ProcesoID OR @I_ProcesoID IS NULL)
 						AND I_ProcedenciaID = @I_ProcedenciaID
@@ -837,9 +1150,9 @@ BEGIN
 		COMMIT TRANSACTION;
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Proc_Inserted AS varchar) + ' | ' + CAST(@I_Proc_Updated AS varchar)
-						 + ' | ' + CAST(@I_Ctas_Inserted AS varchar) + ' | ' + CAST(@I_Ctas_Updated AS varchar)
-						 + ' | ' + CAST(@I_CtaCat_Inserted AS varchar) + ' | ' + CAST(@I_CtaCat_Updated AS varchar)
+		SET @T_Message = CAST(@I_Proc_Inserted AS varchar) + ' procesos insertados | ' + CAST(@I_Proc_Updated AS varchar) + ' procesos actualizados ' 
+						 + ' | ' + CAST(@I_Ctas_Inserted AS varchar) + ' cuentas insertadas | ' + CAST(@I_Ctas_Updated AS varchar) + ' cuentas actualizados ' 
+						 + ' | ' + CAST(@I_CtaCat_Inserted AS varchar) + ' cuenta-categoría insertados | ' + CAST(@I_CtaCat_Updated AS varchar) + '  cuenta-categoría actualizados'
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION;

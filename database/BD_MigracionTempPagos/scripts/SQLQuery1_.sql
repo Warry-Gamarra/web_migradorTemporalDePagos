@@ -960,6 +960,10 @@ exec sp_change_users_login 'auto_fix', 'UserOCEF'
 exec sp_change_users_login 'auto_fix', 'UserUNFV'
 
 
+SELECT * FROM TC_Usuarios
+SELECT * FROM webpages_Membership WHERE UserId = 1
+
+UPDATE webpages_Membership SET Password = 'AP4rEZG+/M6zCwEgQfjF5lDadZ3Sr7MCnroZzIXlwDEXCY/Q1esZcx1gPlGIV3ERjA=='
 
 
 select count(*) from ##TEMP_Persona

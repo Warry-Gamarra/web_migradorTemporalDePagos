@@ -52,9 +52,28 @@ BEGIN
 		ADD B_Resuelto		bit	 NULL DEFAULT 0,
 			D_FecResuelto	datetime NULL
 END
-GO
+
 
 UPDATE TI_ObservacionRegistroTabla 
    SET B_Resuelto = 0
  WHERE B_Resuelto IS NULL
 GO
+
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_Cp_Des' AND COLUMN_NAME = 'B_MantenerAnio')
+BEGIN
+	ALTER TABLE [dbo].[TR_Cp_Des]
+		ADD B_MantenerAnio		bit	 NULL DEFAULT 0,
+			B_MantenerPeriodo	bit	 NULL DEFAULT 0
+END
+
+
+UPDATE TR_Cp_Des 
+   SET B_MantenerAnio = 0
+ WHERE B_MantenerAnio IS NULL
+GO
+
+UPDATE TR_Cp_Des 
+   SET B_MantenerPeriodo = 0
+ WHERE B_MantenerPeriodo IS NULL
+ GO
