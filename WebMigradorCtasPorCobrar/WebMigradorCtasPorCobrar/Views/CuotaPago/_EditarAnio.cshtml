@@ -90,6 +90,7 @@
 
 
 <script>
+    $('#error_title').hide();
     $('#error_descrip').html('@observ_descrip');
 
     $("#btnsubmit").on('click', function (event) {
@@ -141,12 +142,14 @@
         }
         else {
             $('#error_descrip').html('');
+            $('#error_title').show();
         }
     });
 
     $('#btnCancel').on('click', function () {
         $('#edit-target').hide()
         $('#tabla-errores').show()
+        $('#error_title').show();
         $('#error_descrip').html('');
     })
 

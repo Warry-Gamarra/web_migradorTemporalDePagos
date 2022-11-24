@@ -49,7 +49,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 result = connection.Query<CuotaPago>("SELECT * FROM dbo.TR_Cp_Des cp_des " +
                                                      "INNER JOIN TI_ObservacionRegistroTabla obs ON cp_des.I_RowID = obs.I_FilaTablaID AND obs.I_TablaID = @I_TablaID " +
-                                                     "WHERE obs.I_ProcedenciaID = @I_ProcedenciaID AND obs.I_ObservID = @I_ObservID"
+                                                     "WHERE obs.I_ProcedenciaID = @I_ProcedenciaID AND obs.I_ObservID = @I_ObservID AND B_Resuelto = 0"
                                                         , new { I_ProcedenciaID = procedenciaID, I_TablaID = tablaID, I_ObservID = observacionID }
                                                         , commandType: CommandType.Text);
             }

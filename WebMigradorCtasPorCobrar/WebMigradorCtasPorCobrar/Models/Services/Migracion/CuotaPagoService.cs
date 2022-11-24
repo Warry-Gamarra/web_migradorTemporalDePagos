@@ -237,7 +237,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                     break;
             }
 
-            EjecutarValidaciones((Procedencia)cuotaPago.I_ProcedenciaID, cuotaPago.I_RowID);
+            cuotaPagoRepository.MarcarDuplicadosCuotaPago(cuotaPago.I_ProcedenciaID);
+            cuotaPagoRepository.AsignarCategoriaCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID);
+            cuotaPagoRepository.AsignarAnioPeriodoCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }

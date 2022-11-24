@@ -146,8 +146,7 @@ BEGIN
 		UPDATE	TR_Cp_Des 
 		   SET	B_Actualizado = 0, 
 				B_Migrable = 1, 
-				D_FecMigrado = NULL, 
-				B_Migrado = 0
+				D_FecMigrado = NULL
 		 WHERE	I_ProcedenciaID = @I_ProcedenciaID 
 				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
 
@@ -330,8 +329,8 @@ BEGIN
 					   B_Resuelto = 1;
 
 
-		SET @I_Observados_activos = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_activo AND I_TablaID = @I_TablaID)
-		SET @I_Observados_eliminados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_eliminado AND I_TablaID = @I_TablaID)
+		SET @I_Observados_activos = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_activo AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+		SET @I_Observados_eliminados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_eliminado AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
 
 		SET @B_Resultado = 1
 		SET @T_Message = CAST(@I_Observados_activos AS varchar) + ' con estado activo |' + CAST(@I_Observados_eliminados AS varchar) +  ' con estado eliminado'
@@ -546,10 +545,10 @@ BEGIN
 					   B_Resuelto = 1;
 
 	
-		SET @I_cant_MasUnAnio = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnAnio AND I_TablaID = @I_TablaID)
-		SET @I_cant_SinAnio = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinAnio AND I_TablaID = @I_TablaID)
-		SET @I_cant_MasUnPeriodo = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnPeriodo AND I_TablaID = @I_TablaID)
-		SET @I_cant_SinPeriodo = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinPeriodo AND I_TablaID = @I_TablaID)
+		SET @I_cant_MasUnAnio = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnAnio AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+		SET @I_cant_SinAnio = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinAnio AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+		SET @I_cant_MasUnPeriodo = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnPeriodo AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+		SET @I_cant_SinPeriodo = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinPeriodo AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
 
 		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##cuota_anio')
 		BEGIN
@@ -644,12 +643,14 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	I_CatPagoID IS NULL
+				AND Eliminado = 0
 				AND I_ProcedenciaID = @I_ProcedenciaID
 				AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObsSinCategoria AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
 				  WHERE	I_CatPagoID IS NULL 
+						AND Eliminado = 0
 						AND I_ProcedenciaID = @I_ProcedenciaID
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
@@ -666,12 +667,12 @@ BEGIN
 					   B_Resuelto = 1;
 
 
-		SET @I_cant_masCategorias = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnCategoria AND I_TablaID = @I_TablaID)
-		SET @I_cant_sinCategorias = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinCategoria AND I_TablaID = @I_TablaID)
+		SET @I_cant_masCategorias = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnCategoria AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+		SET @I_cant_sinCategorias = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsSinCategoria AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
 		
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_cant_masCategorias AS varchar) + ' | ' + CAST(@I_cant_sinCategorias AS varchar)
+		SET @T_Message = CAST(@I_cant_masCategorias AS varchar) + ' relacionadas a más de una categoría | ' + CAST(@I_cant_sinCategorias AS varchar) + ' sin categoría'
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION

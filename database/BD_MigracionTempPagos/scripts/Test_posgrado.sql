@@ -9,8 +9,17 @@ exec USP_IU_CopiarTablaCuotaDePago @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc,
 select @B_Resultado as resultado, @T_Message as mensaje
 go
 
+declare @B_Resultado  bit,
+		@I_RowID	  int = NULL,
+		@I_ProcedenciaID	tinyint = 2,
+		@T_Message	  nvarchar(4000)
+exec USP_U_InicializarEstadoValidacionCuotaPago @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+select @B_Resultado as resultado, @T_Message as mensaje
+go
+
 
 declare @B_Resultado  bit,
+		@I_RowID	  int = NULL,
 		@I_ProcedenciaID tinyint = 2,
 		@T_Message	  nvarchar(4000)
 exec USP_U_MarcarRepetidosCuotaDePago @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -19,18 +28,20 @@ go
 
 
 declare @B_Resultado  bit,
+		@I_RowID	  int = NULL,
 		@I_ProcedenciaID tinyint = 2,
 		@T_SchemaDB		 varchar(20) = 'eupg',
 		@T_Message	  nvarchar(4000)
-exec USP_U_AsignarAnioPeriodoCuotaPago @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
+exec USP_U_AsignarAnioPeriodoCuotaPago @I_RowID, @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
 go
 
 
 declare @B_Resultado  bit,
+		@I_RowID	  int = NULL,
 		@I_ProcedenciaID tinyint = 2,
 		@T_Message	  nvarchar(4000)
-exec USP_U_AsignarCategoriaCuotaPago  @I_ProcedenciaID, @B_Resultado output, @T_Message output
+exec USP_U_AsignarCategoriaCuotaPago  @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
 select @B_Resultado as resultado, @T_Message as mensaje
 go
 

@@ -36,7 +36,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 result = connection.Query<Observacion>("SELECT DISTINCT I_ObservID, I_TablaID, T_TablaNom, T_ObservDesc, T_ObservCod, I_ProcedenciaID " +
                                                        "FROM dbo.VW_ObservacionesTabla " +
-                                                       "WHERE I_TablaID = @I_TablaID"
+                                                       "WHERE I_TablaID = @I_TablaID AND B_Resuelto = 0;"
                                                        , new { I_TablaID = tablaID }
                                                        , commandType: CommandType.Text);
             }

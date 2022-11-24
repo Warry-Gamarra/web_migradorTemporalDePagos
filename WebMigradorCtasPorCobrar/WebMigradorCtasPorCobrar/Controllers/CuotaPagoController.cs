@@ -123,6 +123,10 @@ namespace WebMigradorCtasPorCobrar.Controllers
             var model = _observacionService.Obtener_ObservacionesCuotaPago(id);
             ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
+            var fila = _cuotaPagoServiceMigracion.Obtener(id);
+
+            ViewBag.ErrorTitle = $"Cuota de pago {fila.Cuota_pago} - {fila.Descripcio}";
+
             return PartialView("_Observaciones", model);
         }
 

@@ -44,13 +44,17 @@ CREATE TABLE TS_DataOrigen (
 )
 GO
 
--- Cambio estructura para version 202211115
+-- Cambio estructura para version 20221115
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TI_ObservacionRegistroTabla' AND COLUMN_NAME = 'B_Resuelto')
 BEGIN
 	ALTER TABLE [dbo].[TI_ObservacionRegistroTabla]
-		ADD B_Resuelto		bit	 NULL,
+		ADD B_Resuelto		bit	 NULL DEFAULT 0,
 			D_FecResuelto	datetime NULL
 END
 GO
 
+UPDATE TI_ObservacionRegistroTabla 
+   SET B_Resuelto = 0
+ WHERE B_Resuelto IS NULL
+GO

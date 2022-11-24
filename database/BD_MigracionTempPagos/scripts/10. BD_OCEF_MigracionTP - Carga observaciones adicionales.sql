@@ -13,7 +13,7 @@ GO
 UPDATE tb_obs
    SET tb_obs.I_ProcedenciaID = cp_des.I_ProcedenciaID
   FROM TI_ObservacionRegistroTabla tb_obs 
-		   INNER JOIN TR_Cp_Des cp_des on cp_des.I_RowID = tb_obs.I_FilaTablaID AND tb_obs.I_TablaID = 2
+	   INNER JOIN TR_Cp_Des cp_des on cp_des.I_RowID = tb_obs.I_FilaTablaID AND tb_obs.I_TablaID = 2
 GO
 
 
