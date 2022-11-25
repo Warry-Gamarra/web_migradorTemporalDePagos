@@ -18,7 +18,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.Query<ConceptoPago>("SELECT * FROM dbo.TR_Cp_Pri WHERE I_ProcedenciaID = @I_ProcedenciaID"
+                result = connection.Query<ConceptoPago>("SELECT cp_pri.*, (cp_des.cuota_pago + ' - ' + cp_des.descripcio) AS cuota_pago_desc FROM dbo.TR_Cp_Pri cp_pri " +
+                                                        "INNER JOIN TR_Cp_Des cp_des ON cp_pri.cuota_pago = cp_des.cuota_pago AND cp_des.Eliminado = 0" +
+                                                        "WHERE I_ProcedenciaID = @I_ProcedenciaID"
                                                          , new { I_ProcedenciaID = procedenciaID }
                                                          , commandType: CommandType.Text);
             }

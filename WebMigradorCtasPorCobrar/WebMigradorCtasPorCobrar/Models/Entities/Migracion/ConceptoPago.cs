@@ -51,6 +51,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public IList<CuotaPago> CuotasPago { get; set; }
         public IList<DetalleObligacion> DetalleObligaciones { get; set; }
 
+        public string Cuota_pago_desc { get; set; }
 
         public ConceptoPago()
         {
