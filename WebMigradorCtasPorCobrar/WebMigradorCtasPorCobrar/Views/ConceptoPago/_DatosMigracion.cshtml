@@ -25,10 +25,10 @@
     @Html.Grid(Model).Columns(columns =>
     {
         columns.Add(c => c.Id_cp).Titled("Codigo").Filterable(true);
-        columns.Add(c => c.Cuota_pago).Titled("Cuota pago").Filterable(true);
         columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
         columns.Add(c => c.Ano).Titled("Año").Filterable(true);
         columns.Add(c => c.P).Titled("Periodo").Filterable(true);
+        columns.Add(c => c.Cuota_pago_desc).Titled("Cuota pago").Filterable(true);
         columns.Add(c => c.Tipo_oblig).Css("text-center").Encoded(false).Sanitized(false).Titled("Obligación").Filterable(true)
                 .RenderValueAs(model => model.Tipo_oblig ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-info\"></i></span>")
                                                          : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));

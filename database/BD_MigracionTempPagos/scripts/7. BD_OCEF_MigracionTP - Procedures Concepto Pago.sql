@@ -779,3 +779,105 @@ BEGIN
 	END CATCH
 END
 GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarDataConceptoPagoObligacionesCtasPorCobrar')
+	DROP PROCEDURE [dbo].[USP_IU_MigrarDataConceptoPagoObligacionesCtasPorCobrar]
+GO
+
+CREATE PROCEDURE USP_IU_MigrarDataConceptoPagoObligacionesCtasPorCobrar
+	@I_ProcesoID	  int = NULL,
+	@I_AnioIni	  int = NULL,
+	@I_AnioFin	  int = NULL,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+--declare	@B_Resultado  bit, 
+--			@I_ProcesoID int = NULL,
+--			@I_AnioIni int = NULL, 
+--			@I_AnioFin int = NULL,
+--			@I_ProcedenciaID tinyint = 3,
+--			@T_Message nvarchar(4000)
+--exec USP_IU_MigrarDataConceptoPagoObligacionesCtasPorCobrar @I_ProcesoID, @I_AnioIni, @I_AnioFin, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	BEGIN TRANSACTION;
+	BEGIN TRY 
+
+
+	--------------
+	--------------
+
+	
+select * from (
+SELECT cp_pri.Id_cp, cp_pri.Ano, ctas_cp.I_Anio, cp_pri.Descripcio, ctas_cp.T_ConceptoPagoDesc, IIF(cp_pri.Descripcio = ctas_cp.T_ConceptoPagoDesc, 1, 0) AS Iguales FROM TR_Cp_Pri cp_pri 
+LEFT JOIN BD_OCEF_CtasPorCobrar..TI_ConceptoPago ctas_cp ON ctas_cp.I_ConcPagID = cp_pri.Id_cp) TBL
+WHERE Iguales = 0
+ORDER BY Id_cp
+
+
+
+select * from (
+	SELECT cp_pri.Id_cp, I_ConcPagID, cp_pri.Ano, ctas_cp2.I_Anio, ctas_cp2.per, cp_pri.P, ctas_cp2.C_grado, cp_pri.Grado, ctas_cp2.I_ProcesoID, cp_pri.Cuota_pago, 
+		  cp_pri.Descripcio, ctas_cp2.T_ConceptoPagoDesc, IIF(cp_pri.Id_cp = ctas_cp2.I_ConcPagID, 1, 0) AS Iguales 
+	FROM TR_Cp_Pri cp_pri 
+	LEFT JOIN (SELECT ctas_cp.*, co.T_OpcionCod AS Per, co2.T_OpcionCod as C_grado 
+			   FROM BD_OCEF_CtasPorCobrar..TI_ConceptoPago ctas_cp 
+				LEFT JOIN BD_OCEF_CtasPorCobrar..TC_CatalogoOpcion co ON co.I_ParametroID = 5 AND ctas_cp.I_Periodo = co.I_OpcionID
+				LEFT JOIN BD_OCEF_CtasPorCobrar..TC_CatalogoOpcion co2 ON co2.I_ParametroID = 2 AND IIF(ctas_cp.I_GradoDestino = 9, 4, ctas_cp.I_GradoDestino) = co2.I_OpcionID
+			   ) ctas_cp2
+		ON ctas_cp2.T_ConceptoPagoDesc = cp_pri.Descripcio 
+		AND ISNULL(ctas_cp2.I_Anio, '   ') = cp_pri.Ano
+		AND ISNULL(ctas_cp2.Per, ' ') = cp_pri.P
+		AND ctas_cp2.M_Monto = cp_pri.Monto
+		AND ctas_cp2.I_AlumnosDestino = cp_pri.Tip_alumno
+		AND ctas_cp2.C_grado = cp_pri.Grado
+		AND ctas_cp2.I_ProcesoID = cp_pri.Cuota_pago
+	WHERE Eliminado = 0
+) TBL
+--WHERE I_ConcPagID IS NOT NULL-- AND Iguales = 0
+ORDER BY Id_cp
+
+
+select * from TR_Cp_Pri
+left join (
+select * from (
+	SELECT cp_pri.Id_cp, I_ConcPagID, cp_pri.Ano, ctas_cp2.I_Anio, ctas_cp2.per, cp_pri.P, ctas_cp2.C_grado, cp_pri.Grado, ctas_cp2.I_ProcesoID, cp_pri.Cuota_pago, 
+		  cp_pri.Descripcio, ctas_cp2.T_ConceptoPagoDesc, IIF(cp_pri.Id_cp = ctas_cp2.I_ConcPagID, 1, 0) AS Iguales 
+	FROM TR_Cp_Pri cp_pri 
+	LEFT JOIN (SELECT ctas_cp.*, co.T_OpcionCod AS Per, co2.T_OpcionCod as C_grado 
+			   FROM BD_OCEF_CtasPorCobrar..TI_ConceptoPago ctas_cp 
+				LEFT JOIN BD_OCEF_CtasPorCobrar..TC_CatalogoOpcion co ON co.I_ParametroID = 5 AND ctas_cp.I_Periodo = co.I_OpcionID
+				LEFT JOIN BD_OCEF_CtasPorCobrar..TC_CatalogoOpcion co2 ON co2.I_ParametroID = 2 AND IIF(ctas_cp.I_GradoDestino = 9, 4, ctas_cp.I_GradoDestino) = co2.I_OpcionID
+			   ) ctas_cp2
+		ON ctas_cp2.T_ConceptoPagoDesc = cp_pri.Descripcio 
+		AND ISNULL(ctas_cp2.I_Anio, '   ') = cp_pri.Ano
+		AND ISNULL(ctas_cp2.Per, ' ') = cp_pri.P
+		AND ctas_cp2.M_Monto = cp_pri.Monto
+		AND ctas_cp2.I_AlumnosDestino = cp_pri.Tip_alumno
+		AND ctas_cp2.C_grado = cp_pri.Grado
+		AND ctas_cp2.I_ProcesoID = cp_pri.Cuota_pago
+	WHERE Eliminado = 0
+) TBL
+--WHERE I_ConcPagID IS NOT NULL-- AND Iguales = 0
+ ) tbl_equiv
+ on TR_Cp_Pri.Id_cp = tbl_equiv.Id_cp
+where tbl_equiv.Id_cp is null
+ 
+	-----------
+	-----------
+
+
+		COMMIT TRANSACTION;
+
+		SET @B_Resultado = 1
+		SET @T_Message = ''
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		ROLLBACK TRANSACTION;
+	END CATCH
+END
+GO

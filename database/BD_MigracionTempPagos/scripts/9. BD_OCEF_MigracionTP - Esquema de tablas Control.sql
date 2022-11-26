@@ -77,3 +77,14 @@ UPDATE TR_Cp_Des
    SET B_MantenerPeriodo = 0
  WHERE B_MantenerPeriodo IS NULL
  GO
+
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_Cp_Pri' AND COLUMN_NAME = 'I_EquivDestinoID')
+BEGIN
+	ALTER TABLE [dbo].[TR_Cp_Pri]
+		ADD I_EquivDestinoID	int  NULL
+END
+GO
+
+
+
