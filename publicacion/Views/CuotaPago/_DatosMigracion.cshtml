@@ -44,7 +44,7 @@
         columns.Add().SetWidth(120).Css("text-right").Encoded(false).Sanitized(false)
                     .RenderValueAs(model => model.B_Migrable ? @Html.Raw("")
                                                              : @Html.Raw($"<a href=\"{ Url.Action("Observaciones", "CuotaPago", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\">" +
-                                                                            $"<i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observacion</span>" +
+                                                                            $"<i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span>" +
                                                                          $"</a>"));
     }
     ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")

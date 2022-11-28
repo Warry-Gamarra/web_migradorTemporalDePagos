@@ -10,7 +10,7 @@
                 <th>Año</th>
                 <th>Periodo</th>
                 <th>Monto</th>
-                <th>Eliminado</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -22,7 +22,16 @@
                     <td>@item.Ano</td>
                     <td>@item.P</td>
                     <td>@item.Monto</td>
-                    <td>@item.Eliminado</td>
+                    <td class="text-center">
+                        @if (item.Eliminado)
+                        {
+                            <span class="badge badge-danger"><i class="fa fa-times-circle"></i> Eliminado</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-success"><i class="fa fa-check-circle"></i> Activo</span>
+                        }
+                    </td>
                 </tr>
             }
         </tbody>
@@ -56,7 +65,7 @@
                 <th>Concepto</th>
                 <th>Año</th>
                 <th>Periodo</th>
-                <th>Eliminado</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -67,7 +76,17 @@
                     <td>@item.Concepto - @item.Descripcio</td>
                     <td>@item.Ano</td>
                     <td>@item.P</td>
-                    <td>@item.Eliminado</td>
+                    <td class="text-center">
+                        @if (item.Eliminado)
+                        {
+                            <span class="badge badge-danger"><i class="fa fa-times-circle"></i> Eliminado</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-success"><i class="fa fa-check-circle"></i> Activo</span>
+                        }
+                    </td>
+
                 </tr>
             }
         </tbody>

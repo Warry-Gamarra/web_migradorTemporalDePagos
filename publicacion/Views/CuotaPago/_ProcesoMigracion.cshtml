@@ -38,27 +38,39 @@
     $('#btn-proc').addClass('active');
 
     $('#btn-copy').on('click', function () {
-        $.ajax({
-            url: '@Url.Action("CopiarRegistros", "CuotaPago", new { area = "" })' + '?procedencia=' + '@procedencia',
-            type: 'POST',
-            cache: false,
-            beforeSend: function () {
-                $('#processing').show();
-                $('#result-message').hide();
-            },
-            success: function (data) {
-                $('#result-message').html(data);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                $('#alert-message p.alert').html(jqXHR.responseText)
-                $('#result-message').show();
-            },
-            complete: function () {
-                $('#processing').hide();
-                $('#result-message').show();
+        Swal.fire({
+            title: 'Copiar Cuotas de pago desde el temporal de pagos',
+            text: "Al copiar datos desde el temporal de pagos se perderá cualquier validacion y cambio que no hayan sido migrados",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff830f',
+            cancelButtonColor: '#3c3c3c',
+            confirmButtonText: 'Sí, copiar datos.'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("CopiarRegistros", "CuotaPago", new { area = "" })' + '?procedencia=' + '@procedencia',
+                    type: 'POST',
+                    cache: false,
+                    beforeSend: function () {
+                        $('#processing').show();
+                        $('#result-message').hide();
+                    },
+                    success: function (data) {
+                        $('#result-message').html(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $('#alert-message p.alert').html(jqXHR.responseText)
+                        $('#result-message').show();
+                    },
+                    complete: function () {
+                        $('#processing').hide();
+                        $('#result-message').show();
+                    }
+                })
             }
-        })
-    })
+        });
+    });
 
 
     $('#btn-validate').on('click', function () {

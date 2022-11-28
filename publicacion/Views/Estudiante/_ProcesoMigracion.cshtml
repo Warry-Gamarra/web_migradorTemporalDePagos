@@ -6,7 +6,7 @@
 <div class="row my-2">
     <div class="col-md-4 py-1"><button id="btn-copy" class="btn btn-warning btn-block">1. Copiar datos desde Temporal de pagos</button></div>
     <div class="col-md-4 py-1"><button id="btn-validate" class="btn btn-info btn-block">2. Validar consistencia de datos</button></div>
-    <div class="col-md-4 py-1"><button id="btn-migrate" class="btn btn-primary btn-block">3. Migrar a Recaudacion de ingresos</button></div>
+    <div class="col-md-4 py-1"><button id="btn-migrate" class="btn btn-primary btn-block">3. Migrar a Repositorio de datos</button></div>
 </div>
 
 <div class="col-md-12 my-4">
@@ -38,27 +38,40 @@
     $('#btn-proc').addClass('active');
 
     $('#btn-copy').on('click', function () {
-        $.ajax({
-            url: '@Url.Action("CopiarRegistros", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
-            type: 'POST',
-            cache: false,
-            beforeSend: function () {
-                $('#processing').show();
-                $('#result-message').hide();
-            },
-            success: function (data) {
-                $('#result-message').html(data);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                $('#alert-message p.alert').html(jqXHR.responseText)
-                $('#result-message').show();
-            },
-            complete: function () {
-                $('#processing').hide();
-                $('#result-message').show();
+        Swal.fire({
+            title: 'Copiar Alumnos desde el temporal de pagos',
+            text: "Al copiar datos desde el temporal de pagos se perderá cualquier validacion y cambio que no hayan sido migrados",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff830f',
+            cancelButtonColor: '#3c3c3c',
+            confirmButtonText: 'Sí, copiar datos.'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("CopiarRegistros", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
+                    type: 'POST',
+                    cache: false,
+                    beforeSend: function () {
+                        $('#processing').show();
+                        $('#result-message').hide();
+                    },
+                    success: function (data) {
+                        $('#result-message').html(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $('#alert-message p.alert').html(jqXHR.responseText)
+                        $('#result-message').show();
+                    },
+                    complete: function () {
+                        $('#processing').hide();
+                        $('#result-message').show();
+                    }
+                })
             }
-        })
-    })
+        });
+    });
+
 
     $('#btn-validate').on('click', function () {
         $.ajax({
