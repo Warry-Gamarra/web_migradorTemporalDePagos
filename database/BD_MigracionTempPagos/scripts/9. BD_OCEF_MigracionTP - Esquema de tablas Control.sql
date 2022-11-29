@@ -52,7 +52,7 @@ BEGIN
 		ADD B_Resuelto		bit	 NULL DEFAULT 0,
 			D_FecResuelto	datetime NULL
 END
-
+GO
 
 UPDATE TI_ObservacionRegistroTabla 
    SET B_Resuelto = 0
@@ -66,6 +66,7 @@ BEGIN
 		ADD B_MantenerAnio		bit	 NULL DEFAULT 0,
 			B_MantenerPeriodo	bit	 NULL DEFAULT 0
 END
+GO
 
 
 UPDATE TR_Cp_Des 

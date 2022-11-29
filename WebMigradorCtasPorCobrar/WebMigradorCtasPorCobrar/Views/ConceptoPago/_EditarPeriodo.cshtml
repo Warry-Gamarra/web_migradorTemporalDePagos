@@ -15,6 +15,7 @@
                 @Html.Hidden("submited", 0)
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(model => model.I_RowID)
+                @Html.HiddenFor(model => model.I_ProcedenciaID)
                 @Html.Hidden("tipoObserv", tipoObs)
 
                 <div class="form-row">
@@ -82,7 +83,7 @@
         </div>
     </div>
     <div class="row mt-4">
-        @*@Html.Partial("_OtrasTablas", Model);*@
+        @Html.Partial("_OtrasTablas", Model)
     </div>
 </div>
 

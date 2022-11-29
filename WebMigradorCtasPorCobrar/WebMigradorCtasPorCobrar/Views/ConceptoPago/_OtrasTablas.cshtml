@@ -1,7 +1,7 @@
 ﻿@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.ConceptoPago
 
 <div class="col-12">
-    <p class="h6 mt-3">Cuota de pago @Model.Cuota_pago en cp_des</p>
+    <p class="h6 mt-3">Cuotas de pago asociadas a concepto @Model.Id_cp - @Model.Descripcio</p>
     <table class="table table-sm table-hover" style="font-size:12px;">
         <thead class="thead-dark">
             <tr>
@@ -25,7 +25,7 @@
             }
         </tbody>
     </table>
-    <p class="h6 mt-3">Cconcepto de Pago @Model.Id_cp @Model.Descripcio en ec_det</p>
+    <p class="h6 mt-3">Concepto de Pago @Model.Id_cp @Model.Descripcio en ec_det</p>
     <table class="table table-sm table-hover" style="font-size:12px;">
         <thead class="thead-dark">
             <tr>

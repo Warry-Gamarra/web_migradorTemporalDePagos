@@ -157,6 +157,22 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             conceptoPago.CuotasPago = new List<CuotaPago>();
 
+            foreach (var concepto in ConceptoPagoRepository.Obtener(conceptoPago.I_ProcedenciaID).Where(x => x.Id_cp == conceptoPago.Id_cp))
+            {
+                foreach (var cuotaPago in CuotaPagoRepository.Obtener(concepto.I_ProcedenciaID).Where(x => x.Cuota_pago == concepto.Cuota_pago))
+                {
+                    conceptoPago.CuotasPago.Add(cuotaPago);
+                }
+            }
+
+            foreach (var obligacion in ObligacionRepository.Obtener(conceptoPago.I_ProcedenciaID).Where(x => x.DetalleObligaciones.Any(d => d.Concepto == conceptoPago.Id_cp)))
+            {
+                foreach (var detalleObligacion in obligacion.DetalleObligaciones)
+                {
+                    conceptoPago.DetalleObligaciones.Add(detalleObligacion);
+                }
+            }
+
             return conceptoPago;
         }
 
