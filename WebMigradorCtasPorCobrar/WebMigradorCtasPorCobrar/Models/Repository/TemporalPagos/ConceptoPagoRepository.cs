@@ -33,7 +33,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
                 result = connection.Query<ConceptoPago>($"SELECT * FROM {schemaDb}.cp_pri " +
-                    $"WHERE cuota_pago = @cuota_pago"
+                                                        $"WHERE cuota_pago = @cuota_pago"
                                                         , new { cuota_pago = cuotaPagoID }
                                                         , commandType: CommandType.Text);
             }

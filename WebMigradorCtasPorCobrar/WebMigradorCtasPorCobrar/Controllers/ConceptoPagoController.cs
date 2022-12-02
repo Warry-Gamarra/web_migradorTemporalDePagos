@@ -114,7 +114,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
         {
-
             Response result = _conceptoPagoServiceMigracion.MigrarDatosTemporalPagos(procedencia);
 
             return PartialView("_ResultadoMigrarRegistros", result);
@@ -124,9 +123,19 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult Observaciones(int id)
         {
             var model = _observacionService.Obtener_ObservacionesConceptoPago(id);
+            ViewBag.RowID = id;
 
             return PartialView("_Observaciones", model);
         }
+
+        public ActionResult AgregarObservacion(int id)
+        {
+            ViewBag.LstObservaciones = new SelectList(_observacionService.ObtenerCatalogo(), "I_ObservID", "T_ObservDesc");
+
+
+            return PartialView("_ObservacionRegistro");
+        }
+
 
         public ActionResult Editar(int id, int obsID)
         {
@@ -143,6 +152,12 @@ namespace WebMigradorCtasPorCobrar.Controllers
                 ViewBag.TipoObserv = obsID.ToString();
                 ViewBag.Observacion = _observacionService.ObtenerCatalogo(obsID).T_ObservDesc;
                 ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
+                                                  "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
+
+                ViewBag.TipoAlumno = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
+                                                  "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
+
+                ViewBag.Grados = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
                                                   "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
 
                 ViewBag.Procedencia = new SelectList(ListEnums.Procedencias(), "Value", "Descripcion", 

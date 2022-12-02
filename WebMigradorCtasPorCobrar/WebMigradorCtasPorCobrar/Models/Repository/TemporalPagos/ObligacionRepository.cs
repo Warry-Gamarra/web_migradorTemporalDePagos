@@ -50,7 +50,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             {
                 string str_query = $"SELECT * FROM {schemaDb}.ec_det WHERE ano = @ano AND p = @p AND cod_alu = @cod_alu " +
                                    $"                                      AND cuota_pago = @cuota_pago AND cod_rc = @cod_rc " +
-                                   $"                                      AND fch_venc = @fch_venc;";
+                                   $"                                      AND fch_venc = @fch_venc" +
+                                   $"                                      AND Concepto_f = 0;";
 
                 result = connection.Query<DetalleObligacion>(str_query,
                                                              new
@@ -67,9 +68,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             return result;
         }
 
-        public static IEnumerable<DetalleObligacion> ObtenerObligacionPorCuotaPago(string schemaDb, string cuotaPago)
+        public static IEnumerable<Obligacion> ObtenerObligacionPorCuotaPago(string schemaDb, string cuotaPago)
         {
-            IEnumerable<DetalleObligacion> result;
+            IEnumerable<Obligacion> result;
 
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
@@ -77,28 +78,33 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
                                    $"       LEFT JOIN {schemaDb}.cp_des ON ec_obl.cuota_pago = cp_des.cuota_pago " +
                                    $"WHERE ec_obl.cuota_pago = @cuota_pago;";
 
-                result = connection.Query<DetalleObligacion>(str_query, new { cuota_pago = cuotaPago }, commandType: CommandType.Text);
+                result = connection.Query<Obligacion>(str_query, new { cuota_pago = cuotaPago }, commandType: CommandType.Text);
             }
 
             return result;
         }
 
-        public static IEnumerable<DetalleObligacion> ObtenerObligacionPorConceptoPago(string schemaDb, string cuotaPago)
+        public static IEnumerable<DetalleObligacion> ObtenerObligacionPorConceptoPago(string schemaDb, string conceptoPago)
         {
             IEnumerable<DetalleObligacion> result;
 
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
                 string str_query = $"SELECT ec_obl.*, cp_pri.descripcio FROM {schemaDb}.ec_obl " +
-                                   $"       INNER JOIN {schemaDb}.cp_pri ON ec_obl.cuota_pago = cp_pri.cuota_pago " +
+                                   $"       INNER JOIN {schemaDb}.ec_det ON ec_obl.cuota_pago = ec_det.cuota_pago " +
+                                   $"                                   AND ec_obl.ano = ec_det.ano " +
+                                   $"                                   AND ec_obl.P = ec_det.P " +
+                                   $"                                   AND ec_obl.cod_alu = ec_det.cod_alu " +
+                                   $"                                   AND ec_obl.cod_rc = ec_det.cod_rc " +
+                                   $"                                   AND ec_obl.fch_venc = ec_det.fch_venc " +
+                                   $"       INNER JOIN {schemaDb}.cp_pri ON ec_det.concepto = cp_pri.id_cp " +
                                    $"WHERE cp_pri.id_cp = @id_cp;";
 
-                result = connection.Query<DetalleObligacion>(str_query, new { cuota_pago = cuotaPago }, commandType: CommandType.Text);
+                result = connection.Query<DetalleObligacion>(str_query, new { id_cp = conceptoPago }, commandType: CommandType.Text);
             }
 
             return result;
         }
-
 
 
         public static IEnumerable<DetalleObligacion> ObtenerDetallePorCuotaPago(string schemaDb, string cuotaPago)
@@ -108,8 +114,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
                 string str_query = $"SELECT ec_det.*, cp_pri.descripcio FROM {schemaDb}.ec_det " +
-                                   $"       LEFT JOIN {schemaDb}.cp_pri ON ec_det.cuota_pago = cp_pri.cuota_pago AND ec_det.concepto = cp_pri.id_cp " +
-                                   $"WHERE ec_det.cuota_pago = @cuota_pago;";
+                                   $"       LEFT JOIN {schemaDb}.cp_des ON ec_det.cuota_pago = cp_des.cuota_pago " +
+                                   $"       LEFT JOIN {schemaDb}.cp_pri ON ec_det.concepto = cp_pri.id_cp " +
+                                   $"WHERE ec_det.cuota_pago = @cuota_pago AND Concepto_f = 0;";
 
                 result = connection.Query<DetalleObligacion>(str_query, new { cuota_pago = cuotaPago }, commandType: CommandType.Text);
             }
@@ -117,17 +124,17 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             return result;
         }
 
-        public static IEnumerable<DetalleObligacion> ObtenerDetallePorConceptoPago(string schemaDb, string cuotaPago)
+        public static IEnumerable<DetalleObligacion> ObtenerDetallePorConceptoPago(string schemaDb, string conceptoPago)
         {
             IEnumerable<DetalleObligacion> result;
 
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
                 string str_query = $"SELECT ec_det.*, cp_pri.descripcio FROM {schemaDb}.ec_det " +
-                                   $"       LEFT JOIN {schemaDb}.cp_pri ON ec_det.cuota_pago = cp_pri.cuota_pago AND ec_det.concepto = cp_pri.id_cp " +
-                                   $"WHERE ec_det.cuota_pago = @cuota_pago;";
+                                   $"       LEFT JOIN {schemaDb}.cp_pri ON  ec_det.concepto = cp_pri.id_cp " +
+                                   $"WHERE ec_det.concepto = @concepto AND Concepto_f = 0;";
 
-                result = connection.Query<DetalleObligacion>(str_query, new { cuota_pago = cuotaPago }, commandType: CommandType.Text);
+                result = connection.Query<DetalleObligacion>(str_query, new { concepto = conceptoPago }, commandType: CommandType.Text);
             }
 
             return result;

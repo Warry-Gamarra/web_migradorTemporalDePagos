@@ -12,6 +12,20 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
     public class ObservacionRepository
     {
 
+        public static IEnumerable<Observacion> ObtenerCatalogo()
+        {
+            IEnumerable<Observacion> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<Observacion>("SELECT I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad " +
+                                                                       "FROM dbo.TC_CatalogoObservacion;"
+                                                                       , commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
         public static Observacion ObtenerCatalogo(int ObservacionID)
         {
             Observacion result;

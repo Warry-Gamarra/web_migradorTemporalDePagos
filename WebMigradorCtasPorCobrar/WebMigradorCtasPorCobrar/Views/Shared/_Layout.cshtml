@@ -10,6 +10,7 @@
     @Styles.Render("~/content/select")
     @Styles.Render("~/content/fonts")
     @Styles.Render("~/content/sweetalert2")
+    @Styles.Render("~/content/datatables")
 
     @Scripts.Render("~/bundles/jquery")
     <script src="@Url.Content("~/Assets/jquery/jquery.unobtrusive-ajax.js")"></script>
@@ -112,9 +113,10 @@
     @Scripts.Render("~/bundles/datetime")
     @Scripts.Render("~/bundles/select")
     @Scripts.Render("~/bundles/sweetalert2")
+    @Scripts.Render("~/bundles/datatables")
     @Scripts.Render("~/bundles/app")
 
-    @RenderSection("scripts", required: false)
+    @RenderSection("Scripts", required: false)
 
     <script type="text/javascript">
         $(function () {

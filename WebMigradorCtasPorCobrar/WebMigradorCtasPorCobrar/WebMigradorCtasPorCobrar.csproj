@@ -520,6 +520,7 @@
     <Content Include="Views\ConceptoPago\_EditarRepetido.cshtml" />
     <Content Include="Views\ConceptoPago\_EditarCuotaPago.cshtml" />
     <Content Include="Views\ConceptoPago\_EditarPeriodo.cshtml" />
+    <Content Include="Views\Shared\_ObservacionRegistro.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

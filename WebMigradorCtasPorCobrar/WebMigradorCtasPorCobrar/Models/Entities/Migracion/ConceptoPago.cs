@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Temporal = WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos;
 using System.Linq;
 using System.Web;
 

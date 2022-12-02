@@ -5,7 +5,6 @@ using System.Web;
 using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
-using WebMigradorCtasPorCobrar.Models.Entities.CtasPorCobrar;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using ClosedXML.Excel;
@@ -68,9 +67,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                 cuotaPago.Obligaciones.Add(new Obligacion(obligacion));
             }
 
-            foreach (var Temp_item in Temporal.ObligacionRepository.ObtenerDetallePorCuotaPago(schema, cuotaPago.Cuota_pago.ToString())
+            foreach (var Temp_item in Temporal.ObligacionRepository.ObtenerDetallePorCuotaPago(schema, cuotaPago.Cuota_pago.ToString())//.Where(x => x.Eliminado == false)
                                                                    .Select(x => new { x.Ano, x.P, x.Cuota_pago, x.Concepto, x.Descripcio, x.Eliminado })
-                                                                   .Distinct())
+                                                                   .Distinct().OrderBy(x => x.Ano ))
             {
                 var detalle = new Entities.TemporalPagos.DetalleObligacion()
                 {
@@ -78,7 +77,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                     P = Temp_item.P,
                     Cuota_pago = Temp_item.Cuota_pago,
                     Concepto = Temp_item.Concepto,
-                    Descripcio = Temp_item.Descripcio
+                    Descripcio = Temp_item.Descripcio,
+                    Eliminado = Temp_item.Eliminado
                 };
 
                 cuotaPago.DetalleObligaciones.Add(new DetalleObligacion(detalle));

@@ -442,7 +442,12 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri SET I_Anio = @I_Anio WHERE I_RowID = @I_RowID;",
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri " +
+                                                  "SET I_Anio = @I_Anio " +
+                                                      "B_Actualizado = 1, " +
+                                                      "B_MantenerPeriodo = 1, " +
+                                                      "D_FecActualiza = GETDATE() " +
+                                                  "WHERE I_RowID = @I_RowID;",
                                                   new { I_Anio = conceptoPago.P, I_RowID = conceptoPago.I_RowID },
                                                   commandType: CommandType.Text);
 
@@ -472,7 +477,12 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri SET I_Anio = @I_Anio WHERE I_RowID = @I_RowID;",
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri " +
+                                                  "SET cuota_pago = @I_Anio " +
+                                                      "B_Actualizado = 1, " +
+                                                      "B_MantenerPeriodo = 1, " +
+                                                      "D_FecActualiza = GETDATE() " +
+                                                  "WHERE I_RowID = @I_RowID;",
                                                   new { I_Anio = conceptoPago.P, I_RowID = conceptoPago.I_RowID },
                                                   commandType: CommandType.Text);
 
@@ -522,7 +532,5 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-
-
     }
 }

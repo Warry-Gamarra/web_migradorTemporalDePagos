@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
@@ -156,6 +157,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             conceptoPago.I_Periodo = _equivalenciaServices.ObtenerPeriodosAcademicos(conceptoPago.P).I_OpcionID;
 
             conceptoPago.CuotasPago = new List<CuotaPago>();
+            conceptoPago.DetalleObligaciones = new List<DetalleObligacion>();
+
+            string schema = Schema.SetSchema((Procedencia)conceptoPago.I_ProcedenciaID);
+            string str_conceptoPago = conceptoPago.Id_cp.ToString();
 
             foreach (var concepto in ConceptoPagoRepository.Obtener(conceptoPago.I_ProcedenciaID).Where(x => x.Id_cp == conceptoPago.Id_cp))
             {
@@ -165,12 +170,24 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                 }
             }
 
-            foreach (var obligacion in ObligacionRepository.Obtener(conceptoPago.I_ProcedenciaID).Where(x => x.DetalleObligaciones.Any(d => d.Concepto == conceptoPago.Id_cp)))
+            foreach (var obligacion in Temporal.ObligacionRepository.ObtenerObligacionPorConceptoPago(schema, str_conceptoPago))
             {
-                foreach (var detalleObligacion in obligacion.DetalleObligaciones)
-                {
-                    conceptoPago.DetalleObligaciones.Add(detalleObligacion);
-                }
+
+            }
+
+            foreach (var detalleObligacion in Temporal.ObligacionRepository.ObtenerDetallePorConceptoPago(schema, str_conceptoPago)//.Where (x => x.Eliminado == false)
+                                                                           .Select(x => new { x.Cuota_pago, x.Ano, x.P, x.Concepto,
+                                                                                              x.Descripcio, x.Eliminado }).Distinct())
+            {
+                conceptoPago.DetalleObligaciones.Add(new DetalleObligacion()
+                                                     {
+                                                         Cuota_pago = detalleObligacion.Cuota_pago,
+                                                         Ano = detalleObligacion.Ano,
+                                                         P = detalleObligacion.P,
+                                                         Concepto = detalleObligacion.Concepto,
+                                                         Descripcio = detalleObligacion.Descripcio,
+                                                         Eliminado = detalleObligacion.Eliminado
+                                                     });
             }
 
             return conceptoPago;

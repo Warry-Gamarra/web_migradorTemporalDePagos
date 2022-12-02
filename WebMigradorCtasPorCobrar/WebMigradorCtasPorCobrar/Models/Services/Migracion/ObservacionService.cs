@@ -40,6 +40,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return ObservacionRepository.Obtener(filaId, (int)Tablas.TR_Ec_Det);
         }
 
+        public IEnumerable<Observacion> ObtenerCatalogo()
+        {
+            return ObservacionRepository.ObtenerCatalogo();
+        }
+
         public Observacion ObtenerCatalogo(int observacionID)
         {
             return ObservacionRepository.ObtenerCatalogo(observacionID);
