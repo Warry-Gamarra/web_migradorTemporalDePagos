@@ -56,7 +56,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-        
+
 
         public static IEnumerable<ConceptoPago> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
         {
@@ -138,7 +138,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public Response InicializarEstadoValidacionCuotaPago(int procedenciaID)
+        public Response InicializarEstadoValidacionCuotaPago(int? rowID, int procedenciaID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -147,8 +147,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
-
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
@@ -168,7 +168,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public Response ValidarDuplicadoConceptosPago(int procedenciaID)
+        public Response ValidarDuplicadoConceptosPago(int? rowID, int procedenciaID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -177,6 +177,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -197,7 +198,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public Response ValidarConceptosPagoObligSinAnioAsignado(int procedenciaID)
+        public Response ValidarConceptosPagoObligSinAnioAsignado(int? rowID, int procedenciaID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -206,6 +207,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -226,7 +228,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public Response ValidarConceptosPagoObligSinPeriodoAsignado(int procedenciaID)
+        public Response ValidarConceptosPagoObligSinPeriodoAsignado(int? rowID, int procedenciaID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -235,6 +237,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -255,7 +258,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public Response ValidarConceptosPagoObligSinCuotaPago(int procedenciaID)
+        public Response ValidarConceptosPagoObligSinCuotaPago(int? rowID, int procedenciaID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -264,6 +267,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -284,7 +288,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public Response AsignarIdEquivalenciasConceptoPago(int procedenciaID)
+        public Response AsignarIdEquivalenciasConceptoPago(int? rowID, int procedenciaID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -293,6 +297,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -313,7 +318,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public Response AsignarEquivalenciasCtasxCobrar(int procedenciaID)
+        public Response AsignarEquivalenciasCtasxCobrar(int? rowID, int procedenciaID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -412,14 +417,25 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri SET I_Anio = @I_Anio WHERE I_RowID = @I_RowID;",
-                                                  new { I_Anio = conceptoPago.P, I_RowID = conceptoPago.I_RowID },
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri " +
+                                                  "SET I_TipPerID = @I_TipPerID, " +
+                                                      "P = @T_PerCod, " +
+                                                      "B_Actualizado = 1, " +
+                                                      "B_MantenerPeriodo = 1, " +
+                                                      "D_FecActualiza = GETDATE() " +
+                                                  "WHERE I_RowID = @I_RowID;",
+                                                  new
+                                                  {
+                                                      I_TipPerID = conceptoPago.I_TipPerID,
+                                                      I_RowID = conceptoPago.I_RowID,
+                                                      T_PerCod = conceptoPago.P
+                                                  },
                                                   commandType: CommandType.Text);
 
                     if (rowCount > 0)
                     {
                         result.IsDone = true;
-                        result.Message = "Año actualizado correctamente";
+                        result.Message = "Periodo actualizado correctamente";
                     }
                 }
             }
@@ -443,12 +459,12 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri " +
-                                                  "SET I_Anio = @I_Anio " +
+                                                  "SET Ano = @I_Anio, " +
                                                       "B_Actualizado = 1, " +
-                                                      "B_MantenerPeriodo = 1, " +
+                                                      "B_MantenerAnio = 1, " +
                                                       "D_FecActualiza = GETDATE() " +
                                                   "WHERE I_RowID = @I_RowID;",
-                                                  new { I_Anio = conceptoPago.P, I_RowID = conceptoPago.I_RowID },
+                                                  new { I_Anio = conceptoPago.Ano, I_RowID = conceptoPago.I_RowID },
                                                   commandType: CommandType.Text);
 
                     if (rowCount > 0)
@@ -478,12 +494,11 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri " +
-                                                  "SET cuota_pago = @I_Anio " +
+                                                  "SET cuota_pago = @Cuota_Pago, " +
                                                       "B_Actualizado = 1, " +
-                                                      "B_MantenerPeriodo = 1, " +
                                                       "D_FecActualiza = GETDATE() " +
                                                   "WHERE I_RowID = @I_RowID;",
-                                                  new { I_Anio = conceptoPago.P, I_RowID = conceptoPago.I_RowID },
+                                                  new { Cuota_Pago = conceptoPago.Cuota_pago, I_RowID = conceptoPago.I_RowID },
                                                   commandType: CommandType.Text);
 
                     if (rowCount > 0)

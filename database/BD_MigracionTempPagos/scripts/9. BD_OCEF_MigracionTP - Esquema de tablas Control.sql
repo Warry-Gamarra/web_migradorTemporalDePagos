@@ -89,3 +89,26 @@ GO
 
 
 
+-- Cambio estructura para version 20221205
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_Cp_Pri' AND COLUMN_NAME = 'B_MantenerAnio')
+BEGIN
+	ALTER TABLE [dbo].[TR_Cp_Pri]
+		ADD B_MantenerAnio		bit	 NULL DEFAULT 0,
+			B_MantenerPeriodo	bit	 NULL DEFAULT 0
+END
+GO
+
+
+UPDATE TR_Cp_Pri 
+   SET B_MantenerAnio = 0
+ WHERE B_MantenerAnio IS NULL
+GO
+
+UPDATE TR_Cp_Pri 
+   SET B_MantenerPeriodo = 0
+ WHERE B_MantenerPeriodo IS NULL
+ GO
+
+
+

@@ -40,7 +40,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar
 
             try
             {
-                string s_command = @"SELECT t.* FROM dbo.TC_CategoriaPago t WHERE I_OpcionID = @I_OpcionID;";
+                string s_command = @"SELECT t.* FROM dbo.TC_CatalogoOpcion t WHERE I_OpcionID = @I_OpcionID;";
 
                 using (var _dbConnection = new SqlConnection(Databases.CtasPorCobrarConnectionString))
                 {

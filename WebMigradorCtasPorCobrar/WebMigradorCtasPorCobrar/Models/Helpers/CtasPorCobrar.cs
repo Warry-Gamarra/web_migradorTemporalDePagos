@@ -9,8 +9,13 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
     {
         public enum Parametro
         {
+            TipoAlumno = 1,
+            Grado = 2,
             PeriodoAcademico = 5,
             CodigoIngreso = 7,
+            MotivoMatricula = 8,
+            CondicionPago = 9,
+            TipoPago = 10
         }
     }
 }

@@ -34,12 +34,12 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-3">
-                        @Html.Label("Año", new { @class = "col-form-label", @for = "I_Anio" })
+                        @Html.Label("Año", new { @class = "col-form-label", @for = "Ano" })
                         @Html.TextBoxFor(model => model.Ano, new { @class = "form-control form-control-sm", @readonly = "true"})
                     </div>
                     <div class="form-group col-3">
-                        @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_Periodo" })
-                        @Html.DropDownListFor(model => model.I_Periodo, ViewBag.Periodos as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm" })
+                        @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_TipPerID" })
+                        @Html.DropDownListFor(model => model.I_TipPerID, ViewBag.Periodos as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm" })
                     </div>
                     <div class="form-group col-3">
                         @Html.Label("Monto", new { @class = "col-form-label", @for = "Monto" })
@@ -52,16 +52,16 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-3 col-4">
-                        @Html.Label("Tipo de Alumno", new { @class = "col-form-label", @for = "Fch_venc" })
-                        @Html.DropDownListFor(model => model.Tip_alumno, ViewBag.TipoAlumno as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
+                        @Html.Label("Tipo de Alumno", new { @class = "col-form-label", @for = "I_TipAluID" })
+                        @Html.DropDownListFor(model => model.I_TipAluID, ViewBag.TipoAlumno as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
                     </div>
-                    <div class="form-group col-md-6 col-5">
-                        @Html.Label("Grado", new { @class = "col-form-label", @for = "Grado" })
-                        @Html.DropDownListFor(model => model.Grado, ViewBag.Grados as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
+                    <div class="form-group col-md-3 col-4">
+                        @Html.Label("Grado", new { @class = "col-form-label", @for = "I_TipGradoID" })
+                        @Html.DropDownListFor(model => model.I_TipGradoID, ViewBag.Grados as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
                     </div>
                 </div>
 
-
+                <br />
                 <div class="col-md-12" style="display:none" id="loading">
                     <h6>Actualizando los datos...</h6>
 

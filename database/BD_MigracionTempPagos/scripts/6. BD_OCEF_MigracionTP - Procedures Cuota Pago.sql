@@ -297,22 +297,22 @@ BEGIN
 					   B_Resuelto = 1;
 
 
-		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID_eliminado AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_Cp_Des 
-				 WHERE CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID AND ELIMINADO = 1 
-									  GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
-			  ) AS SRC
-		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
-					   B_Resuelto = 0
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_eliminado AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
-			UPDATE SET D_FecResuelto = GETDATE(),
-					   B_Resuelto = 1;
+		--MERGE TI_ObservacionRegistroTabla AS TRG
+		--USING (SELECT @I_ObservID_eliminado AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		--		 FROM TR_Cp_Des 
+		--		 WHERE CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID AND ELIMINADO = 1 
+		--							  GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
+		--	  ) AS SRC
+		--ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		--WHEN MATCHED THEN
+		--	UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+		--			   B_Resuelto = 0
+		--WHEN NOT MATCHED BY TARGET THEN
+		--	INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+		--	VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+		--WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_eliminado AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+		--	UPDATE SET D_FecResuelto = GETDATE(),
+		--			   B_Resuelto = 1;
 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
@@ -320,6 +320,7 @@ BEGIN
 				 FROM TR_Cp_Des 
 				 WHERE CUOTA_PAGO IN (SELECT CUOTA_PAGO FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID 
 									  GROUP BY CUOTA_PAGO HAVING COUNT(CUOTA_PAGO) > 1)
+					   AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
 					   AND Eliminado = 1
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
@@ -826,7 +827,6 @@ BEGIN
 									AND B_Resuelto = 0 
 									AND I_ObservID = @I_ObsMasUnPeriodo)
 				AND Eliminado = 0
-
 
 		UPDATE	tb_des  
 		SET		I_Periodo = per1.I_Periodo,

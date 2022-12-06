@@ -8,8 +8,8 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
 {
     public class ConceptoPago
     {
-        public double I_RowID { get; set; }
-        public double Id_cp { get; set; }
+        public int I_RowID { get; set; }
+        public int Id_cp { get; set; }
         public int Cuota_pago { get; set; }
         public string Ano { get; set; }
         public string P { get; set; }
@@ -20,8 +20,8 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public string Clasific_5 { get; set; }
         public double Id_cp_agrp { get; set; }
         public bool Agrupa { get; set; }
-        public double Nro_pagos { get; set; }
-        public double Id_cp_afec { get; set; }
+        public int Nro_pagos { get; set; }
+        public int Id_cp_afec { get; set; }
         public bool Porcentaje { get; set; }
         public decimal Monto { get; set; }
         public bool Eliminado { get; set; }
@@ -47,7 +47,9 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public bool B_Removido { get; set; }
         public DateTime D_FecRemovido { get; set; }
 
-        public int I_Periodo { get; set; }
+        public int I_TipPerID { get; set; }
+        public int I_TipAluID { get; set; }
+        public int I_TipGradoID { get; set; }
         public int I_ProcedenciaID { get; set; }
         public IList<CuotaPago> CuotasPago { get; set; }
         public IList<DetalleObligacion> DetalleObligaciones { get; set; }

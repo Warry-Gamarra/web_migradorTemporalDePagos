@@ -101,13 +101,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             string schemaDb = Schema.SetSchema(procedencia);
 
-            result_inicializarEstados = conceptoPagoRepository.InicializarEstadoValidacionCuotaPago((int)procedencia);
+            result_inicializarEstados = conceptoPagoRepository.InicializarEstadoValidacionCuotaPago(null, (int)procedencia);
 
-            result_duplicados = conceptoPagoRepository.ValidarDuplicadoConceptosPago((int)procedencia);
-            result_anio = conceptoPagoRepository.ValidarConceptosPagoObligSinAnioAsignado((int)procedencia);
-            result_periodo = conceptoPagoRepository.ValidarConceptosPagoObligSinPeriodoAsignado((int)procedencia);
-            result_cuotaPago = conceptoPagoRepository.ValidarConceptosPagoObligSinCuotaPago((int)procedencia);
-            result_equivalencias = conceptoPagoRepository.AsignarIdEquivalenciasConceptoPago((int)procedencia);
+            result_duplicados = conceptoPagoRepository.ValidarDuplicadoConceptosPago(null, (int)procedencia);
+            result_anio = conceptoPagoRepository.ValidarConceptosPagoObligSinAnioAsignado(null, (int)procedencia);
+            result_periodo = conceptoPagoRepository.ValidarConceptosPagoObligSinPeriodoAsignado(null, (int)procedencia);
+            result_cuotaPago = conceptoPagoRepository.ValidarConceptosPagoObligSinCuotaPago(null, (int)procedencia);
+            result_equivalencias = conceptoPagoRepository.AsignarIdEquivalenciasConceptoPago(null, (int)procedencia);
             result_catalogoConceptos = conceptoPagoRepository.GrabarTablaCatalogoConceptos((int)procedencia);
 
             result.IsDone = result_duplicados.IsDone &&
@@ -154,7 +154,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         public ConceptoPago ObtenerConRelaciones(int conceptoPagoID)
         {
             ConceptoPago conceptoPago = ConceptoPagoRepository.ObtenerPorId(conceptoPagoID);
-            conceptoPago.I_Periodo = _equivalenciaServices.ObtenerPeriodosAcademicos(conceptoPago.P).I_OpcionID;
 
             conceptoPago.CuotasPago = new List<CuotaPago>();
             conceptoPago.DetalleObligaciones = new List<DetalleObligacion>();
@@ -197,6 +196,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             Response result = new Response();
             ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+            conceptoPago.P = _equivalenciaServices.ObtenerPorId(conceptoPago.I_TipPerID).T_OpcionCod;
+
+            conceptoPagoRepository.InicializarEstadoValidacionCuotaPago(conceptoPago.I_RowID, conceptoPago.I_ProcedenciaID);
+
             switch ((ConceptoPagoObs)tipoObserv)
             {
                 case ConceptoPagoObs.Repetido:
@@ -214,10 +217,17 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                 case ConceptoPagoObs.ErrorConAnioCuota:
                     result = conceptoPagoRepository.SaveAnio(conceptoPago);
                     break;
-                case ConceptoPagoObs.ErroConPeriodoCuota:
+                case ConceptoPagoObs.ErrorConPeriodoCuota:
                     result = conceptoPagoRepository.SavePeriodo(conceptoPago);
                     break;
             }
+
+            conceptoPagoRepository.ValidarDuplicadoConceptosPago(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.ValidarConceptosPagoObligSinAnioAsignado(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.ValidarConceptosPagoObligSinPeriodoAsignado(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.ValidarConceptosPagoObligSinCuotaPago(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.AsignarIdEquivalenciasConceptoPago(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
+
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }

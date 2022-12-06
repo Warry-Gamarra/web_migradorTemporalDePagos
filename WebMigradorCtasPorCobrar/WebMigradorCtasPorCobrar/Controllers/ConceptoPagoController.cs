@@ -123,7 +123,12 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult Observaciones(int id)
         {
             var model = _observacionService.Obtener_ObservacionesConceptoPago(id);
+            ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
+
             ViewBag.RowID = id;
+
+            var fila = _conceptoPagoServiceMigracion.Obtener(id);
+            ViewBag.ErrorTitle = $"Cuota de pago {fila.Id_cp} - {fila.Descripcio}";
 
             return PartialView("_Observaciones", model);
         }
@@ -152,13 +157,13 @@ namespace WebMigradorCtasPorCobrar.Controllers
                 ViewBag.TipoObserv = obsID.ToString();
                 ViewBag.Observacion = _observacionService.ObtenerCatalogo(obsID).T_ObservDesc;
                 ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
-                                                  "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
+                                                  "I_OpcionID", "T_OpcionDesc", model.I_TipPerID);
 
-                ViewBag.TipoAlumno = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
-                                                  "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
+                ViewBag.TipoAlumno = new SelectList(_equivalenciasServices.ObtenerTipoAlumno(),
+                                                  "I_OpcionID", "T_OpcionDesc", model.I_TipAluID);
 
-                ViewBag.Grados = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
-                                                  "I_OpcionID", "T_OpcionDesc", model.I_Periodo);
+                ViewBag.Grados = new SelectList(_equivalenciasServices.ObtenerTipoGrado(),
+                                                  "I_OpcionID", "T_OpcionDesc", model.I_TipGradoID);
 
                 ViewBag.Procedencia = new SelectList(ListEnums.Procedencias(), "Value", "Descripcion", 
                                                      model.I_ProcedenciaID);
@@ -171,6 +176,8 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult Save(ConceptoPago model, int tipoObserv)
         {
             var result = _conceptoPagoServiceMigracion.Save(model, tipoObserv);
+
+            ViewBag.Reload = true;
 
             return PartialView("_Message", result);
         }
@@ -215,7 +222,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
                 case ConceptoPagoObs.ErrorConAnioCuota:
                     viewName = "_EditarAnio";
                     break;
-                case ConceptoPagoObs.ErroConPeriodoCuota:
+                case ConceptoPagoObs.ErrorConPeriodoCuota:
                     viewName = "_EditarPeriodo";
                     break;
             }

@@ -37,7 +37,7 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             SinAnio = 14,
             ErrorConAnioCuota = 15,
             SinPeriodo = 16,
-            ErroConPeriodoCuota = 17,
+            ErrorConPeriodoCuota = 17,
             SinCuotaPago = 18,
             SinCuotaMigrada = 19,
             Externo = 20

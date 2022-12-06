@@ -10,6 +10,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar
 {
     public class EquivalenciasServices
     {
+        public TC_CatalogoOpcion ObtenerPorId(int opcionID)
+        {
+            var result = CatalogoOpcionRepository.ObtenerOpcion(opcionID);
+
+            return result ?? new TC_CatalogoOpcion();
+        }
+
+
+
         public IEnumerable<TC_CategoriaPago> ObtenerCategoriasPago(string cod_bnc)
         {
             return CategoriaPagoRepository.Obtener().Where(x => x.N_CodBanco == cod_bnc);
@@ -42,6 +51,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar
             return result ?? new TC_CatalogoOpcion();
         }
 
+        public IEnumerable<TC_CatalogoOpcion> ObtenerTipoAlumno()
+        {
+            return CatalogoOpcionRepository.Obtener((int)Parametro.TipoAlumno);
+        }
+
+        public IEnumerable<TC_CatalogoOpcion> ObtenerTipoGrado()
+        {
+            return CatalogoOpcionRepository.Obtener((int)Parametro.Grado);
+        }
 
 
         public IEnumerable<VW_CarreraProfesional> ObtenerCarreraProfesional()
