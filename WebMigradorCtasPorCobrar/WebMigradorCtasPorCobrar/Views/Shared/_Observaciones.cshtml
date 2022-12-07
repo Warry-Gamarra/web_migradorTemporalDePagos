@@ -16,21 +16,21 @@
             <table class="table">
                 <thead class="thead-light">
                     <tr>
-                        <th>Tipo</th>
-                        <th>Descripción</th>
-                        <th>Fec. Registro</th>
-                        <th>Estado</th>
-                        <th></th>
+                        <th style="min-width:90px">Tipo</th>
+                        <th style="width:450px">Descripción</th>
+                        <th style="width:220px">Fec. Registro</th>
+                        <th style="width:70px">Estado</th>
+                        <th style="width:110px"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model)
                     {
                         <tr style="font-size:13px;">
-                            <td style="min-width:100px">@item.T_ObservCod</td>
-                            <td style="width:450px">@item.T_ObservDesc</td>
-                            <td style="width:180px">@item.D_FecRegistro</td>
-                            <td style="width:90px">
+                            <td>@item.T_ObservCod</td>
+                            <td>@item.T_ObservDesc</td>
+                            <td>@item.D_FecRegistro</td>
+                            <td>
                                 @if (item.B_Resuelto)
                                 {
                                     <span class="badge badge-pill badge-success"><i class="fa fa-check-circle"></i> Corregido</span>
@@ -40,7 +40,7 @@
                                     <span class="badge badge-pill badge-warning"><i class="fa fa-exclamation-circle"></i> Pendiente</span>
                                 }
                             </td>
-                            <td style="width:120px" class="text-right">
+                            <td class="text-right">
                                 @if (!item.B_Resuelto)
                                 {
                                     <a class="link-editar" href="javascript:;" data-url="@Url.Action("Editar",ViewBag.Controller, new { id = item.I_FilaTablaID, obsID = item.I_ObservID })"><i class="fa fa-pencil-square-o"></i> Corregir</a>

@@ -412,15 +412,15 @@ BEGIN
 		USING (SELECT @I_ObservID_sinAnio AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Cp_Pri 
 				WHERE (ANO IS NULL OR ANO = 0) 
-					   AND TIPO_OBLIG = 1 
+					  AND TIPO_OBLIG = 1 
 					  AND Eliminado = 0
 					  AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
 					   B_Resuelto = 0
-		WHEN NOT MATCHED BY TARGET THEN
+		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
 		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinAnio AND TRG.I_ProcedenciaID = @I_ProcedenciaID  
@@ -433,6 +433,8 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE I_Anio = TR_Cp_Pri.ANO AND Cuota_pago = TR_Cp_Pri.Cuota_pago) 
 				AND Tipo_oblig = 1
+				AND ANO IS NOT NULL
+				AND ANO <> 0
 				AND I_ProcedenciaID = @I_ProcedenciaID
 				AND Eliminado = 0
 				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
@@ -440,6 +442,8 @@ BEGIN
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_AnioDif AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE I_Anio = TR_Cp_Pri.Ano AND Cuota_pago = TR_Cp_Pri.Cuota_pago) 
+					  AND ANO IS NOT NULL
+					  AND ANO <> 0
 					  AND Tipo_oblig = 1 
 					  AND I_ProcedenciaID = @I_ProcedenciaID
 					  AND Eliminado = 0
@@ -448,10 +452,10 @@ BEGIN
 		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
 					   B_Resuelto = 0
-		WHEN NOT MATCHED BY TARGET THEN
+		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinAnio AND TRG.I_ProcedenciaID = @I_ProcedenciaID  
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_AnioDif AND TRG.I_ProcedenciaID = @I_ProcedenciaID  
 								   AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
 			UPDATE SET D_FecResuelto = GETDATE(),
 					   B_Resuelto = 1;
@@ -460,14 +464,15 @@ BEGIN
 		SET @I_Observados_sinAnio = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
 									 WHERE I_ObservID = @I_ObservID_sinAnio AND I_TablaID = @I_TablaID 
 										   AND I_ProcedenciaID = @I_ProcedenciaID
-										   AND I_FilaTablaID = IIF(@I_RowID IS NULL, I_FilaTablaID, @I_RowID)
+										   AND I_FilaTablaID = IIF(@I_RowID IS NULL, I_FilaTablaID, @I_RowID) 
+										   AND B_Resuelto = 0
 									)
 
 		SET @I_Observados_AnioDif = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
 									 WHERE I_ObservID = @I_ObservID_AnioDif AND I_TablaID = @I_TablaID 
 										   AND I_ProcedenciaID = @I_ProcedenciaID
 										   AND I_FilaTablaID = IIF(@I_RowID IS NULL, I_FilaTablaID, @I_RowID)
-
+										   AND B_Resuelto = 0
 									)
 
 		SET @B_Resultado = 1
@@ -521,14 +526,14 @@ BEGIN
 		USING (SELECT @I_ObservID_sinPer AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Cp_Pri WHERE (P IS NULL OR P = '') 
 									  AND TIPO_OBLIG = 1 
+									  AND I_ProcedenciaID = @I_ProcedenciaID 
 									  AND Eliminado = 0
-									  AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
 					   B_Resuelto = 0
-		WHEN NOT MATCHED BY TARGET THEN
+		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
 		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinPer AND TRG.I_ProcedenciaID = @I_ProcedenciaID
@@ -541,6 +546,7 @@ BEGIN
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE P = TR_Cp_Pri.P AND Cuota_pago = TR_Cp_Pri.Cuota_pago) 
+				AND (P IS NOT NULL AND P <> '')
 				AND TIPO_OBLIG = 1
 				AND I_ProcedenciaID = @I_ProcedenciaID
 				AND Eliminado = 0
@@ -549,6 +555,7 @@ BEGIN
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_PerDif AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE P = TR_Cp_Pri.P AND Cuota_pago = TR_Cp_Pri.Cuota_pago) 
+									  AND (P IS NOT NULL AND P <> '') 
 									  AND TIPO_OBLIG = 1
 									  AND Eliminado = 0
 									  AND I_ProcedenciaID = @I_ProcedenciaID
@@ -557,7 +564,7 @@ BEGIN
 		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
 					   B_Resuelto = 0
-		WHEN NOT MATCHED BY TARGET THEN
+		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
 		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_PerDif AND TRG.I_ProcedenciaID = @I_ProcedenciaID 

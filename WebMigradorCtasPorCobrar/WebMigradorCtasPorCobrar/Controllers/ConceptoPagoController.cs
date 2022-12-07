@@ -128,7 +128,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             ViewBag.RowID = id;
 
             var fila = _conceptoPagoServiceMigracion.Obtener(id);
-            ViewBag.ErrorTitle = $"Cuota de pago {fila.Id_cp} - {fila.Descripcio}";
+            ViewBag.ErrorTitle = $"Concepto de pago {fila.Id_cp} - {fila.Descripcio}";
 
             return PartialView("_Observaciones", model);
         }

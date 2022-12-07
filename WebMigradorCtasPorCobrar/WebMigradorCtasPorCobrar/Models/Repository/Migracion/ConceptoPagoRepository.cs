@@ -67,7 +67,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                 result = connection.Query<ConceptoPago>("SELECT cp_pri.*, (CAST(cp_des.cuota_pago as varchar) + ' - ' + cp_des.descripcio) AS cuota_pago_desc FROM dbo.TR_Cp_Pri cp_pri " +
                                                         "INNER JOIN TI_ObservacionRegistroTabla obs ON cp_pri.I_RowID = obs.I_FilaTablaID AND obs.I_TablaID = @I_TablaID " +
                                                         "INNER JOIN TR_Cp_Des cp_des ON cp_pri.cuota_pago = cp_des.cuota_pago AND cp_des.Eliminado = 0 " +
-                                                        "WHERE obs.I_ProcedenciaID = @I_ProcedenciaID AND obs.I_ObservID = @I_ObservID"
+                                                        "WHERE obs.I_ProcedenciaID = @I_ProcedenciaID AND obs.I_ObservID = @I_ObservID AND B_Resuelto = 0"
                                                         , new { I_ProcedenciaID = procedenciaID, I_TablaID = tablaID, I_ObservID = observacionID }
                                                         , commandType: CommandType.Text);
             }
@@ -147,7 +147,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -177,7 +177,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -207,7 +207,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -237,7 +237,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -267,7 +267,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -297,7 +297,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
