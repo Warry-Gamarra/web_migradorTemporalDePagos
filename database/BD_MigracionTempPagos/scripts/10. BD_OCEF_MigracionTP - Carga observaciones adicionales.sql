@@ -7,6 +7,10 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (45, 'El registro se encuentra con estado Eliminado y no será parte de la migración.', 'REMOVIDO', NULL)
 
 
+--cambio 20221212 
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (46, 'El concepto de pago contiene falso en el campo obligación.', 'NO OBLIGACION', NULL)
+
+
 GO
 
 

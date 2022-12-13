@@ -225,6 +225,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
                 case ConceptoPagoObs.ErrorConPeriodoCuota:
                     viewName = "_EditarPeriodo";
                     break;
+                case ConceptoPagoObs.NoObligacion:
+                    viewName = "_EditarEsObligacion";
+                    break;
             }
 
             model.CurrentID = viewName;

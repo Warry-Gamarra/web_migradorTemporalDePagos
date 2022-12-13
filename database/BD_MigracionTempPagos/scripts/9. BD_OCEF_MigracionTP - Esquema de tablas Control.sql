@@ -111,4 +111,5 @@ UPDATE TR_Cp_Pri
  GO
 
 
-
+ DELETE FROM TI_ObservacionRegistroTabla WHERE I_ProcedenciaID IS NULL
+ GO

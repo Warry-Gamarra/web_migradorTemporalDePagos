@@ -16,7 +16,8 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             SinModIng = 23,
             DniRepetido = 30,
             SexoErrado = 31,
-            DniExiste = 41
+            DniExiste = 41,
+            Removido = 45
         }
 
         public enum CuotaPagoObs
@@ -29,6 +30,7 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             SinPeriodo = 8,
             MásDeUnaCategoría = 9,
             SinCategoria = 10,
+            Removido = 45
         }
 
         public enum ConceptoPagoObs
@@ -40,7 +42,9 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             ErrorConPeriodoCuota = 17,
             SinCuotaPago = 18,
             SinCuotaMigrada = 19,
-            Externo = 20
+            Externo = 20,
+            NoObligacion = 46,
+            Removido = 45
         }
 
         public enum ObligacionesPagoObs
@@ -55,7 +59,8 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             ObsAnioDetalle =37,
             ObsPeriodoDetalle =38,
             ObsConceptoDetalle =38,
-            SinDetalle =40
+            SinDetalle =40,
+            Removido = 45
         }
 
         public enum DetalleObligacionObs
@@ -66,7 +71,8 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             ConceptoNoExiste = 35,
             CuotaConceptoNoCoincide = 42,
             AnioConceptoNoCoincide = 43,
-            PeriodoConceptoNoCoincide = 44
+            PeriodoConceptoNoCoincide = 44,
+            Removido = 45
         }
 
     }
