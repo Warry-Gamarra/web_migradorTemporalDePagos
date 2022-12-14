@@ -32,7 +32,10 @@
         columns.Add(c => c.Tipo_oblig).Css("text-center").Encoded(false).Sanitized(false).Titled("Obligación").Filterable(true)
                 .RenderValueAs(model => model.Tipo_oblig ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-info\"></i></span>")
                                                          : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
-        columns.Add(c => c.Nro_pagos).Titled("Nro Pagos").Filterable(true);
+        columns.Add(c => c.Eliminado).Css("text-center").Encoded(false).Sanitized(false).Titled("Eliminado").Filterable(true)
+                .RenderValueAs(model => model.Eliminado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-warning\"></i></span>")
+                                                         : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
+        //columns.Add(c => c.Nro_pagos).Titled("Nro Pagos").Filterable(true);
         columns.Add(c => c.Monto).Titled("Monto").Filterable(true);
         columns.Add(c => c.B_Migrable).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrable").Filterable(true)
                 .RenderValueAs(model => model.B_Migrable ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")

@@ -10,11 +10,13 @@
 <div class="col-12">
     <div class="row">
         <div class="col-12">
-            @using (Ajax.BeginForm("Save", "ConceptoPago", new { area = "" }, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "div_msg", OnBegin = "Load", OnSuccess = "Submited", OnComplete = "Stop" }))
+            @*@using (Ajax.BeginForm("Save", "ConceptoPago", new { area = "" }, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "div_msg", OnBegin = "Load", OnSuccess = "Submited", OnComplete = "Stop" }))*@
+            @using (Html.BeginForm("Save", "ConceptoPago", new { area = "" }, FormMethod.Post, new { id = "form_cppri" }))
             {
                 @Html.Hidden("submited", 0)
                 @Html.AntiForgeryToken()
                 @Html.HiddenFor(model => model.I_RowID)
+                @Html.HiddenFor(model => model.I_ProcedenciaID)
                 @Html.Hidden("tipoObserv", tipoObs)
 
                 <div class="form-row">
@@ -34,11 +36,11 @@
                 <div class="form-row">
                     <div class="form-group col-3">
                         @Html.Label("Año", new { @class = "col-form-label", @for = "I_Anio" })
-                        @Html.TextBoxFor(model => model.Ano, new { @class = "form-control form-control-sm" })
+                        @Html.TextBoxFor(model => model.Ano, new { @class = "form-control form-control-sm", autofocus = "true" })
                     </div>
                     <div class="form-group col-3">
-                        @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_Periodo" })
-                        @Html.DropDownListFor(model => model.I_Periodo, ViewBag.Periodos as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
+                        @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_TipPerID" })
+                        @Html.DropDownListFor(model => model.I_TipPerID, ViewBag.Periodos as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
                     </div>
                     <div class="form-group col-3">
                         @Html.Label("Monto", new { @class = "col-form-label", @for = "Monto" })
@@ -49,25 +51,19 @@
                         @Html.DropDownListFor(model => model.I_ProcedenciaID, ViewBag.Procedencia as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
                     </div>
                 </div>
-                @*<div class="form-row">
+                <div class="form-row">
                     <div class="form-group col-md-3 col-4">
-                        @Html.Label("Fecha Vencto", new { @class = "col-form-label", @for = "Fch_venc" })
-                        @Html.TextBoxFor(model => model.Fch_venc_s, new { @class = "form-control form-control-sm", @readonly = "true" })
+                        @Html.Label("Tipo de Alumno", new { @class = "col-form-label", @for = "I_TipAluID" })
+                        @Html.DropDownListFor(model => model.I_TipAluID, ViewBag.TipoAlumno as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
                     </div>
-                    <div class="form-group col-md-6 col-5">
-                        @Html.Label("Categoría (Equivalencia)", new { @class = "col-form-label", @for = "I_CatPagoID" })
-                        @Html.DropDownListFor(model => model.I_CatPagoID, ViewBag.CategoriasBnc as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
+                    <div class="form-group col-md-3 col-4">
+                        @Html.Label("Grado", new { @class = "col-form-label", @for = "Grado" })
+                        @Html.DropDownListFor(model => model.I_TipGradoID, ViewBag.Grados as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
                     </div>
-                    <div class="form-group col-md-3 col-3">
-                        <label>&nbsp;</label>
-                        <div class="form-check px-5 pt-2">
-                            @Html.CheckBoxFor(model => model.C_mora, new { @class = "form-check-input", disabled = "true" })
-                            @Html.Label("Mora", new { @class = "col-check-label" })
-                        </div>
-                    </div>
-                </div>*@
-
+                </div>
+                <br />
                 <div class="col-md-12" style="display:none" id="loading">
+
                     <h6>Actualizando los datos...</h6>
 
                     <div class="progress">
@@ -90,6 +86,51 @@
 <script>
     $('#error_title').hide();
     $('#error_descrip').html('@observ_descrip');
+
+    $('#Ano').select();
+
+    $("#btnsubmit").on('click', function (event) {
+        event.preventDefault();
+        var form = $('#form_cppri');
+        Swal.fire({
+            title: "¡Atención, posible incosistencia!",
+            text: "Se ha identificado que concepto de pago se encuentra asociada a más de un año.\n" +
+                "Al guardar, el año tomará el valor seleccionado y deberá corregir las cuotas de pago en las obligaciones relacionados.",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonColor: '#ff830f',
+            cancelButtonColor: '#3c3c3c',
+            confirmButtonText: "Sí, guardar cambios",
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: form[0].action,
+                    type: 'POST',
+                    data: form.serialize(),
+                    cache: false,
+                    beforeSend: function () {
+                        Load();
+                    },
+                    success: function (data) {
+                        Submited();
+                        $('#div_msg').html(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $('#form_cppri').append(`<div class="col-12">
+                                                    <div id="div-alert" class="mt-3">
+                                                        <div class="text-center alert alert-danger">
+                                                            <i class="fa fa-times">&nbsp;</i>${jqXHR.responseText}
+                                                        </div>
+                                                    </div>
+                                                </div>`);
+                    },
+                    complete: function () {
+                        $('#loading').hide();
+                    }
+                })
+            };
+        });
+    });
 
     $("form").submit(function () {
         if (parseInt($("#submited").val()) > 0) {

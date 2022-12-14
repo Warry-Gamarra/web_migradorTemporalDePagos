@@ -2,7 +2,7 @@
 
 <div class="col-12">
     <p class="h6 mt-3">Cuota de pago @Model.Cuota_pago en cp_pri</p>
-    <table class="table table-sm table-hover" style="font-size:12px;">
+    <table id="tbl_pri" class="table table-sm table-hover" style="font-size:12px;">
         <thead class="thead-dark">
             <tr>
                 <th>Cuota Pago</th>
@@ -36,8 +36,9 @@
             }
         </tbody>
     </table>
+    <br />
     <p class="h6 mt-3">Cuota de pago @Model.Cuota_pago en ec_obl</p>
-    <table class="table table-sm table-hover" style="font-size:12px;">
+    <table id="tbl_obl" class="table table-sm table-hover" style="font-size:12px;">
         <thead class="thead-dark">
             <tr>
                 <th>Cuota Pago</th>
@@ -56,9 +57,9 @@
             }
         </tbody>
     </table>
-
+    <br />
     <p class="h6 mt-3">Cuota de pago @Model.Cuota_pago en ec_det</p>
-    <table class="table table-sm table-hover" style="font-size:12px;">
+    <table id="tbl_det" class="table table-sm table-hover" style="font-size:12px;">
         <thead class="thead-dark">
             <tr>
                 <th>Cuota Pago</th>
@@ -86,10 +87,36 @@
                             <span class="badge badge-success"><i class="fa fa-check-circle"></i> Activo</span>
                         }
                     </td>
-
                 </tr>
             }
         </tbody>
     </table>
 </div>
 
+
+<script>
+    $(document).ready(function () {
+        $('#tbl_pri, #tbl_obl, #tbl_det').DataTable({
+            searching: false,
+            pageLength: 10,
+            lengthChange: false,
+            language: {
+                emptyTable: "No se encontraron registros",
+                info: "Mostrando _START_ - _END_ de _TOTAL_",
+                infoEmpty: "Mostrando 0 - 0 de 0 ",
+                infoFiltered: "(Filtrado de _MAX_ registros)",
+                lengthMenu: "Mostrar _MENU_ registros",
+                loadingRecords: "Cargando...",
+                processing: "",
+                search: "Buscar:",
+                zeroRecords: "No se encontró ningun registro",
+                paginate: {
+                    first: "Primero",
+                    last: "Último",
+                    next: "Siguiente",
+                    previous: "Anterior"
+                }
+            }
+        });
+    })
+</script>
