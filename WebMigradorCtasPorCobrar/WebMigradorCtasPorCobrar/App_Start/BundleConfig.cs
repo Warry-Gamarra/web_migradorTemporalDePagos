@@ -31,6 +31,9 @@ namespace WebMigradorCtasPorCobrar
             bundles.Add(new StyleBundle("~/content/sweetalert2").Include(
                 "~/Assets/sweetalert2/css/sweetalert2.min.css"));
 
+            bundles.Add(new StyleBundle("~/content/bootstrap4toggle").Include(
+                "~/Assets/bootstrap-toggle/css/bootstrap4-toggle.min.css"));
+
             bundles.Add(new StyleBundle("~/content/datatables").Include(
                 "~/Assets/datatables/css/datatables.min.css",
                 "~/Assets/datatables/css/dataTables.bootstrap4.min.css"));
@@ -50,6 +53,9 @@ namespace WebMigradorCtasPorCobrar
 
             bundles.Add(new ScriptBundle("~/bundles/sweetalert2").Include(
                 "~/Assets/sweetalert2/js/sweetalert2.min.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/bootstrap4toggle").Include(
+                "~/Assets/bootstrap-toggle/js/bootstrap4-toggle.min.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/datatables").Include(
                 "~/Assets/datatables/js/datatables.min.js",

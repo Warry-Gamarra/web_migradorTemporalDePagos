@@ -18,9 +18,13 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.Query<CuotaPago>("SELECT * FROM dbo.TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID"
-                                                        , new { I_ProcedenciaID = procedenciaID }
-                                                        , commandType: CommandType.Text);
+                result = connection.Query<CuotaPago>("SELECT cp_des.*, eq.T_OpcionDesc AS PeriodoDesc, eq2.T_CatPagoDesc AS CatPagoDesc " +
+                                                     "FROM dbo.TR_Cp_Des cp_des " +
+                                                          "LEFT JOIN VW_EquivalenciasCtasPorCobrar eq ON cp_des.I_Periodo = eq.I_opcionID " +
+                                                          "LEFT JOIN VW_CategoríasDePagoCtasPorCobrar eq2 ON cp_des.I_CatPagoID = eq2.I_CatPagoID " +
+                                                     "WHERE I_ProcedenciaID = @I_ProcedenciaID"
+                                                     , new { I_ProcedenciaID = procedenciaID }
+                                                     , commandType: CommandType.Text);
             }
 
             return result;
@@ -32,9 +36,13 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.QuerySingleOrDefault<CuotaPago>("SELECT * FROM dbo.TR_Cp_Des WHERE I_RowID = @I_RowID"
-                                                        , new { I_RowID = rowID }
-                                                        , commandType: CommandType.Text);
+                result = connection.QuerySingleOrDefault<CuotaPago>("SELECT cp_des.*, eq.T_OpcionDesc AS PeriodoDesc, eq2.T_CatPagoDesc AS CatPagoDesc " +
+                                                                    "FROM dbo.TR_Cp_Des cp_des " +
+                                                                         "LEFT JOIN VW_EquivalenciasCtasPorCobrar eq ON cp_des.I_Periodo = eq.I_opcionID " +
+                                                                         "LEFT JOIN VW_CategoríasDePagoCtasPorCobrar eq2 ON cp_des.I_CatPagoID = eq2.I_CatPagoID " +
+                                                                    "WHERE I_RowID = @I_RowID"
+                                                                    , new { I_RowID = rowID }
+                                                                    , commandType: CommandType.Text);
             }
 
             return result;
@@ -163,6 +171,36 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
                     connection.Execute("USP_U_MarcarRepetidosCuotaDePago", parameters, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response MarcarEliminadosCuotaPago(int? rowID, int procedenciaID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_U_MarcarConceptosPagoEliminados", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");

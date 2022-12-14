@@ -1,6 +1,6 @@
-﻿
-@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.ConceptoPago
+﻿@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.ConceptoPago
 @Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/bootstrap4toggle")
 
 @{
     string tipoObs = ViewBag.TipoObserv;
@@ -10,8 +10,7 @@
 <div class="col-12">
     <div class="row">
         <div class="col-12">
-            @*@using (Ajax.BeginForm("Save", "ConceptoPago", new { area = "" }, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "div_msg", OnBegin = "Load", OnSuccess = "Submited", OnComplete = "Stop" }))*@
-            @using (Html.BeginForm("Save", "ConceptoPago", new { area = "" }, FormMethod.Post, new { id = "form_cppri" }))
+            @using (Ajax.BeginForm("Save", "ConceptoPago", new { area = "" }, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "div_msg", OnBegin = "Load", OnSuccess = "Submited", OnComplete = "Stop" }))
             {
                 @Html.Hidden("submited", 0)
                 @Html.AntiForgeryToken()
@@ -36,7 +35,7 @@
                 <div class="form-row">
                     <div class="form-group col-3">
                         @Html.Label("Año", new { @class = "col-form-label", @for = "I_Anio" })
-                        @Html.TextBoxFor(model => model.Ano, new { @class = "form-control form-control-sm", autofocus = "true" })
+                        @Html.TextBoxFor(model => model.Ano, new { @class = "form-control form-control-sm", @readonly = "true" })
                     </div>
                     <div class="form-group col-3">
                         @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_TipPerID" })
@@ -59,6 +58,10 @@
                     <div class="form-group col-md-3 col-4">
                         @Html.Label("Grado", new { @class = "col-form-label", @for = "Grado" })
                         @Html.DropDownListFor(model => model.I_TipGradoID, ViewBag.Grados as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", disabled = "true" })
+                    </div>
+                    <div class="form-group col-md-3 col-4">
+                        @Html.Label("Tipo Obligacion", new { @class = "col-form-label", @for = "Grado", @style="display: block;" })
+                        @Html.CheckBoxFor(model => model.Tipo_oblig, new { @data_toggle = "toggle", @data_on = "SI", @data_off = "NO", @data_onstyle = "info", @data_offstyle = "secondary", @data_size = "sm" })
                     </div>
                 </div>
                 <br />
@@ -87,50 +90,6 @@
     $('#error_title').hide();
     $('#error_descrip').html('@observ_descrip');
 
-    $('#Ano').select();
-
-    $("#btnsubmit").on('click', function (event) {
-        event.preventDefault();
-        var form = $('#form_cppri');
-        Swal.fire({
-            title: "¡Atención, posible incosistencia!",
-            text: "Se ha identificado que concepto de pago se encuentra asociada a más de un año.\n" +
-                "Al guardar, el año tomará el valor seleccionado y deberá corregir las cuotas de pago en las obligaciones relacionados.",
-            type: "warning",
-            showCancelButton: true,
-            confirmButtonColor: '#ff830f',
-            cancelButtonColor: '#3c3c3c',
-            confirmButtonText: "Sí, guardar cambios",
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: form[0].action,
-                    type: 'POST',
-                    data: form.serialize(),
-                    cache: false,
-                    beforeSend: function () {
-                        Load();
-                    },
-                    success: function (data) {
-                        Submited();
-                        $('#div_msg').html(data);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        $('#form_cppri').append(`<div class="col-12">
-                                                    <div id="div-alert" class="mt-3">
-                                                        <div class="text-center alert alert-danger">
-                                                            <i class="fa fa-times">&nbsp;</i>${jqXHR.responseText}
-                                                        </div>
-                                                    </div>
-                                                </div>`);
-                    },
-                    complete: function () {
-                        $('#loading').hide();
-                    }
-                })
-            };
-        });
-    });
 
     $("form").submit(function () {
         if (parseInt($("#submited").val()) > 0) {

@@ -229,6 +229,10 @@
     <Content Include="Assets\bootstrap-datepicker\js\bootstrap-datepicker.es.js" />
     <Content Include="Assets\bootstrap-datepicker\js\bootstrap-datepicker.js" />
     <Content Include="Assets\bootstrap-datepicker\js\bootstrap-timepicker.js" />
+    <Content Include="Assets\bootstrap-toggle\css\bootstrap4-toggle.css" />
+    <Content Include="Assets\bootstrap-toggle\css\bootstrap4-toggle.min.css" />
+    <Content Include="Assets\bootstrap-toggle\js\bootstrap4-toggle.js" />
+    <Content Include="Assets\bootstrap-toggle\js\bootstrap4-toggle.min.js" />
     <Content Include="Assets\bootstrap\css\bootstrap-icons.css" />
     <Content Include="Assets\bootstrap\css\bootstrap.min.css" />
     <Content Include="Assets\bootstrap\js\bootstrap.min.js" />
@@ -463,6 +467,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Files\Help\ManualUsuario.pdf" />
+    <Content Include="Assets\bootstrap-toggle\js\bootstrap4-toggle.min.js.map" />
     <None Include="packages.config" />
     <Content Include="Views\Posgrado\ConceptoPago.cshtml" />
     <Content Include="Views\Posgrado\Obligacion.cshtml" />
@@ -517,7 +522,7 @@
     <Content Include="Views\CuotaPago\_OtrasTablas.cshtml" />
     <Content Include="Views\ConceptoPago\_EditarAnio.cshtml" />
     <Content Include="Views\ConceptoPago\_OtrasTablas.cshtml" />
-    <Content Include="Views\ConceptoPago\_EditarRepetido.cshtml" />
+    <Content Include="Views\ConceptoPago\_EditarEsObligacion.cshtml" />
     <Content Include="Views\ConceptoPago\_EditarCuotaPago.cshtml" />
     <Content Include="Views\ConceptoPago\_EditarPeriodo.cshtml" />
     <Content Include="Views\Shared\_ObservacionRegistro.cshtml" />

@@ -25,13 +25,15 @@
     {
         columns.Add(c => c.Cuota_pago).Titled("Codigo").Filterable(true);
         columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
+        columns.Add(c => c.I_Anio).Css("text-center").Titled("Año").Filterable(true);
+        columns.Add(c => c.PeriodoDesc).Css("text-center").Titled("Periodo").Filterable(true);
         columns.Add(c => c.N_cta_cte).Titled("Nro. Cuenta").Filterable(true);
         columns.Add(c => c.Codigo_bnc).Css("text-center").Titled("Cod. BNC").Filterable(true);
         columns.Add(c => c.Fch_venc).Css("text-center").RenderValueAs(model => model.Fch_venc.ToShortDateString()).Titled("Fec. Venc").Filterable(true);
-        columns.Add(c => c.Prioridad).Css("text-center").Titled("Prioridad").Filterable(true);
-        columns.Add(c => c.C_mora).Css("text-center").Encoded(false).Sanitized(false).Titled("Mora").Filterable(true)
-                .RenderValueAs(model => model.C_mora ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-info\"></i></span>")
-                                                     : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
+        //columns.Add(c => c.Prioridad).Css("text-center").Titled("Prioridad").Filterable(true);
+        //columns.Add(c => c.C_mora).Css("text-center").Encoded(false).Sanitized(false).Titled("Mora").Filterable(true)
+        //        .RenderValueAs(model => model.C_mora ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-info\"></i></span>")
+        //                                             : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
         columns.Add(c => c.Eliminado).Css("text-center").Encoded(false).Sanitized(false).Titled("Eliminado").Filterable(true)
                 .RenderValueAs(model => model.Eliminado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-warning\"></i></span>")
                                                         : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));

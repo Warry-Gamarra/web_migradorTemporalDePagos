@@ -145,15 +145,19 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             Response result_categorias = new Response();
             Response result_anio = new Response();
             Response result_periodo = new Response();
+            Response result_removido = new Response();
+
             string schemaDb = Schema.SetSchema(procedencia);
 
             result_InicializarEstados = cuotaPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPagoRowID, (int)procedencia);
             result_duplicados = cuotaPagoRepository.MarcarDuplicadosCuotaPago((int)procedencia);
+            result_removido = cuotaPagoRepository.MarcarEliminadosCuotaPago(cuotaPagoRowID, (int)procedencia);
             result_categorias = cuotaPagoRepository.AsignarCategoriaCuotaPago(cuotaPagoRowID, (int)procedencia);
             result_anio = cuotaPagoRepository.AsignarAnioCuotaPago(cuotaPagoRowID, (int)procedencia, schemaDb);
             result_periodo = cuotaPagoRepository.AsignarPeriodoCuotaPago(cuotaPagoRowID, (int)procedencia, schemaDb);
 
             result.IsDone = result_duplicados.IsDone &&
+                            result_removido.IsDone &&
                             result_categorias.IsDone &&
                             result_anio.IsDone &&
                             result_periodo.IsDone;
@@ -175,10 +179,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_periodo.Message}</p>" +
                              $"        </dd>" +
-                             //$"        <dt class=\"col-md-4 col-sm-6\">Observados por Años de ingreso</dt>" +
-                             //$"        <dd class=\"col-md-8 col-sm-6\">" +
-                             //$"            <p>{result_AnioIngresoAlumno.Message}</p>" +
-                             //$"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por estado eliminado</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_removido.Message}</p>" +
+                             $"        </dd>" +
                              //$"        <dt class=\"col-md-4 col-sm-6\">Observados por Modalidades de ingreso</dt>" +
                              //$"        <dd class=\"col-md-8 col-sm-6\">" +
                              //$"            <p>{result_ModIngresoAlumno.Message}</p>" +

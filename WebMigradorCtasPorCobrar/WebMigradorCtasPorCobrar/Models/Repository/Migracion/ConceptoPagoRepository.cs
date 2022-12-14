@@ -147,7 +147,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -198,6 +198,66 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
+        public Response ValidarEliminadoConceptosPago(int? rowID, int procedenciaID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_U_MarcarConceptosPagoEliminados", parameters, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response ValidarConceptosPagoNoObligacion(int? rowID, int procedenciaID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_U_MarcarConceptosPagoNoObligacion", parameters, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
         public Response ValidarConceptosPagoObligSinAnioAsignado(int? rowID, int procedenciaID)
         {
             Response result = new Response();
@@ -207,12 +267,42 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
                     connection.Execute("USP_U_MarcarConceptosPagoObligSinAnioAsignado", parameters, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response ValidarConceptosPagoConAnioDiferenteCuotaPago(int? rowID, int procedenciaID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_U_MarcarConceptosPagoConAnioDiferenteCuotaPago", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -237,12 +327,42 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
                     connection.Execute("USP_U_MarcarConceptosPagoObligSinPeriodoAsignado", parameters, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response ValidarConceptosPagoConPeriodoDiferenteCuotaPago(int? rowID, int procedenciaID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_U_MarcarConceptosPagoConPeriodoDiferenteCuotaPago", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -267,7 +387,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -297,7 +417,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    //parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -530,6 +650,36 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                 {
                     rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri SET I_Anio = @I_Anio WHERE I_RowID = @I_RowID;",
                                                   new { I_Anio = conceptoPago.P, I_RowID = conceptoPago.I_RowID },
+                                                  commandType: CommandType.Text);
+
+                    if (rowCount > 0)
+                    {
+                        result.IsDone = true;
+                        result.Message = "Año actualizado correctamente";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response SaveEstadoObligacion(ConceptoPago conceptoPago)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri SET Tipo_oblig = @TipoObligacion WHERE I_RowID = @I_RowID;",
+                                                  new { TipoObligacion = conceptoPago.Tipo_oblig, I_RowID = conceptoPago.I_RowID },
                                                   commandType: CommandType.Text);
 
                     if (rowCount > 0)
