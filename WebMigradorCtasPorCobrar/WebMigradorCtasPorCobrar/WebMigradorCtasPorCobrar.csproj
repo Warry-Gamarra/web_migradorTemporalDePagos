@@ -208,6 +208,7 @@
     <Compile Include="Models\Services\TemporalPagos\CuotaPagoService.cs" />
     <Compile Include="Models\Services\TemporalPagos\AlumnoService.cs" />
     <Compile Include="Models\Services\TemporalPagos\ObligacionService.cs" />
+    <Compile Include="Models\Services\UnfvRepositorio\AlumnoService.cs" />
     <Compile Include="Models\ViewModels\LoginViewModel.cs" />
     <Compile Include="Models\ViewModels\ObligacionAlumnoViewModel.cs" />
     <Compile Include="Models\ViewModels\ResponseViewModel.cs" />
@@ -462,6 +463,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Models\Repository\UnfvRepositorio\" />
     <Folder Include="Views\CajaPeriferica\" />
     <Folder Include="Views\Tasas\" />
   </ItemGroup>

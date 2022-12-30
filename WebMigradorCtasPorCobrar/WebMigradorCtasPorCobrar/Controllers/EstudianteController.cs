@@ -64,6 +64,11 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_DatosMigracion", model);
         }
 
+        public ActionResult RepositorioBD(Procedencia procedencia)
+        {
+            var model = _.Obtener(procedencia).OrderBy(x => x.T_NomCompleto);
+            return PartialView("_TemporalPagos", model);
+        }
 
         public ActionResult ProcesoMigracion(Procedencia procedencia)
         {

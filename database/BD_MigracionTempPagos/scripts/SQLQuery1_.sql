@@ -909,20 +909,20 @@ WHERE alu.I_ProcedenciaID = 1 AND obs.I_ObservID = 30
 	)
 
 	DECLARE @I_ProcedenciaID INT = 1
-	SET IDENTITY_INSERT ##TEMP_Persona ON
+	--SET IDENTITY_INSERT ##TEMP_Persona ON
 
-	INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
-	SELECT	DISTINCT A.I_PersonaID, LTRIM(RTRIM(REPLACE(P.C_NumDNI,' ', ' '))), P.C_CodTipDoc, P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, 
-			IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo), IIF(P.D_FecNac IS NULL, TA.D_FecNac, P.D_FecNac)
-	FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
-			INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID
-			INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
-	WHERE	P.B_Eliminado = 0 
-			AND A.B_Eliminado = 0
-			AND I_ProcedenciaID = @I_ProcedenciaID
-	ORDER BY A.I_PersonaID
+	--INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
+	--SELECT	DISTINCT A.I_PersonaID, LTRIM(RTRIM(REPLACE(P.C_NumDNI,' ', ' '))), P.C_CodTipDoc, P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, 
+	--		IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo), IIF(P.D_FecNac IS NULL, TA.D_FecNac, P.D_FecNac)
+	--FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
+	--		INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID
+	--		INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+	--WHERE	P.B_Eliminado = 0 
+	--		AND A.B_Eliminado = 0
+	--		AND I_ProcedenciaID = @I_ProcedenciaID
+	--ORDER BY A.I_PersonaID
 		
-	SET IDENTITY_INSERT ##TEMP_Persona OFF
+	--SET IDENTITY_INSERT ##TEMP_Persona OFF
 
 
 	DECLARE @I_TempPersonaID int
@@ -941,11 +941,11 @@ WHERE alu.I_ProcedenciaID = 1 AND obs.I_ObservID = 30
 						AND AL.T_ApeMaterno COLLATE Latin1_general_CI_AI = TP.T_ApeMaterno COLLATE Latin1_general_CI_AI 
 						AND AL.T_Nombre COLLATE Latin1_general_CI_AI = TP.T_Nombre COLLATE Latin1_general_CI_AI
 						--AND ISNULL(AL.D_FecNac, '') = ISNULL(TP.D_FecNac, '') 
-						AND ISNULL(AL.C_Sexo, '') = ISNULL(TP.C_Sexo, '') 
+						--AND ISNULL(AL.C_Sexo, '') = ISNULL(TP.C_Sexo, '') 
 		WHERE TP.I_PersonaID IS NULL
 	)
 
---	INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
+	INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
 	SELECT DISTINCT (@I_TempPersonaID + ROW_NUMBER() OVER(ORDER BY T_ApePaterno)) AS I_PersonaID, C_NumDNI, C_CodTipDoc, 
 			T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac
 	FROM   (SELECT	DISTINCT LTRIM(RTRIM(REPLACE(TA.C_NumDNI,' ', ' '))) C_NumDNI, 
@@ -981,6 +981,25 @@ WHERE alu.I_ProcedenciaID = 1 AND obs.I_ObservID = 30
 						WHERE B_Migrable = 1) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
 	WHERE  A.I_PersonaID IS NULL
 		AND TA.I_ProcedenciaID = @I_ProcedenciaID
+
+
+		SELECT * FROM ##TEMP_Persona TMP
+INNER JOIN (SELECT C_NumDNI FROM ##TEMP_Persona GROUP BY C_NumDNI HAVING COUNT(C_NumDNI) > 1) REP ON TMP.C_NumDNI = REP.C_NumDNI
+
+
+
+SELECT * FROM BD_UNFV_Repositorio.dbo.VW_Alumnos where C_NumDNI = '48486091'
+SELECT * FROM BD_OCEF_MigracionTP.dbo.TR_Alumnos where C_NumDNI = '48486091'
+
+SELECT * FROM BD_UNFV_Repositorio.dbo.VW_Alumnos where C_NumDNI = '42049718'
+SELECT * FROM BD_OCEF_MigracionTP.dbo.TR_Alumnos where C_NumDNI = '42049718'
+
+SELECT * FROM BD_UNFV_Repositorio.dbo.VW_Alumnos where C_NumDNI = '72168949'
+SELECT * FROM BD_OCEF_MigracionTP.dbo.TR_Alumnos where C_NumDNI = '72168949'
+
+SELECT * FROM BD_UNFV_Repositorio.dbo.VW_Alumnos where C_NumDNI = '75667604'
+SELECT * FROM BD_OCEF_MigracionTP.dbo.TR_Alumnos where C_NumDNI = '75667604'
+
 
 
 exec sp_change_users_login 'report'
