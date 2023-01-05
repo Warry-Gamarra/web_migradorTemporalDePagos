@@ -165,6 +165,8 @@
     <Compile Include="Models\Entities\Migracion\Obligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Observacion.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tabla.cs" />
+    <Compile Include="Models\Entities\UnfvRepositorio\Alumno.cs" />
+    <Compile Include="Models\Entities\UnfvRepositorio\Persona.cs" />
     <Compile Include="Models\Helpers\ListEnums.cs" />
     <Compile Include="Models\Helpers\Observaciones.cs" />
     <Compile Include="Models\Helpers\CtasPorCobrar.cs" />

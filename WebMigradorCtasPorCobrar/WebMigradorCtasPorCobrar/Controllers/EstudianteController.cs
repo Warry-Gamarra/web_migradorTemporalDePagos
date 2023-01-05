@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
-using WebMigradorCtasPorCobrar.Models.Services.Migracion;
+using UnfvRepositorio = WebMigradorCtasPorCobrar.Models.Services.UnfvRepositorio;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
@@ -18,14 +18,15 @@ namespace WebMigradorCtasPorCobrar.Controllers
     {
         private readonly TemporalPagos.AlumnoService _alumnoServiceTemporalPagos;
         private readonly Migracion.AlumnoService _alumnoServiceMigracion;
-        private readonly ObservacionService _observacionService;
+        private readonly UnfvRepositorio.AlumnoService _alumnoServiceUnfvRepositorio;
+        private readonly Migracion.ObservacionService _observacionService;
         private readonly EquivalenciasServices _equivalenciaService;
         
         public EstudianteController()
         {
             _alumnoServiceTemporalPagos = new TemporalPagos.AlumnoService();
             _alumnoServiceMigracion = new Migracion.AlumnoService();
-            _observacionService = new ObservacionService();
+            _observacionService = new Migracion.ObservacionService();
             _equivalenciaService = new EquivalenciasServices();
         }
 
@@ -66,7 +67,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult RepositorioBD(Procedencia procedencia)
         {
-            var model = _.Obtener(procedencia).OrderBy(x => x.T_NomCompleto);
+            var model = _alumnoServiceUnfvRepositorio.Obtener(procedencia).OrderBy(x => x.T_NomCompleto);
             return PartialView("_TemporalPagos", model);
         }
 
