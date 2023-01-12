@@ -166,6 +166,7 @@
     <Compile Include="Models\Entities\Migracion\Observacion.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tabla.cs" />
     <Compile Include="Models\Entities\UnfvRepositorio\Alumno.cs" />
+    <Compile Include="Models\Entities\UnfvRepositorio\AlumnoPersona.cs" />
     <Compile Include="Models\Entities\UnfvRepositorio\Persona.cs" />
     <Compile Include="Models\Helpers\ListEnums.cs" />
     <Compile Include="Models\Helpers\Observaciones.cs" />
@@ -200,6 +201,8 @@
     <Compile Include="Models\Helpers\Constant.cs" />
     <Compile Include="Models\Helpers\Procedencia.cs" />
     <Compile Include="Models\Helpers\Response.cs" />
+    <Compile Include="Models\Repository\UnfvRepositorio\AlumnoRepository.cs" />
+    <Compile Include="Models\Repository\UnfvRepositorio\PersonaRepository.cs" />
     <Compile Include="Models\Services\CtasPorCobrar\EquivalenciasServices.cs" />
     <Compile Include="Models\Services\Migracion\AlumnoService.cs" />
     <Compile Include="Models\Services\Migracion\ConceptoPagoService.cs" />
@@ -465,7 +468,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Models\Repository\UnfvRepositorio\" />
     <Folder Include="Views\CajaPeriferica\" />
     <Folder Include="Views\Tasas\" />
   </ItemGroup>
@@ -530,6 +532,12 @@
     <Content Include="Views\ConceptoPago\_EditarCuotaPago.cshtml" />
     <Content Include="Views\ConceptoPago\_EditarPeriodo.cshtml" />
     <Content Include="Views\Shared\_ObservacionRegistro.cshtml" />
+    <Content Include="Views\Estudiante\_UnfvRepositorio.cshtml" />
+    <Content Include="Views\Estudiante\_UnfvRepositorio_tab_personas.cshtml" />
+    <Content Include="Views\Estudiante\_UnfvRepositorio_tab_default.cshtml" />
+    <Content Include="Views\Estudiante\_UnfvRepositorio_tab_alumnos.cshtml" />
+    <Content Include="Views\Obligaciones\_DetalleObligacion.cshtml" />
+    <Content Include="Views\Obligaciones\_EditarObligacion.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

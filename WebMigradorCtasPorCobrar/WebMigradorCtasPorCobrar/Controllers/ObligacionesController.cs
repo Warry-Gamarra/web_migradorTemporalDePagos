@@ -76,9 +76,15 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
 
 
-        public ActionResult DatosMigracion(Procedencia procedencia)
+        public ActionResult DatosMigracion(Procedencia procedencia, int? tipo_obs)
         {
-            var model = _obligacionServiceMigracion.ObtenerObligaciones(procedencia);
+            var model = _obligacionServiceMigracion.ObtenerObligaciones(procedencia, tipo_obs);
+
+            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Ec_Obl, procedencia),
+                                                "I_ObservID", "T_ObservDesc", tipo_obs);
+
+            ViewBag.IdObservacion = tipo_obs;
+            ViewBag.Procedencia = procedencia;
 
             return PartialView("_DatosMigracion", model);
         }
@@ -100,6 +106,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_ResultadoCopiarRegistros", result);
         }
 
+
         [HttpPost]
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
@@ -107,6 +114,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             return PartialView("_ResultadoValidarRegistros", result);
         }
+
 
         [HttpPost]
         public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
@@ -117,9 +125,24 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
+        public ActionResult CargarDetalle(int id, Procedencia procedencia)
+        {
+            var model = _obligacionServiceMigracion.ObtenerObligacion(id, procedencia);
+
+            return PartialView("_DetalleObligacion", model);
+        }
+
+
         public ActionResult Observaciones(int id)
         {
             var model = _observacionService.Obtener_ObservacionesObligacion(id);
+
+            ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
+
+            ViewBag.RowID = id;
+
+            var fila = _obligacionServiceMigracion.ObtenerObligacion(id, null);
+            ViewBag.ErrorTitle = $"Obligación de pago {fila.Ano}-{fila.P} {fila.Cod_alu}";
 
             return PartialView("_Observaciones", model);
         }
@@ -127,8 +150,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult Editar(int id)
         {
 
-            return PartialView("_ProcesoMigracion");
+            return PartialView("_EditarObligacion");
         }
+
 
         [HttpPost]
         public ActionResult Save(int id)
@@ -136,6 +160,15 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             return PartialView("_ProcesoMigracion");
         }
+
+
+        public ActionResult ExportarObservaciones(int? id, Procedencia procedencia)
+        {
+            var model = _obligacionServiceMigracion.ObtenerDatosObservaciones(procedencia, id);
+
+            return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Observaciones-Obligaciones_{DateTime.Now.ToString("yyyyMMdd_hhmmss")}.xlsx");
+        }
+
 
     }
 }

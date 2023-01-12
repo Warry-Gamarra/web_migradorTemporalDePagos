@@ -68,7 +68,7 @@ BEGIN
 		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE()			 
 					  MERGE TR_Cp_Pri AS TRG
 					  USING (SELECT cp_pri.* FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_pri cp_pri 
-									  INNER JOIN BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des cp_des ON cp_pri.cuota_pago = cp_des.cuota_pago 
+									  LEFT JOIN BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des cp_des ON cp_pri.cuota_pago = cp_des.cuota_pago 
 									  WHERE cp_des.codigo_bnc IN (' + @T_Codigo_bnc + ') AND cp_des.Eliminado = 0) AS SRC
 					  ON	TRG.Id_cp = SRC.id_cp 
 						AND TRG.Cuota_pago = SRC.cuota_pago 

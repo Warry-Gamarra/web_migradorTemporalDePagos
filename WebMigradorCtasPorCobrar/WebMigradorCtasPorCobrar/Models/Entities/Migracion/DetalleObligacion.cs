@@ -15,6 +15,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public string P { get; set; }
         public bool Tipo_oblig { get; set; }
         public int Concepto { get; set; }
+        public string Concepto_desc { get; set; }
         public DateTime Fch_venc { get; set; }
         public string Nro_recibo { get; set; }
         public DateTime Fch_pago { get; set; }

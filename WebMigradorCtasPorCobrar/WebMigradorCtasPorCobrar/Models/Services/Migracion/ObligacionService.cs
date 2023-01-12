@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
@@ -11,11 +13,28 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
     public class ObligacionService
     {
-        public IEnumerable<Obligacion> ObtenerObligaciones(Procedencia procedencia)
+        public IEnumerable<Obligacion> ObtenerObligaciones(Procedencia procedencia, int? tipo_obsID)
         {
+            if (tipo_obsID.HasValue)
+            {
+                return ObligacionRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Ec_Obl);
+            }
+
             return ObligacionRepository.Obtener((int)procedencia);
         }
 
+
+        public Obligacion ObtenerObligacion(int obligacionID,Procedencia? procedencia)
+        {
+            var obligacion = ObligacionRepository.ObtenerPorID(obligacionID);
+
+            if (procedencia.HasValue)
+            {
+                obligacion.DetalleObligaciones = ObligacionRepository.ObtenerDetalle((int)procedencia, obligacionID).ToList();
+            }
+
+            return obligacion;
+        }
 
         public IEnumerable<Obligacion> ObtenerPorAlumno(string codAlu, string codRc)
         {
@@ -29,6 +48,23 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             return obligaciones;
+        }
+
+
+        public byte[] ObtenerDatosObservaciones(Procedencia procedencia, int? tipo_obsID)
+        {
+            XLWorkbook excel_book = new XLWorkbook();
+            MemoryStream result = new MemoryStream();
+
+            tipo_obsID = tipo_obsID.HasValue ? tipo_obsID : 0;
+            var data = ObligacionRepository.ObtenerReporteObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Ec_Obl);
+
+            var sheet = excel_book.Worksheets.Add(data, "Observaciones");
+            sheet.ColumnsUsed().AdjustToContents();
+
+            excel_book.SaveAs(result);
+
+            return result.ToArray();
         }
 
 

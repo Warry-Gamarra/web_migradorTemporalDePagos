@@ -19,6 +19,9 @@
             <i class="fa fa-file-excel-o"></i> Exportar Observaciones
         </a>
     </div>
+    <div id="spinner-loading" class="spinner-border text-info mx-4" role="status" style="display:none;">
+        <span class="sr-only">Loading...</span>
+    </div>
 </div>
 
 <div class="table-responsive" style="min-height: 300px; font-size: 13px;">
@@ -60,6 +63,7 @@
 
     $('#cboTipoObs').on('change', function () {
         $('#link-exportar').hide();
+        $('#spinner-loading').show();
         location.href = '@Url.Action(str_procedencia, "ConceptoPago", new { area = "", partial = "DatosMigracion" })' + '&tipo_obs=' + this.value;
     })
 

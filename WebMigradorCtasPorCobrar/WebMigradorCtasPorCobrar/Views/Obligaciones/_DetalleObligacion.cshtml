@@ -1,9 +1,10 @@
-﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Migracion.Observacion>
+﻿
+@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.Obligacion
 
 <div class="modal-header">
     <h5 class="modal-title">
-        Observaciones: 
-        <span id="error_title" style="font-size:1rem; vertical-align: text-bottom;">@ViewBag.ErrorTitle</span> 
+        Obligación : [@Model.Cuota_pago_desc  @Model.Ano - @Model.P ] Alumno: [ @Model.Cod_alu ]
+        <span id="error_title" style="font-size:1rem; vertical-align: text-bottom;">@ViewBag.ErrorTitle</span>
         <span id="error_descrip" class="d-inline-block text-truncate1" style="font-size:1rem; vertical-align: text-bottom;"></span>
     </h5>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -13,37 +14,41 @@
 <div class="modal-body">
     <div class="row" id="div_msg">
         <div class="col-12" id="tabla-errores">
-            <table class="table">
+            <table class="table" id ="tbl_det">
                 <thead class="thead-light">
                     <tr>
-                        <th style="min-width:90px">Tipo</th>
-                        <th style="width:450px">Descripción</th>
-                        <th style="width:220px">Fec. Registro</th>
-                        <th style="width:70px">Estado</th>
-                        <th style="width:110px"></th>
+                        <th style="min-width:200px">Concepto</th>
+                        <th style="width:60px" class="text-center">Cantidad</th>
+                        <th style="width:70px" class="text-center">Monto</th>
+                        <th style="width:120px" class="text-center">Estado pago</th>
+                        <th style="width:130px" class="text-center">Estado registro</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.DetalleObligaciones)
                     {
                         <tr style="font-size:13px;">
-                            <td>@item.T_ObservCod</td>
-                            <td>@item.T_ObservDesc</td>
-                            <td>@item.D_FecRegistro</td>
-                            <td>
-                                @if (item.B_Resuelto)
+                            <td>@item.Concepto_desc</td>
+                            <td class="text-right">@item.Cantidad</td>
+                            <td class="text-right">@item.Monto</td>
+                            <td class="text-center">
+                                @if (item.Pagado)
                                 {
-                                    <span class="badge badge-pill badge-success"><i class="fa fa-check-circle"></i> Corregido</span>
+                                    <span class="badge badge-pill badge-success"><i class="fa fa-check-circle"></i> pagado</span>
                                 }
                                 else
                                 {
                                     <span class="badge badge-pill badge-warning"><i class="fa fa-exclamation-circle"></i> Pendiente</span>
                                 }
                             </td>
-                            <td class="text-right">
-                                @if (!item.B_Resuelto)
+                            <td class="text-center">
+                                @if (item.Eliminado)
                                 {
-                                    <a class="link-editar" href="javascript:;" data-url="@Url.Action("Editar",ViewBag.Controller, new { id = item.I_FilaTablaID, obsID = item.I_ObservID })"><i class="fa fa-pencil-square-o"></i> Corregir</a>
+                                    <span class="badge badge-pill badge-secondary"><i class="fa fa-minus-circle"></i> Eliminado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-pill badge-info"><i class="fa fa-check-circle"></i> Activo</span>
                                 }
                             </td>
                         </tr>
@@ -60,8 +65,8 @@
 
 </div>
 <div id="main_modal_footer" class="modal-footer">
-@*<div id="main_modal_footer" class="modal-footer" style="justify-content:space-between">
-    <button type="button" id="btn_addObs" class="btn btn-info" data-dismiss="modal" data-url="@Url.Action("AgregarObservacion", ViewBag.Controller, new { id = ViewBag.RowID })"><i class="fa fa-plus"></i> Agregar</button>*@
+    @*<div id="main_modal_footer" class="modal-footer" style="justify-content:space-between">
+        <button type="button" id="btn_addObs" class="btn btn-info" data-dismiss="modal" data-url="@Url.Action("AgregarObservacion", ViewBag.Controller, new { id = ViewBag.RowID })"><i class="fa fa-plus"></i> Agregar</button>*@
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
 </div>
 
@@ -99,7 +104,7 @@
                 $('#processing').show();
                 $('#tabla-errores').hide()
                 $('#main_modal_footer').hide();
-           },
+            },
             success: function (data) {
                 $('#edit-target').html(data);
                 $('#edit-target').show()
@@ -113,4 +118,28 @@
 
         });
     })
+
+    $('#tbl_det').DataTable({
+        searching: false,
+        pageLength: 9,
+        lengthChange: false,
+        language: {
+            emptyTable: "No se encontraron registros",
+            info: "Mostrando _START_ - _END_ de _TOTAL_",
+            infoEmpty: "Mostrando 0 - 0 de 0 ",
+            infoFiltered: "(Filtrado de _MAX_ registros)",
+            lengthMenu: "Mostrar _MENU_ registros",
+            loadingRecords: "Cargando...",
+            processing: "",
+            search: "Buscar:",
+            zeroRecords: "No se encontró ningun registro",
+            paginate: {
+                first: "Primero",
+                last: "Último",
+                next: "Siguiente",
+                previous: "Anterior"
+            }
+        }
+    });
+
 </script>

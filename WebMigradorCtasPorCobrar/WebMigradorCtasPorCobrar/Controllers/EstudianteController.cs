@@ -26,6 +26,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             _alumnoServiceTemporalPagos = new TemporalPagos.AlumnoService();
             _alumnoServiceMigracion = new Migracion.AlumnoService();
+            _alumnoServiceUnfvRepositorio = new UnfvRepositorio.AlumnoService();
             _observacionService = new Migracion.ObservacionService();
             _equivalenciaService = new EquivalenciasServices();
         }
@@ -65,10 +66,22 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_DatosMigracion", model);
         }
 
-        public ActionResult RepositorioBD(Procedencia procedencia)
+        public ActionResult RepositorioBD(Procedencia procedencia, string tab)
         {
-            var model = _alumnoServiceUnfvRepositorio.Obtener(procedencia).OrderBy(x => x.T_NomCompleto);
-            return PartialView("_TemporalPagos", model);
+            switch (tab)
+            {
+                case "personas":
+                    var personas = _alumnoServiceUnfvRepositorio.ObtenerPersonas(procedencia).OrderBy(x => x.T_NomCompleto);
+                    return PartialView("_UnfvRepositorio_tab_personas", personas);
+
+                case "alumnos":
+                    var alumnos = _alumnoServiceUnfvRepositorio.ObtenerAlumnos(procedencia).OrderBy(x => x.C_RcCod);
+                    return PartialView("_UnfvRepositorio_tab_alumnos", alumnos);
+
+                default:
+                    var model = _alumnoServiceUnfvRepositorio.Obtener(procedencia).OrderBy(x => x.T_NomCompleto);
+                    return PartialView("_UnfvRepositorio_tab_default", model);
+            }
         }
 
         public ActionResult ProcesoMigracion(Procedencia procedencia)

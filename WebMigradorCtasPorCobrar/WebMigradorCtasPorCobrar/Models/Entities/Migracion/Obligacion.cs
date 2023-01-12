@@ -13,6 +13,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public string Cod_alu { get; set; }
         public string Cod_RC { get; set; }
         public int Cuota_pago { get; set; }
+        public string Cuota_pago_desc { get; set; }
         public bool Tipo_oblig { get; set; }
         public DateTime Fch_venc { get; set; }
         public decimal Monto { get; set; }
@@ -32,8 +33,13 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
 
         public Obligacion()
         {
-
         }
+
+        public Obligacion(IEnumerable<DetalleObligacion> detalle)
+        {
+            this.DetalleObligaciones = detalle.ToList();
+        }
+
 
         public Obligacion(TemporalPagos.Obligacion obligacion)
         {
