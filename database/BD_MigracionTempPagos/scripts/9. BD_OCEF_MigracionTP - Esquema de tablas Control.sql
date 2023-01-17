@@ -116,3 +116,17 @@ GO
 
 DELETE FROM TI_ObservacionRegistroTabla WHERE I_TablaID = 3
 GO
+
+
+
+--- Cambio observaciones obligación y reasignación de ids 20230116
+
+DELETE TI_ObservacionRegistroTabla WHERE I_TablaID = 5
+
+DECLARE @I_MAX_ObsTablaID bigint 
+SET @I_MAX_ObsTablaID = (SELECT max(I_ObsTablaID) + 1 FROM TI_ObservacionRegistroTabla)
+
+DBCC CHECKIDENT('TI_ObservacionRegistroTabla', RESEED, @I_MAX_ObsTablaID)
+
+SELECT IDENT_CURRENT('TI_ObservacionRegistroTabla')
+

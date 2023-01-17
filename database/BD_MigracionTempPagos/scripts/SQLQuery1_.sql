@@ -1061,3 +1061,33 @@ SELECT PER.* FROM  BD_UNFV_Repositorio..TC_Persona PER INNER JOIN (
 SELECT C_NumDNI, count(*) cantidad FROM BD_UNFV_Repositorio..TC_Persona where C_NumDNI is not null group by C_NumDNI having COUNT(*) > 1
 ) REP ON PER.C_NumDNI = REP.C_NumDNI 
 ORDER BY PER.C_NumDNI
+
+
+
+select * from TR_Ec_Obl WHERE B_Migrado = 1
+
+SELECT * FROM VW_ObservacionesTabla WHERE T_TablaNom = 'TR_Ec_obl'
+SELECT * FROM VW_ObservacionesTabla WHERE T_TablaNom = 'TR_Ec_det'
+
+
+
+select count(*) from TI_ObservacionRegistroTabla
+select max(I_ObsTablaID) from TI_ObservacionRegistroTabla
+
+select * from TC_CatalogoTabla 
+
+
+
+
+SELECT IDENT_CURRENT('TI_ObservacionRegistroTabla')
+
+DELETE TI_ObservacionRegistroTabla WHERE I_TablaID = 5
+
+DECLARE @I_MAX_ObsTablaID bigint 
+SET @I_MAX_ObsTablaID = (SELECT max(I_ObsTablaID) + 1 FROM TI_ObservacionRegistroTabla)
+
+DBCC CHECKIDENT('TI_ObservacionRegistroTabla', RESEED, @I_MAX_ObsTablaID)
+
+SELECT IDENT_CURRENT('TI_ObservacionRegistroTabla')
+
+SELECT * FROM TC_CatalogoObservacion

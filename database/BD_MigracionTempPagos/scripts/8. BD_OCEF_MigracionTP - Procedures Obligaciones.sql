@@ -405,7 +405,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY 
 		UPDATE	TR_Ec_Det 
-		   SET	B_Actualizado = 0, 
+		   SET	B_Actualizado = IIF(B_Actualizado = 1, B_Actualizado, 0), 
 				B_Migrable = 1, 
 				D_FecMigrado = NULL, 
 				B_Migrado = 0
@@ -548,7 +548,8 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID 
+								   AND TRG.I_TablaID = SRC.I_TablaID  THEN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM TR_Ec_Obl OBL
