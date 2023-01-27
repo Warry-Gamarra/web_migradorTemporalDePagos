@@ -1,0 +1,26 @@
+﻿Correcciones al aplicativo de migracion
+
+- Mostrar vista de los registros migrados en base de datos de cuentas por cobrar
+
+
+CONCEPTOS DE PAGO
+- (CUDED) Obs la cuota de pago no fue migrada. No diferencia entre codigos de cuotas de pago habilitados y deshabilitados (331, 439, 438)
+- Revisar cuando se realiza la validacion de datos de obligaciones modifica el estado de las observaciones en conceptos de pago y cuotas de pago. Hacer el script de obligaciones más específico
+- Revisar que en cuentas por cobrar los codigos de concepto no hayan sido alterados.
+- Realzar una validación en la vista de ctas por cobrar dentro de la aplicacion de migración
+
+
+CUOTAS DE PAGO
+- Mostrar consulta de cuotas de pago en  base de datos ctas por cobrar
+- Revisar que las observaciones de las cuotas de pago no se borren al realizar la validación de obligaciones ni detalle de obligaciones
+
+
+ALUMNOS
+- Revisar script y realizar la migración de alumnos
+- Validar en ctas por cobrar los repetidos para evitar duplicidad
+- crear la vista del repositorio de ctas por cobrar
+
+
+OBLIGACIONES
+- Migracion de obligaciones realizarlo en dos etapas: < 2020 y  2020 < 2023
+- Dentro del detalle de la obligación mostrar 2 pestañas: Conceptos y pago

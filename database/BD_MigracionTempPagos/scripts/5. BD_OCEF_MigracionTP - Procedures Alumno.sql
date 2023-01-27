@@ -226,10 +226,10 @@ BEGIN
 		SET @I_Removidos = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
 		
 		SET @T_SQL = 'SELECT A.* FROM BD_OCEF_TemporalPagos.dbo.alumnos A 
-					  INNER JOIN (SELECT DISTINCT Cod_alu, Cod_rc FROM BD_OCEF_TemporalPagos.' + @T_schemaDb + '.ec_pri) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc 
+					  INNER JOIN (SELECT DISTINCT Cod_alu, Cod_rc FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_pri) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc 
 					  UNION 
 					  SELECT A.* FROM BD_OCEF_TemporalPagos.dbo.alumnos A 
-					  INNER JOIN (SELECT DISTINCT Cod_alu, Cod_rc FROM BD_OCEF_TemporalPagos.' + @T_schemaDb + '.ec_obl) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc '
+					  INNER JOIN (SELECT DISTINCT Cod_alu, Cod_rc FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl) O ON A.C_CODALU = O.cod_alu AND A.C_RCCOD = O.cod_rc '
 
 		exec sp_executesql @T_SQL
 		SET @I_CantAlu_schema = @@ROWCOUNT
