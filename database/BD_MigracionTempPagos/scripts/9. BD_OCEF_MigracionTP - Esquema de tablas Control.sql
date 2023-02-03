@@ -129,4 +129,20 @@ SET @I_MAX_ObsTablaID = (SELECT max(I_ObsTablaID) + 1 FROM TI_ObservacionRegistr
 DBCC CHECKIDENT('TI_ObservacionRegistroTabla', RESEED, @I_MAX_ObsTablaID)
 
 SELECT IDENT_CURRENT('TI_ObservacionRegistroTabla')
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TC_CarreraProfesionalProcedencia')
+	DROP TABLE TC_CarreraProfesionalProcedencia
+GO
+
+CREATE TABLE TC_CarreraProfesionalProcedencia
+(
+	C_CodRc  varchar(3),
+	I_ProcedenciaID tinyint,
+	T_Descripcion  varchar(100),
+	N_Grado char(1),
+	CONSTRAINT PK_CarreraProfesionalProcedencia PRIMARY KEY (C_CodRc),
+	CONSTRAINT PK_CarreraProfesionalProcedencia_Procedencia FOREIGN KEY (I_ProcedenciaID) REFERENCES TC_ProcedenciaData(I_ProcedenciaID)
+)
 

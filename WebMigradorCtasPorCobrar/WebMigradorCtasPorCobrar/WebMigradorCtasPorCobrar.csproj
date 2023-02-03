@@ -154,6 +154,7 @@
     <Compile Include="Models\Databases.cs" />
     <Compile Include="Models\Entities\Config\Password.cs" />
     <Compile Include="Models\Entities\Config\User.cs" />
+    <Compile Include="Models\Entities\CtasPorCobrar\VW_Proceso.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\TC_CatalogoOpcion.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\TC_CategoriaPago.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\TC_Concepto.cs" />
@@ -176,6 +177,7 @@
     <Compile Include="Models\Repository\CtasPorCobrar\CatalogoOpcionRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\CarreraProfesionalRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\CategoriaPagoRepository.cs" />
+    <Compile Include="Models\Repository\CtasPorCobrar\ConceptoRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\ProcesoRepositoty.cs" />
     <Compile Include="Models\Repository\Migracion\AlumnoRepository.cs" />
@@ -203,6 +205,7 @@
     <Compile Include="Models\Helpers\Response.cs" />
     <Compile Include="Models\Repository\UnfvRepositorio\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\UnfvRepositorio\PersonaRepository.cs" />
+    <Compile Include="Models\Services\CtasPorCobrar\ProcesoServices.cs" />
     <Compile Include="Models\Services\CtasPorCobrar\EquivalenciasServices.cs" />
     <Compile Include="Models\Services\Migracion\AlumnoService.cs" />
     <Compile Include="Models\Services\Migracion\ConceptoPagoService.cs" />
@@ -539,6 +542,7 @@
     <Content Include="Views\Estudiante\_UnfvRepositorio_tab_alumnos.cshtml" />
     <Content Include="Views\Obligaciones\_DetalleObligacion.cshtml" />
     <Content Include="Views\Obligaciones\_EditarObligacion.cshtml" />
+    <Content Include="Views\CuotaPago\_CtasPorCobrarProcesos.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

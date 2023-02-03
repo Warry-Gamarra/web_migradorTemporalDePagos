@@ -1091,3 +1091,29 @@ DBCC CHECKIDENT('TI_ObservacionRegistroTabla', RESEED, @I_MAX_ObsTablaID)
 SELECT IDENT_CURRENT('TI_ObservacionRegistroTabla')
 
 SELECT * FROM TC_CatalogoObservacion
+
+
+select * from BD_UNFV_Repositorio.dbo.VW_CarreraProfesional where C_CodFac = 'ET'
+select * from BD_UNFV_Repositorio.dbo.TC_GradoAcademico
+
+
+select distinct cod_rc from BD_OCEF_TemporalPagos.eupg.ec_obl where isnumeric(cod_rc) = 1
+
+select * from BD_UNFV_Repositorio.dbo.TI_CarreraProfesional where C_RcCod in (
+'010',
+'070',
+'103',
+'064',
+'020')
+
+select distinct cod_rc, ano from BD_OCEF_TemporalPagos.eupg.ec_obl where cod_rc in (
+'010',
+'070',
+'103',
+'064',
+'020')
+
+truncate table TC_CarreraProfesionalProcedencia
+
+
+SELECT * FROM TC_CarreraProfesionalProcedencia

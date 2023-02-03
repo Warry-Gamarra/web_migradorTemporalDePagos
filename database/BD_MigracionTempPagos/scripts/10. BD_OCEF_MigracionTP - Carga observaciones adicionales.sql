@@ -21,3 +21,27 @@ UPDATE tb_obs
 GO
 
 
+
+--cambio 20230116
+
+DECLARE @I_ProcedenciaID tinyint = 0
+
+--PREGRADO
+SET @I_ProcedenciaID = 1
+INSERT INTO TC_CarreraProfesionalProcedencia (C_CodRc, I_ProcedenciaID, T_Descripcion, N_Grado)
+	 SELECT C_RcCod, @I_ProcedenciaID, T_CarProfDesc, N_Grado FROM BD_UNFV_Repositorio.dbo.VW_CarreraProfesional
+	  WHERE N_Grado = 1 AND C_CodFac <> 'ET'
+
+--POSGRADO
+SET @I_ProcedenciaID = 2
+INSERT INTO TC_CarreraProfesionalProcedencia (C_CodRc, I_ProcedenciaID, T_Descripcion, N_Grado)
+	 SELECT C_RcCod, @I_ProcedenciaID, T_CarProfDesc, N_Grado FROM BD_UNFV_Repositorio.dbo.VW_CarreraProfesional
+	  WHERE N_Grado IN (2, 3)
+
+
+--CUDED
+SET @I_ProcedenciaID = 3
+INSERT INTO TC_CarreraProfesionalProcedencia (C_CodRc, I_ProcedenciaID, T_Descripcion, N_Grado)
+	 SELECT C_RcCod, @I_ProcedenciaID, T_CarProfDesc, N_Grado FROM BD_UNFV_Repositorio.dbo.VW_CarreraProfesional
+	  WHERE N_Grado = 1 AND C_CodFac = 'ET'
+

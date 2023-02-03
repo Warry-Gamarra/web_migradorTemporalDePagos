@@ -18,6 +18,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
     {
         private readonly TemporalPagos.CuotaPagoService _cuotaPagoServiceTemporalPagos;
         private readonly Migracion.CuotaPagoService _cuotaPagoServiceMigracion;
+        private readonly ProcesoServices _cuotaPagoServiceCtasPorCobrar;
         private readonly EquivalenciasServices _equivalenciasServices;
         private readonly ObservacionService _observacionService;
 
@@ -25,6 +26,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             _cuotaPagoServiceTemporalPagos = new TemporalPagos.CuotaPagoService();
             _cuotaPagoServiceMigracion = new Migracion.CuotaPagoService();
+            _cuotaPagoServiceCtasPorCobrar = new ProcesoServices();
             _observacionService = new ObservacionService();
             _equivalenciasServices = new EquivalenciasServices();
         }
@@ -67,6 +69,12 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             var model = _cuotaPagoServiceTemporalPagos.Obtener(procedencia);
             return PartialView("_TemporalPagos", model);
+        }
+
+        public ActionResult CtasPorCobrar(Procedencia procedencia)
+        {
+            var model = _cuotaPagoServiceCtasPorCobrar.Obtener(procedencia);
+            return PartialView("_CtasPorCobrarProcesos", model);
         }
 
 
