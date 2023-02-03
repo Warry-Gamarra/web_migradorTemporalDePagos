@@ -138,6 +138,12 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_Observaciones", model);
         }
 
+        public ActionResult VerDetalleMigracion(int? id, int cuota_pago)
+        {
+
+            return PartialView("_VerDetalleMigracion");
+        }
+
         public ActionResult Editar(int id, int obsID)
         {
             var model = _cuotaPagoServiceMigracion.ObtenerConRelaciones(id);

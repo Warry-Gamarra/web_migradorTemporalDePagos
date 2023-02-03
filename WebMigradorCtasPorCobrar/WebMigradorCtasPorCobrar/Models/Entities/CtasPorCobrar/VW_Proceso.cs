@@ -24,6 +24,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.CtasPorCobrar
         public int I_TipoAlumno { get; set; }
         public string T_TipoAlumno { get; set; }
         public string C_TipoAlumno { get; set; }
+        public int Cuota_Pago { get; set; }
         public bool B_Migrado { get; set; }
         public int? I_MigracionTablaID { get; set; }
         public int? I_MigracionRowID { get; set; }

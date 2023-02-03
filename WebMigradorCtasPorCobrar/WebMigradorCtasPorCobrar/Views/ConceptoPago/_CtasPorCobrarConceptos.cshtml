@@ -1,5 +1,5 @@
 ﻿
-@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.CtasPorCobrar.VW_Proceso>
+@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.CtasPorCobrar.TI_ConceptoPago>
 @using GridMvc.Html
 
 
@@ -14,6 +14,7 @@
         columns.Add(c => c.I_Anio).Css("text-center").Titled("Año").Filterable(true);
         columns.Add(c => c.T_PeriodoDesc).Css("text-center").Titled("Periodo").Filterable(true);
         columns.Add(c => c.T_ProcesoDesc).Titled("Nom. proceso").Filterable(true);
+        //columns.Add(c => c.N_CodBanco).Css("text-center").Titled("Cod. BNC").Filterable(true);
         columns.Add(c => c.D_FecVencto).Css("text-center").RenderValueAs(model => model.D_FecVencto.Value.ToShortDateString()).Titled("Fec. Venc").Filterable(true);
         columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrado").Filterable(true)
                 .RenderValueAs(model => model.B_Migrado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
