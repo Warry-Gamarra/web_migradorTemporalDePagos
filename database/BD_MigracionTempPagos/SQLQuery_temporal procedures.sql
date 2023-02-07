@@ -21,9 +21,10 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY
-		SELECT RA.C_CodAlu, A.C_CodAlu, RA.C_RcCod, A.C_RcCod, RA.C_NumDNI, A.C_NumDNI, iif(LTRIM(RTRIM(REPLACE(RA.C_NumDNI,' ', ' '))) = LTRIM(RTRIM(REPLACE(A.C_NumDNI,' ', ' '))), 1, 0) FROM BD_UNFV_Repositorio.dbo.VW_Alumnos RA
-		INNER JOIN TR_Alumnos A ON RA.C_CodAlu = A.C_CodAlu AND RA.C_RcCod = A.C_RcCod
-		WHERE iif(LTRIM(RTRIM(REPLACE(RA.C_NumDNI,' ', ' '))) = LTRIM(RTRIM(REPLACE(A.C_NumDNI,' ', ' '))), 1, 0) = 0
+		SELECT RA.C_CodAlu, A.C_CodAlu, RA.C_RcCod, A.C_RcCod, RA.C_NumDNI, A.C_NumDNI, iif(LTRIM(RTRIM(REPLACE(RA.C_NumDNI,' ', ' '))) = LTRIM(RTRIM(REPLACE(A.C_NumDNI,' ', ' '))), 1, 0) 
+		  FROM BD_UNFV_Repositorio.dbo.VW_Alumnos RA
+			   INNER JOIN TR_Alumnos A ON RA.C_CodAlu = A.C_CodAlu AND RA.C_RcCod = A.C_RcCod
+		 WHERE IIF(LTRIM(RTRIM(REPLACE(RA.C_NumDNI,' ', ' '))) = LTRIM(RTRIM(REPLACE(A.C_NumDNI,' ', ' '))), 1, 0) = 0
 		
 		SELECT  C_RcCod, C_CodAlu, A.C_NumDNI, C_CodTipDoc, A.T_ApePaterno, A.T_ApeMaterno, A.T_Nombre, I_ProcedenciaID, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso
 		INTO #NumDoc_Repetidos_nombres_diferentes

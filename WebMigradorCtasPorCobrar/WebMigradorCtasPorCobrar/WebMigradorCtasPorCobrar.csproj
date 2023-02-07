@@ -205,6 +205,7 @@
     <Compile Include="Models\Helpers\Response.cs" />
     <Compile Include="Models\Repository\UnfvRepositorio\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\UnfvRepositorio\PersonaRepository.cs" />
+    <Compile Include="Models\Services\CtasPorCobrar\ConceptoPagoServices.cs" />
     <Compile Include="Models\Services\CtasPorCobrar\ProcesoServices.cs" />
     <Compile Include="Models\Services\CtasPorCobrar\EquivalenciasServices.cs" />
     <Compile Include="Models\Services\Migracion\AlumnoService.cs" />
@@ -546,6 +547,7 @@
     <Content Include="Views\CuotaPago\_CtasPorCobrarProcesos.cshtml" />
     <Content Include="Views\ConceptoPago\_CtasPorCobrarConceptos.cshtml" />
     <Content Include="Views\CuotaPago\_VerDetalleMigracion.cshtml" />
+    <Content Include="Views\Estudiante\_RepositorioAlumnos.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

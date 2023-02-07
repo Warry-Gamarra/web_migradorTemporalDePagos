@@ -2,25 +2,24 @@
 @model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.CtasPorCobrar.TI_ConceptoPago>
 @using GridMvc.Html
 
-
+.
 <div class="table-responsive" style="min-height:300px; font-size: 13px;">
     @Html.Grid(Model).Columns(columns =>
     {
         columns.Add(c => c.T_TablaNom).Css("text-center").Titled("Tabla origen").Filterable(true);
-        columns.Add(c => c.T_TipoAlumno).Css("text-center").Titled("Tipo de Alumno").Filterable(true);
-        columns.Add(c => c.T_CatPagoDesc).Css("text-truncate").Titled("Categoría").Filterable(true);
+        columns.Add(c => c.T_ConceptoPagoDesc).Css("text-center").Titled("Concepto de pago").Filterable(true);
+        columns.Add(c => c.I_ConcPagID).Css("text-truncate").Titled("Cod Concepto").Filterable(true);
         columns.Add(c => c.I_ProcesoID).Titled("ID Proc.").Filterable(true);
-        columns.Add(c => c.Cuota_Pago).Titled("Cuota Pago").Filterable(true);
-        columns.Add(c => c.I_Anio).Css("text-center").Titled("Año").Filterable(true);
-        columns.Add(c => c.T_PeriodoDesc).Css("text-center").Titled("Periodo").Filterable(true);
         columns.Add(c => c.T_ProcesoDesc).Titled("Nom. proceso").Filterable(true);
+        columns.Add(c => c.I_Anio).Titled("Año").Filterable(true);
+        columns.Add(c => c.T_PeriodoDesc).Css("text-center").Titled("Periodo").Filterable(true);
+        columns.Add(c => c.M_Monto).Css("text-center").Titled("Periodo").Filterable(true);
         //columns.Add(c => c.N_CodBanco).Css("text-center").Titled("Cod. BNC").Filterable(true);
-        columns.Add(c => c.D_FecVencto).Css("text-center").RenderValueAs(model => model.D_FecVencto.Value.ToShortDateString()).Titled("Fec. Venc").Filterable(true);
         columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrado").Filterable(true)
                 .RenderValueAs(model => model.B_Migrado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
                                                         : Html.Raw("<span class=\"h5\"><i class=\"fa fa-exclamation-triangle text-warning\"></i></span>"));
         columns.Add().SetWidth(120).Css("text-right").Encoded(false).Sanitized(false)
-                     .RenderValueAs(model => @Html.Raw($"<a href=\"{ Url.Action("VerDetalleMigracion", "CuotaPago", new { id = model.I_MigracionRowID, cp = model.Cuota_Pago, area = "" })}\" class=\"modal-link-lg\">" +
+                     .RenderValueAs(model => @Html.Raw($"<a href=\"{ Url.Action("VerDetalleMigracion", "ConceptoPago", new { id = model.I_MigracionRowID, cp = model.I_ConcPagID, area = "" })}\" class=\"modal-link-lg\">" +
                                                        $"  <i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver Registro</span>" +
                                                        $"</a>"));
         }

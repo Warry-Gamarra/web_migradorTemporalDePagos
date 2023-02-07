@@ -49,6 +49,12 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.CtasPorCobrar
         public DateTime? D_FecCre { get; set; }
         public int? I_UsuarioMod { get; set; }
         public DateTime? D_FecMod { get; set; }
+        public bool B_Migrado { get; set; }
+        public int? I_MigracionTablaID { get; set; }
+        public int? I_MigracionRowID { get; set; }
+        public string T_TablaNom { get; set; }
+        public string T_PeriodoDesc { get; set; }
+        public string T_ProcesoDesc { get; set; }
 
     }
 }

@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
+using CtasPorCobrar = WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
@@ -19,6 +20,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
     {
         private readonly TemporalPagos.ConceptoPagoService _conceptoPagoServiceTemporalPagos;
         private readonly Migracion.ConceptoPagoService _conceptoPagoServiceMigracion;
+        private readonly CtasPorCobrar.ConceptoPagoServices _conceptoPagoServiceCtasPorCobrar;
         private readonly EquivalenciasServices _equivalenciasServices;
         private readonly ObservacionService _observacionService;
 
@@ -26,6 +28,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             _conceptoPagoServiceTemporalPagos = new TemporalPagos.ConceptoPagoService();
             _conceptoPagoServiceMigracion = new Migracion.ConceptoPagoService();
+            _conceptoPagoServiceCtasPorCobrar = new CtasPorCobrar.ConceptoPagoServices();
             _observacionService = new ObservacionService();
             _equivalenciasServices = new EquivalenciasServices();
         }
@@ -70,6 +73,13 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             var model = _conceptoPagoServiceTemporalPagos.Obtener(procedencia);
             return PartialView("_TemporalPagos", model);
+        }
+
+
+        public ActionResult CtasPorCobrar(Procedencia procedencia)
+        {
+            var model = _conceptoPagoServiceCtasPorCobrar.Obtener(procedencia);
+            return PartialView("_CtasPorCobrarProcesos", model);
         }
 
 

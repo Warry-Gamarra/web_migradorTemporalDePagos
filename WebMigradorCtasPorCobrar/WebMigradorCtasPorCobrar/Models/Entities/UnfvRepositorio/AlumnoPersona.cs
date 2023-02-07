@@ -35,6 +35,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.UnfvRepositorio
         public int? I_IdPlan { get; set; }
         public bool B_Habilitado { get; set; }
         public int? I_DependenciaID { get; set; }
+        public bool B_Migrado { get; set; }
 
         public AlumnoPersona()
         {
