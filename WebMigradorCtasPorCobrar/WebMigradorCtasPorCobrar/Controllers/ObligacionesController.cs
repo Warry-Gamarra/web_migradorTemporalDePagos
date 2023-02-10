@@ -75,6 +75,14 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
+        public ActionResult CtasPorCobrar(Procedencia procedencia)
+        {
+            var model = _obligacionServiceTemporalPagos.ObtenerObligaciones(procedencia);
+            ViewBag.Procedencia = procedencia;
+
+            return PartialView("_CtasPorCobrarObligaciones", model);
+        }
+
 
         public ActionResult DatosMigracion(Procedencia procedencia, int? tipo_obs)
         {

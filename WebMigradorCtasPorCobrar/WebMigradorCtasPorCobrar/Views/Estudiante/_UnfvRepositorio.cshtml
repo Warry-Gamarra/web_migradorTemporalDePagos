@@ -1,1 +1,97 @@
-﻿
+﻿@{
+    string str_tab = ViewBag.Tab.ToString();
+    string str_procedencia = ViewBag.Procedencia.ToString();
+}
+
+
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button type="button" class="nav-link nav-fill" id="nav-default-tab" data-toggle="tab" data-target="#nav-default" role="tab" aria-controls="nav-default" aria-selected="true">Inicio</button>
+        <button type="button" class="nav-link nav-fill" id="nav-alumnos-tab" data-toggle="tab" data-target="#nav-alumnos" role="tab" aria-controls="nav-alumnos" aria-selected="false">Alumnos</button>
+        <button type="button" class="nav-link nav-fill" id="nav-personas-tab" data-toggle="tab" data-target="#nav-personas" role="tab" aria-controls="nav-personas" aria-selected="false">Personas</button>
+    </div>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+    <div class="tab-pane fade py-4 px-2" id="nav-default" role="tabpanel" aria-labelledby="nav-default-tab">
+        nav-default
+    </div>
+    <div class="tab-pane fade py-4 px-2" id="nav-alumnos" role="tabpanel" aria-labelledby="nav-alumnos-tab">
+        nav-alumnos
+    </div>
+    <div class="tab-pane fade py-4 px-2" id="nav-personas" role="tabpanel" aria-labelledby="nav-personas-tab">
+        nav-personas
+    </div>
+</div>
+
+<script>
+    $('#btn-tp').removeClass('active');
+    $('#btn-rep').addClass('active');
+    $('#btn-mg').removeClass('active');
+    $('#btn-proc').removeClass('active');
+
+    if ('@str_tab' === '') {
+        $('#nav-personas-tab').removeClass('show active');
+        $('#nav-alumnos-tab').removeClass('show active');
+        $('#nav-default-tab').addClass('show active');
+    }
+
+    load_data('@str_tab');
+
+    let active_tab;
+
+    $('#nav-tab > .nav-link.nav-fill').on('click', function () {
+        if ($(this).data('target') === '#nav-alumnos') {
+            active_tab = 'alumnos';
+        }
+        else if ($(this).data('target') === '#nav-personas') {
+            active_tab = 'personas';
+        }
+        else {
+            active_tab = '@str_tab';
+        }
+
+        load_data(active_tab);
+    })
+
+    function load_data(active_tab) {
+        debugger
+        $.ajax({
+            url: '@Url.Action("TabRepositorioBD", "Estudiante", new { area = "", procedencia = str_procedencia })' + '&tab=' + active_tab,
+            type: "GET",
+            cache: false,
+            async: false,
+            beforeSend: function () {
+
+            },
+            success: function (data) {
+                debugger
+                if (active_tab === 'personas') {
+                    $('#nav-personas').addClass('show active');
+                    $('#nav-alumnos').removeClass('show active');
+                    $('#nav-default').removeClass('show active');
+
+                    $('#nav-personas').html(data);
+                }
+                else if (active_tab === 'alumnos') {
+                    $('#nav-personas').removeClass('show active');
+                    $('#nav-alumnos').addClass('show active');
+                    $('#nav-default').removeClass('show active');
+
+                    $('#nav-alumnos').html(data);
+                }
+                else {
+                    $('#nav-personas').removeClass('show active');
+                    $('#nav-alumnos').removeClass('show active');
+                    $('#nav-default').addClass('show active');
+
+                    $('#nav-default').html(data);
+                }
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+
+</script>

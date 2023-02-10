@@ -22,6 +22,7 @@ else
         </div>
     </div>
 }
+
 @helper RenderGridBody()
 {
     if (!Model.ItemsToDisplay.Any())
@@ -54,6 +55,7 @@ else
         }
     }
 }
+
 @helper RenderGridHeader()
 {
     <tr>
@@ -64,6 +66,7 @@ else
         }
     </tr>
 }
+
 @helper RenderGridFooter()
 {
     <div class="grid-footer">

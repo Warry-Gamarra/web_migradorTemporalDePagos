@@ -9,11 +9,11 @@
         columns.Add(c => c.T_TablaNom).Css("text-center").Titled("Tabla origen").Filterable(true);
         columns.Add(c => c.T_TipoAlumno).Css("text-center").Titled("Tipo de Alumno").Filterable(true);
         columns.Add(c => c.T_CatPagoDesc).Css("text-truncate").Titled("Categoría").Filterable(true);
-        columns.Add(c => c.I_ProcesoID).Titled("ID Proc.").Filterable(true);
         columns.Add(c => c.Cuota_Pago).Titled("Cuota Pago").Filterable(true);
+        columns.Add(c => c.I_ProcesoID).Titled("ID Proc.").Filterable(true);
+        columns.Add(c => c.T_ProcesoDesc).Titled("Nom. proceso").Filterable(true);
         columns.Add(c => c.I_Anio).Css("text-center").Titled("Año").Filterable(true);
         columns.Add(c => c.T_PeriodoDesc).Css("text-center").Titled("Periodo").Filterable(true);
-        columns.Add(c => c.T_ProcesoDesc).Titled("Nom. proceso").Filterable(true);
         columns.Add(c => c.D_FecVencto).Css("text-center").RenderValueAs(model => model.D_FecVencto.Value.ToShortDateString()).Titled("Fec. Venc").Filterable(true);
         columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrado").Filterable(true)
                 .RenderValueAs(model => model.B_Migrado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
@@ -29,7 +29,8 @@
 
 <script>
     $('#btn-tp').removeClass('active');
-    $('#btn-mg').addClass('active');
+    $('#btn-cpp').addClass('active');
+    $('#btn-mg').removeClass('active');
     $('#btn-proc').removeClass('active');
 
 </script>

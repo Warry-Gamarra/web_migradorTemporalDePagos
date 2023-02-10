@@ -79,7 +79,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult CtasPorCobrar(Procedencia procedencia)
         {
             var model = _conceptoPagoServiceCtasPorCobrar.Obtener(procedencia);
-            return PartialView("_CtasPorCobrarProcesos", model);
+            return PartialView("_CtasPorCobrarConceptos", model);
         }
 
 

@@ -1,1 +1,18 @@
-﻿
+﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.UnfvRepositorio.Persona>
+@using GridMvc.Html
+
+<div class="table-responsive" style="min-height:300px; font-size: 13px;">
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(c => c.C_NumDNI).Titled("Codigo").Filterable(true);
+        columns.Add(c => c.T_ApePaterno).Titled("Cod RC").Filterable(true);
+        columns.Add(c => c.T_ApeMaterno).Titled("Apellido paterno").Filterable(true);
+        columns.Add(c => c.T_Nombre).Titled("Apellido nombre").Filterable(true);
+        //columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false)
+        //       .RenderValueAs(model => model.B_Migrado ? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>") : Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
+        //       .Titled("Migrado").Filterable(true);
+        columns.Add().SetWidth(100).Css("text-right").Encoded(false).Sanitized(false)
+               .RenderValueAs(model => Html.Raw($"<a href=\"{ Url.Action("VerDatos", "Estudiante", new { id = model.C_NumDNI, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-id-card\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver</span></a>"));
+    }).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+</div>
+

@@ -68,21 +68,35 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult RepositorioBD(Procedencia procedencia, string tab)
         {
+            ViewBag.Tab = string.IsNullOrEmpty(tab) ? "": tab;
+            ViewBag.Procedencia = procedencia;
+
+            return PartialView("_UnfvRepositorio"); 
+        }
+
+        public ActionResult TabRepositorioBD(Procedencia procedencia, string tab)
+        {
             switch (tab)
             {
                 case "personas":
                     var personas = _alumnoServiceUnfvRepositorio.ObtenerPersonas(procedencia).OrderBy(x => x.T_NomCompleto);
+
                     return PartialView("_UnfvRepositorio_tab_personas", personas);
 
                 case "alumnos":
-                    var alumnos = _alumnoServiceUnfvRepositorio.ObtenerAlumnos(procedencia).OrderBy(x => x.C_RcCod);
+                    var alumnos = _alumnoServiceUnfvRepositorio.Obtener(procedencia).OrderBy(x => x.C_RcCod);
+                    ViewBag.Alumnos = "show active";
+
                     return PartialView("_UnfvRepositorio_tab_alumnos", alumnos);
 
                 default:
                     var model = _alumnoServiceUnfvRepositorio.Obtener(procedencia).OrderBy(x => x.T_NomCompleto);
+                    ViewBag.Default = "show active";
+
                     return PartialView("_UnfvRepositorio_tab_default", model);
             }
         }
+
 
         public ActionResult ProcesoMigracion(Procedencia procedencia)
         {

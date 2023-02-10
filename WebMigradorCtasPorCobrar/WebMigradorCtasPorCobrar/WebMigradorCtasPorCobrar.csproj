@@ -547,7 +547,7 @@
     <Content Include="Views\CuotaPago\_CtasPorCobrarProcesos.cshtml" />
     <Content Include="Views\ConceptoPago\_CtasPorCobrarConceptos.cshtml" />
     <Content Include="Views\CuotaPago\_VerDetalleMigracion.cshtml" />
-    <Content Include="Views\Estudiante\_RepositorioAlumnos.cshtml" />
+    <Content Include="Views\Obligaciones\_CtasPorCobrarObligaciones.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using WebMigradorCtasPorCobrar.Models.Entities.UnfvRepositorio;
 using WebMigradorCtasPorCobrar.Models.Helpers;
+using WebMigradorCtasPorCobrar.Models.Repository.UnfvRepositorio;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.UnfvRepositorio
 {
@@ -16,26 +17,17 @@ namespace WebMigradorCtasPorCobrar.Models.Services.UnfvRepositorio
 
         public IEnumerable<AlumnoPersona> Obtener(Procedencia procedencia)
         {
-            List<AlumnoPersona> result = new List<AlumnoPersona>();
-
-
-            return result;
+            return AlumnoRepository.Obtener((int)procedencia);
         }
 
-        public IEnumerable<Alumno> ObtenerAlumnos(Procedencia procedencia)
+        //public IEnumerable<Alumno> ObtenerAlumnos(Procedencia procedencia)
+        //{
+        //    return new IAsyncResult = '');
+        //}
+
+        public IEnumerable<Persona> ObtenerPersonas(Procedencia procedenciaID)
         {
-            List<Alumno> result = new List<Alumno>();
-
-
-            return result;
-        }
-
-        public IEnumerable<Persona> ObtenerPersonas(Procedencia procedencia)
-        {
-            List<Persona> result = new List<Persona>();
-
-
-            return result;
+            return PersonaRepository.Obtener((int)procedenciaID);
         }
 
         public AlumnoPersona ObtenerAlumno(string codRc, string codAlu)

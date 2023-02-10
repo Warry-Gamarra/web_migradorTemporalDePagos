@@ -33,7 +33,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.UnfvRepositorio
             return result;
         }
 
-        public static IEnumerable<AlumnoPersona> Obtener()
+        public static IEnumerable<AlumnoPersona> Obtener(int procedenciaID)
         {
             IEnumerable<AlumnoPersona> result;
             string command;

@@ -11,6 +11,29 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.UnfvRepositorio
 {
     public class PersonaRepository
     {
+        public static IEnumerable<Persona> Obtener(int procedenciaID)
+        {
+            IEnumerable<Persona> result;
+            string command;
+
+            try
+            {
+                using (var _dbConnection = new SqlConnection(Databases.RepositorioUnfvConnectionString))
+                {
+                    command = "SELECT * FROM TC_Persona WHERE B_Eliminado = 0";
+
+                    result = _dbConnection.Query<Persona>(command, new { I_ProcedenciaID = procedenciaID }, commandType: CommandType.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return result;
+        }
+
+
         public static IEnumerable<Persona> ObtenerPorDocumento(string codTipDoc, string numDNI)
         {
             IEnumerable<Persona> result;
