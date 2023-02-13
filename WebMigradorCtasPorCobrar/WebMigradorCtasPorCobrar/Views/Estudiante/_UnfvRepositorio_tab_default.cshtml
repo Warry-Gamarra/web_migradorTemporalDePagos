@@ -1,18 +1,56 @@
 ﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.UnfvRepositorio.AlumnoPersona>
-@using GridMvc.Html
 
 <div class="table-responsive" style="min-height:300px; font-size: 13px;">
-    @Html.Grid(Model).Columns(columns =>
-    {
-        columns.Add(c => c.C_CodAlu).Titled("Codigo").Filterable(true);
-        columns.Add(c => c.C_RcCod).Titled("Cod RC").Filterable(true);
-        columns.Add(c => c.T_NomCompleto).Titled("Nombre completo").Filterable(true);
-        columns.Add(c => c.C_NumDNI).Titled("Num. Doc.").Filterable(true);
-        columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false)
-               .RenderValueAs(model => model.B_Migrado ? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>") : Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
-               .Titled("Migrado").Filterable(true);
-        columns.Add().SetWidth(100).Css("text-right").Encoded(false).Sanitized(false)
-               .RenderValueAs(model => Html.Raw($"<a href=\"{ Url.Action("VerDatos", "Estudiante", new { id = model.C_CodAlu, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-id-card\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver</span></a>"));
-    }).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+    <table id="tbl_default" class="table table-sm table-hover" style="font-size:12px;">
+        <thead class="thead-light">
+            <tr>
+                <th>Codigo</th>
+                <th>Cod RC</th>
+                <th>Nombre completo</th>
+                <th>Num. Doc.</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.C_CodAlu</td>
+                    <td>@item.C_RcCod</td>
+                    <td>@item.T_NomCompleto</td>
+                    <td>@item.C_NumDNI</td>
+                    <td>@item.B_Migrado</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 
+
+<script>
+    $(document).ready(function () {
+        $('#tbl_default').DataTable({
+            searching: true,
+            pageLength: 20,
+            lengthChange: false,
+            language: {
+                emptyTable: "No se encontraron registros",
+                info: "Mostrando _START_ - _END_ de _TOTAL_",
+                infoEmpty: "Mostrando 0 - 0 de 0 ",
+                infoFiltered: "(Filtrado de _MAX_ registros)",
+                lengthMenu: "Mostrar _MENU_ registros",
+                loadingRecords: "Cargando...",
+                processing: "",
+                search: "Buscar:",
+                zeroRecords: "No se encontró ningun registro",
+                paginate: {
+                    first: "Primero",
+                    last: "Último",
+                    next: "Siguiente",
+                    previous: "Anterior"
+                }
+            }
+        });
+    });
+
+</script>

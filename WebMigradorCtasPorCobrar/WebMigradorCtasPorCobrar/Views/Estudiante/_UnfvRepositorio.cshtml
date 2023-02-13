@@ -3,13 +3,24 @@
     string str_procedencia = ViewBag.Procedencia.ToString();
 }
 
-
 <nav>
-    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button type="button" class="nav-link nav-fill" id="nav-default-tab" data-toggle="tab" data-target="#nav-default" role="tab" aria-controls="nav-default" aria-selected="true">Inicio</button>
-        <button type="button" class="nav-link nav-fill" id="nav-alumnos-tab" data-toggle="tab" data-target="#nav-alumnos" role="tab" aria-controls="nav-alumnos" aria-selected="false">Alumnos</button>
-        <button type="button" class="nav-link nav-fill" id="nav-personas-tab" data-toggle="tab" data-target="#nav-personas" role="tab" aria-controls="nav-personas" aria-selected="false">Personas</button>
-    </div>
+    <ul class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link" id="nav-default-tab" data-toggle="tab" data-target="#nav-default" role="tab" aria-controls="nav-default" aria-selected="true">
+                Inicio
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="nav-alumnos-tab" data-toggle="tab" data-target="#nav-alumnos" role="tab" aria-controls="nav-alumnos" aria-selected="false">
+                Alumnos
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="nav-personas-tab" data-toggle="tab" data-target="#nav-personas" role="tab" aria-controls="nav-personas" aria-selected="false">
+                Personas
+            </a>
+        </li>
+    </ul>
 </nav>
 <div class="tab-content" id="nav-tabContent">
     <div class="tab-pane fade py-4 px-2" id="nav-default" role="tabpanel" aria-labelledby="nav-default-tab">
@@ -39,7 +50,7 @@
 
     let active_tab;
 
-    $('#nav-tab > .nav-link.nav-fill').on('click', function () {
+    $('#nav-tab .nav-link').on('click', function () {
         if ($(this).data('target') === '#nav-alumnos') {
             active_tab = 'alumnos';
         }
@@ -54,17 +65,19 @@
     })
 
     function load_data(active_tab) {
-        debugger
         $.ajax({
             url: '@Url.Action("TabRepositorioBD", "Estudiante", new { area = "", procedencia = str_procedencia })' + '&tab=' + active_tab,
             type: "GET",
             cache: false,
             async: false,
             beforeSend: function () {
-
+                $('#nav-tabContent .tab-pane').html(`<div class="d-flex justify-content-center">
+                                                         <div class="spinner-border text-info" role="status">
+                                                             <span class="sr-only">Loading...</span>
+                                                         </div>
+                                                     </div>`)
             },
             success: function (data) {
-                debugger
                 if (active_tab === 'personas') {
                     $('#nav-personas').addClass('show active');
                     $('#nav-alumnos').removeClass('show active');
@@ -87,9 +100,15 @@
                     $('#nav-default').html(data);
                 }
             },
-            error: function () {
-
-            }
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#nav-tabContent .tab-pane').html(`<div class="col-12">
+                                                         <div id="div-alert" class="mt-3">
+                                                             <div class="text-center alert alert-danger">
+                                                                 <i class="fa fa-times">&nbsp;</i>${jqXHR.responseText}
+                                                             </div>
+                                                         </div>
+                                                     </div>`);
+            },
         })
     }
 
