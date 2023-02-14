@@ -20,8 +20,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 result = connection.Query<Obligacion>("SELECT ec_obl.*, '(' + CAST(cp_des.cuota_pago as varchar) + ') ' + cp_des.Descripcio AS Cuota_pago_desc " +
                                                         "FROM TR_Ec_obl ec_obl " +
-                                                             "LEFT JOIN TR_Cp_Des cp_des ON ec_obl.cuota_pago = cp_des.cuota_pago AND cp_des.eliminado = 0" + 
-                                                      "WHERE ec_obl.I_ProcedenciaID = @I_ProcedenciaID ORDER BY Ano, P, Cuota_pago", 
+                                                             "LEFT JOIN TR_Cp_Des cp_des ON ec_obl.cuota_pago = cp_des.cuota_pago AND cp_des.eliminado = 0" +
+                                                      "WHERE ec_obl.I_ProcedenciaID = @I_ProcedenciaID ORDER BY Ano, P, Cuota_pago",
                                                         new { I_ProcedenciaID = procedenciaID },
                                                         commandType: CommandType.Text, commandTimeout: 1200);
             }
@@ -39,7 +39,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                 result = connection.QuerySingleOrDefault<Obligacion>("SELECT ec_obl.*, '(' + CAST(cp_des.cuota_pago as varchar) + ') ' + cp_des.Descripcio AS Cuota_pago_desc " +
                                                                        "FROM TR_Ec_obl ec_obl " +
                                                                             "LEFT JOIN TR_Cp_Des cp_des ON ec_obl.cuota_pago = cp_des.cuota_pago AND cp_des.eliminado = 0" +
-                                                                     "WHERE ec_obl.I_RowID = @I_RowID", 
+                                                                     "WHERE ec_obl.I_RowID = @I_RowID",
                                                         new { I_RowID = obligacionID },
                                                         commandType: CommandType.Text);
             }
@@ -58,7 +58,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                                                       "  FROM TR_Ec_Obl ec_obl " +
                                                              "LEFT JOIN TR_Cp_Des cp_des ON ec_obl.cuota_pago = cp_des.cuota_pago AND cp_des.eliminado = 0 " +
                                                              "INNER JOIN TI_ObservacionRegistroTabla ort ON ort.I_FilaTablaID = ec_obl.I_RowID " +
-                                                                    "AND ort.I_ProcedenciaID = ec_obl.I_ProcedenciaID  "+
+                                                                    "AND ort.I_ProcedenciaID = ec_obl.I_ProcedenciaID  " +
                                                       "WHERE ec_obl.I_ProcedenciaID = @I_ProcedenciaID " +
                                                       "      AND ort.I_TablaID = @I_TablaID " +
                                                       "      AND ort.I_ObservID = @I_ObservID;"
@@ -70,7 +70,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public static IEnumerable<DetalleObligacion> ObtenerDetalle(int procedenciaID, int obligacionID)
+        public static IEnumerable<DetalleObligacion> ObtenerDetalle(int obligacionID)
         {
             IEnumerable<DetalleObligacion> result;
 
@@ -80,10 +80,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                                                                "FROM TR_Ec_det ec_det " +
                                                                     "LEFT JOIN TR_Cp_Pri cp_pri ON ec_det.concepto = cp_pri.id_cp AND cp_pri.eliminado = 0 " +
                                                             "WHERE I_OblRowID = @I_OblRowID " +
-                                                                  "AND ec_det.I_ProcedenciaID = @I_ProcedenciaID " +
                                                                   "AND ec_det.concepto_f = 0 " +
                                                              "ORDER BY ec_det.Eliminado ASC",
-                                                              new { I_OblRowID = obligacionID, I_ProcedenciaID = procedenciaID }, 
+                                                              new { I_OblRowID = obligacionID },
                                                               commandType: CommandType.Text, commandTimeout: 1200);
             }
 
@@ -113,7 +112,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
                 result = connection.Query<DetalleObligacion>("SELECT * FROM TR_Ec_det WHERE I_OblRowID = @I_OblRowID AND Cod_alu = @Cod_alu AND Cod_RC = @Cod_RC",
-                                                              new { I_OblRowID = ObligacionID, Cod_alu = CodAlu, Cod_Rc = CodRc},
+                                                              new { I_OblRowID = ObligacionID, Cod_alu = CodAlu, Cod_Rc = CodRc },
                                                               commandType: CommandType.Text, commandTimeout: 1200);
             }
 

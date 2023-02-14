@@ -5,8 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
-using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
+using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -14,14 +14,16 @@ namespace WebMigradorCtasPorCobrar.Controllers
     public class ObligacionesController : Controller
     {
         private readonly TemporalPagos.ObligacionService _obligacionServiceTemporalPagos;
-        private readonly Migracion.ObligacionService _obligacionServiceMigracion;
+        private readonly ObligacionService _obligacionServiceMigracion;
+        private readonly EquivalenciasServices _equivalenciasServices;
         private readonly ObservacionService _observacionService;
 
         public ObligacionesController()
         {
             _obligacionServiceTemporalPagos = new TemporalPagos.ObligacionService();
-            _obligacionServiceMigracion = new Migracion.ObligacionService();
+            _obligacionServiceMigracion = new ObligacionService();
             _observacionService = new ObservacionService();
+            _equivalenciasServices = new EquivalenciasServices();
         }
 
 
@@ -135,7 +137,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult CargarDetalle(int id, Procedencia procedencia)
         {
-            var model = _obligacionServiceMigracion.ObtenerObligacion(id, procedencia);
+            var model = _obligacionServiceMigracion.ObtenerObligacion(id, true);
 
             return PartialView("_DetalleObligacion", model);
         }
@@ -144,21 +146,26 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult Observaciones(int id)
         {
             var model = _observacionService.Obtener_ObservacionesObligacion(id);
-
             ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
             ViewBag.RowID = id;
 
-            var fila = _obligacionServiceMigracion.ObtenerObligacion(id, null);
+            var fila = _obligacionServiceMigracion.ObtenerObligacion(id, false);
             ViewBag.ErrorTitle = $"Obligación de pago {fila.Ano}-{fila.P} {fila.Cod_alu}";
 
             return PartialView("_Observaciones", model);
         }
 
-        public ActionResult Editar(int id)
+        public ActionResult Editar(int id, int obsID)
         {
+            var model = _obligacionServiceMigracion.ObtenerObligacion(id, false);
+            ViewBag.TipoObserv = obsID.ToString();
+            ViewBag.Observacion = _observacionService.ObtenerCatalogo(obsID).T_ObservDesc;
+            ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
+                                                    "I_OpcionID", "T_OpcionCodDesc", model.I_Periodo);
 
-            return PartialView("_EditarObligacion");
+
+            return PartialView("_EditarObligacion", model);
         }
 
 

@@ -142,6 +142,7 @@
     <Compile Include="Controllers\CajaPerifericaController.cs" />
     <Compile Include="Controllers\ConceptoPagoController.cs" />
     <Compile Include="Controllers\CuotaPagoController.cs" />
+    <Compile Include="Controllers\DetalleObligacionController.cs" />
     <Compile Include="Controllers\EstudianteController.cs" />
     <Compile Include="Controllers\HelpController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="Models\Services\Migracion\AlumnoService.cs" />
     <Compile Include="Models\Services\Migracion\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\Migracion\CuotaPagoService.cs" />
+    <Compile Include="Models\Services\Migracion\DetalleObservacionService.cs" />
     <Compile Include="Models\Services\Migracion\ObligacionService.cs" />
     <Compile Include="Models\Services\Migracion\ObservacionService.cs" />
     <Compile Include="Models\Services\TemporalPagos\ConceptoPagoService.cs" />
@@ -451,7 +453,7 @@
     <Content Include="Assets\font-awesome\fonts\FontAwesome.otf" />
     <Content Include="Assets\jquery\jquery-3.3.1.min.map" />
     <Content Include="Assets\toastr\js\toastr.js.map" />
-    <Content Include="TextFile1.txt" />
+    <Content Include="Cambios pendientes.txt" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -475,6 +477,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\CajaPeriferica\" />
+    <Folder Include="Views\DetalleObligacion\" />
     <Folder Include="Views\Tasas\" />
   </ItemGroup>
   <ItemGroup>
@@ -548,6 +551,7 @@
     <Content Include="Views\ConceptoPago\_CtasPorCobrarConceptos.cshtml" />
     <Content Include="Views\CuotaPago\_VerDetalleMigracion.cshtml" />
     <Content Include="Views\Obligaciones\_CtasPorCobrarObligaciones.cshtml" />
+    <Content Include="Views\Obligaciones\_EditarDetObligacion.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

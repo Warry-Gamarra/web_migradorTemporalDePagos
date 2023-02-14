@@ -42,13 +42,12 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public DateTime D_FecMigrado { get; set; }
         public bool B_Removido { get; set; }
         public DateTime D_FecRemovido { get; set; }
-
         public string Descripcio { get; set; }
+        public int I_OblRowID { get; set; }
+        public int I_ProcedenciaID { get; set; }
 
-        public DetalleObligacion()
-        {
 
-        }
+        public DetalleObligacion() { }
 
         public DetalleObligacion(TemporalPagos.DetalleObligacion detalleObligacion)
         {
@@ -59,6 +58,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
             this.P = detalleObligacion.P;
             this.Tipo_oblig = detalleObligacion.Tipo_oblig;
             this.Concepto = detalleObligacion.Concepto;
+            this.Descripcio = detalleObligacion.Descripcio;
             this.Fch_venc = detalleObligacion.Fch_venc;
             this.Nro_recibo = detalleObligacion.Nro_recibo;
             this.Fch_pago = detalleObligacion.Fch_pago;
@@ -76,7 +76,6 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
             this.Tipo_pago = detalleObligacion.Tipo_pago;
             this.No_banco = detalleObligacion.No_banco;
             this.Cod_dep = detalleObligacion.Cod_dep;
-            this.Descripcio = detalleObligacion.Descripcio;
         }
     }
 }

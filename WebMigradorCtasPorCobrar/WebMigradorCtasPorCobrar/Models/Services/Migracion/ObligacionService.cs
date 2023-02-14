@@ -24,13 +24,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         }
 
 
-        public Obligacion ObtenerObligacion(int obligacionID,Procedencia? procedencia)
+        public Obligacion ObtenerObligacion(int obligacionID, bool getDetalle)
         {
             var obligacion = ObligacionRepository.ObtenerPorID(obligacionID);
 
-            if (procedencia.HasValue)
+            if (getDetalle)
             {
-                obligacion.DetalleObligaciones = ObligacionRepository.ObtenerDetalle((int)procedencia, obligacionID).ToList();
+                obligacion.DetalleObligaciones = ObligacionRepository.ObtenerDetalle(obligacionID).ToList();
             }
 
             return obligacion;
@@ -111,33 +111,19 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             Response result = new Response();
             ObligacionRepository obligacionRepository = new ObligacionRepository();
+            _ = Schema.SetSchema(procedencia);
+            _ = obligacionRepository.InicializarEstadoValidacionObligacionPago((int)procedencia);
+            _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacionPago((int)procedencia);
 
-            Response result_InicializarEstadosCabecera = new Response();
-            Response result_InicializarEstadosDetalle = new Response();
-            Response result_Alumnos = new Response();
-            Response result_Anio = new Response();
-            Response result_Periodo = new Response();
-            Response result_FecVencimiento = new Response();
-            Response result_CuotaPagoMigrada = new Response();
-            Response result_Procedencia = new Response();
-            Response result_Detalle = new Response();
-            Response result_ConceptoPago = new Response();
-            Response result_ConceptoPagoMigrado = new Response();
-
-            string schemaDb = Schema.SetSchema(procedencia);
-
-            result_InicializarEstadosCabecera = obligacionRepository.InicializarEstadoValidacionObligacionPago((int)procedencia);
-            result_InicializarEstadosDetalle = obligacionRepository.InicializarEstadoValidacionDetalleObligacionPago((int)procedencia);
-
-            result_Alumnos = obligacionRepository.ValidarAlumnoCabeceraObligacion((int)procedencia, null, null);
-            result_Anio = obligacionRepository.ValidarAnioEnCabeceraObligacion((int)procedencia);
-            result_Periodo = obligacionRepository.ValidarPeriodoEnCabeceraObligacion((int)procedencia);
-            result_FecVencimiento = obligacionRepository.ValidarFechaVencimientoCuotaObligacion((int)procedencia);
-            result_CuotaPagoMigrada = obligacionRepository.ValidarObligacionCuotaPagoMigrada((int)procedencia);
-            result_Procedencia = obligacionRepository.ValidarProcedenciaObligacionCuotaPago((int)procedencia);
-            result_Detalle = obligacionRepository.ValidarDetalleObligacion((int)procedencia);
-            result_ConceptoPago = obligacionRepository.ValidarDetalleObligacionConceptoPago((int)procedencia);
-            result_ConceptoPagoMigrado = obligacionRepository.ValidarDetalleObligacionConceptoPagoMigrado((int)procedencia);
+            Response result_Alumnos = obligacionRepository.ValidarAlumnoCabeceraObligacion((int)procedencia, null, null);
+            Response result_Anio = obligacionRepository.ValidarAnioEnCabeceraObligacion((int)procedencia);
+            Response result_Periodo = obligacionRepository.ValidarPeriodoEnCabeceraObligacion((int)procedencia);
+            Response result_FecVencimiento = obligacionRepository.ValidarFechaVencimientoCuotaObligacion((int)procedencia);
+            Response result_CuotaPagoMigrada = obligacionRepository.ValidarObligacionCuotaPagoMigrada((int)procedencia);
+            Response result_Procedencia = obligacionRepository.ValidarProcedenciaObligacionCuotaPago((int)procedencia);
+            Response result_Detalle = obligacionRepository.ValidarDetalleObligacion((int)procedencia);
+            Response result_ConceptoPago = obligacionRepository.ValidarDetalleObligacionConceptoPago((int)procedencia);
+            Response result_ConceptoPagoMigrado = obligacionRepository.ValidarDetalleObligacionConceptoPagoMigrado((int)procedencia);
 
             result.IsDone = result_Alumnos.IsDone &&
                             result_Anio.IsDone &&
