@@ -1,5 +1,6 @@
-﻿@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.Obligacion
+﻿@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.DetalleObligacion
 @Scripts.Render("~/bundles/jqueryval")
+@Scripts.Render("~/bundles/bootstrap4toggle")
 
 @{
     string tipoObs = ViewBag.TipoObserv;
@@ -11,7 +12,62 @@
         <div class="col-12">
             @using (Html.BeginForm("SaveDetalle", "Obligaciones", new { area = "" }, FormMethod.Post, new { id = "form_ec_det" }))
             {
+                @Html.Hidden("submited", 0)
+                @Html.AntiForgeryToken()
+                @Html.HiddenFor(model => model.I_RowID)
+                @Html.HiddenFor(model => model.I_ProcedenciaID)
+                @Html.Hidden("tipoObserv", tipoObs)
 
+                <div class="form-row">
+                    <div class="form-group col-2">
+                        @Html.Label("Año", new { @class = "col-form-label", @for = "I_Anio" })
+                        @Html.TextBoxFor(model => model.Ano, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Periodo", new { @class = "col-form-label", @for = "I_Periodo" })
+                        @Html.DropDownListFor(model => model.I_Periodo, ViewBag.Periodos as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", @disabled = "true" })
+                    </div>
+                    <div class="form-group col-2">
+                        @Html.Label("Cod Carrera", new { @class = "col-form-label", @for = "Cod_rc" })
+                        @Html.TextBoxFor(model => model.Cod_rc, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-2">
+                        @Html.Label("Cod Estudiante", new { @class = "col-form-label", @for = "Cod_alu" })
+                        @Html.TextBoxFor(model => model.Cod_alu, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Fecha Vencto", new { @class = "col-form-label", @for = "Fch_venc" })
+                        @Html.TextBoxFor(model => model.Fch_venc, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-2">
+                        @Html.Label("Código Cuota", new { @class = "col-form-label", @for = "Cuota_pago" })
+                        @Html.TextBoxFor(model => model.Cuota_pago, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-2">
+                        @Html.Label("Concepto de Pago", new { @class = "col-form-label", @for = "Cuota_pago" })
+                        @Html.TextBoxFor(model => model.Cuota_pago, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-4">
+                        @Html.Label("Concepto", new { @class = "col-form-label", @for = "Descripción" })
+                        @Html.DropDownListFor(model => model.I_Periodo, ViewBag.Periodos as SelectList, "[ SELECCIONE ]", new { @class = "form-control form-control-sm", @disabled = "true" })
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-3">
+                        @Html.Label("Monto", new { @class = "col-form-label", @for = "I_Periodo" })
+                        @Html.TextBoxFor(model => model.Monto, new { @class = "form-control form-control-sm", @readonly = "true" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Tipo Obligacion", new { @class = "col-form-label", @for = "Tipo_oblig", @style = "display: block;" })
+                        @Html.CheckBoxFor(model => model.Tipo_oblig, new { @data_toggle = "toggle", @data_on = "SI", @data_off = "NO", @data_onstyle = "info", @data_offstyle = "secondary", @data_size = "sm", @disabled = "true" })
+                    </div>
+                    <div class="form-group col-3">
+                        @Html.Label("Pagado", new { @class = "col-form-label", @for = "Pagado", @style = "display: block;" })
+                        @Html.CheckBoxFor(model => model.Pagado, new { @data_toggle = "toggle", @data_on = "SI", @data_off = "NO", @data_onstyle = "info", @data_offstyle = "secondary", @data_size = "sm", @disabled = "true" })
+                    </div>
+                </div>
             }
         </div>
     </div>
