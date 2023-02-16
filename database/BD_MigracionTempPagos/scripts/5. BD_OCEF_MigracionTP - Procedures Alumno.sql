@@ -880,7 +880,7 @@ BEGIN
 						  WHERE C_NumDNI IS NOT NULL
 						  GROUP BY C_NumDNI, T_ApePaterno COLLATE Modern_Spanish_CI_AI, T_ApeMaterno COLLATE Modern_Spanish_CI_AI, T_Nombre COLLATE Modern_Spanish_CI_AI
 						  HAVING COUNT(*) > 1) PRG ON PR.C_NumDNI = PRG.C_NumDNI
-		WHERE  PRG.C_NumDNI IS NULL
+		WHERE  PRG.C_NumDNI IS NULL AND P.B_Eliminado = 0
 		ORDER BY P.C_NumDNI
 
 		UPDATE	TR_Alumnos

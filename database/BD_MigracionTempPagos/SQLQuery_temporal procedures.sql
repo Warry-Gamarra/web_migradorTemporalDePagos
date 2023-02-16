@@ -1,9 +1,9 @@
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarCorrespondenciaNumDocPersonaRepositorio')
-	DROP PROCEDURE [dbo].USP_U_ValidarCorrespondenciaNumDocPersonaRepositorio
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_UnfvRepo_ValidarCorrespondenciaNumDocPersona')
+	DROP PROCEDURE [dbo].[USP_U_UnfvRepo_ValidarCorrespondenciaNumDocPersona]
 GO
 
-CREATE PROCEDURE USP_U_ValidarCorrespondenciaNumDocPersonaRepositorio	
+CREATE PROCEDURE USP_U_UnfvRepo_ValidarCorrespondenciaNumDocPersona	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -11,7 +11,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarCorrespondenciaNumDocPersonaRepositorio @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_U_UnfvRepo_ValidarCorrespondenciaNumDocPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -21,6 +21,8 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY
+		--1.- Validar duplicados en BD Repositorio
+
 		SELECT RA.C_CodAlu, A.C_CodAlu, RA.C_RcCod, A.C_RcCod, RA.C_NumDNI, A.C_NumDNI, iif(LTRIM(RTRIM(REPLACE(RA.C_NumDNI,' ', ' '))) = LTRIM(RTRIM(REPLACE(A.C_NumDNI,' ', ' '))), 1, 0) 
 		  FROM BD_UNFV_Repositorio.dbo.VW_Alumnos RA
 			   INNER JOIN TR_Alumnos A ON RA.C_CodAlu = A.C_CodAlu AND RA.C_RcCod = A.C_RcCod
@@ -79,11 +81,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarCorrespondenciaNumDocRepositorioPersona')
-	DROP PROCEDURE [dbo].[USP_U_ValidarCorrespondenciaNumDocRepositorioPersona]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_UnfvRepo_ValidarRepetidoNumDocPersona')
+	DROP PROCEDURE [dbo].[USP_U_UnfvRepo_ValidarRepetidoNumDocPersona]
 GO
 
-CREATE PROCEDURE USP_U_ValidarCorrespondenciaNumDocRepositorioPersona	
+CREATE PROCEDURE USP_U_UnfvRepo_ValidarRepetidoNumDocPersona	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -91,7 +93,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 2,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarCorrespondenciaNumDocRepositorioPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_U_UnfvRepo_ValidarRepetidoNumDocPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -173,11 +175,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarSexoDiferenteMismoDocumento')
-	DROP PROCEDURE [dbo].[USP_U_ValidarSexoDiferenteMismoDocumento]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_UnfvRepo_ValidarSexoDiferenteMismoDocumento')
+	DROP PROCEDURE [dbo].[USP_U_UnfvRepo_ValidarSexoDiferenteMismoDocumento]
 GO
 
-CREATE PROCEDURE USP_U_ValidarSexoDiferenteMismoDocumento	
+CREATE PROCEDURE USP_U_UnfvRepo_ValidarSexoDiferenteMismoDocumento	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -185,7 +187,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarSexoDiferenteMismoDocumento @B_Resultado output, @T_Message output
+--exec USP_U_UnfvRepo_ValidarSexoDiferenteMismoDocumento @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -198,12 +200,14 @@ BEGIN
 		
 		SELECT I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, I_ProcedenciaID, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso
 		INTO #NumDoc_Repetidos_sexo_diferente
-		FROM TR_Alumnos WHERE C_NumDNI IN (
-				SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM TR_Alumnos
+		FROM BD_UNFV_Repositorio.dbo.VW_Alumnos A
+			 INNER JOIN TC_CarreraProfesionalProcedencia CPP ON A.C_RcCod = CPP.C_CodRc AND CPP.I_ProcedenciaID = @I_ProcedenciaID
+		WHERE C_NumDNI IN (
+				SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM BD_UNFV_Repositorio.dbo.VW_Alumnos
 						WHERE C_NumDNI IS NOT NULL
 						GROUP BY C_NumDNI
 						HAVING COUNT(*) > 1) T1
-				WHERE NOT EXISTS (SELECT C_NumDNI, C_Sexo, COUNT(*) R FROM TR_Alumnos
+				WHERE NOT EXISTS (SELECT C_NumDNI, C_Sexo, COUNT(*) R FROM BD_UNFV_Repositorio.dbo.VW_Alumnos
 									WHERE C_NumDNI IS NOT NULL AND T1.C_NumDNI = C_NumDNI
 									GROUP BY C_NumDNI, C_Sexo
 									HAVING COUNT(*) > 1)

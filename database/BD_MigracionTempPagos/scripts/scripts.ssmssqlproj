@@ -80,9 +80,9 @@
           <FullPath>1. BD_OCEF_MigracionTP - Creación de base de datos.sql</FullPath>
         </FileNode>
         <FileNode Name="10. BD_OCEF_MigracionTP - Carga observaciones adicionales.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:PX12404HOW10\BDT:False:sa</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>PX12404HOW10\BDT</AssociatedConnSrvName>
-          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnUserName />
           <FullPath>10. BD_OCEF_MigracionTP - Carga observaciones adicionales.sql</FullPath>
         </FileNode>
         <FileNode Name="2. BD_OCEF_MigracionTP - Esquema de tablas.sql">
@@ -128,9 +128,9 @@
           <FullPath>8. BD_OCEF_MigracionTP - Procedures Obligaciones.sql</FullPath>
         </FileNode>
         <FileNode Name="9. BD_OCEF_MigracionTP - Esquema de tablas Control.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:PX12404HOW10\BDT:False:sa</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>PX12404HOW10\BDT</AssociatedConnSrvName>
-          <AssociatedConnUserName>sa</AssociatedConnUserName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnUserName />
           <FullPath>9. BD_OCEF_MigracionTP - Esquema de tablas Control.sql</FullPath>
         </FileNode>
         <FileNode Name="SQLQuery1_.sql">
