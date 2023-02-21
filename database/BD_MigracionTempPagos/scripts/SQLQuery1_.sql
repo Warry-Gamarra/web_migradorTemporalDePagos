@@ -1060,8 +1060,8 @@ select * from ##TEMP_AlumnoPersona where C_RcCod = '001'and C_CodAlu = '00081007
 SELECT PER.* FROM  BD_UNFV_Repositorio..TC_Persona PER INNER JOIN (
 SELECT C_NumDNI, count(*) cantidad FROM BD_UNFV_Repositorio..TC_Persona where C_NumDNI is not null group by C_NumDNI having COUNT(*) > 1
 ) REP ON PER.C_NumDNI = REP.C_NumDNI 
+where B_Eliminado = 0
 ORDER BY PER.C_NumDNI
-
 
 
 select * from TR_Ec_Obl WHERE B_Migrado = 1
@@ -1117,3 +1117,26 @@ truncate table TC_CarreraProfesionalProcedencia
 
 
 SELECT * FROM TC_CarreraProfesionalProcedencia
+
+
+declare @con_tilde varchar(10)  = 'José'
+declare @sin_tilde varchar(10)  = ' jose'
+
+select IIF(@sin_tilde COLLATE Latin1_General_CI_AI = @con_tilde COLLATE Latin1_General_CI_AI , 'IGUALES', 'DIFERENTES')
+
+
+select * from ##TEMP_AlumnoPersona
+select * from ##TEMP_Persona order by I_PersonaID
+
+
+
+select * from ##TEMP_AlumnoPersona WHERE C_RcCod = 'M63' AND C_CodAlu = '2010325936'
+select * from ##TEMP_Persona WHERE I_PersonaID IN (31767
+,31769)
+
+SELECT distinct PER.* FROM ##TEMP_Persona per INNER JOIN (
+SELECT C_NumDNI, count(*) cantidad FROM ##TEMP_Persona where C_NumDNI is not null group by C_NumDNI having COUNT(*) > 1
+) REP ON PER.C_NumDNI = REP.C_NumDNI 
+ORDER BY PER.C_NumDNI
+
+SELECT * FROM TR_Alumnos WHERE T_ApePaterno = 'COLLINS'

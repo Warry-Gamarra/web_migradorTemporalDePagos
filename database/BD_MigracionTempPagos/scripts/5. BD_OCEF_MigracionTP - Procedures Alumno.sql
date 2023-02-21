@@ -1121,11 +1121,11 @@ BEGIN
 				AL.C_Sexo, AL.D_FecNac, AL.C_CodModIng, AL.C_AnioIngreso, AL.D_FecCarga, AL.B_Migrado, AL.B_Migrable 
 		   FROM TR_Alumnos AL
 				LEFT JOIN ##TEMP_Persona TP ON ISNULL(LTRIM(RTRIM(REPLACE(AL.C_NumDNI,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.C_NumDNI,' ', ' '))), '') COLLATE Latin1_general_CI_AI 
-						  AND AL.T_ApePaterno COLLATE Latin1_general_CI_AI = TP.T_ApePaterno COLLATE Latin1_general_CI_AI 
-						  AND AL.T_ApeMaterno COLLATE Latin1_general_CI_AI = TP.T_ApeMaterno COLLATE Latin1_general_CI_AI 
-						  AND AL.T_Nombre COLLATE Latin1_general_CI_AI = TP.T_Nombre COLLATE Latin1_general_CI_AI
+						  AND ISNULL(LTRIM(RTRIM(REPLACE(AL.T_ApePaterno,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.T_ApePaterno,' ', ' '))), '') COLLATE Latin1_general_CI_AI 
+						  AND ISNULL(LTRIM(RTRIM(REPLACE(AL.T_ApeMaterno,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.T_ApeMaterno,' ', ' '))), '') COLLATE Latin1_general_CI_AI 
+						  AND ISNULL(LTRIM(RTRIM(REPLACE(AL.T_Nombre,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.T_Nombre,' ', ' '))), '') COLLATE Latin1_general_CI_AI
 						  --AND ISNULL(AL.D_FecNac, '') = ISNULL(TP.D_FecNac, '') 
-						  AND ISNULL(AL.C_Sexo, '') COLLATE Latin1_general_CI_AI = ISNULL(TP.C_Sexo, '') COLLATE Latin1_general_CI_AI 
+						  AND ISNULL(LTRIM(RTRIM(REPLACE(AL.C_Sexo,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.C_Sexo,' ', ' '))), '') COLLATE Latin1_general_CI_AI 
 		  WHERE TP.I_PersonaID IS NULL
 		)
 
@@ -1133,7 +1133,7 @@ BEGIN
 		SELECT DISTINCT (@I_TempPersonaID + ROW_NUMBER() OVER(ORDER BY T_ApePaterno)) AS I_PersonaID, C_NumDNI, C_CodTipDoc, 
 				T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac
 		FROM   (SELECT	DISTINCT LTRIM(RTRIM(REPLACE(TA.C_NumDNI,' ', ' '))) C_NumDNI, 
-						IIF(TA.C_CodTipDoc IS NULL, IIF(LEN(TA.C_NumDNI) = 8, 'DI', NULL), TA.C_CodTipDoc) AS C_CodTipDoc, 
+						IIF(TA.C_CodTipDoc IS NULL, IIF(LEN(TA.C_NumDNI) = 8, 'DI', NULL), IIF(TA.C_NumDNI IS NULL, NULL,TA.C_CodTipDoc)) AS C_CodTipDoc, 
 						LTRIM(RTRIM(TA.T_ApePaterno)) COLLATE Latin1_general_CI_AI AS T_ApePaterno, 
 						LTRIM(RTRIM(TA.T_ApeMaterno)) COLLATE Latin1_general_CI_AI AS T_ApeMaterno, 
 						LTRIM(RTRIM(TA.T_Nombre)) COLLATE Latin1_general_CI_AI AS T_Nombre, C_Sexo, NULL AS D_FecNac, TA.B_Migrable
@@ -1146,31 +1146,31 @@ BEGIN
 
 		SET IDENTITY_INSERT ##TEMP_Persona OFF
 
-		SET IDENTITY_INSERT BD_UNFV_Repositorio.dbo.TC_Persona ON
+		--SET IDENTITY_INSERT BD_UNFV_Repositorio.dbo.TC_Persona ON
 
-		MERGE BD_UNFV_Repositorio.dbo.TC_Persona AS TRG
-		USING (SELECT DISTINCT  AP.I_PersonaID, AP.C_NumDNI, AP.C_CodTipDoc, AP.T_ApePaterno COLLATE Latin1_General_CI_AI as T_ApePaterno, 
-								AP.T_ApeMaterno COLLATE Latin1_General_CI_AI as T_ApeMaterno, AP.T_Nombre COLLATE Latin1_General_CI_AI as T_Nombre, 
-								AP.C_Sexo, AP.D_FecNac, 1 AS B_Migrado
-			   FROM ##TEMP_Persona AP) AS SRC
-		ON TRG.I_PersonaID = SRC.I_PersonaID
-		WHEN MATCHED AND SRC.B_Migrado = 0 THEN
-			UPDATE SET	TRG.C_NumDNI	 = SRC.C_NumDNI,
-						TRG.C_CodTipDoc	 = SRC.C_CodTipDoc,
-						TRG.T_ApePaterno = SRC.T_ApePaterno,
-						TRG.T_ApeMaterno = SRC.T_ApeMaterno,
-						TRG.T_Nombre	 = SRC.T_Nombre,
-						TRG.C_Sexo		 = SRC.C_Sexo,
-						TRG.I_UsuarioMod = 1,
-						TRG.D_FecMod	 = @D_FecProceso
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Habilitado, B_Eliminado, D_FecCre)
-			VALUES (SRC.I_PersonaID,SRC.C_NUMDNI, SRC.C_CodTipDoc, SRC.T_ApePaterno, SRC.T_ApeMaterno, SRC.T_Nombre, SRC.C_Sexo, SRC.D_FecNac, 1, 0, @D_FecProceso)
-		OUTPUT	$ACTION, inserted.C_NumDNI, inserted.C_CodTipDoc, inserted.T_ApePaterno, inserted.T_ApeMaterno, inserted.T_Nombre, 
-				inserted.C_Sexo, inserted.D_FecNac, deleted.C_NumDNI, deleted.C_CodTipDoc, deleted.T_ApePaterno, deleted.T_ApeMaterno, 
-				deleted.T_Nombre, deleted.C_Sexo, deleted.D_FecNac, inserted.I_PersonaID, 0 INTO #Tbl_output_persona;		
+		--MERGE BD_UNFV_Repositorio.dbo.TC_Persona AS TRG
+		--USING (SELECT DISTINCT  AP.I_PersonaID, AP.C_NumDNI, AP.C_CodTipDoc, AP.T_ApePaterno COLLATE Latin1_General_CI_AI as T_ApePaterno, 
+		--						AP.T_ApeMaterno COLLATE Latin1_General_CI_AI as T_ApeMaterno, AP.T_Nombre COLLATE Latin1_General_CI_AI as T_Nombre, 
+		--						AP.C_Sexo, AP.D_FecNac, 1 AS B_Migrado
+		--	   FROM ##TEMP_Persona AP) AS SRC
+		--ON TRG.I_PersonaID = SRC.I_PersonaID
+		--WHEN MATCHED AND SRC.B_Migrado = 0 THEN
+		--	UPDATE SET	TRG.C_NumDNI	 = SRC.C_NumDNI,
+		--				TRG.C_CodTipDoc	 = SRC.C_CodTipDoc,
+		--				TRG.T_ApePaterno = SRC.T_ApePaterno,
+		--				TRG.T_ApeMaterno = SRC.T_ApeMaterno,
+		--				TRG.T_Nombre	 = SRC.T_Nombre,
+		--				TRG.C_Sexo		 = SRC.C_Sexo,
+		--				TRG.I_UsuarioMod = 1,
+		--				TRG.D_FecMod	 = @D_FecProceso
+		--WHEN NOT MATCHED BY TARGET THEN
+		--	INSERT (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac, B_Habilitado, B_Eliminado, D_FecCre)
+		--	VALUES (SRC.I_PersonaID,SRC.C_NUMDNI, SRC.C_CodTipDoc, SRC.T_ApePaterno, SRC.T_ApeMaterno, SRC.T_Nombre, SRC.C_Sexo, SRC.D_FecNac, 1, 0, @D_FecProceso)
+		--OUTPUT	$ACTION, inserted.C_NumDNI, inserted.C_CodTipDoc, inserted.T_ApePaterno, inserted.T_ApeMaterno, inserted.T_Nombre, 
+		--		inserted.C_Sexo, inserted.D_FecNac, deleted.C_NumDNI, deleted.C_CodTipDoc, deleted.T_ApePaterno, deleted.T_ApeMaterno, 
+		--		deleted.T_Nombre, deleted.C_Sexo, deleted.D_FecNac, inserted.I_PersonaID, 0 INTO #Tbl_output_persona;		
 		
-		SET IDENTITY_INSERT BD_UNFV_Repositorio.dbo.TC_Persona OFF
+		--SET IDENTITY_INSERT BD_UNFV_Repositorio.dbo.TC_Persona OFF
 
 		
 		INSERT INTO ##TEMP_AlumnoPersona (I_PersonaID, C_RcCod, C_CodAlu, C_CodModIng, C_AnioIngreso, B_Migrado)
@@ -1194,52 +1194,52 @@ BEGIN
 			AND TA.I_ProcedenciaID = @I_ProcedenciaID
 			  
 
-		MERGE BD_UNFV_Repositorio.dbo.TC_Alumno AS TRG
-		USING (SELECT DISTINCT AP.I_PersonaID, AP.C_RcCod, AP.C_CodAlu, AP.C_CodModIng, AP.C_AnioIngreso, AP.B_Migrado 
-				FROM ##TEMP_AlumnoPersona AP) AS SRC
-		ON	TRG.C_RcCod COLLATE Latin1_general_CI_AI = SRC.C_RcCod COLLATE Latin1_general_CI_AI 
-			AND TRG.C_CodAlu COLLATE Latin1_general_CI_AI = SRC.C_CodAlu COLLATE Latin1_general_CI_AI 
-			AND ISNULL(TRG.C_CodModIng, '')	COLLATE Latin1_general_CI_AI = ISNULL(SRC.C_CodModIng, '') COLLATE Latin1_general_CI_AI
-			--AND TRG.C_AnioIngreso = SRC.C_AnioIngreso		
-		WHEN MATCHED AND SRC.B_Migrado = 0 THEN
-			UPDATE SET	TRG.I_PersonaID	 = SRC.I_PersonaID,
-						TRG.C_AnioIngreso = SRC.C_AnioIngreso,	
-						TRG.I_UsuarioMod = 1,
-						TRG.D_FecMod	 = @D_FecProceso
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (C_RcCod, C_CodAlu, I_PersonaID, C_CodModIng, C_AnioIngreso, B_Habilitado, B_Eliminado, D_FecCre)
-			VALUES (SRC.C_RcCod, SRC.C_CodAlu, SRC.I_PersonaID, SRC.C_CodModIng, SRC.C_AnioIngreso, 1, 0, @D_FecProceso)
-		OUTPUT	$ACTION, inserted.C_RcCod, inserted.C_CodAlu, inserted.C_AnioIngreso, inserted.C_CodModIng, 
-				inserted.I_PersonaID, deleted.I_PersonaID, 0 INTO #Tbl_output_alumno;		
+		--MERGE BD_UNFV_Repositorio.dbo.TC_Alumno AS TRG
+		--USING (SELECT DISTINCT AP.I_PersonaID, AP.C_RcCod, AP.C_CodAlu, AP.C_CodModIng, AP.C_AnioIngreso, AP.B_Migrado 
+		--		FROM ##TEMP_AlumnoPersona AP) AS SRC
+		--ON	TRG.C_RcCod COLLATE Latin1_general_CI_AI = SRC.C_RcCod COLLATE Latin1_general_CI_AI 
+		--	AND TRG.C_CodAlu COLLATE Latin1_general_CI_AI = SRC.C_CodAlu COLLATE Latin1_general_CI_AI 
+		--	AND ISNULL(TRG.C_CodModIng, '')	COLLATE Latin1_general_CI_AI = ISNULL(SRC.C_CodModIng, '') COLLATE Latin1_general_CI_AI
+		--	--AND TRG.C_AnioIngreso = SRC.C_AnioIngreso		
+		--WHEN MATCHED AND SRC.B_Migrado = 0 THEN
+		--	UPDATE SET	TRG.I_PersonaID	 = SRC.I_PersonaID,
+		--				TRG.C_AnioIngreso = SRC.C_AnioIngreso,	
+		--				TRG.I_UsuarioMod = 1,
+		--				TRG.D_FecMod	 = @D_FecProceso
+		--WHEN NOT MATCHED BY TARGET THEN
+		--	INSERT (C_RcCod, C_CodAlu, I_PersonaID, C_CodModIng, C_AnioIngreso, B_Habilitado, B_Eliminado, D_FecCre)
+		--	VALUES (SRC.C_RcCod, SRC.C_CodAlu, SRC.I_PersonaID, SRC.C_CodModIng, SRC.C_AnioIngreso, 1, 0, @D_FecProceso)
+		--OUTPUT	$ACTION, inserted.C_RcCod, inserted.C_CodAlu, inserted.C_AnioIngreso, inserted.C_CodModIng, 
+		--		inserted.I_PersonaID, deleted.I_PersonaID, 0 INTO #Tbl_output_alumno;		
 
-		UPDATE	t_Alumnos
-		SET		t_Alumnos.B_Migrado = 1,
-				t_Alumnos.D_FecMigrado = @D_FecProceso
-		FROM TR_Alumnos AS t_Alumnos
-		INNER JOIN 	#Tbl_output_alumno as t_out_a ON t_out_a.C_RcCod = t_Alumnos.C_RcCod AND t_out_a.C_CodAlu COLLATE Latin1_general_CI_AI = t_Alumnos.C_CodAlu COLLATE Latin1_general_CI_AI 
-					AND ISNULL(t_out_a.C_CodModIng, '') COLLATE Latin1_general_CI_AI  = ISNULL(t_Alumnos.C_CodModIng, '') COLLATE Latin1_general_CI_AI 
-		INNER JOIN 	#Tbl_output_persona as t_out_p ON t_out_p.I_PersonaID = t_out_a.INS_I_PersonaID
+		--UPDATE	t_Alumnos
+		--SET		t_Alumnos.B_Migrado = 1,
+		--		t_Alumnos.D_FecMigrado = @D_FecProceso
+		--FROM TR_Alumnos AS t_Alumnos
+		--INNER JOIN 	#Tbl_output_alumno as t_out_a ON t_out_a.C_RcCod = t_Alumnos.C_RcCod AND t_out_a.C_CodAlu COLLATE Latin1_general_CI_AI = t_Alumnos.C_CodAlu COLLATE Latin1_general_CI_AI 
+		--			AND ISNULL(t_out_a.C_CodModIng, '') COLLATE Latin1_general_CI_AI  = ISNULL(t_Alumnos.C_CodModIng, '') COLLATE Latin1_general_CI_AI 
+		--INNER JOIN 	#Tbl_output_persona as t_out_p ON t_out_p.I_PersonaID = t_out_a.INS_I_PersonaID
 
 
-		SET @I_CantAlu = (SELECT COUNT(*) FROM ##TEMP_AlumnoPersona AP 
-											   INNER JOIN TR_Alumnos A ON AP.C_CodAlu COLLATE Latin1_general_CI_AI = A.C_CodAlu COLLATE Latin1_general_CI_AI 
-																	      AND AP.C_RcCod COLLATE Latin1_general_CI_AI = A.C_RcCod COLLATE Latin1_general_CI_AI 
-																		  AND A.B_Migrable = 1)
+		--SET @I_CantAlu = (SELECT COUNT(*) FROM ##TEMP_AlumnoPersona AP 
+		--									   INNER JOIN TR_Alumnos A ON AP.C_CodAlu COLLATE Latin1_general_CI_AI = A.C_CodAlu COLLATE Latin1_general_CI_AI 
+		--															      AND AP.C_RcCod COLLATE Latin1_general_CI_AI = A.C_RcCod COLLATE Latin1_general_CI_AI 
+		--																  AND A.B_Migrable = 1)
 
 		SET @I_Insertados_persona = (SELECT COUNT(*) FROM #Tbl_output_persona WHERE accion = 'INSERT')
 		SET @I_Insertados_alumno = (SELECT COUNT(*) FROM #Tbl_output_alumno WHERE accion = 'INSERT')
 		SET @I_Actualizados_persona = (SELECT COUNT(*) FROM #Tbl_output_persona WHERE accion = 'UPDATE' AND B_Removido = 0)
 		SET @I_Actualizados_alumno = (SELECT COUNT(*) FROM #Tbl_output_alumno WHERE accion = 'UPDATE' AND B_Removido = 0)
 		
-		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_Persona')
-		BEGIN
-			DROP TABLE ##TEMP_Persona
-		END
+		--IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_Persona')
+		--BEGIN
+		--	DROP TABLE ##TEMP_Persona
+		--END
 
-		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_AlumnoPersona')
-		BEGIN
-			DROP TABLE ##TEMP_AlumnoPersona
-		END
+		--IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_AlumnoPersona')
+		--BEGIN
+		--	DROP TABLE ##TEMP_AlumnoPersona
+		--END
 
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1
