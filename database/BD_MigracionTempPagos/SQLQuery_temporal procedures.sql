@@ -198,14 +198,17 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY 
 		
-		SELECT I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, I_ProcedenciaID, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso
+		SELECT I_RowID, A.C_RcCod, A.C_CodAlu, A.C_NumDNI, A.C_CodTipDoc, A.T_ApePaterno, A.T_ApeMaterno, A.T_Nombre, TA.I_ProcedenciaID, A.C_Sexo, A.D_FecNac, A.C_CodModIng, A.C_AnioIngreso
 		INTO #NumDoc_Repetidos_sexo_diferente
 		FROM BD_UNFV_Repositorio.dbo.VW_Alumnos A
-			 INNER JOIN TC_CarreraProfesionalProcedencia CPP ON A.C_RcCod = CPP.C_CodRc AND CPP.I_ProcedenciaID = @I_ProcedenciaID
-		WHERE C_NumDNI IN (
-				SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM BD_UNFV_Repositorio.dbo.VW_Alumnos
-						WHERE C_NumDNI IS NOT NULL
-						GROUP BY C_NumDNI
+			 INNER JOIN TR_Alumnos TA ON A.C_CodAlu = TA.C_CodAlu AND A.C_RcCod = TA.C_RcCod
+			 --INNER JOIN TC_CarreraProfesionalProcedencia CPP ON A.C_RcCod = CPP.C_CodRc AND CPP.I_ProcedenciaID = @I_ProcedenciaID
+		WHERE A.C_NumDNI IN (
+				SELECT C_NumDNI FROM (SELECT A.C_NumDNI, COUNT(*) R 
+				FROM BD_UNFV_Repositorio.dbo.VW_Alumnos A
+					 INNER JOIN TR_Alumnos TA ON A.C_CodAlu = TA.C_CodAlu AND A.C_RcCod = TA.C_RcCod
+						WHERE A.C_NumDNI IS NOT NULL
+						GROUP BY A.C_NumDNI
 						HAVING COUNT(*) > 1) T1
 				WHERE NOT EXISTS (SELECT C_NumDNI, C_Sexo, COUNT(*) R FROM BD_UNFV_Repositorio.dbo.VW_Alumnos
 									WHERE C_NumDNI IS NOT NULL AND T1.C_NumDNI = C_NumDNI

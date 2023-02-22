@@ -3,7 +3,7 @@
   <Items>
     <LogicalFolder Name="Connections" Type="2" Sorted="true">
       <Items>
-        <ConnectionNode Name="14-CEUC-DESA-05\SQL_2016E:AzureAD\WarryAbrahanGamarraA">
+        <ConnectionNode Name="14-CEUC-DESA-05\SQL_2016E:DESKTOP-B34HJML\gamar">
           <Created>2021-10-12T12:20:16.8959196-05:00</Created>
           <Type>SQL</Type>
           <Server>14-CEUC-DESA-05\SQL_2016E</Server>
@@ -15,7 +15,7 @@
           <ConnectionProtocol>NotSpecified</ConnectionProtocol>
           <ApplicationName />
         </ConnectionNode>
-        <ConnectionNode Name="DESKTOP-5082GII\SQL_2016E:AzureAD\WarryAbrahanGamarraA">
+        <ConnectionNode Name="DESKTOP-5082GII\SQL_2016E:DESKTOP-B34HJML\gamar">
           <Created>2023-02-07T11:01:33.4727794-05:00</Created>
           <Type>SQL</Type>
           <Server>DESKTOP-5082GII\SQL_2016E</Server>
@@ -27,7 +27,7 @@
           <ConnectionProtocol>NotSpecified</ConnectionProtocol>
           <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
         </ConnectionNode>
-        <ConnectionNode Name="DESKTOP-B34HJML\SQL_2016E:AzureAD\WarryAbrahanGamarraA">
+        <ConnectionNode Name="DESKTOP-B34HJML\SQL_2016E:DESKTOP-B34HJML\gamar">
           <Created>2021-10-13T12:00:57.5227069-05:00</Created>
           <Type>SQL</Type>
           <Server>DESKTOP-B34HJML\SQL_2016E</Server>
@@ -80,8 +80,8 @@
           <FullPath>1. BD_OCEF_MigracionTP - Creación de base de datos.sql</FullPath>
         </FileNode>
         <FileNode Name="10. BD_OCEF_MigracionTP - Carga observaciones adicionales.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>10. BD_OCEF_MigracionTP - Carga observaciones adicionales.sql</FullPath>
         </FileNode>
@@ -104,8 +104,8 @@
           <FullPath>4. BD_OCEF_MigracionTP - Vistas y Funciones.sql</FullPath>
         </FileNode>
         <FileNode Name="5. BD_OCEF_MigracionTP - Procedures Alumno.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>5. BD_OCEF_MigracionTP - Procedures Alumno.sql</FullPath>
         </FileNode>
@@ -128,14 +128,14 @@
           <FullPath>8. BD_OCEF_MigracionTP - Procedures Obligaciones.sql</FullPath>
         </FileNode>
         <FileNode Name="9. BD_OCEF_MigracionTP - Esquema de tablas Control.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>9. BD_OCEF_MigracionTP - Esquema de tablas Control.sql</FullPath>
         </FileNode>
         <FileNode Name="SQLQuery1_.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>SQLQuery1_.sql</FullPath>
         </FileNode>
