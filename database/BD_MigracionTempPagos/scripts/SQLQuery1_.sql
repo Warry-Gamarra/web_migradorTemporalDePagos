@@ -1064,6 +1064,8 @@ where B_Eliminado = 0
 ORDER BY PER.C_NumDNI
 
 
+
+
 select * from TR_Ec_Obl WHERE B_Migrado = 1
 
 SELECT * FROM VW_ObservacionesTabla WHERE T_TablaNom = 'TR_Ec_obl'
@@ -1136,16 +1138,52 @@ select * from ##TEMP_Persona WHERE I_PersonaID IN (31767
 select * from ##TEMP_Persona WHERE C_NumDNI = '48486091'
 
 select * from TR_Alumnos where C_NumDNI = '43231400'
-select * from BD_UNFV_Repositorio..TC_Persona where C_NumDNI = '43231400'
+select * from BD_UNFV_Repositorio..TC_Persona where C_NumDNI = '75667604'
+select * from ##TEMP_Persona WHERE C_NumDNI = '43231400'
 
+
+SELECT COUNT(*) FROM ##TEMP_Persona 
+SELECT IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona') 
 SELECT distinct PER.* FROM ##TEMP_Persona per INNER JOIN (
 SELECT C_NumDNI, count(*) cantidad FROM ##TEMP_Persona where C_NumDNI is not null group by C_NumDNI having COUNT(*) > 1
 ) REP ON PER.C_NumDNI = REP.C_NumDNI 
 ORDER BY PER.C_NumDNI
 
+SELECT I_AlumnoRowID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
+		FROM ##TEMP_Persona WHERE C_NumDNI IN (
+				SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM ##TEMP_Persona
+						WHERE C_NumDNI IS NOT NULL
+						GROUP BY C_NumDNI
+						HAVING COUNT(*) > 1) T1
+				WHERE NOT EXISTS (SELECT C_NumDNI, C_Sexo, COUNT(*) R FROM ##TEMP_Persona
+									WHERE C_NumDNI IS NOT NULL AND T1.C_NumDNI = C_NumDNI
+									GROUP BY C_NumDNI, C_Sexo
+									HAVING COUNT(*) > 1)
+			)
+
+SELECT IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona') 
+SELECT distinct PER.* FROM ##TEMP_Persona per
+
+
 SELECT * FROM TR_Alumnos WHERE T_ApePaterno = 'COLLINS'
 select * from TC_CatalogoObservacion where I_ObservID = 41
+SELECT * FROM TR_Alumnos WHERE EXISTS (SELECT I_AlumnoRowID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
+		FROM ##TEMP_Persona WHERE C_NumDNI IN (
+				SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM ##TEMP_Persona
+						WHERE C_NumDNI IS NOT NULL
+						GROUP BY C_NumDNI
+						HAVING COUNT(*) > 1) T1
+				WHERE NOT EXISTS (SELECT C_NumDNI, C_Sexo, COUNT(*) R FROM ##TEMP_Persona
+									WHERE C_NumDNI IS NOT NULL AND T1.C_NumDNI = C_NumDNI
+									GROUP BY C_NumDNI, C_Sexo
+									HAVING COUNT(*) > 1)
+			)
+			AND I_RowID = TR_Alumnos.I_RowID
+)
 
 select * from ##NumDoc_Repetidos_sexo_diferente
 
 select * from ##NumDoc_Repetidos_nombres_diferentes
+
+
+select * from TR_Alumnos where B_Correcto = 1

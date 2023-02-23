@@ -61,10 +61,23 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         public Response Save(Alumno alumno, Procedencia procedencia)
         {
             Response result = new Response();
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            alumnoRepository.InicializarEstadoValidacionAlumno((int)procedencia);
 
             alumno.I_ProcedenciaID = (byte)procedencia;
-
             result = AlumnoRepository.Save(alumno);
+
+            alumnoRepository.ValidarCaracteresEspeciales((int)procedencia);
+            alumnoRepository.ValidarCodigoCarreraAlumno((int)procedencia);
+            alumnoRepository.ValidarCodigosAlumnoRepetidos((int)procedencia);
+            alumnoRepository.ValidarAnioIngresoAlumno((int)procedencia);
+
+            alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona((int)procedencia);
+            alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersona((int)procedencia);
+            alumnoRepository.ValidarCodigosAlumnoRemovidos((int)procedencia);
+            alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo((int)procedencia);
+            alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersonaRepo((int)procedencia);
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
@@ -85,37 +98,28 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             Response result = new Response();
 
-            Response result_InicializarEstados = new Response();
-            Response result_CaracteresEspeciales = new Response();
-            Response result_CodigoCarreraAlumno = new Response();
-            Response result_CodigosAlumnoRepetidos = new Response();
-            Response result_AnioIngresoAlumno = new Response();
-            Response result_ModIngresoAlumno = new Response();
-            Response result_CorrespondenciaNumDoc = new Response();
-            Response result_CorrespondenciaNumDocRepo = new Response();
-            Response result_SexoDiferenteMismoDoc = new Response();
-            Response result_CodigosAlumnoRemovidos = new Response();
-
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
-            result_InicializarEstados = alumnoRepository.InicializarEstadoValidacionAlumno((int)procedencia);
-            result_CaracteresEspeciales = alumnoRepository.ValidarCaracteresEspeciales((int)procedencia);
-            result_CodigoCarreraAlumno = alumnoRepository.ValidarCodigoCarreraAlumno((int)procedencia);
-            result_CodigosAlumnoRepetidos = alumnoRepository.ValidarCodigosAlumnoRepetidos((int)procedencia);
-            result_AnioIngresoAlumno = alumnoRepository.ValidarAnioIngresoAlumno((int)procedencia);
-            //result_ModIngresoAlumno = alumnoRepository.ValidarModalidadIngresoAlumno((int)procedencia);
-            result_CorrespondenciaNumDoc = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona((int)procedencia);
-            result_CorrespondenciaNumDocRepo = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo((int)procedencia);
-            result_SexoDiferenteMismoDoc = alumnoRepository.ValidarSexoDiferenteMismoDocumento((int)procedencia);
-            result_CodigosAlumnoRemovidos = alumnoRepository.ValidarCodigosAlumnoRemovidos((int)procedencia);
+            Response result_InicializarEstados = alumnoRepository.InicializarEstadoValidacionAlumno((int)procedencia);
+            Response result_CaracteresEspeciales = alumnoRepository.ValidarCaracteresEspeciales((int)procedencia);
+            Response result_CodigoCarreraAlumno = alumnoRepository.ValidarCodigoCarreraAlumno((int)procedencia);
+            Response result_CodigosAlumnoRepetidos = alumnoRepository.ValidarCodigosAlumnoRepetidos((int)procedencia);
+            Response result_AnioIngresoAlumno = alumnoRepository.ValidarAnioIngresoAlumno((int)procedencia);
+
+            Response result_CorrespondenciaNumDoc = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona((int)procedencia);
+            Response result_SexoDiferenteMismoDoc = alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersona((int)procedencia);
+            Response result_CodigosAlumnoRemovidos = alumnoRepository.ValidarCodigosAlumnoRemovidos((int)procedencia);
+
+            Response result_CorrespondenciaNumDocRepo = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo((int)procedencia);
+            Response result_SexoDiferenteMismoDocRepo = alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersonaRepo((int)procedencia);
 
             result.IsDone = result_CaracteresEspeciales.IsDone &&
                             result_CodigoCarreraAlumno.IsDone &&
                             result_CodigosAlumnoRepetidos.IsDone &&
                             result_AnioIngresoAlumno.IsDone &&
-                            //result_ModIngresoAlumno.IsDone &&
                             result_CorrespondenciaNumDoc.IsDone &&
-                            result_SexoDiferenteMismoDoc.IsDone;
+                            result_SexoDiferenteMismoDoc.IsDone &&
+                            result_SexoDiferenteMismoDocRepo.IsDone;
 
             result.Message = $"    <dl class=\"row text-justify\">" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Observados por caracteres especiales</dt>" +
@@ -134,10 +138,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_AnioIngresoAlumno.Message}</p>" +
                              $"        </dd>" +
-                             //$"        <dt class=\"col-md-4 col-sm-6\">Observados por Modalidades de ingreso</dt>" +
-                             //$"        <dd class=\"col-md-8 col-sm-6\">" +
-                             //$"            <p>{result_ModIngresoAlumno.Message}</p>" +
-                             //$"        </dd>" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_CorrespondenciaNumDoc.Message}</p>" +
@@ -146,9 +146,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_CorrespondenciaNumDocRepo.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Sexo duplicado</dt>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Sexo difernte</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_SexoDiferenteMismoDoc.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Sexo difernte con el repositorio</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_SexoDiferenteMismoDocRepo.Message}</p>" +
                              $"        </dd>" +
                              $"    </dl>";
 

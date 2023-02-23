@@ -24,6 +24,8 @@ GO
 
 --cambio 20230116
 
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (47, 'El valor del campo <Sexo> prensenta valores distintos para misma persona en la base de destino', 'SEXO ERRADO', NULL)
+
 DECLARE @I_ProcedenciaID tinyint = 0
 
 --PREGRADO
@@ -44,4 +46,5 @@ SET @I_ProcedenciaID = 3
 INSERT INTO TC_CarreraProfesionalProcedencia (C_CodRc, I_ProcedenciaID, T_Descripcion, N_Grado)
 	 SELECT C_RcCod, @I_ProcedenciaID, T_CarProfDesc, N_Grado FROM BD_UNFV_Repositorio.dbo.VW_CarreraProfesional
 	  WHERE N_Grado = 1 AND C_CodFac = 'ET'
+
 
