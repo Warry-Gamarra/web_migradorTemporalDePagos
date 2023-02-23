@@ -1133,6 +1133,10 @@ select * from ##TEMP_Persona order by I_PersonaID
 select * from ##TEMP_AlumnoPersona WHERE C_RcCod = 'M63' AND C_CodAlu = '2010325936'
 select * from ##TEMP_Persona WHERE I_PersonaID IN (31767
 ,31769)
+select * from ##TEMP_Persona WHERE C_NumDNI = '48486091'
+
+select * from TR_Alumnos where C_NumDNI = '43231400'
+select * from BD_UNFV_Repositorio..TC_Persona where C_NumDNI = '43231400'
 
 SELECT distinct PER.* FROM ##TEMP_Persona per INNER JOIN (
 SELECT C_NumDNI, count(*) cantidad FROM ##TEMP_Persona where C_NumDNI is not null group by C_NumDNI having COUNT(*) > 1
@@ -1140,3 +1144,8 @@ SELECT C_NumDNI, count(*) cantidad FROM ##TEMP_Persona where C_NumDNI is not nul
 ORDER BY PER.C_NumDNI
 
 SELECT * FROM TR_Alumnos WHERE T_ApePaterno = 'COLLINS'
+select * from TC_CatalogoObservacion where I_ObservID = 41
+
+select * from ##NumDoc_Repetidos_sexo_diferente
+
+select * from ##NumDoc_Repetidos_nombres_diferentes

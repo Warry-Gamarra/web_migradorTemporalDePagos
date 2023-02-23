@@ -1011,7 +1011,7 @@ CREATE PROCEDURE USP_IU_MigrarDataAlumnosUnfvRepositorio
 AS
 --declare @C_CodAlu  varchar(20) = null,
 --		@C_AnioIng  smallint = null,
---		@I_ProcedenciaID tinyint = 1,
+--		@I_ProcedenciaID tinyint = 2,
 --		@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
 --exec USP_IU_MigrarDataAlumnosUnfvRepositorio @C_CodAlu, @C_AnioIng, @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -1084,8 +1084,7 @@ BEGIN
 		T_ApePaterno	varchar(50),
 		T_ApeMaterno	varchar(50),
 		T_Nombre		varchar(50),
-		C_Sexo			char(1),
-		D_FecNac		date
+		C_Sexo			char(1)
 	)
 
 
@@ -1094,9 +1093,9 @@ BEGIN
 
 		SET IDENTITY_INSERT ##TEMP_Persona ON
 
-		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
+		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
 		SELECT	DISTINCT A.I_PersonaID, LTRIM(RTRIM(REPLACE(P.C_NumDNI,' ', ' '))), P.C_CodTipDoc, P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, 
-				IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo), IIF(P.D_FecNac IS NULL, TA.D_FecNac, P.D_FecNac)
+				IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo)
 		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
 				INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID
 				INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
@@ -1129,14 +1128,14 @@ BEGIN
 		  WHERE TP.I_PersonaID IS NULL
 		)
 
-		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
+		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
 		SELECT DISTINCT (@I_TempPersonaID + ROW_NUMBER() OVER(ORDER BY T_ApePaterno)) AS I_PersonaID, C_NumDNI, C_CodTipDoc, 
-				T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac
+				T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
 		FROM   (SELECT	DISTINCT LTRIM(RTRIM(REPLACE(TA.C_NumDNI,' ', ' '))) C_NumDNI, 
 						IIF(TA.C_CodTipDoc IS NULL, IIF(LEN(TA.C_NumDNI) = 8, 'DI', NULL), IIF(TA.C_NumDNI IS NULL, NULL,TA.C_CodTipDoc)) AS C_CodTipDoc, 
 						LTRIM(RTRIM(TA.T_ApePaterno)) COLLATE Latin1_general_CI_AI AS T_ApePaterno, 
 						LTRIM(RTRIM(TA.T_ApeMaterno)) COLLATE Latin1_general_CI_AI AS T_ApeMaterno, 
-						LTRIM(RTRIM(TA.T_Nombre)) COLLATE Latin1_general_CI_AI AS T_Nombre, C_Sexo, NULL AS D_FecNac, TA.B_Migrable
+						LTRIM(RTRIM(TA.T_Nombre)) COLLATE Latin1_general_CI_AI AS T_Nombre, C_Sexo, TA.B_Migrable
 				FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
 						RIGHT JOIN alumnos_no_persona TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod AND TA.B_Migrable = 1					 
 				WHERE	A.I_PersonaID IS NULL
