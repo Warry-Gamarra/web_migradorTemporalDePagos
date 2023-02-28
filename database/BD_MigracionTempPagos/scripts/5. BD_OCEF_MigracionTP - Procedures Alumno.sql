@@ -1067,7 +1067,34 @@ BEGIN
 									GROUP BY C_NumDNI, C_Sexo
 									HAVING COUNT(*) > 1)
 		)
-		order by T_ApePaterno, T_ApeMaterno
+		ORDER BY T_ApePaterno, T_ApeMaterno
+
+		---
+		INSERT INTO ##NumDoc_Repetidos_sexo_diferente (I_AlumnoRowID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
+		SELECT TP.I_AlumnoRowID, TP.C_NumDNI, TP.C_CodTipDoc, TP.T_ApePaterno, TP.T_ApeMaterno, TP.T_Nombre, TP.C_Sexo
+		  FROM ##TEMP_Persona TP
+			   LEFT JOIN ##NumDoc_Repetidos_sexo_diferente NDR ON ISNULL(NDR.T_ApePaterno, '') COLLATE Latin1_general_CI_AI = ISNULL(TP.T_ApePaterno, '') COLLATE Latin1_general_CI_AI
+																  AND ISNULL(NDR.T_ApeMaterno, '') COLLATE Latin1_general_CI_AI = ISNULL(TP.T_ApeMaterno, '') COLLATE Latin1_general_CI_AI
+																  AND ISNULL(NDR.T_Nombre, '') COLLATE Latin1_general_CI_AI = ISNULL(TP.T_Nombre, '') COLLATE Latin1_general_CI_AI
+																  AND ISNULL(NDR.C_Sexo, '') COLLATE Latin1_general_CI_AI = ISNULL(TP.C_Sexo, '') COLLATE Latin1_general_CI_AI
+		WHERE EXISTS (SELECT * FROM (SELECT TP1.T_ApePaterno, TP1.T_ApeMaterno, TP1.T_Nombre, COUNT(*) R
+									   FROM ##TEMP_Persona TP1				
+									 GROUP BY TP1.T_ApePaterno, TP1.T_ApeMaterno, TP1.T_Nombre 
+									 HAVING COUNT(*) > 1) TP2
+					   WHERE NOT EXISTS (SELECT T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, COUNT(*) R FROM ##TEMP_Persona
+										 WHERE TP2.T_ApePaterno = T_ApePaterno 
+											   AND TP2.T_ApeMaterno = T_ApeMaterno 
+											   AND TP2.T_Nombre = T_Nombre
+					   					 GROUP BY T_ApePaterno, T_ApeMaterno, T_Nombre , C_Sexo
+										 HAVING COUNT(*) > 1
+										)
+							 AND TP.T_ApePaterno =  TP2.T_ApePaterno
+							 AND TP.T_ApeMaterno =  TP2.T_ApeMaterno
+							 AND TP.T_Nombre =  TP2.T_Nombre
+					 )
+			  AND NDR.I_AlumnoRowID IS NULL	
+		ORDER BY T_ApePaterno, T_ApeMaterno, T_Nombre
+		--
 
 		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
@@ -1105,17 +1132,20 @@ BEGIN
 		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
 
-	IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##NumDoc_Repetidos_sexo_diferente')
-	BEGIN
-		DROP TABLE ##NumDoc_Repetidos_sexo_diferente
-	END 
-		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_Persona')
-	BEGIN
-		DROP TABLE ##TEMP_Persona
-	END
+	--IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##NumDoc_Repetidos_sexo_diferente')
+	--BEGIN
+	--	DROP TABLE ##NumDoc_Repetidos_sexo_diferente
+	--END 
+	--	IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_Persona')
+	--BEGIN
+	--	DROP TABLE ##TEMP_Persona
+	--END
 END
 GO
 
+
+USE BD_OCEF_MigracionTP
+GO
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarDataAlumnosUnfvRepositorio')
 	DROP PROCEDURE [dbo].[USP_IU_MigrarDataAlumnosUnfvRepositorio]
@@ -1133,7 +1163,7 @@ AS
 --		@I_ProcedenciaID tinyint = 1,
 --		@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
---exec USP_IU_MigrarDataAlumnosUnfvRepositorio @C_CodAlu, @C_AnioIng, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_IU_MigrarDataAlumnosUnfvRepositorio @I_ProcedenciaID, @C_CodAlu, @C_AnioIng, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_CantAlu int = 0
@@ -1203,7 +1233,7 @@ BEGIN
 		T_ApePaterno	varchar(50),
 		T_ApeMaterno	varchar(50),
 		T_Nombre		varchar(50),
-		C_Sexo			char(1)
+		C_Sexo			char(1),
 	)
 
 	DECLARE @tbl_personas AS TABLE (
@@ -1228,70 +1258,135 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-
-		INSERT INTO @tbl_personas (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
-		SELECT	DISTINCT A.I_PersonaID, LTRIM(RTRIM(REPLACE(P.C_NumDNI,' ', ' '))), P.C_CodTipDoc, P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, 
-				IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo)
-		FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
-				INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID
-				INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
-		WHERE	(A.C_CodAlu = @C_CodAlu OR @C_CodAlu IS NULL) OR (A.C_AnioIngreso = @C_AnioIng OR @C_AnioIng IS NULL)
-				AND P.B_Eliminado = 0 
-				AND A.B_Eliminado = 0
-				AND I_ProcedenciaID = @I_ProcedenciaID
-		ORDER BY A.I_PersonaID
-		
-		SELECT * FROM @tbl_personas
-
 		DECLARE @I_TempPersonaID int
 		SET @I_TempPersonaID = IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona') 
 
 
-		;WITH alumnos_no_persona (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, I_ProcedenciaID, 
-								 C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, D_FecCarga, B_Migrado, B_Migrable)
+		;WITH cte_alumnos_persona_codalu (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
+		AS
+		(
+			SELECT	DISTINCT A.I_PersonaID, LTRIM(RTRIM(REPLACE(P.C_NumDNI,' ', ' '))) AS C_NumDNI, P.C_CodTipDoc,  
+					P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo) AS C_Sexo
+			FROM	BD_UNFV_Repositorio.dbo.TC_Persona P
+					INNER JOIN BD_UNFV_Repositorio.dbo.TC_Alumno A ON A.I_PersonaID = P.I_PersonaID
+					INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+			WHERE	A.C_CodAlu = ISNULL(@C_CodAlu, A.C_CodAlu) 
+					AND ISNULL(A.C_AnioIngreso, '') = ISNULL(@C_AnioIng, ISNULL(A.C_AnioIngreso, ''))
+					AND P.B_Eliminado = 0 
+					AND A.B_Eliminado = 0
+		)
+
+		INSERT INTO @tbl_personas (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
+							SELECT I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
+							  FROM cte_alumnos_persona_codalu
+							ORDER BY I_PersonaID
+
+		select * from @tbl_personas
+		ORDER BY I_PersonaID
+
+		;WITH cte_alumnos_persona_numdoc(I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
+		AS
+		(
+			SELECT	DISTINCT A.I_PersonaID, LTRIM(RTRIM(REPLACE(P.C_NumDNI,' ', ' '))) AS C_NumDNI, P.C_CodTipDoc,  
+					P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo) AS C_Sexo
+			FROM	BD_UNFV_Repositorio.dbo.TC_Alumno A 
+					INNER JOIN BD_UNFV_Repositorio.dbo.TC_Persona P ON A.I_PersonaID = P.I_PersonaID
+					INNER JOIN TR_Alumnos TA ON TA.C_NumDNI = P.C_NumDNI
+			WHERE	A.C_CodAlu = ISNULL(@C_CodAlu, A.C_CodAlu) 
+					AND ISNULL(A.C_AnioIngreso, '') = ISNULL(@C_AnioIng, ISNULL(A.C_AnioIngreso, ''))
+					AND P.B_Eliminado = 0 
+					AND A.B_Eliminado = 0
+		)
+
+		INSERT INTO @tbl_personas (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
+							SELECT CAP.I_PersonaID, CAP.C_NumDNI, CAP.C_CodTipDoc, CAP.T_ApePaterno, CAP.T_ApeMaterno, CAP.T_Nombre, CAP.C_Sexo
+							  FROM cte_alumnos_persona_numdoc CAP
+							       LEFT JOIN @tbl_personas TP ON CAP.I_PersonaID = TP.I_PersonaID
+							 WHERE TP.I_PersonaID IS NULL
+
+
+		;WITH cte_alumnos_no_persona (C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, I_ProcedenciaID, 
+									  C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, D_FecCarga, B_Migrado, B_Migrable)
 		AS
 		(SELECT AL.C_RcCod, AL.C_CodAlu, AL.C_NumDNI, AL.C_CodTipDoc, AL.T_ApePaterno, AL.T_ApeMaterno, AL.T_Nombre, AL.I_ProcedenciaID, 
-				AL.C_Sexo, AL.D_FecNac, AL.C_CodModIng, AL.C_AnioIngreso, AL.D_FecCarga, AL.B_Migrado, AL.B_Migrable 
+				AL.C_Sexo, AL.D_FecNac, AL.C_CodModIng, AL.C_AnioIngreso, AL.D_FecCarga, AL.B_Migrado, AL.B_Migrable				
 		   FROM TR_Alumnos AL
 				LEFT JOIN @tbl_personas TP ON ISNULL(LTRIM(RTRIM(REPLACE(AL.C_NumDNI,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.C_NumDNI,' ', ' '))), '') COLLATE Latin1_general_CI_AI 
 						  AND ISNULL(LTRIM(RTRIM(REPLACE(AL.T_ApePaterno,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.T_ApePaterno,' ', ' '))), '') COLLATE Latin1_general_CI_AI 
 						  AND ISNULL(LTRIM(RTRIM(REPLACE(AL.T_ApeMaterno,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.T_ApeMaterno,' ', ' '))), '') COLLATE Latin1_general_CI_AI 
 						  AND ISNULL(LTRIM(RTRIM(REPLACE(AL.T_Nombre,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.T_Nombre,' ', ' '))), '') COLLATE Latin1_general_CI_AI
-						  --AND ISNULL(AL.D_FecNac, '') = ISNULL(TP.D_FecNac, '') 
 						  AND ISNULL(LTRIM(RTRIM(REPLACE(AL.C_Sexo,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.C_Sexo,' ', ' '))), '') COLLATE Latin1_general_CI_AI 
-		  WHERE TP.I_PersonaID IS NULL 
+		  WHERE TP.I_PersonaID IS NULL
+				AND AL.I_ProcedenciaID = @I_ProcedenciaID
 		)
 		
-		INSERT INTO @tbl_personas2 (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
-		SELECT DISTINCT (@I_TempPersonaID + ROW_NUMBER() OVER(ORDER BY T_ApePaterno)) AS I_PersonaID, 
-				LTRIM(RTRIM(REPLACE(TA.C_NumDNI,' ', ' '))) AS C_NumDNI, 
+		INSERT INTO @tbl_personas2 (C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
+		SELECT DISTINCT LTRIM(RTRIM(REPLACE(TA.C_NumDNI,' ', ' '))) AS C_NumDNI, 
 				IIF(TA.C_CodTipDoc IS NULL, IIF(LEN(TA.C_NumDNI) = 8, 'DI', NULL), IIF(TA.C_NumDNI IS NULL, NULL,TA.C_CodTipDoc)) AS C_CodTipDoc, 
 				LTRIM(RTRIM(TA.T_ApePaterno)) COLLATE Latin1_general_CI_AI AS T_ApePaterno, 
 				LTRIM(RTRIM(TA.T_ApeMaterno)) COLLATE Latin1_general_CI_AI AS T_ApeMaterno, 
 				LTRIM(RTRIM(TA.T_Nombre)) COLLATE Latin1_general_CI_AI AS T_Nombre, C_Sexo	
-		FROM    alumnos_no_persona TA 
+		FROM    cte_alumnos_no_persona TA 
 		WHERE	TA.B_Migrable = 1
 				AND I_ProcedenciaID = @I_ProcedenciaID
+		ORDER BY 1
 
-		SELECT * FROM @tbl_personas2
 
 		SET IDENTITY_INSERT ##TEMP_Persona ON
 
 		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
-		SELECT I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
-		FROM @tbl_personas
-		UNION
-		SELECT I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
-		FROM @tbl_personas2
+							 SELECT I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
+							   FROM @tbl_personas
+
+		UPDATE ##TEMP_Persona
+		   SET T_ApePaterno = T2.T_ApePaterno,
+			   T_ApeMaterno = T2.T_ApeMaterno,
+			   T_Nombre = T2.T_Nombre,
+			   C_Sexo = T2.C_Sexo
+		  FROM @tbl_personas2 T2
+		 WHERE ##TEMP_Persona.C_NumDNI = T2.C_NumDNI
+
+		DELETE  @tbl_personas2
+		 WHERE  C_NumDNI IN (SELECT	T2.C_NumDNI
+							   FROM	@tbl_personas2 T2
+									INNER JOIN @tbl_personas T1 ON T2.C_NumDNI = T1.C_NumDNI)
+
+		select * from @tbl_personas2
+
+				
+		INSERT INTO ##TEMP_Persona (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo)
+							SELECT (@I_TempPersonaID + ROW_NUMBER() OVER(ORDER BY T2.T_ApePaterno)) AS I_PersonaID, 
+									T2.C_NumDNI, T2.C_CodTipDoc, T2.T_ApePaterno, T2.T_ApeMaterno, T2.T_Nombre, T2.C_Sexo
+							FROM	@tbl_personas2 T2
+							WHERE   NOT EXISTS (SELECT I_PersonaID FROM BD_UNFV_Repositorio.dbo.TC_Persona T1 
+												 WHERE ISNULL(T2.T_ApePaterno, '') COLLATE Latin1_general_CI_AI = ISNULL(T1.T_ApePaterno, '') COLLATE Latin1_general_CI_AI 
+													   AND ISNULL(T2.T_ApeMaterno, '') COLLATE Latin1_general_CI_AI = ISNULL(T1.T_ApeMaterno, '') COLLATE Latin1_general_CI_AI 
+													   AND ISNULL(T2.T_Nombre, '') COLLATE Latin1_general_CI_AI = ISNULL(T1.T_Nombre, '') COLLATE Latin1_general_CI_AI
+													   AND ISNULL(T2.C_Sexo, '') COLLATE Latin1_general_CI_AI = ISNULL(T1.C_Sexo, '') COLLATE Latin1_general_CI_AI
+												)
+									AND NOT EXISTS (SELECT * FROM @tbl_personas2 TP
+													WHERE EXISTS (SELECT TP1.T_ApePaterno, TP1.T_ApeMaterno, TP1.T_Nombre, COUNT(*) FROM @tbl_personas2 TP1				
+																  GROUP BY TP1.T_ApePaterno, TP1.T_ApeMaterno, TP1.T_Nombre 
+																  HAVING COUNT(*) > 1
+																		 AND TP.T_ApePaterno =  TP1.T_ApePaterno
+																		 AND TP.T_ApeMaterno =  TP1.T_ApeMaterno
+																		 AND TP.T_Nombre =  TP1.T_Nombre
+																  )
+														AND TP.C_NumDNI IS NULL
+														AND T2.T_ApePaterno =  TP.T_ApePaterno
+														AND T2.T_ApeMaterno =  TP.T_ApeMaterno
+														AND T2.T_Nombre =  TP.T_Nombre
+													)
 
 		SET IDENTITY_INSERT ##TEMP_Persona OFF
+
+		SELECT * FROM ##TEMP_Persona
 
 
 		--SET IDENTITY_INSERT BD_UNFV_Repositorio.dbo.TC_Persona ON
 
 		--MERGE BD_UNFV_Repositorio.dbo.TC_Persona AS TRG
-		--USING (SELECT DISTINCT  AP.I_PersonaID, AP.C_NumDNI, AP.C_CodTipDoc, AP.T_ApePaterno COLLATE Latin1_General_CI_AI as T_ApePaterno, 
-		--						AP.T_ApeMaterno COLLATE Latin1_General_CI_AI as T_ApeMaterno, AP.T_Nombre COLLATE Latin1_General_CI_AI as T_Nombre, 
+		--USING (SELECT DISTINCT  AP.I_PersonaID, AP.C_NumDNI, AP.C_CodTipDoc, AP.T_ApePaterno, AP.T_ApeMaterno, AP.T_Nombre,
 		--						AP.C_Sexo, NULL AS D_FecNac, 1 AS B_Migrado
 		--	   FROM ##TEMP_Persona AP) AS SRC
 		--ON TRG.I_PersonaID = SRC.I_PersonaID
@@ -1317,23 +1412,32 @@ BEGIN
 		INSERT INTO ##TEMP_AlumnoPersona (I_PersonaID, C_RcCod, C_CodAlu, C_CodModIng, C_AnioIngreso, B_Migrado)
 		SELECT A.I_PersonaID, A.C_RcCod, A.C_CodAlu, A.C_CodModIng, IIF(A.C_AnioIngreso IS NULL, TA.C_AnioIngreso, A.C_AnioIngreso), 1 AS B_Migrado
 		FROM   BD_UNFV_Repositorio.dbo.TC_Alumno A 
-				INNER JOIN (SELECT * FROM TR_Alumnos WHERE B_Migrable = 1) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+			   INNER JOIN (SELECT * FROM TR_Alumnos WHERE B_Migrable = 1) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
 		WHERE  TA.I_ProcedenciaID = @I_ProcedenciaID
 		UNION
 		SELECT TA.I_PersonaID, TA.C_RcCod, TA.C_CodAlu, TA.C_CodModIng, TA.C_AnioIngreso, TA.B_Migrado
 		FROM   BD_UNFV_Repositorio.dbo.TC_Alumno A 
-				RIGHT JOIN (SELECT TP.I_PersonaID , AL.C_RcCod, AL.C_CodAlu, AL.C_CodModIng, AL.C_AnioIngreso, AL.B_Migrado, AL.I_ProcedenciaID
-							FROM TR_Alumnos AL
+			   RIGHT JOIN (SELECT TP.I_PersonaID, AL.C_RcCod, AL.C_CodAlu, AL.C_CodModIng, AL.C_AnioIngreso, AL.B_Migrado, AL.I_ProcedenciaID
+							 FROM TR_Alumnos AL
 								  INNER JOIN ##TEMP_Persona TP ON ISNULL(LTRIM(RTRIM(REPLACE(AL.C_NumDNI,' ', ' '))), '') COLLATE Latin1_general_CI_AI = ISNULL(LTRIM(RTRIM(REPLACE(TP.C_NumDNI,' ', ' '))), '') COLLATE Latin1_general_CI_AI 
-									AND AL.T_ApePaterno COLLATE Latin1_general_CI_AI = TP.T_ApePaterno COLLATE Latin1_general_CI_AI 
-									AND AL.T_ApeMaterno COLLATE Latin1_general_CI_AI = TP.T_ApeMaterno COLLATE Latin1_general_CI_AI 
-									AND AL.T_Nombre COLLATE Latin1_general_CI_AI = TP.T_Nombre COLLATE Latin1_general_CI_AI
-								  --AND ISNULL(AL.D_FecNac, '') = ISNULL(TP.D_FecNac, '')
-								  AND ISNULL(AL.C_Sexo, '') COLLATE Latin1_general_CI_AI = ISNULL(TP.C_Sexo, '') COLLATE Latin1_general_CI_AI 
-						   ) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+											AND AL.T_ApePaterno COLLATE Latin1_general_CI_AI = TP.T_ApePaterno COLLATE Latin1_general_CI_AI 
+											AND AL.T_ApeMaterno COLLATE Latin1_general_CI_AI = TP.T_ApeMaterno COLLATE Latin1_general_CI_AI 
+											AND AL.T_Nombre COLLATE Latin1_general_CI_AI = TP.T_Nombre COLLATE Latin1_general_CI_AI
+											AND ISNULL(AL.C_Sexo, '') COLLATE Latin1_general_CI_AI = ISNULL(TP.C_Sexo, '') COLLATE Latin1_general_CI_AI 
+						    WHERE B_Migrable = 1
+							UNION
+							SELECT TP.I_PersonaID, AL.C_RcCod, AL.C_CodAlu, AL.C_CodModIng, AL.C_AnioIngreso, AL.B_Migrado, AL.I_ProcedenciaID
+							 FROM TR_Alumnos AL
+								  INNER JOIN ##TEMP_Persona TP ON AL.T_ApePaterno COLLATE Latin1_general_CI_AI = TP.T_ApePaterno COLLATE Latin1_general_CI_AI 
+											AND AL.T_ApeMaterno COLLATE Latin1_general_CI_AI = TP.T_ApeMaterno COLLATE Latin1_general_CI_AI 
+											AND AL.T_Nombre COLLATE Latin1_general_CI_AI = TP.T_Nombre COLLATE Latin1_general_CI_AI
+											AND ISNULL(AL.C_Sexo, '') COLLATE Latin1_general_CI_AI = ISNULL(TP.C_Sexo, '') COLLATE Latin1_general_CI_AI 
+						    WHERE B_Migrable = 1
+							) TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
 		WHERE  A.I_PersonaID IS NULL
-			AND TA.I_ProcedenciaID = @I_ProcedenciaID
+			   AND TA.I_ProcedenciaID = @I_ProcedenciaID
 			  
+		SELECT * FROM ##TEMP_AlumnoPersona
 
 		--MERGE BD_UNFV_Repositorio.dbo.TC_Alumno AS TRG
 		--USING (SELECT DISTINCT AP.I_PersonaID, AP.C_RcCod, AP.C_CodAlu, AP.C_CodModIng, AP.C_AnioIngreso, AP.B_Migrado 
@@ -1341,7 +1445,6 @@ BEGIN
 		--ON	TRG.C_RcCod COLLATE Latin1_general_CI_AI = SRC.C_RcCod COLLATE Latin1_general_CI_AI 
 		--	AND TRG.C_CodAlu COLLATE Latin1_general_CI_AI = SRC.C_CodAlu COLLATE Latin1_general_CI_AI 
 		--	AND ISNULL(TRG.C_CodModIng, '')	COLLATE Latin1_general_CI_AI = ISNULL(SRC.C_CodModIng, '') COLLATE Latin1_general_CI_AI
-		--	--AND TRG.C_AnioIngreso = SRC.C_AnioIngreso		
 		--WHEN MATCHED AND SRC.B_Migrado = 0 THEN
 		--	UPDATE SET	TRG.I_PersonaID	 = SRC.I_PersonaID,
 		--				TRG.C_AnioIngreso = SRC.C_AnioIngreso,	
@@ -1357,30 +1460,21 @@ BEGIN
 		--SET		t_Alumnos.B_Migrado = 1,
 		--		t_Alumnos.D_FecMigrado = @D_FecProceso
 		--FROM TR_Alumnos AS t_Alumnos
-		--INNER JOIN 	#Tbl_output_alumno as t_out_a ON t_out_a.C_RcCod = t_Alumnos.C_RcCod AND t_out_a.C_CodAlu COLLATE Latin1_general_CI_AI = t_Alumnos.C_CodAlu COLLATE Latin1_general_CI_AI 
-		--			AND ISNULL(t_out_a.C_CodModIng, '') COLLATE Latin1_general_CI_AI  = ISNULL(t_Alumnos.C_CodModIng, '') COLLATE Latin1_general_CI_AI 
-		--INNER JOIN 	#Tbl_output_persona as t_out_p ON t_out_p.I_PersonaID = t_out_a.INS_I_PersonaID
+		--	 INNER JOIN 	#Tbl_output_alumno as t_out_a ON t_out_a.C_RcCod = t_Alumnos.C_RcCod AND t_out_a.C_CodAlu COLLATE Latin1_general_CI_AI = t_Alumnos.C_CodAlu COLLATE Latin1_general_CI_AI 
+		--	 			AND ISNULL(t_out_a.C_CodModIng, '') COLLATE Latin1_general_CI_AI  = ISNULL(t_Alumnos.C_CodModIng, '') COLLATE Latin1_general_CI_AI 
+		--	 INNER JOIN 	#Tbl_output_persona as t_out_p ON t_out_p.I_PersonaID = t_out_a.INS_I_PersonaID
 
 
-		--SET @I_CantAlu = (SELECT COUNT(*) FROM ##TEMP_AlumnoPersona AP 
-		--									   INNER JOIN TR_Alumnos A ON AP.C_CodAlu COLLATE Latin1_general_CI_AI = A.C_CodAlu COLLATE Latin1_general_CI_AI 
-		--															      AND AP.C_RcCod COLLATE Latin1_general_CI_AI = A.C_RcCod COLLATE Latin1_general_CI_AI 
-		--																  AND A.B_Migrable = 1)
+		SET @I_CantAlu = (SELECT COUNT(*) FROM ##TEMP_AlumnoPersona AP 
+											   INNER JOIN TR_Alumnos A ON AP.C_CodAlu COLLATE Latin1_general_CI_AI = A.C_CodAlu COLLATE Latin1_general_CI_AI 
+																	      AND AP.C_RcCod COLLATE Latin1_general_CI_AI = A.C_RcCod COLLATE Latin1_general_CI_AI 
+																		  AND A.B_Migrable = 1)
 
-		--SET @I_Insertados_persona = (SELECT COUNT(*) FROM #Tbl_output_persona WHERE accion = 'INSERT')
-		--SET @I_Insertados_alumno = (SELECT COUNT(*) FROM #Tbl_output_alumno WHERE accion = 'INSERT')
-		--SET @I_Actualizados_persona = (SELECT COUNT(*) FROM #Tbl_output_persona WHERE accion = 'UPDATE' AND B_Removido = 0)
-		--SET @I_Actualizados_alumno = (SELECT COUNT(*) FROM #Tbl_output_alumno WHERE accion = 'UPDATE' AND B_Removido = 0)
+		SET @I_Insertados_persona = (SELECT COUNT(*) FROM #Tbl_output_persona WHERE accion = 'INSERT')
+		SET @I_Insertados_alumno = (SELECT COUNT(*) FROM #Tbl_output_alumno WHERE accion = 'INSERT')
+		SET @I_Actualizados_persona = (SELECT COUNT(*) FROM #Tbl_output_persona WHERE accion = 'UPDATE' AND B_Removido = 0)
+		SET @I_Actualizados_alumno = (SELECT COUNT(*) FROM #Tbl_output_alumno WHERE accion = 'UPDATE' AND B_Removido = 0)
 		
-		--IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_Persona')
-		--BEGIN
-		--	DROP TABLE ##TEMP_Persona
-		--END
-
-		--IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_AlumnoPersona')
-		--BEGIN
-		--	DROP TABLE ##TEMP_AlumnoPersona
-		--END
 
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1
@@ -1393,6 +1487,18 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
 	END CATCH
+
+
+	--IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_Persona')
+	--BEGIN
+	--	DROP TABLE ##TEMP_Persona
+	--END
+
+	--IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_AlumnoPersona')
+	--BEGIN
+	--	DROP TABLE ##TEMP_AlumnoPersona
+	--END
+
 END
 GO
 

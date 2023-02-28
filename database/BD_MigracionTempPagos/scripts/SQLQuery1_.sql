@@ -1049,36 +1049,75 @@ order by p.C_NumDNI
 SELECT * FROM ##TEMP_Persona where C_NUMDNI = '73240463'
 select * from BD_OCEF_TemporalPagos.dbo.alumnos where C_NUMDNI = '73240463'
 select * from TR_Alumnos WHERE C_NumDNI = '46037558'
-SELECT * FROM BD_UNFV_Repositorio..TC_Persona WHERE C_NumDNI = '73240463'
 
+SELECT * FROM BD_UNFV_Repositorio..TC_Persona WHERE C_NumDNI = '77328587'
+select * from BD_UNFV_Repositorio..TC_Alumno where I_PersonaID = 20977
+select * from TR_Alumnos where C_NumDNI = '77328587'
+select * from ##TEMP_Persona where C_NumDNI = '77010403'
 
 select * from TR_Alumnos where C_RcCod = '001'and C_CodAlu = '0008100789'
 select * from BD_UNFV_Repositorio..TC_Alumno where C_RcCod = '001'and C_CodAlu = '0008100789'
 
 select * from ##TEMP_AlumnoPersona where C_RcCod = '001'and C_CodAlu = '0008100789'
+SELECT * FROM BD_UNFV_Repositorio..TC_Persona WHERE T_ApePaterno = 'ANGULO' and T_ApeMaterno = 'ESCALANTE'
+SELECT * FROM BD_UNFV_Repositorio..TC_Persona WHERE T_ApePaterno = 'MELCHOR' and T_ApeMaterno = 'QUISPE'
+SELECT * FROM BD_UNFV_Repositorio..TC_Persona WHERE T_ApePaterno = 'VALLEJOS' and T_ApeMaterno = 'VASQUEZ'
+
+select * from ##TEMP_Persona WHERE T_ApePaterno = 'ANGULO' and T_ApeMaterno = 'ESCALANTE'
+
+
+SELECT COUNT(*) FROM ##TEMP_Persona 
+SELECT IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona') 
 
 SELECT PER.* FROM  BD_UNFV_Repositorio..TC_Persona PER INNER JOIN (
-SELECT C_NumDNI, count(*) cantidad FROM BD_UNFV_Repositorio..TC_Persona where C_NumDNI is not null group by C_NumDNI having COUNT(*) > 1
+SELECT C_NumDNI, count(*) cantidad FROM BD_UNFV_Repositorio..TC_Persona where C_NumDNI is not null AND B_Eliminado = 0
+ group by C_NumDNI having COUNT(*) > 1
 ) REP ON PER.C_NumDNI = REP.C_NumDNI 
-where B_Eliminado = 0
 ORDER BY PER.C_NumDNI
 
 
 
+SELECT PER.* FROM  BD_UNFV_Repositorio..TC_Alumno PER INNER JOIN (
+SELECT C_CodAlu, count(*) cantidad FROM BD_UNFV_Repositorio..TC_Alumno where C_CodAlu is not null AND B_Eliminado = 0
+ group by C_CodAlu having COUNT(*) > 1
+) REP ON PER.C_CodAlu = REP.C_CodAlu 
+ORDER BY PER.C_CodAlu
+
+
+SELECT * FROM ##TEMP_Persona TP
+WHERE EXISTS (SELECT TP1.T_ApePaterno, TP1.T_ApeMaterno, TP1.T_Nombre, COUNT(*) FROM ##TEMP_Persona TP1				
+				GROUP BY TP1.T_ApePaterno, TP1.T_ApeMaterno, TP1.T_Nombre 
+				HAVING COUNT(*) > 1
+						AND TP.T_ApePaterno =  TP1.T_ApePaterno
+						AND TP.T_ApeMaterno =  TP1.T_ApeMaterno
+						AND TP.T_Nombre =  TP1.T_Nombre
+				)
+order by T_ApePaterno, T_ApeMaterno, T_Nombre
+
+select * from TR_Alumnos WHERE T_ApePaterno = 'TORRES' and T_ApeMaterno = 'ARBIETO'
+
+select * from BD_UNFV_Repositorio.dbo.TC_Alumno where I_PersonaID = 796
 
 select * from TR_Ec_Obl WHERE B_Migrado = 1
 
 SELECT * FROM VW_ObservacionesTabla WHERE T_TablaNom = 'TR_Ec_obl'
 SELECT * FROM VW_ObservacionesTabla WHERE T_TablaNom = 'TR_Ec_det'
 
-
+SELECT	DISTINCT A.I_PersonaID, LTRIM(RTRIM(REPLACE(P.C_NumDNI,' ', ' '))) AS C_NumDNI, P.C_CodTipDoc,  
+		P.T_ApePaterno, P.T_ApeMaterno, P.T_Nombre, IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo) AS C_Sexo
+FROM	BD_UNFV_Repositorio.dbo.TC_Persona P
+		INNER JOIN BD_UNFV_Repositorio.dbo.TC_Alumno A ON A.I_PersonaID = P.I_PersonaID
+		INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+WHERE	P.B_Eliminado = 0 
+		AND A.B_Eliminado = 0
+order by 1
 
 select count(*) from TI_ObservacionRegistroTabla
 select max(I_ObsTablaID) from TI_ObservacionRegistroTabla
 
 select * from TC_CatalogoTabla 
 
-
+select * from TC_CatalogoObservacion 
 
 
 SELECT IDENT_CURRENT('TI_ObservacionRegistroTabla')
@@ -1132,58 +1171,31 @@ select * from ##TEMP_Persona order by I_PersonaID
 
 
 
-select * from ##TEMP_AlumnoPersona WHERE C_RcCod = 'M63' AND C_CodAlu = '2010325936'
+select * from ##TEMP_AlumnoPersona WHERE C_RcCod = '010' AND C_CodAlu = '2008180647'
 select * from ##TEMP_Persona WHERE I_PersonaID IN (31767
 ,31769)
 select * from ##TEMP_Persona WHERE C_NumDNI = '48486091'
 
 select * from TR_Alumnos where C_NumDNI = '43231400'
-select * from BD_UNFV_Repositorio..TC_Persona where C_NumDNI = '75667604'
+select * from BD_UNFV_Repositorio..TC_Persona where C_NumDNI = '10087163'
 select * from ##TEMP_Persona WHERE C_NumDNI = '43231400'
 
 
-SELECT COUNT(*) FROM ##TEMP_Persona 
-SELECT IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona') 
+		SELECT IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona') 
+
+
 SELECT distinct PER.* FROM ##TEMP_Persona per INNER JOIN (
 SELECT C_NumDNI, count(*) cantidad FROM ##TEMP_Persona where C_NumDNI is not null group by C_NumDNI having COUNT(*) > 1
 ) REP ON PER.C_NumDNI = REP.C_NumDNI 
 ORDER BY PER.C_NumDNI
 
-SELECT I_AlumnoRowID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
-		FROM ##TEMP_Persona WHERE C_NumDNI IN (
-				SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM ##TEMP_Persona
-						WHERE C_NumDNI IS NOT NULL
-						GROUP BY C_NumDNI
-						HAVING COUNT(*) > 1) T1
-				WHERE NOT EXISTS (SELECT C_NumDNI, C_Sexo, COUNT(*) R FROM ##TEMP_Persona
-									WHERE C_NumDNI IS NOT NULL AND T1.C_NumDNI = C_NumDNI
-									GROUP BY C_NumDNI, C_Sexo
-									HAVING COUNT(*) > 1)
-			)
-
-SELECT IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona') 
-SELECT distinct PER.* FROM ##TEMP_Persona per
 
 
-SELECT * FROM TR_Alumnos WHERE T_ApePaterno = 'COLLINS'
-select * from TC_CatalogoObservacion where I_ObservID = 41
-SELECT * FROM TR_Alumnos WHERE EXISTS (SELECT I_AlumnoRowID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo
-		FROM ##TEMP_Persona WHERE C_NumDNI IN (
-				SELECT C_NumDNI FROM (SELECT C_NumDNI, COUNT(*) R FROM ##TEMP_Persona
-						WHERE C_NumDNI IS NOT NULL
-						GROUP BY C_NumDNI
-						HAVING COUNT(*) > 1) T1
-				WHERE NOT EXISTS (SELECT C_NumDNI, C_Sexo, COUNT(*) R FROM ##TEMP_Persona
-									WHERE C_NumDNI IS NOT NULL AND T1.C_NumDNI = C_NumDNI
-									GROUP BY C_NumDNI, C_Sexo
-									HAVING COUNT(*) > 1)
-			)
-			AND I_RowID = TR_Alumnos.I_RowID
-)
 
-select * from ##NumDoc_Repetidos_sexo_diferente
-
-select * from ##NumDoc_Repetidos_nombres_diferentes
-
-
-select * from TR_Alumnos where B_Correcto = 1
+declare @C_CodAlu  varchar(20) = null,
+		@C_AnioIng  smallint = null,
+		@I_ProcedenciaID tinyint = 1,
+		@B_Resultado  bit,
+		@T_Message	  nvarchar(4000)
+exec USP_IU_MigrarDataAlumnosUnfvRepositorio @I_ProcedenciaID, @C_CodAlu, @C_AnioIng, @B_Resultado output, @T_Message output
+select @B_Resultado as resultado, @T_Message as mensaje
