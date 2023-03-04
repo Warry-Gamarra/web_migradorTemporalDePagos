@@ -77,7 +77,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersona((int)procedencia);
             alumnoRepository.ValidarCodigosAlumnoRemovidos((int)procedencia);
             alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo((int)procedencia);
-            alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersonaRepo((int)procedencia);
+            alumnoRepository.ValidarSexoDiferenteMismoAlumnoRepo((int)procedencia);
+            alumnoRepository.ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo((int)procedencia);
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
@@ -108,10 +109,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             Response result_CorrespondenciaNumDoc = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona((int)procedencia);
             Response result_SexoDiferenteMismoDoc = alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersona((int)procedencia);
+            Response result_DniDiferenteMismoCodAlu = alumnoRepository.ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo((int)procedencia);
             Response result_CodigosAlumnoRemovidos = alumnoRepository.ValidarCodigosAlumnoRemovidos((int)procedencia);
 
             Response result_CorrespondenciaNumDocRepo = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo((int)procedencia);
-            Response result_SexoDiferenteMismoDocRepo = alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersonaRepo((int)procedencia);
+            Response result_SexoDiferenteMismoDocRepo = alumnoRepository.ValidarSexoDiferenteMismoAlumnoRepo((int)procedencia);
 
             result.IsDone = result_CaracteresEspeciales.IsDone &&
                             result_CodigoCarreraAlumno.IsDone &&
@@ -119,6 +121,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                             result_AnioIngresoAlumno.IsDone &&
                             result_CorrespondenciaNumDoc.IsDone &&
                             result_SexoDiferenteMismoDoc.IsDone &&
+                            result_DniDiferenteMismoCodAlu.IsDone &&
                             result_SexoDiferenteMismoDocRepo.IsDone;
 
             result.Message = $"    <dl class=\"row text-justify\">" +
@@ -141,6 +144,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_CorrespondenciaNumDoc.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_DniDiferenteMismoCodAlu.Message}</p>" +
                              $"        </dd>" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento Repositorio</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
