@@ -145,4 +145,4 @@ CREATE TABLE TC_CarreraProfesionalProcedencia
 	CONSTRAINT PK_CarreraProfesionalProcedencia PRIMARY KEY (C_CodRc),
 	CONSTRAINT PK_CarreraProfesionalProcedencia_Procedencia FOREIGN KEY (I_ProcedenciaID) REFERENCES TC_ProcedenciaData(I_ProcedenciaID)
 )
-
+GO

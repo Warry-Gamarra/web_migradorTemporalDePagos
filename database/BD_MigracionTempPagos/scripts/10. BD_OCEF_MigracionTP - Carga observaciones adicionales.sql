@@ -25,6 +25,7 @@ GO
 --cambio 20230116
 
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (47, 'El valor del campo <Sexo> prensenta valores distintos para misma persona en la base de destino', 'SEXO ERRADO', NULL)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (48, 'El valor del campo <DNI> prensenta valores distintos para el mismo código de alumno', 'DNI ERRADO', NULL)
 
 DECLARE @I_ProcedenciaID tinyint = 0
 

@@ -898,7 +898,7 @@ order by p.C_NumDNI
 
 SELECT * FROM ##TEMP_Persona where C_NUMDNI = '73240463'
 select * from BD_OCEF_TemporalPagos.dbo.alumnos where C_NUMDNI = '73240463'
-select * from TR_Alumnos WHERE C_NumDNI = '46037558'
+select * from TR_Alumnos WHERE C_NumDNI = '2008230617'
 
 SELECT * FROM BD_UNFV_Repositorio..TC_Persona WHERE C_NumDNI = '77328587'
 SELECT * FROM BD_UNFV_Repositorio..TC_Persona WHERE I_PersonaID = 24256
@@ -909,7 +909,7 @@ select * from TR_Alumnos where C_NumDNI = '70092156'
 select * from ##TEMP_Persona where C_NumDNI = '77010403'
 
 select * from TR_Alumnos where C_RcCod = '001'and C_CodAlu = '0008100789'
-select * from BD_UNFV_Repositorio..TC_Alumno where C_CodAlu = '2011013394'
+select * from BD_UNFV_Repositorio..TC_Alumno where C_CodAlu = '2013020021'
 
 select * from ##TEMP_AlumnoPersona where C_RcCod = '001'and C_CodAlu = '0008100789'
 SELECT * FROM BD_UNFV_Repositorio..TC_Persona WHERE T_ApePaterno = 'ANGULO' and T_ApeMaterno = 'ESCALANTE'
@@ -944,12 +944,17 @@ ORDER BY PER.C_CodAlu
 
 
 SELECT * FROM ##TEMP_Persona TP
-WHERE EXISTS (SELECT TP1.T_ApePaterno, TP1.T_ApeMaterno, TP1.T_Nombre, COUNT(*) FROM ##TEMP_Persona TP1				
-				GROUP BY TP1.T_ApePaterno, TP1.T_ApeMaterno, TP1.T_Nombre 
+WHERE EXISTS (SELECT TP1.T_ApePaterno COLLATE Latin1_general_CI_AI,
+					 TP1.T_ApeMaterno COLLATE Latin1_general_CI_AI,
+					 TP1.T_Nombre COLLATE Latin1_general_CI_AI,
+					 COUNT(*) FROM ##TEMP_Persona TP1				
+				GROUP BY TP1.T_ApePaterno COLLATE Latin1_general_CI_AI,
+						 TP1.T_ApeMaterno COLLATE Latin1_general_CI_AI,
+						 TP1.T_Nombre COLLATE Latin1_general_CI_AI
 				HAVING COUNT(*) > 1
-						AND TP.T_ApePaterno =  TP1.T_ApePaterno
-						AND TP.T_ApeMaterno =  TP1.T_ApeMaterno
-						AND TP.T_Nombre =  TP1.T_Nombre
+						AND TP.T_ApePaterno = TP1.T_ApePaterno COLLATE Latin1_general_CI_AI
+						AND TP.T_ApeMaterno = TP1.T_ApeMaterno COLLATE Latin1_general_CI_AI
+						AND TP.T_Nombre =  TP1.T_Nombre COLLATE Latin1_general_CI_AI
 				)
 order by T_ApePaterno, T_ApeMaterno, T_Nombre
 
@@ -967,24 +972,45 @@ order by TP.C_RcCod, TP.C_CodAlu
 
 
 
-select * from TR_Alumnos WHERE C_NumDNI = '45771170'
+
+
+select * from TR_Alumnos A
+right join ##TEMP_AlumnoPersona TA on a.C_RcCod = ta.C_RcCod	AND a.C_CodAlu =  ta.C_CodAlu
+	where A.C_CodAlu is null
+	 and a.I_ProcedenciaID = 2 and B_Migrable = 1
+order by a.T_ApePaterno, a.T_ApeMaterno, a.T_Nombre
+
+
+SELECT min(i_PersonaID) over (partition by C_CodAlu) as max_i_persona, * FROM ##TEMP_AlumnoPersona TP
+WHERE EXISTS (SELECT TP1.C_CodAlu, TP1.C_RcCod, COUNT(*) FROM ##TEMP_AlumnoPersona TP1				
+				GROUP BY TP1.C_RcCod, TP1.C_CodAlu
+				HAVING COUNT(*) > 1
+						AND TP.C_CodAlu =  TP1.C_CodAlu
+						AND TP.C_RcCod =  TP1.C_RcCod
+				)
+order by TP.C_RcCod, TP.C_CodAlu
+
+
+select * from TR_Alumnos A
+left join ##TEMP_AlumnoPersona TA on a.C_RcCod = ta.C_RcCod	AND a.C_CodAlu =  ta.C_CodAlu
+	where ta.C_CodAlu is null
+	 and a.I_ProcedenciaID = 2 and B_Migrable = 1
+order by a.T_ApePaterno, a.T_ApeMaterno, a.T_Nombre
+
+select * from ##temp_persona where c_numdni = '70559900'
+select * from TR_Alumnos WHERE C_NumDNI = '70559900'
+
 select * from TR_Alumnos WHERE C_NumDNI = '45771176'
 
-select * from TR_Alumnos WHERE T_ApePaterno = 'CHARRI' and T_ApeMaterno = 'COZ'
+select * from TR_Alumnos WHERE T_ApePaterno = 'AMES' and T_ApeMaterno = 'GANVINI'
 
 select * from TR_Alumnos WHERE T_ApePaterno = 'VENTO' and T_ApeMaterno = 'ROJAS'
-select * from ##TEMP_Persona where I_PersonaID IN (18968
-,21053
-,19012
-,24290
-,958
-,20568
-,18970
-,24256)
+select * from ##TEMP_Persona where I_PersonaID IN (49942,
+49941)
 ORDER BY 4,5,6
 
-select * from TR_Alumnos WHERE C_CodAlu = '2014009308'
-select * from BD_UNFV_Repositorio.dbo.VW_Alumnos where C_CodAlu = '2013018786'
+select * from TR_Alumnos WHERE C_CodAlu = '2009331309'
+select * from BD_UNFV_Repositorio.dbo.VW_Alumnos where C_CodAlu = '48877036'
 
 select * from TR_Ec_Obl WHERE B_Migrado = 1
 
