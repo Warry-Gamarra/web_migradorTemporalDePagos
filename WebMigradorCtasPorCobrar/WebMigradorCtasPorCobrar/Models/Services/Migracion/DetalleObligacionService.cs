@@ -5,8 +5,11 @@ using System.Web;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
-    public class DetalleObservacionService
+    public class DetalleObligacionService
     {
-
+        public int ObtenerObligacionesDetalle(int detOblID)
+        {
+            return detOblID;
+        }
     }
 }

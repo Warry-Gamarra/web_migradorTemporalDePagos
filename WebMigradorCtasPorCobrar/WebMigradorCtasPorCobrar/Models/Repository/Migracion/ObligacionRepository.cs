@@ -29,7 +29,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-
         public static Obligacion ObtenerPorID(int obligacionID)
         {
             Obligacion result;
@@ -46,7 +45,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-
 
         public static IEnumerable<Obligacion> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
         {
@@ -69,27 +67,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-
-        public static IEnumerable<DetalleObligacion> ObtenerDetalle(int obligacionID)
-        {
-            IEnumerable<DetalleObligacion> result;
-
-            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
-            {
-                result = connection.Query<DetalleObligacion>("SELECT ec_det.*, '(' + CAST(cp_pri.id_cp as varchar) + ') ' + cp_pri.Descripcio AS Concepto_desc " +
-                                                               "FROM TR_Ec_det ec_det " +
-                                                                    "LEFT JOIN TR_Cp_Pri cp_pri ON ec_det.concepto = cp_pri.id_cp AND cp_pri.eliminado = 0 " +
-                                                            "WHERE I_OblRowID = @I_OblRowID " +
-                                                                  "AND ec_det.concepto_f = 0 " +
-                                                             "ORDER BY ec_det.Eliminado ASC",
-                                                              new { I_OblRowID = obligacionID },
-                                                              commandType: CommandType.Text, commandTimeout: 1200);
-            }
-
-            return result;
-        }
-
-
         public static IEnumerable<Obligacion> ObtenerPorAlumno(string CodAlu, string CodRc)
         {
             IEnumerable<Obligacion> result;
@@ -103,22 +80,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-
-
-        public static IEnumerable<DetalleObligacion> ObtenerDetallePorAlumno(string CodAlu, string CodRc, double ObligacionID)
-        {
-            IEnumerable<DetalleObligacion> result;
-
-            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
-            {
-                result = connection.Query<DetalleObligacion>("SELECT * FROM TR_Ec_det WHERE I_OblRowID = @I_OblRowID AND Cod_alu = @Cod_alu AND Cod_RC = @Cod_RC",
-                                                              new { I_OblRowID = ObligacionID, Cod_alu = CodAlu, Cod_Rc = CodRc },
-                                                              commandType: CommandType.Text, commandTimeout: 1200);
-            }
-
-            return result;
-        }
-
 
         public static DataTable ObtenerReporteObservados(int procedenciaID, int observacionID, int tablaID)
         {
@@ -148,7 +109,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-
 
         public Response CopiarRegistrosCabecera(int procedenciaID, string schemaDB, int? anioIni, int? anioFin)
         {
@@ -182,40 +142,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-
-        public Response CopiarRegistrosDetalle(int procedenciaID, string schemaDB, int? anioIni, int? anioFin)
-        {
-            Response result = new Response();
-            DynamicParameters parameters = new DynamicParameters();
-
-            try
-            {
-                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
-                {
-                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
-                    parameters.Add(name: "T_SchemaDB", dbType: DbType.String, size: 20, value: schemaDB);
-                    parameters.Add(name: "T_AnioIni", dbType: DbType.String, value: anioIni);
-                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, value: anioFin);
-
-                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
-                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
-
-                    connection.Execute("USP_IU_CopiarTablaDetalleObligacionesPago", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
-
-                    result.IsDone = parameters.Get<bool>("B_Resultado");
-                    result.Message = parameters.Get<string>("T_Message");
-                }
-            }
-            catch (Exception ex)
-            {
-                result.IsDone = false;
-                result.Message = ex.Message;
-            }
-
-            return result;
-        }
-
-
         public Response InicializarEstadoValidacionObligacionPago(int procedenciaID)
         {
             Response result = new Response();
@@ -244,37 +170,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-
-
-        public Response InicializarEstadoValidacionDetalleObligacionPago(int procedenciaID)
-        {
-            Response result = new Response();
-            DynamicParameters parameters = new DynamicParameters();
-
-            try
-            {
-                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
-                {
-                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
-
-                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
-                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
-
-                    connection.Execute("USP_U_InicializarEstadoValidacionDetalleObligacionPago", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
-
-                    result.IsDone = parameters.Get<bool>("B_Resultado");
-                    result.Message = parameters.Get<string>("T_Message");
-                }
-            }
-            catch (Exception ex)
-            {
-                result.IsDone = false;
-                result.Message = ex.Message;
-            }
-
-            return result;
-        }
-
 
         public Response ValidarAlumnoCabeceraObligacion(int procedenciaID, int? anioIni, int? anioFin)
         {
@@ -306,7 +201,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-
         public Response ValidarAnioEnCabeceraObligacion(int procedenciaID)
         {
             Response result = new Response();
@@ -334,7 +228,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-
 
         public Response ValidarPeriodoEnCabeceraObligacion(int procedenciaID)
         {
@@ -364,7 +257,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-
         public Response ValidarFechaVencimientoCuotaObligacion(int procedenciaID)
         {
             Response result = new Response();
@@ -392,7 +284,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-
 
         public Response ValidarObligacionCuotaPagoMigrada(int procedenciaID)
         {
@@ -422,7 +313,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-
         public Response ValidarProcedenciaObligacionCuotaPago(int procedenciaID)
         {
             Response result = new Response();
@@ -451,36 +341,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-
-        public Response ValidarDetalleObligacion(int procedenciaID)
-        {
-            Response result = new Response();
-            DynamicParameters parameters = new DynamicParameters();
-
-            try
-            {
-                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
-                {
-                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
-                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
-                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
-
-                    connection.Execute("USP_U_ValidarDetalleObligacion", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
-
-                    result.IsDone = parameters.Get<bool>("B_Resultado");
-                    result.Message = parameters.Get<string>("T_Message");
-                }
-            }
-            catch (Exception ex)
-            {
-                result.IsDone = false;
-                result.Message = ex.Message;
-            }
-
-            return result;
-        }
-
-
         public Response ValidarDetalleObligacionConceptoPago(int procedenciaID)
         {
             Response result = new Response();
@@ -508,36 +368,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-
-
-        public Response ValidarDetalleObligacionConceptoPagoMigrado(int procedenciaID)
-        {
-            Response result = new Response();
-            DynamicParameters parameters = new DynamicParameters();
-
-            try
-            {
-                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
-                {
-                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
-                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
-                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
-
-                    connection.Execute("USP_U_ValidarDetalleObligacionConceptoPagoMigrado", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
-
-                    result.IsDone = parameters.Get<bool>("B_Resultado");
-                    result.Message = parameters.Get<string>("T_Message");
-                }
-            }
-            catch (Exception ex)
-            {
-                result.IsDone = false;
-                result.Message = ex.Message;
-            }
-
-            return result;
-        }
-
 
         public Response MigrarDataObligacionesCtasPorCobrar(int procedenciaID, int? procesoID, int? anioIni, int? anioFin)
         {
@@ -590,6 +420,264 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response SaveCuotaPagoObligacion(Obligacion obligacion)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    string sqlCommand = "UPDATE TR_Ec_Obl SET Cuota_pago = @Cuota_Pago, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
+                                        "WHERE I_RowID = @I_RowID;";
+
+                    rowCount = connection.Execute(sqlCommand, new
+                    {
+                        Cuota_pago = obligacion.Cuota_pago,
+                        I_RowID = obligacion.I_RowID,
+                        B_Actualizado = obligacion.B_Actualizado,
+                        D_FecActualiza = obligacion.D_FecActualiza
+                    },
+                    commandTimeout: 3600,
+                    commandType: CommandType.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response SavePeriodoObligacion(Obligacion obligacion)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    string sqlCommand = "UPDATE TR_Ec_Obl SET P = @P, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
+                                        "WHERE I_RowID = @I_RowID;";
+
+                    rowCount = connection.Execute(sqlCommand, new
+                    {
+                        P = obligacion.P,
+                        I_Periodo = obligacion.I_Periodo,
+                        I_RowID = obligacion.I_RowID,
+                        B_Actualizado = obligacion.B_Actualizado,
+                        D_FecActualiza = obligacion.D_FecActualiza
+                    },
+                    commandTimeout: 3600,
+                    commandType: CommandType.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response SaveAnioObligacion(Obligacion obligacion)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    string sqlCommand = "UPDATE TR_Ec_Obl SET Ano = @Ano, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
+                                        "WHERE I_RowID = @I_RowID;";
+
+                    rowCount = connection.Execute(sqlCommand, new
+                    {
+                        Ano = obligacion.Ano,
+                        I_RowID = obligacion.I_RowID,
+                        B_Actualizado = obligacion.B_Actualizado,
+                        D_FecActualiza = obligacion.D_FecActualiza
+                    },
+                    commandTimeout: 3600,
+                    commandType: CommandType.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response SaveMontoObligacion(Obligacion obligacion)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    string sqlCommand = "UPDATE TR_Ec_Obl SET Monto = @Monto, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
+                                        "WHERE I_RowID = @I_RowID;";
+
+                    rowCount = connection.Execute(sqlCommand, new
+                    {
+                        Monto = obligacion.Monto,
+                        I_RowID = obligacion.I_RowID,
+                        B_Actualizado = obligacion.B_Actualizado,
+                        D_FecActualiza = obligacion.D_FecActualiza
+                    },
+                    commandTimeout: 3600,
+                    commandType: CommandType.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response SaveEstadoObligacion(Obligacion obligacion)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    string sqlCommand = "UPDATE TR_Ec_Obl SET Pagado = @Pagado, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
+                                        "WHERE I_RowID = @I_RowID;";
+
+                    rowCount = connection.Execute(sqlCommand, new
+                    {
+                        Pagado = obligacion.Pagado,
+                        I_RowID = obligacion.I_RowID,
+                        B_Actualizado = obligacion.B_Actualizado,
+                        D_FecActualiza = obligacion.D_FecActualiza
+                    },
+                    commandTimeout: 3600,
+                    commandType: CommandType.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response SaveEstudianteObligacion(Obligacion obligacion)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    string sqlCommand = "UPDATE TR_Ec_Obl SET Cod_alu = @Cod_alu, Cod_RC = @Cod_RC, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
+                                        "WHERE I_RowID = @I_RowID;";
+
+                    rowCount = connection.Execute(sqlCommand, new
+                    {
+                        Cod_RC = obligacion.Cod_RC,
+                        Cod_alu = obligacion.Cod_alu,
+                        I_RowID = obligacion.I_RowID,
+                        B_Actualizado = obligacion.B_Actualizado,
+                        D_FecActualiza = obligacion.D_FecActualiza
+                    },
+                    commandTimeout: 3600,
+                    commandType: CommandType.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response SaveTipoObligacion(Obligacion obligacion)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    string sqlCommand = "UPDATE TR_Ec_Obl SET Tipo_oblig = @Tipo_oblig, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
+                                        "WHERE I_RowID = @I_RowID;";
+
+                    rowCount = connection.Execute(sqlCommand, new
+                    {
+                        Tipo_oblig = obligacion.Tipo_oblig,
+                        I_RowID = obligacion.I_RowID,
+                        B_Actualizado = obligacion.B_Actualizado,
+                        D_FecActualiza = obligacion.D_FecActualiza
+                    },
+                    commandTimeout: 3600,
+                    commandType: CommandType.Text);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response SaveFecVencObligacion(Obligacion obligacion)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    string sqlCommand = "UPDATE TR_Ec_Obl SET Fch_venc = @Fch_venc, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
+                                        "WHERE I_RowID = @I_RowID;";
+
+                    rowCount = connection.Execute(sqlCommand, new
+                    {
+                        Fch_venc = obligacion.Fch_venc,
+                        I_RowID = obligacion.I_RowID,
+                        B_Actualizado = obligacion.B_Actualizado,
+                        D_FecActualiza = obligacion.D_FecActualiza
+                    },
+                    commandTimeout: 3600,
+                    commandType: CommandType.Text);
                 }
             }
             catch (Exception ex)

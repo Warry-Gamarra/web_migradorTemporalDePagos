@@ -30,7 +30,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             if (getDetalle)
             {
-                obligacion.DetalleObligaciones = ObligacionRepository.ObtenerDetalle(obligacionID).ToList();
+                obligacion.DetalleObligaciones = DetalleObligacionRepository.ObtenerDetalle(obligacionID).ToList();
             }
 
             return obligacion;
@@ -44,7 +44,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             foreach (var item in obligaciones)
             {
-                item.DetalleObligaciones = ObligacionRepository.ObtenerDetallePorAlumno(codAlu, codRc, item.I_RowID).ToList();
+                item.DetalleObligaciones = DetalleObligacionRepository.ObtenerDetallePorAlumno(codAlu, codRc, item.I_RowID).ToList();
             }
 
             return obligaciones;
@@ -74,11 +74,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             Response result_Cabecera = new Response();
             Response result_Detalle = new Response();
             ObligacionRepository obligacionRepository = new ObligacionRepository();
+            DetalleObligacionRepository detalleObligacionRepository = new DetalleObligacionRepository();
 
             string schemaDb = Schema.SetSchema(procedencia);
 
             result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, anioIni, anioFin);
-            result_Detalle = obligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, anioIni, anioFin);
+            result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, anioIni, anioFin);
 
             if (result_Cabecera.IsDone && result_Detalle.IsDone)
             {
@@ -111,9 +112,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             Response result = new Response();
             ObligacionRepository obligacionRepository = new ObligacionRepository();
+            DetalleObligacionRepository detalleObligacionRepository = new DetalleObligacionRepository();
+
             _ = Schema.SetSchema(procedencia);
             _ = obligacionRepository.InicializarEstadoValidacionObligacionPago((int)procedencia);
-            _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacionPago((int)procedencia);
+            _ = detalleObligacionRepository.InicializarEstadoValidacionDetalleObligacionPago((int)procedencia);
 
             Response result_Alumnos = obligacionRepository.ValidarAlumnoCabeceraObligacion((int)procedencia, null, null);
             Response result_Anio = obligacionRepository.ValidarAnioEnCabeceraObligacion((int)procedencia);
@@ -121,9 +124,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             Response result_FecVencimiento = obligacionRepository.ValidarFechaVencimientoCuotaObligacion((int)procedencia);
             Response result_CuotaPagoMigrada = obligacionRepository.ValidarObligacionCuotaPagoMigrada((int)procedencia);
             Response result_Procedencia = obligacionRepository.ValidarProcedenciaObligacionCuotaPago((int)procedencia);
-            Response result_Detalle = obligacionRepository.ValidarDetalleObligacion((int)procedencia);
+            Response result_Detalle = detalleObligacionRepository.ValidarDetalleObligacion((int)procedencia);
             Response result_ConceptoPago = obligacionRepository.ValidarDetalleObligacionConceptoPago((int)procedencia);
-            Response result_ConceptoPagoMigrado = obligacionRepository.ValidarDetalleObligacionConceptoPagoMigrado((int)procedencia);
+            Response result_ConceptoPagoMigrado = detalleObligacionRepository.ValidarDetalleObligacionConceptoPagoMigrado((int)procedencia);
 
             result.IsDone = result_Alumnos.IsDone &&
                             result_Anio.IsDone &&
