@@ -30,7 +30,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             if (getDetalle)
             {
-                obligacion.DetalleObligaciones = DetalleObligacionRepository.ObtenerDetalle(obligacionID).ToList();
+                obligacion.DetalleObligaciones = DetalleObligacionRepository.Obtener(obligacionID).ToList();
             }
 
             return obligacion;
@@ -112,11 +112,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             Response result = new Response();
             ObligacionRepository obligacionRepository = new ObligacionRepository();
-            DetalleObligacionRepository detalleObligacionRepository = new DetalleObligacionRepository();
 
             _ = Schema.SetSchema(procedencia);
             _ = obligacionRepository.InicializarEstadoValidacionObligacionPago((int)procedencia);
-            _ = detalleObligacionRepository.InicializarEstadoValidacionDetalleObligacionPago((int)procedencia);
 
             Response result_Alumnos = obligacionRepository.ValidarAlumnoCabeceraObligacion((int)procedencia, null, null);
             Response result_Anio = obligacionRepository.ValidarAnioEnCabeceraObligacion((int)procedencia);
@@ -124,18 +122,14 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             Response result_FecVencimiento = obligacionRepository.ValidarFechaVencimientoCuotaObligacion((int)procedencia);
             Response result_CuotaPagoMigrada = obligacionRepository.ValidarObligacionCuotaPagoMigrada((int)procedencia);
             Response result_Procedencia = obligacionRepository.ValidarProcedenciaObligacionCuotaPago((int)procedencia);
-            Response result_Detalle = detalleObligacionRepository.ValidarDetalleObligacion((int)procedencia);
             Response result_ConceptoPago = obligacionRepository.ValidarDetalleObligacionConceptoPago((int)procedencia);
-            Response result_ConceptoPagoMigrado = detalleObligacionRepository.ValidarDetalleObligacionConceptoPagoMigrado((int)procedencia);
 
             result.IsDone = result_Alumnos.IsDone &&
                             result_Anio.IsDone &&
                             result_Periodo.IsDone &&
                             result_FecVencimiento.IsDone &&
                             result_CuotaPagoMigrada.IsDone &&
-                            result_Detalle.IsDone &&
-                            result_ConceptoPago.IsDone &&
-                            result_ConceptoPagoMigrado.IsDone;
+                            result_ConceptoPago.IsDone;
 
             result.Message = $"    <dl class=\"row text-justify\">" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Código de alumno no migrado</dt>" +
@@ -158,17 +152,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_CuotaPagoMigrada.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Obligación no migrada</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_Detalle.Message}</p>" +
-                             $"        </dd>" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Observaciones en el codigo de concepto</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_ConceptoPago.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Concepto de pago no migrado</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_ConceptoPagoMigrado.Message}</p>" +
                              $"        </dd>" +
                              $"    </dl>";
 

@@ -12,7 +12,27 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 {
     public class DetalleObligacionRepository
     {
-        public static IEnumerable<DetalleObligacion> ObtenerDetalle(int obligacionID)
+        public static DetalleObligacion ObtenerDatosDetalle(int detalleObligID)
+        {
+            DetalleObligacion result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.QuerySingleOrDefault<DetalleObligacion>("SELECT ec_det.*, '(' + CAST(cp_pri.id_cp as varchar) + ') ' + cp_pri.Descripcio AS Concepto_desc " +
+                                                                              "FROM TR_Ec_det ec_det " +
+                                                                                   "LEFT JOIN TR_Cp_Pri cp_pri ON ec_det.concepto = cp_pri.id_cp AND cp_pri.eliminado = 0 " +
+                                                                             "WHERE I_RowID = @I_RowID " +
+                                                                                   "AND ec_det.concepto_f = 0 " +
+                                                                            "ORDER BY ec_det.Eliminado ASC",
+                                                                             new { I_RowID = detalleObligID },
+                                                                              commandType: CommandType.Text, commandTimeout: 1200);
+            }
+
+            return result;
+        }
+
+
+        public static IEnumerable<DetalleObligacion> Obtener(int obligacionID)
         {
             IEnumerable<DetalleObligacion> result;
 
@@ -78,7 +98,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-        public Response InicializarEstadoValidacionDetalleObligacionPago(int procedenciaID)
+        public Response InicializarEstadoValidacionDetalleObligacionPago(int procedenciaID, int ObligacionID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -88,6 +108,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, value: ObligacionID);
+                    parameters.Add(name: "T_AnioIni", dbType: DbType.String, value: null);
+                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, value: null);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -134,7 +157,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-
+        
         public Response ValidarDetalleObligacionConceptoPagoMigrado(int procedenciaID)
         {
             Response result = new Response();
@@ -291,7 +314,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-
+        
         public Response SaveMontoObligacion(DetalleObligacion detalleObligacion)
         {
             Response result = new Response();
