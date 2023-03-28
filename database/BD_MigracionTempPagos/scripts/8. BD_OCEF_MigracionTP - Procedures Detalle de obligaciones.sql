@@ -18,7 +18,7 @@ AS
 --		@T_SchemaDB   varchar(20) = 'eupg',
 --		@T_AnioIni	  varchar(4) = null,
 --		@T_AnioFin	  varchar(4) = null,
---		@B_Resultado  bit,
+--	 <vbnm;	@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
 --exec USP_IU_CopiarTablaDetalleObligacionesPago @I_ProcedenciaID, @T_SchemaDB, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
@@ -190,7 +190,6 @@ GO
 CREATE PROCEDURE USP_U_InicializarEstadoValidacionDetalleObligacionPago	
 	@I_ProcedenciaID tinyint,
 	@I_OblRowID	  int = NULL,
-
 	@T_AnioIni	  varchar(4) = NULL,
 	@T_AnioFin	  varchar(4) = NULL,
 	@B_Resultado  bit output,
@@ -244,8 +243,8 @@ CREATE PROCEDURE [dbo].[USP_U_ValidarAnioEnDetalleObligacion]
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare	@I_ProcedenciaID	tinyint = 3, 
---			@B_Resultado  bit,
 --			@I_OblRowID		int = NULL,
+--			@B_Resultado  bit,
 --			@T_Message	  nvarchar(4000)
 --exec USP_U_ValidarAnioEnDetalleObligacion @I_ProcedenciaID, @I_OblRowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
@@ -330,68 +329,6 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarPeriodoEnCabeceraObligacion')
-	DROP PROCEDURE [dbo].[USP_U_ValidarPeriodoEnCabeceraObligacion]
-GO
-
-CREATE PROCEDURE [dbo].[USP_U_ValidarPeriodoEnCabeceraObligacion]	
-	@I_ProcedenciaID tinyint,
-	@B_Resultado  bit output,
-	@T_Message	  nvarchar(4000) OUTPUT	
-AS
---declare @I_ProcedenciaID	tinyint = 3, 
---		@B_Resultado  bit,
---		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarPeriodoEnCabeceraObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
-BEGIN
-	DECLARE @I_Observados int = 0
-	DECLARE @I_TablaID int = 5
-
-	BEGIN TRANSACTION
-	BEGIN TRY 
-	DECLARE @D_FecProceso datetime = GETDATE() 
-	DECLARE @I_ObservID int = 27
-
-		UPDATE	TR_Ec_Obl
-		SET		B_Migrable = 0,
-				D_FecEvalua = @D_FecProceso
-		WHERE	I_Periodo IS NULL OR P = ''
-				AND I_ProcedenciaID = @I_ProcedenciaID
-					
-		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro, I_ProcedenciaID
-				   FROM TR_Ec_Obl
-				  WHERE	I_Periodo IS NULL
-				  		AND I_ProcedenciaID = @I_ProcedenciaID
-				) AS SRC
-		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED AND SRC.I_ProcedenciaID = @I_ProcedenciaID THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
-		WHEN NOT MATCHED BY TARGET AND SRC.I_ProcedenciaID = @I_ProcedenciaID THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
-			DELETE;
-
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
-							 WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
-
-		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
-
-		COMMIT TRANSACTION
-					
-		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados AS varchar)
-	END TRY
-	BEGIN CATCH
-		ROLLBACK TRANSACTION
-		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
-	END CATCH
-END
-GO
-
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarPeriodoEnDetalleObligacion')
 	DROP PROCEDURE [dbo].[USP_U_ValidarPeriodoEnDetalleObligacion]
@@ -399,13 +336,17 @@ GO
 
 CREATE PROCEDURE [dbo].[USP_U_ValidarPeriodoEnDetalleObligacion]	
 	@I_ProcedenciaID tinyint,
+	@I_OblRowID	  int = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 3, 
---		@B_Resultado  bit,
---		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarPeriodoEnDetalleObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--declare	@I_ProcedenciaID	tinyint = 3, 
+--			@I_OblRowID		int = NULL,
+--			@B_Resultado  bit,/0.
+
+*-*/
+--			@T_Message	  nvarchar(4000)
+--exec USP_U_ValidarPeriodoEnDetalleObligacion @I_ProcedenciaID, @I_OblRowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -486,12 +427,14 @@ GO
 
 CREATE PROCEDURE [dbo].[USP_U_ValidarFechaVencimientoCuotaObligacion]	
 	@I_ProcedenciaID tinyint,
+	@I_OblRowID	  int = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 3, 
---		  @B_Resultado  bit,
---		  @T_Message    nvarchar(4000)
+--declare	@I_ProcedenciaID	tinyint = 3, 
+--			@I_OblRowID		int = NULL,
+--			@B_Resultado  bit,
+--			 @T_Message    nvarchar(4000)
 --exec USP_U_ValidarFechaVencimientoCuotaObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN

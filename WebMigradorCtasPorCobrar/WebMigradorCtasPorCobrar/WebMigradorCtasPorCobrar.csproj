@@ -213,7 +213,7 @@
     <Compile Include="Models\Services\Migracion\AlumnoService.cs" />
     <Compile Include="Models\Services\Migracion\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\Migracion\CuotaPagoService.cs" />
-    <Compile Include="Models\Services\Migracion\DetalleObligacionService.cs" />
+    <Compile Include="Models\Services\Migracion\ObligacionDetalleService.cs" />
     <Compile Include="Models\Services\Migracion\DetalleObservacionService.cs" />
     <Compile Include="Models\Services\Migracion\ObligacionService.cs" />
     <Compile Include="Models\Services\Migracion\ObservacionService.cs" />

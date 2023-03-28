@@ -10,7 +10,7 @@ using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
-    public class DetalleObligacionService
+    public class ObligacionDetalleService
     {
         public DetalleObligacion ObtenerDatosDetalle(int detOblID)
         {
