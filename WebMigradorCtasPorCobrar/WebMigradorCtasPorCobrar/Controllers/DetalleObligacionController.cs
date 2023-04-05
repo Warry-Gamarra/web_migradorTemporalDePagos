@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 
 namespace WebMigradorCtasPorCobrar.Controllers
@@ -32,10 +33,18 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_Observaciones", model);
         }
 
-        public ActionResult VerDetalleMigracion(int? id, int cuota_pago)
+        public ActionResult CargarDetalle(int id, Procedencia procedencia)
+        {
+            var model = _obligacionServiceMigracion.ObtenerObligacion(id, true);
+
+            return PartialView("_DetalleObligacion", model);
+        }
+
+
+        public ActionResult EditarDetalleObligacion(int? id)
         {
 
-            return PartialView("_VerDetalleMigracion");
+            return PartialView("_EditarDetalleObligacion");
         }
     }
 }

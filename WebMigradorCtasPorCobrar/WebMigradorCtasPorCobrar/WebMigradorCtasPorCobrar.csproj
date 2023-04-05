@@ -479,7 +479,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\CajaPeriferica\" />
-    <Folder Include="Views\DetalleObligacion\" />
     <Folder Include="Views\Tasas\" />
   </ItemGroup>
   <ItemGroup>
@@ -547,13 +546,13 @@
     <Content Include="Views\Estudiante\_UnfvRepositorio_tab_personas.cshtml" />
     <Content Include="Views\Estudiante\_UnfvRepositorio_tab_default.cshtml" />
     <Content Include="Views\Estudiante\_UnfvRepositorio_tab_alumnos.cshtml" />
-    <Content Include="Views\Obligaciones\_DetalleObligacion.cshtml" />
+    <Content Include="Views\DetalleObligacion\_DetalleObligacion.cshtml" />
     <Content Include="Views\Obligaciones\_EditarObligacion.cshtml" />
     <Content Include="Views\CuotaPago\_CtasPorCobrarProcesos.cshtml" />
     <Content Include="Views\ConceptoPago\_CtasPorCobrarConceptos.cshtml" />
     <Content Include="Views\CuotaPago\_VerDetalleMigracion.cshtml" />
     <Content Include="Views\Obligaciones\_CtasPorCobrarObligaciones.cshtml" />
-    <Content Include="Views\Obligaciones\_EditarDetObligacion.cshtml" />
+    <Content Include="Views\DetalleObligacion\_EditarDetalleObligacion.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

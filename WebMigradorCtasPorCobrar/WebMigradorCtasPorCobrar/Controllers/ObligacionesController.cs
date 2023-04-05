@@ -135,14 +135,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
-        public ActionResult CargarDetalle(int id, Procedencia procedencia)
-        {
-            var model = _obligacionServiceMigracion.ObtenerObligacion(id, true);
-
-            return PartialView("_DetalleObligacion", model);
-        }
-
-
         public ActionResult Observaciones(int id)
         {
             var model = _observacionService.Obtener_ObservacionesObligacion(id);
