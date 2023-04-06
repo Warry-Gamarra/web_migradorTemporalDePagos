@@ -209,8 +209,8 @@ GO
 CREATE PROCEDURE [dbo].[USP_U_ValidarExisteAlumnoCabeceraObligacion]	
 	@I_ProcedenciaID tinyint,
 	@I_RowID	  int = NULL,
-	@I_AnioIni	  int,
-	@I_AnioFin	  int,
+	@I_AnioIni	  int = NULL,
+	@I_AnioFin	  int = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
@@ -238,6 +238,7 @@ BEGIN
 		FROM TR_Ec_Obl
 		WHERE ISNUMERIC(ANO) = 1
 			  AND I_ProcedenciaID = @I_ProcedenciaID
+			  AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
 
 		UPDATE	ec_obl
 		SET		B_Migrable = 0,
@@ -248,6 +249,7 @@ BEGIN
 				AND CAST(num_ec_obl.Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin
 			    AND ec_obl.I_ProcedenciaID = @I_ProcedenciaID
 				AND (num_ec_obl.Ano BETWEEN @I_AnioIni AND @I_AnioFin)
+
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, ec_obl.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
@@ -263,12 +265,14 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID 
+								   AND TRG.I_TablaID = @I_TablaID AND TRG.I_FilaTablaID = @I_RowID THEN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM #Numeric_Year_Ec_Obl OBL
 												  INNER JOIN (SELECT * FROM TI_ObservacionRegistroTabla 
-															  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID) OBS 
+															  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID
+																	AND I_FilaTablaID = IIF(@I_RowID IS NULL, I_FilaTablaID, @I_RowID)) OBS 
 															  ON OBS.I_FilaTablaID = OBL.I_RowID)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
@@ -282,6 +286,11 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
 	END CATCH
+
+	IF OBJECT_ID ('#Numeric_Year_Ec_Obl') IS NOT NULL
+	BEGIN 
+		DROP TABLE #Numeric_Year_Ec_Obl
+	END 
 END
 GO
 
@@ -315,13 +324,15 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	ISNUMERIC(ANO) = 0
 				AND I_ProcedenciaID = @I_ProcedenciaID
-
+				AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
 				
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM	TR_Ec_Obl 
 				 WHERE	ISNUMERIC(ANO) = 0 
-						AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
+						AND I_ProcedenciaID = @I_ProcedenciaID
+						AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
+				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -329,12 +340,13 @@ BEGIN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
 		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID 
-								   AND TRG.I_TablaID = SRC.I_TablaID  THEN
+								   AND TRG.I_TablaID = @I_TablaID AND TRG.I_FilaTablaID = @I_RowID  THEN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM TR_Ec_Obl OBL
 												  INNER JOIN (SELECT * FROM TI_ObservacionRegistroTabla 
-															  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID) OBS 
+															  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID
+																	AND I_FilaTablaID = IIF(@I_RowID IS NULL, I_FilaTablaID, @I_RowID)) OBS 
 															  ON OBS.I_FilaTablaID = OBL.I_RowID)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
@@ -358,15 +370,19 @@ GO
 
 CREATE PROCEDURE [dbo].[USP_U_ValidarPeriodoEnCabeceraObligacion]	
 	@I_ProcedenciaID tinyint,
+	@T_AnioIni	  varchar(4) = NULL,
+	@T_AnioFin	  varchar(4) = NULL,
 	@I_RowID	  int = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 3, 
---		@I_RowID	  int = NULL,
---		@B_Resultado  bit,
---		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarPeriodoEnCabeceraObligacion @I_ProcedenciaID, @I_RowID, @B_Resultado output, @T_Message output
+--declare	@I_ProcedenciaID	tinyint = 3, 
+--			@T_AnioIni	  varchar(4) = NULL,
+--			@T_AnioFin	  varchar(4) = NULL,
+--			@I_RowID	  int = NULL,
+--			@B_Resultado  bit,
+--			@T_Message	  nvarchar(4000)
+--exec USP_U_ValidarPeriodoEnCabeceraObligacion @I_ProcedenciaID, @T_AnioIni, @T_AnioFin, @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -382,12 +398,16 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	I_Periodo IS NULL OR P = ''
 				AND I_ProcedenciaID = @I_ProcedenciaID
-					
+				AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID) 
+			    AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
+				
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro, I_ProcedenciaID
 				   FROM TR_Ec_Obl
 				  WHERE	I_Periodo IS NULL
 				  		AND I_ProcedenciaID = @I_ProcedenciaID
+						AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID) 
+						AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED AND SRC.I_ProcedenciaID = @I_ProcedenciaID THEN
@@ -395,11 +415,13 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET AND SRC.I_ProcedenciaID = @I_ProcedenciaID THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID 
+								   AND TRG.I_TablaID = @I_TablaID AND TRG.I_FilaTablaID = @I_RowID  THEN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
-							 WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+							 WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID
+								   AND I_FilaTablaID = IIF(@I_RowID IS NULL, I_FilaTablaID, @I_RowID))
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
@@ -424,14 +446,18 @@ GO
 CREATE PROCEDURE [dbo].[USP_U_ValidarFechaVencimientoCuotaObligacion]	
 	@I_ProcedenciaID tinyint,
 	@I_RowID	  int = NULL,
+	@T_AnioIni	  varchar(4) = NULL,
+	@T_AnioFin	  varchar(4) = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 3, 
---		  @I_RowID	  int = NULL,
---		  @B_Resultado  bit,
---		  @T_Message    nvarchar(4000)
---exec USP_U_ValidarFechaVencimientoCuotaObligacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--declare	@I_ProcedenciaID	tinyint = 3, 
+--			@I_RowID	  int = NULL,
+--			@T_AnioIni	  varchar(4) = NULL,
+--			@T_AnioFin	  varchar(4) = NULL,
+--			@B_Resultado  bit,
+--			@T_Message    nvarchar(4000)
+--exec USP_U_ValidarFechaVencimientoCuotaObligacion @I_ProcedenciaID, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -449,6 +475,8 @@ BEGIN
 				INNER JOIN (SELECT ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
 							FROM  TR_Ec_Obl
 							WHERE I_ProcedenciaID = @I_ProcedenciaID
+								  AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
+								  AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
 							GROUP BY ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
 							HAVING COUNT(*) > 1) SRC_1 
 				ON TRG_1.ANO = SRC_1.ANO AND TRG_1.P = SRC_1.P AND TRG_1.COD_ALU = SRC_1.COD_ALU AND TRG_1.COD_RC = SRC_1.COD_RC 
@@ -462,6 +490,8 @@ BEGIN
 					INNER JOIN (SELECT ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
 								FROM  TR_Ec_Obl
 								WHERE I_ProcedenciaID = @I_ProcedenciaID
+									  AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
+									  AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
 								GROUP BY ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
 								HAVING COUNT(*) > 1) SRC_1 
 					ON TRG_1.ANO = SRC_1.ANO AND TRG_1.P = SRC_1.P AND TRG_1.COD_ALU = SRC_1.COD_ALU AND TRG_1.COD_RC = SRC_1.COD_RC 
@@ -474,11 +504,13 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID 
+								   AND TRG.I_TablaID = @I_TablaID AND TRG.I_FilaTablaID = @I_RowID THEN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
-							 WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID
+									AND I_FilaTablaID = IIF(@I_RowID IS NULL, I_FilaTablaID, @I_RowID))
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
@@ -502,13 +534,17 @@ GO
 CREATE PROCEDURE [dbo].[USP_U_ValidarObligacionCuotaPagoMigrada]	
 	@I_ProcedenciaID tinyint,
 	@I_RowID	  int = NULL,
+	@T_AnioIni	  varchar(4) = NULL,
+	@T_AnioFin	  varchar(4) = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 3, 
---		  @I_RowID	  int = NULL,
---		  @B_Resultado  bit,
---		  @T_Message    nvarchar(4000)
+--declare	@I_ProcedenciaID	tinyint = 3, 
+--			@I_RowID	  int = NULL,
+--			@T_AnioIni	  varchar(4) = NULL,
+--			@T_AnioFin	  varchar(4) = NULL,
+--			@B_Resultado  bit,
+--			@T_Message    nvarchar(4000)
 --exec USP_U_ValidarObligacionCuotaPagoMigrada @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
@@ -525,12 +561,16 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	Cuota_pago IN (SELECT Cuota_pago FROM TR_Cp_Des WHERE B_Migrado = 0 AND I_ProcedenciaID = @I_ProcedenciaID)
 				AND I_ProcedenciaID = @I_ProcedenciaID
-					
+				AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
+				AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
+								  
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Obl
 				 WHERE	Cuota_pago IN (SELECT Cuota_pago FROM TR_Cp_Des WHERE B_Migrado = 0 AND I_ProcedenciaID = @I_ProcedenciaID)
 						AND I_ProcedenciaID = @I_ProcedenciaID 
+						AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
+						AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
 				 ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -542,7 +582,8 @@ BEGIN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
-							 WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID
+									AND I_FilaTablaID = IIF(@I_RowID IS NULL, I_FilaTablaID, @I_RowID))
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
@@ -566,13 +607,18 @@ GO
 CREATE PROCEDURE [dbo].[USP_U_ValidarProcedenciaObligacionCuotaPago]	
 	@I_ProcedenciaID tinyint,
 	@I_RowID	  int = NULL,
+	@T_AnioIni	  varchar(4) = NULL,
+	@T_AnioFin	  varchar(4) = NULL,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 3, 
---		  @B_Resultado  bit,
---		  @T_Message    nvarchar(4000)
---exec USP_U_ValidarProcedenciaObligacionCuotaPago @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--declare	@I_ProcedenciaID	tinyint = 3, 
+--			@I_RowID	  int = NULL,
+--			@T_AnioIni	  varchar(4) = NULL,
+--			@T_AnioFin	  varchar(4) = NULL,
+--			@B_Resultado  bit,
+--			@T_Message    nvarchar(4000)
+--exec USP_U_ValidarProcedenciaObligacionCuotaPago @I_ProcedenciaID, @I_RowID, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -588,13 +634,17 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	Cuota_pago NOT IN (SELECT Cuota_pago FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID)
 				AND I_ProcedenciaID = @I_ProcedenciaID
-					
+				AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
+				AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)	
+
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Obl
 				 WHERE	Cuota_pago NOT IN (SELECT Cuota_pago FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID)
 						AND I_ProcedenciaID = @I_ProcedenciaID
-				 ) AS SRC
+						AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
+						AND (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
+				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
@@ -605,7 +655,8 @@ BEGIN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
-							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID
+									AND I_FilaTablaID = IIF(@I_RowID IS NULL, I_FilaTablaID, @I_RowID))
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
@@ -787,6 +838,11 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
 	END CATCH
+
+	IF OBJECT_ID('tempdb..#Numeric_Year_Ec_Obl') IS NOT NULL
+	BEGIN
+		DROP TABLE #Numeric_Year_Ec_Obl
+	END
 END
 GO
 
@@ -938,10 +994,6 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = 'Obligaciones migradas:' + CAST(@I_Obl_Insertados AS varchar(10))  + ' | Detalle de obligaciones migradas: ' + CAST(@I_Det_Insertados AS varchar(10))
 
-		DROP TABLE #temp_pagos_interes_mora
-		DROP TABLE #temp_pagos_banco
-		DROP TABLE #temp_pagos_conceptos 
-
 		COMMIT TRANSACTION;
 	END TRY
 	BEGIN CATCH
@@ -949,5 +1001,21 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
 	END CATCH
+
+	IF OBJECT_ID('tempdb..#temp_pagos_interes_mora') IS NOT NULL
+	BEGIN	
+		DROP TABLE #temp_pagos_interes_mora
+	END
+
+	IF OBJECT_ID('tempdb..#temp_pagos_banco') IS NOT NULL
+	BEGIN
+		DROP TABLE #temp_pagos_banco
+	END
+
+	IF OBJECT_ID('tempdb..#temp_pagos_conceptos') IS NOT NULL
+	BEGIN
+		DROP TABLE #temp_pagos_conceptos 
+	END
+
 END
 GO

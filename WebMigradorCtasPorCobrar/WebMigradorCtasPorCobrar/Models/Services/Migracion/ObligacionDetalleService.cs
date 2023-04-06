@@ -32,6 +32,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             Response result_Detalle = detalleObligacionRepository.ValidarDetalleObligacion((int)procedencia);
             Response result_ConceptoPagoMigrado = detalleObligacionRepository.ValidarDetalleObligacionConceptoPagoMigrado((int)procedencia);
+            Response result_ConceptoPago = detalleObligacionRepository.ValidarDetalleObligacionConceptoPago((int)procedencia);
 
             result.IsDone = result_Detalle.IsDone && result_ConceptoPagoMigrado.IsDone;
 
@@ -43,6 +44,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        <dt class=\"col-md-4 col-sm-6\">Concepto de pago no migrado</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
                              $"            <p>{result_ConceptoPagoMigrado.Message}</p>" +
+                             $"        </dd>" +
+                             $"        <dt class=\"col-md-4 col-sm-6\">Observaciones en el codigo de concepto</dt>" +
+                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"            <p>{result_ConceptoPago.Message}</p>" +
                              $"        </dd>" +
                              $"    </dl>";
 

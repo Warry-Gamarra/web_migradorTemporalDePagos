@@ -20,8 +20,8 @@
                     </div>
                 </div>
             </div>
-            <div class="card text-center">
-                <div id="result-message" class="container-fluid">
+            <div class="card text-center" id="result-message">
+                <div class="container-fluid">
                     <div class="card-body">
                         <h5 class="card-title">Seleccione una opción del proceso</h5>
                     </div>
@@ -40,11 +40,12 @@
     $('#btn-copy').on('click', function () {
         Swal.fire({
             title: 'Copiar Cuotas de pago desde el temporal de pagos',
-            text: "Al copiar datos desde el temporal de pagos se perderá cualquier validacion y cambio que no hayan sido migrados",
+            text: 'Al copiar datos desde el temporal de pagos se perderá cualquier validacion y cambio que no hayan sido migrados',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ff830f',
             cancelButtonColor: '#3c3c3c',
+            cancelButtonText: 'Cancelar',
             confirmButtonText: 'Sí, copiar datos.'
         }).then((result) => {
             if (result.isConfirmed) {
@@ -74,48 +75,75 @@
 
 
     $('#btn-validate').on('click', function () {
-        $.ajax({
-            url: '@Url.Action("ValidarRegistros", "CuotaPago", new { area = "" })' + '?procedencia=' + '@procedencia',
-            type: 'POST',
-            cache: false,
-            beforeSend: function () {
-                $('#processing').show();
-                $('#result-message').hide();
-            },
-            success: function (data) {
-                $('#result-message').html(data);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                $('#alert-message p.alert').html(jqXHR.responseText)
-                $('#result-message').show();
-            },
-            complete: function () {
-                $('#processing').hide();
-                $('#result-message').show();
+        Swal.fire({
+            title: 'Validar Cuotas de pago del temporal de pagos',
+            text: 'Al aceptar se procederá con la validación de consistencia de las cuotas de pago ' +
+                  'del sistema temporal de pagos con la base de datos de recaudacion de ingresos.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff830f',
+            cancelButtonColor: '#3c3c3c',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Iniciar validación'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("ValidarRegistros", "CuotaPago", new { area = "" })' + '?procedencia=' + '@procedencia',
+                    type: 'POST',
+                    cache: false,
+                    beforeSend: function () {
+                        $('#processing').show();
+                        $('#result-message').hide();
+                    },
+                    success: function (data) {
+                        $('#result-message').html(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $('#alert-message p.alert').html(jqXHR.responseText)
+                        $('#result-message').show();
+                    },
+                    complete: function () {
+                        $('#processing').hide();
+                        $('#result-message').show();
+                    }
+                })
             }
         })
     })
 
     $('#btn-migrate').on('click', function () {
-        $.ajax({
-            url: '@Url.Action("MigrarDatosTemporalPagos", "CuotaPago", new { area = "" })' + '?procedencia=' + '@procedencia',
-            type: 'POST',
-            cache: false,
-            beforeSend: function () {
-                $('#processing').show();
-                $('#result-message').hide();
-            },
-            success: function (data) {
-                $('#result-message').html(data);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                $('#alert-message p.alert').html(jqXHR.responseText)
-                $('#result-message').show();
-            },
-            complete: function () {
-                $('#processing').hide();
-                $('#result-message').show();
+        Swal.fire({
+            title: 'Migrar Cuotas de pago desde el temporal de pagos',
+            text: 'Al aceptar los registros con correctamente validados serán copiados a la base de Recaudación de ingresos.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff830f',
+            cancelButtonColor: '#3c3c3c',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Sí, migrar datos.'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("MigrarDatosTemporalPagos", "CuotaPago", new { area = "" })' + '?procedencia=' + '@procedencia',
+                    type: 'POST',
+                    cache: false,
+                    beforeSend: function () {
+                        $('#processing').show();
+                        $('#result-message').hide();
+                    },
+                    success: function (data) {
+                        $('#result-message').html(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $('#alert-message p.alert').html(jqXHR.responseText)
+                        $('#result-message').show();
+                    },
+                    complete: function () {
+                        $('#processing').hide();
+                        $('#result-message').show();
+                    }
+                })
             }
-        })
-    })
+        });
+   })
 </script>

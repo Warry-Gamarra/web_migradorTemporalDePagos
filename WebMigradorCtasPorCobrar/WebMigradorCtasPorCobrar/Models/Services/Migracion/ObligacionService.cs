@@ -77,9 +77,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             DetalleObligacionRepository detalleObligacionRepository = new DetalleObligacionRepository();
 
             string schemaDb = Schema.SetSchema(procedencia);
+            string s_anioIni = anioIni.HasValue ? null : anioIni.ToString();
+            string s_anioFin = anioFin.HasValue ? null : anioIni.ToString();
 
-            result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, anioIni, anioFin);
-            result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, anioIni, anioFin);
+            result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, s_anioIni, s_anioFin);
+            result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, s_anioIni, s_anioFin);
 
             if (result_Cabecera.IsDone && result_Detalle.IsDone)
             {
@@ -108,28 +110,46 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         }
 
 
-        public Response EjecutarValidaciones(Procedencia procedencia)
+        public Response EjecutarValidaciones(Procedencia procedencia, int? oblId, PeriodosValidacion periodosValidacion)
         {
+            string anioInicio = null;
+            string anioFin = null;
+
             Response result = new Response();
             ObligacionRepository obligacionRepository = new ObligacionRepository();
 
-            _ = Schema.SetSchema(procedencia);
-            _ = obligacionRepository.InicializarEstadoValidacionObligacionPago((int)procedencia);
+            switch (periodosValidacion)
+            {
+                case PeriodosValidacion.Anterior_hasta_2009:
+                    anioInicio = null;
+                    anioFin = "2009";
+                    break;
+                case PeriodosValidacion.Del_2010_al_2015:
+                    anioInicio = "2010";
+                    anioFin = "2015";
+                    break;
+                case PeriodosValidacion.Del_2016_al_2020:
+                    anioInicio = null;
+                    anioFin = "2020";
+                    break;
+            }
 
-            Response result_Alumnos = obligacionRepository.ValidarAlumnoCabeceraObligacion((int)procedencia, null, null);
-            Response result_Anio = obligacionRepository.ValidarAnioEnCabeceraObligacion((int)procedencia);
-            Response result_Periodo = obligacionRepository.ValidarPeriodoEnCabeceraObligacion((int)procedencia);
-            Response result_FecVencimiento = obligacionRepository.ValidarFechaVencimientoCuotaObligacion((int)procedencia);
-            Response result_CuotaPagoMigrada = obligacionRepository.ValidarObligacionCuotaPagoMigrada((int)procedencia);
-            Response result_Procedencia = obligacionRepository.ValidarProcedenciaObligacionCuotaPago((int)procedencia);
-            Response result_ConceptoPago = obligacionRepository.ValidarDetalleObligacionConceptoPago((int)procedencia);
+            _ = Schema.SetSchema(procedencia);
+            _ = obligacionRepository.InicializarEstadoValidacionObligacionPago((int)procedencia, oblId, anioInicio, anioFin);
+
+            Response result_Alumnos = obligacionRepository.ValidarAlumnoCabeceraObligacion((int)procedencia, oblId, anioInicio, anioFin);
+            Response result_Anio = obligacionRepository.ValidarAnioEnCabeceraObligacion((int)procedencia, oblId);
+            Response result_Periodo = obligacionRepository.ValidarPeriodoEnCabeceraObligacion((int)procedencia, oblId, anioInicio, anioFin);
+            Response result_FecVencimiento = obligacionRepository.ValidarFechaVencimientoCuotaObligacion((int)procedencia, oblId, anioInicio, anioFin);
+            Response result_CuotaPagoMigrada = obligacionRepository.ValidarObligacionCuotaPagoMigrada((int)procedencia, oblId, anioInicio, anioFin);
+            Response result_Procedencia = obligacionRepository.ValidarProcedenciaObligacionCuotaPago((int)procedencia, oblId, anioInicio, anioFin);
 
             result.IsDone = result_Alumnos.IsDone &&
                             result_Anio.IsDone &&
                             result_Periodo.IsDone &&
                             result_FecVencimiento.IsDone &&
                             result_CuotaPagoMigrada.IsDone &&
-                            result_ConceptoPago.IsDone;
+                            result_Procedencia.IsDone;
 
             result.Message = $"    <dl class=\"row text-justify\">" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Código de alumno no migrado</dt>" +
@@ -154,7 +174,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                              $"        </dd>" +
                              $"        <dt class=\"col-md-4 col-sm-6\">Observaciones en el codigo de concepto</dt>" +
                              $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_ConceptoPago.Message}</p>" +
+                             $"            <p>{result_Procedencia.Message}</p>" +
                              $"        </dd>" +
                              $"    </dl>";
 

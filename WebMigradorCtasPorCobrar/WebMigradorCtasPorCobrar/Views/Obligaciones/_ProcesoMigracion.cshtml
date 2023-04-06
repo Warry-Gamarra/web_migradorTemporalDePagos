@@ -11,6 +11,19 @@
 
 <div class="col-md-12 my-4">
     <div class="jumbotron" style="min-height: 450px">
+        <div class="card text-center" id="result-periodos" style="display:none;">
+            <div class="container-fluid" style="display:none;">
+                <div class="card-body">
+                </div>
+            </div>
+        </div>
+        <div class="card text-center" id="result-message">
+            <div class="container-fluid">
+                <div class="card-body">
+                    <h5 class="card-title">Seleccione una opción del proceso</h5>
+                </div>
+            </div>
+        </div>
         <div id="processing" class="container-fluid" style="display:none;">
             <div class="d-flex justify-content-center">
                 <div class="spinner-border text-info" role="status" style="width: 5rem; height: 5rem;">
@@ -18,13 +31,6 @@
                 </div>
                 <div class="d-flex justify-content-center">
                     <span id="load-message" class="h5 mt-4"></span>
-                </div>
-            </div>
-        </div>
-        <div class="card text-center">
-            <div id="result-message" class="container-fluid">
-                <div class="card-body">
-                    <h5 class="card-title">Seleccione una opción del proceso</h5>
                 </div>
             </div>
         </div>
@@ -76,45 +82,58 @@
     $('#btn-validate').on('click', function () {
         $.ajax({
             url: '@Url.Action("ValidarRegistros", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia',
-            type: 'POST',
+            type: 'GET',
             cache: false,
             beforeSend: function () {
                 $('#processing').show();
                 $('#result-message').hide();
             },
             success: function (data) {
-                $('#result-message').html(data);
+                $('#result-periodos').html(data);
             },
             error: function (jqXHR, textStatus, errorThrown) {
                 $('#alert-message p.alert').html(jqXHR.responseText)
-                $('#result-message').show();
+                $('#result-periodos').show();
             },
             complete: function () {
                 $('#processing').hide();
-                $('#result-message').show();
+                $('#result-periodos').show();
             }
         })
     })
 
     $('#btn-migrate').on('click', function () {
-        $.ajax({
-            url: '@Url.Action("MigrarDatosTemporalPagos", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia',
-            type: 'POST',
-            cache: false,
-            beforeSend: function () {
-                $('#processing').show();
-                $('#result-message').hide();
-            },
-            success: function (data) {
-                $('#result-message').html(data);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                $('#alert-message p.alert').html(jqXHR.responseText)
-                $('#result-message').show();
-            },
-            complete: function () {
-                $('#processing').hide();
-                $('#result-message').show();
+        Swal.fire({
+            title: 'Migrar Obligaciones y pagos desde el temporal de pagos',
+            text: 'Al aceptar los registros con correctamente validados serán copiados a la base de Recaudación de ingresos.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff830f',
+            cancelButtonColor: '#3c3c3c',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Sí, migrar datos.'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("MigrarDatosTemporalPagos", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia',
+                    type: 'POST',
+                    cache: false,
+                    beforeSend: function () {
+                        $('#processing').show();
+                        $('#result-message').hide();
+                    },
+                    success: function (data) {
+                        $('#result-message').html(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $('#alert-message p.alert').html(jqXHR.responseText)
+                        $('#result-message').show();
+                    },
+                    complete: function () {
+                        $('#processing').hide();
+                        $('#result-message').show();
+                    }
+                })
             }
         })
     })

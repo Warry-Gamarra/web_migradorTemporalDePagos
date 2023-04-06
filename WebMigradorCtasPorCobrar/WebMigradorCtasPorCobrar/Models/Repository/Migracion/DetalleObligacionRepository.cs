@@ -66,7 +66,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-        public Response CopiarRegistrosDetalle(int procedenciaID, string schemaDB, int? anioIni, int? anioFin)
+        public Response CopiarRegistrosDetalle(int procedenciaID, string schemaDB, string anioIni, string anioFin)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -77,8 +77,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "T_SchemaDB", dbType: DbType.String, size: 20, value: schemaDB);
-                    parameters.Add(name: "T_AnioIni", dbType: DbType.String, value: anioIni);
-                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, value: anioFin);
+                    parameters.Add(name: "T_AnioIni", dbType: DbType.String, size: 4, value: anioIni);
+                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioFin);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -157,7 +157,35 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-        
+
+        public Response ValidarDetalleObligacionConceptoPago(int procedenciaID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_U_ValidarDetalleObligacionConceptoPago", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
         public Response ValidarDetalleObligacionConceptoPagoMigrado(int procedenciaID)
         {
             Response result = new Response();
@@ -314,7 +342,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
-        
+
         public Response SaveMontoObligacion(DetalleObligacion detalleObligacion)
         {
             Response result = new Response();

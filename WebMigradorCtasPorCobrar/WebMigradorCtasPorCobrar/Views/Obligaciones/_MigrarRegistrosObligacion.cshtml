@@ -1,0 +1,82 @@
+﻿@{ 
+    string Hdn_procedencia = ViewBag.Procedencia;
+    string Rango_hasta_2009 = ViewBag.Rango_Hasta_2009;
+    string Rango_2010_2015 = ViewBag.Rango_2010_2015;
+    string Rango_2016_2020 = ViewBag.Rango_2016_2020;
+}
+
+<div class="col-12">
+    <form class="form-inline">
+        <div class="form-group my-3 col-6 ">
+            @Html.Hidden("hdn_procedencia", @Hdn_procedencia)
+            <label for="cbo-periodo" class=" col col-form-label">SELECCIONAR PERIODOS</label>
+            <select class="col-3 form-control" id="cbo-periodo">
+                <option value="">NINGUNO</option>
+                <option value="@Rango_hasta_2009">Anteriores al 2009</option>
+                <option value="@Rango_2010_2015">Del 2010 al 2015</option>
+                <option value="@Rango_2016_2020">Del 2016 al 2020 </option>
+            </select>
+        </div>
+        <div class="form-group my-3 col-6">
+            <button type="button" id="btn-migrate-per" class="btn btn-primary">Validar registros</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    buttonState();
+
+    $('#cbo-periodo').on('change', function () {
+        buttonState();
+    })
+
+    function buttonState() {
+        let periodo = $('#cbo-periodo').val();
+        if (periodo == '') {
+            $('#btn-validate-per').attr('disabled', true);
+        }
+        else {
+            $('#btn-validate-per').removeAttr('disabled');
+        }
+
+    }
+
+    $('#btn-migrate-per').on('click', function () {
+        let periodo = $('#cbo-periodo').val();
+        Swal.fire({
+            title: 'Validar Obligaciones y pagos del sitstema temporal de pagos',
+            text: 'Al aceptar se procederá con la validación de consistencia de las obligaciones y pagos ' +
+                'del sistema temporal de pagos con la base de datos de recaudacion de ingresos.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff830f',
+            cancelButtonColor: '#3c3c3c',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Iniciar validación'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("ValidarRegistros", "Obligaciones", new { area = "" })' + '?procedencia=' + '@Hdn_procedencia' + '&' + 'periodo=' + periodo,
+                    type: 'POST',
+                    cache: false,
+                    beforeSend: function () {
+                        $('#processing').show();
+                        $('#result-message').hide();
+                    },
+                    success: function (data) {
+                        $('#result-message').html(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $('#alert-message p.alert').html(jqXHR.responseText)
+                        $('#result-message').show();
+                    },
+                    complete: function () {
+                        $('#processing').hide();
+                        $('#result-message').show();
+                    }
+                })
+            }
+        })
+    })
+
+</script>

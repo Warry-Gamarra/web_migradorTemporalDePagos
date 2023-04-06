@@ -75,47 +75,74 @@
 
 
     $('#btn-validate').on('click', function () {
-        $.ajax({
-            url: '@Url.Action("ValidarRegistros", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
-            type: 'POST',
-            cache: false,
-            beforeSend: function () {
-                $('#processing').show();
-                $('#result-message').hide();
-            },
-            success: function (data) {
-                $('#result-message').html(data);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                $('#alert-message p.alert').html(jqXHR.responseText)
-                $('#result-message').show();
-            },
-            complete: function () {
-                $('#processing').hide();
-                $('#result-message').show();
+        Swal.fire({
+            title: 'Validar Alumnos del temporal de pagos',
+            text: 'Al aceptar se procederá con la validación de consistencia de los datos de alumno ' +
+                'del sistema temporal de pagos con la base de datos de recaudacion de ingresos.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff830f',
+            cancelButtonColor: '#3c3c3c',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Iniciar validación'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("ValidarRegistros", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
+                    type: 'POST',
+                    cache: false,
+                    beforeSend: function () {
+                        $('#processing').show();
+                        $('#result-message').hide();
+                    },
+                    success: function (data) {
+                        $('#result-message').html(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $('#alert-message p.alert').html(jqXHR.responseText)
+                        $('#result-message').show();
+                    },
+                    complete: function () {
+                        $('#processing').hide();
+                        $('#result-message').show();
+                    }
+                })
             }
         })
     })
 
     $('#btn-migrate').on('click', function () {
-        $.ajax({
-            url: '@Url.Action("MigrarDatosTemporalPagos", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
-            type: 'POST',
-            cache: false,
-            beforeSend: function () {
-                $('#processing').show();
-                $('#result-message').hide();
-            },
-            success: function (data) {
-                $('#result-message').html(data);
-            },
-            error: function (jqXHR, textStatus, errorThrown) {
-                $('#alert-message p.alert').html(jqXHR.responseText)
-                $('#result-message').show();
-            },
-            complete: function () {
-                $('#processing').hide();
-                $('#result-message').show();
+        Swal.fire({
+            title: 'Migrar Alumnos desde el temporal de pagos',
+            text: 'Al aceptar los registros con correctamente validados serán copiados a la base de Repositorio Unfv.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ff830f',
+            cancelButtonColor: '#3c3c3c',
+            cancelButtonText: 'Cancelar',
+            confirmButtonText: 'Sí, migrar datos.'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: '@Url.Action("MigrarDatosTemporalPagos", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
+                    type: 'POST',
+                    cache: false,
+                    beforeSend: function () {
+                        $('#processing').show();
+                        $('#result-message').hide();
+                    },
+                    success: function (data) {
+                        $('#result-message').html(data);
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        $('#alert-message p.alert').html(jqXHR.responseText)
+                        $('#result-message').show();
+                    },
+                    complete: function () {
+                        $('#processing').hide();
+                        $('#result-message').show();
+                    }
+                })
             }
         })
     })

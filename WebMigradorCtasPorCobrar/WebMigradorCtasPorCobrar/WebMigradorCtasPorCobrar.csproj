@@ -553,6 +553,8 @@
     <Content Include="Views\CuotaPago\_VerDetalleMigracion.cshtml" />
     <Content Include="Views\Obligaciones\_CtasPorCobrarObligaciones.cshtml" />
     <Content Include="Views\DetalleObligacion\_EditarDetalleObligacion.cshtml" />
+    <Content Include="Views\Obligaciones\_ValidarRegistrosObligacion.cshtml" />
+    <Content Include="Views\Obligaciones\_MigrarRegistrosObligacion.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
