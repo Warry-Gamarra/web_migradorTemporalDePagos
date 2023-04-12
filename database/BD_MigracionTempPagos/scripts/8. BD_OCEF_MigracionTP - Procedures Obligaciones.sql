@@ -175,7 +175,7 @@ AS
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	SET @T_AnioIni = (SELECT ISNULL(@T_AnioIni, '0'))
-	SET @T_AnioIni = (SELECT ISNULL(@T_AnioIni, '3000'))
+	SET @T_AnioFin = (SELECT ISNULL(@T_AnioFin, '3000'))
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
@@ -388,10 +388,13 @@ BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @I_TablaID int = 5
 
+	SET @T_AnioIni = (SELECT ISNULL(@T_AnioIni, '0'))
+	SET @T_AnioFin = (SELECT ISNULL(@T_AnioFin, '3000'))
+
 	BEGIN TRANSACTION
 	BEGIN TRY 
-	DECLARE @D_FecProceso datetime = GETDATE() 
-	DECLARE @I_ObservID int = 27
+		DECLARE @D_FecProceso datetime = GETDATE() 
+		DECLARE @I_ObservID int = 27
 
 		UPDATE	TR_Ec_Obl
 		SET		B_Migrable = 0,
@@ -464,6 +467,9 @@ BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 28
 	DECLARE @I_TablaID int = 5
+
+	SET @T_AnioIni = (SELECT ISNULL(@T_AnioIni, '0'))
+	SET @T_AnioFin = (SELECT ISNULL(@T_AnioFin, '3000'))
 
 	BEGIN TRANSACTION
 	BEGIN TRY
@@ -553,6 +559,9 @@ BEGIN
 	DECLARE @I_ObservID int = 32
 	DECLARE @I_TablaID int = 5
 
+	SET @T_AnioIni = (SELECT ISNULL(@T_AnioIni, '0'))
+	SET @T_AnioFin = (SELECT ISNULL(@T_AnioFin, '3000'))
+
 	BEGIN TRANSACTION
 	BEGIN TRY
 
@@ -625,6 +634,9 @@ BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 34
 	DECLARE @I_TablaID int = 5
+
+	SET @T_AnioIni = (SELECT ISNULL(@T_AnioIni, '0'))
+	SET @T_AnioFin = (SELECT ISNULL(@T_AnioFin, '3000'))
 
 	BEGIN TRANSACTION
 	BEGIN TRY
