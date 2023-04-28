@@ -154,7 +154,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "T_AnioIni", dbType: DbType.String, size: 4, value: anioIni);
-                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioIni);
+                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioFin);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
@@ -244,7 +244,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "T_AnioIni", dbType: DbType.String, size: 4, value: anioIni);
-                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioIni);
+                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioFin);
                     parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -276,7 +276,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "T_AnioIni", dbType: DbType.String, size: 4, value: anioIni);
-                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioIni);
+                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioFin);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
@@ -307,7 +307,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "T_AnioIni", dbType: DbType.String, size: 4, value: anioIni);
-                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioIni);
+                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioFin);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
@@ -338,7 +338,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
                     parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
                     parameters.Add(name: "T_AnioIni", dbType: DbType.String, size: 4, value: anioIni);
-                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioIni);
+                    parameters.Add(name: "T_AnioFin", dbType: DbType.String, size: 4, value: anioFin);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 

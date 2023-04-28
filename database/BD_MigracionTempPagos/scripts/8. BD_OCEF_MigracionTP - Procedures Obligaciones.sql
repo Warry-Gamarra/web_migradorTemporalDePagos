@@ -48,7 +48,7 @@ BEGIN
 								TR_Ec_Obl.B_Migrable	= 0
 						WHERE	NOT EXISTS (SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl SRC  
 											WHERE TR_Ec_Obl.ANO = SRC.ANO AND TR_Ec_Obl.P = SRC.P AND TR_Ec_Obl.COD_ALU = SRC.COD_ALU 
-											AND TR_Ec_Obl.COD_RC = SRC.COD_RC AND TR_Ec_Obl.CUOTA_PAGO = SRC.CUOTA_PAGO  hay reunion
+											AND TR_Ec_Obl.COD_RC = SRC.COD_RC AND TR_Ec_Obl.CUOTA_PAGO = SRC.CUOTA_PAGO 
 											AND ISNULL(TR_Ec_Obl.FCH_VENC, ''19000101'') = ISNULL(SRC.FCH_VENC, ''19000101'')
 											AND ISNULL(TR_Ec_Obl.TIPO_OBLIG, 0) = ISNULL(SRC.TIPO_OBLIG, 0)
 											AND TR_Ec_Obl.MONTO = SRC.MONTO AND TR_Ec_Obl.PAGADO = SRC.PAGADO) '

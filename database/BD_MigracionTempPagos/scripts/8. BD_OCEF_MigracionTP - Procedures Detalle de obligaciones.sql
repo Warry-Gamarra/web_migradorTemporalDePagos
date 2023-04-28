@@ -342,9 +342,7 @@ CREATE PROCEDURE [dbo].[USP_U_ValidarPeriodoEnDetalleObligacion]
 AS
 --declare	@I_ProcedenciaID	tinyint = 3, 
 --			@I_OblRowID		int = NULL,
---			@B_Resultado  bit,/0.
-
-*-*/
+--			@B_Resultado  bit,
 --			@T_Message	  nvarchar(4000)
 --exec USP_U_ValidarPeriodoEnDetalleObligacion @I_ProcedenciaID, @I_OblRowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
