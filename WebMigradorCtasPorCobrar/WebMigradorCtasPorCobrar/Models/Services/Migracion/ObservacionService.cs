@@ -32,12 +32,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
         public IEnumerable<Observacion> Obtener_ObservacionesObligacion(int filaId)
         {
-            return ObservacionRepository.Obtener(filaId, (int)Tablas.TR_Ec_Obl);
+            return ObservacionRepository.ObtenerDeCabecercaObligacion(filaId);
         }
 
         public IEnumerable<Observacion> Obtener_ObservacionesDetalleObligacion(int filaId)
         {
-            return ObservacionRepository.Obtener(filaId, (int)Tablas.TR_Ec_Det);
+            return ObservacionRepository.ObtenerDeDetalleObligacion(filaId);
         }
 
         public IEnumerable<Observacion> ObtenerCatalogo()

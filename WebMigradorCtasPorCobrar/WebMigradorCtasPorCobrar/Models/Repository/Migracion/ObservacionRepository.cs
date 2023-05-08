@@ -73,5 +73,36 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 
             return result;
         }
+
+
+        public static IEnumerable<Observacion> ObtenerDeCabecercaObligacion(int filaID)
+        {
+            IEnumerable<Observacion> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<Observacion>("SELECT * FROM dbo.VW_ObservacionesEcObl " +
+                                                       "WHERE I_FilaTablaID = @I_FilaTablaID"
+                                                       , new { I_FilaTablaID = filaID }
+                                                       , commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
+        public static IEnumerable<Observacion> ObtenerDeDetalleObligacion(int filaID)
+        {
+            IEnumerable<Observacion> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<Observacion>("SELECT * FROM dbo.VW_ObservacionesEcDet " +
+                                                       "WHERE I_FilaTablaID = @I_FilaTablaID"
+                                                       , new { I_FilaTablaID = filaID }
+                                                       , commandType: CommandType.Text);
+            }
+
+            return result;
+        }
     }
 }
