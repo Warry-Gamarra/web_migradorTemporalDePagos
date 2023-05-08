@@ -81,7 +81,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             string s_anioFin = anioFin.HasValue ? null : anioIni.ToString();
 
             result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, s_anioIni, s_anioFin);
-            result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, s_anioIni, s_anioFin);
+            //result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, s_anioIni, s_anioFin);
 
             if (result_Cabecera.IsDone && result_Detalle.IsDone)
             {
@@ -151,32 +151,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                             result_CuotaPagoMigrada.IsDone &&
                             result_Procedencia.IsDone;
 
-            result.Message = $"    <dl class=\"row text-justify\">" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Código de alumno no migrado</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_Alumnos.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Error en el año de la obligación</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_Anio.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Error en el periodo de la obligación</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_Periodo.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observado por fecha de vencimiento</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_FecVencimiento.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Cuota de pago de migrada</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_CuotaPagoMigrada.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observaciones en el codigo de concepto</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_Procedencia.Message}</p>" +
-                             $"        </dd>" +
-                             $"    </dl>";
 
 
             return result.IsDone ? result.Success(false) : result.Error(false);

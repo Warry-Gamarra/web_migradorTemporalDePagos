@@ -14,11 +14,11 @@ CREATE PROCEDURE USP_IU_CopiarTablaDetalleObligacionesPago
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_ProcedenciaID	tinyint = 2,
---		@T_SchemaDB   varchar(20) = 'eupg',
+--declare @I_ProcedenciaID	tinyint = 3,
+--		@T_SchemaDB   varchar(20) = 'euded',
 --		@T_AnioIni	  varchar(4) = null,
 --		@T_AnioFin	  varchar(4) = null,
---	 <vbnm;	@B_Resultado  bit,
+--	 	@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
 --exec USP_IU_CopiarTablaDetalleObligacionesPago @I_ProcedenciaID, @T_SchemaDB, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
@@ -30,134 +30,23 @@ BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @T_SQL nvarchar(max)
 
-	CREATE TABLE #Tbl_output
-	(
-		accion			varchar(20),
-		I_RowID			int, 
-		COD_ALU			nvarchar(50),
-		COD_RC			nvarchar(50),
-		CUOTA_PAGO		float,
-		ANO				nvarchar(50),
-		P				nvarchar(50),
-		TIPO_OBLIG		varchar(50),
-		CONCEPTO		float,
-		FCH_VENC		nvarchar(50),
-		ELIMINADO		nvarchar(50),
-		INS_NRO_RECIBO	nvarchar(50),
-		INS_FCH_PAGO	nvarchar(50),
-		INS_ID_LUG_PAG	nvarchar(50),
-		INS_CANTIDAD	nvarchar(50),
-		INS_MONTO		nvarchar(50),
-		INS_PAGADO		nvarchar(50),
-		INS_CONCEPTO_F	nvarchar(50),
-		INS_FCH_ELIMIN	nvarchar(50),
-		INS_NRO_EC		float,
-		INS_FCH_EC		nvarchar(50),
-		INS_PAG_DEMAS	nvarchar(50),
-		INS_COD_CAJERO	nvarchar(50),
-		INS_TIPO_PAGO	nvarchar(50),
-		INS_NO_BANCO	nvarchar(50),
-		INS_COD_DEP		nvarchar(50),
-		DEL_NRO_RECIBO	nvarchar(50),
-		DEL_FCH_PAGO	nvarchar(50),
-		DEL_ID_LUG_PAG	nvarchar(50),
-		DEL_CANTIDAD	nvarchar(50),
-		DEL_MONTO		nvarchar(50),
-		DEL_PAGADO		nvarchar(50),
-		DEL_CONCEPTO_F	nvarchar(50),
-		DEL_FCH_ELIMIN	nvarchar(50),
-		DEL_NRO_EC		float,
-		DEL_FCH_EC		nvarchar(50),
-		DEL_PAG_DEMAS	nvarchar(50),
-		DEL_COD_CAJERO	nvarchar(50),
-		DEL_TIPO_PAGO	nvarchar(50),
-		DEL_NO_BANCO	nvarchar(50),
-		DEL_COD_DEP		nvarchar(50),
-		B_Removido		bit
-	)
-
 	BEGIN TRY 	
-				
-		DECLARE @T_Source varchar(2000)
-		SET @T_Source = 'SELECT obl.I_RowID AS I_OblRowID , det.* 
-						 FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det det
-							  LEFT JOIN (SELECT I_RowID, obl2.* FROM TR_Ec_Obl obl1 
-										 INNER JOIN (SELECT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, pagado, I_ProcedenciaID
-													 FROM TR_Ec_Obl WHERE  I_ProcedenciaID = ' + CAST(@I_ProcedenciaID as varchar(3)) + ' 
-													 GROUP BY  I_ProcedenciaID, Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Pagado
-													 HAVING count(*) = 1
-													) obl2 ON obl1.Ano = obl2.Ano AND obl1.P = obl2.P AND obl1.Cod_alu = obl2.Cod_alu
-													 		  AND obl1.Cod_rc = obl2.Cod_rc AND obl1.Cuota_pago = obl2.Cuota_pago 
-													 		  AND obl1.Fch_venc = obl2.Fch_venc AND obl1.Pagado = obl2.Pagado 
-													 		  AND obl1.I_ProcedenciaID = obl2.I_ProcedenciaID
-										) obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
-							  			 		 AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
-							  			 		 AND det.fch_venc = obl.fch_venc --AND det.pagado = obl.Pagado 
-						'
-							  			 							   
-		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
-		BEGIN
-			SET @T_Source = @T_Source + ' ' + char(13)+CHAR(10)+ 'WHERE (det.ano BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''')'
-		END
+	
+		SET @T_SQL = 'DELETE FROM TR_Ec_Det WHERE B_Migrado = 0 AND I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ''
 
-		SET @T_SQL = '	DECLARE @D_FecProceso datetime = GETDATE()			 
-						MERGE TR_Ec_Det AS TRG
-						USING ('+ @T_Source +') AS SRC
-						ON	  TRG.Cod_alu = SRC.cod_alu AND
-							  TRG.Cod_rc = SRC.cod_rc AND
-							  TRG.Cuota_pago = SRC.cuota_pago AND
-							  TRG.Ano = SRC.ano AND
-							  TRG.P = SRC.p AND
-							  TRG.Tipo_oblig = SRC.tipo_oblig AND
-							  TRG.Concepto = SRC.concepto AND
-							  TRG.Fch_venc = SRC.fch_venc AND
-							  TRG.Eliminado = SRC.eliminado AND
-							  TRG.Pagado = SRC.pagado AND
-							  TRG.Concepto_f = SRC.concepto_f AND
-							  TRG.Fch_elimin = SRC.fch_elimin AND
-							  TRG.Nro_ec = SRC.nro_ec AND
-							  TRG.Fch_ec = SRC.fch_ec
-						--WHEN MATCHED AND TRG.B_Migrado = 0 THEN
-						--	UPDATE SET Nro_recibo = SRC.nro_recibo, 
-						--			   Fch_pago = SRC.fch_pago, 
-						--			   Id_lug_pag = SRC.id_lug_pag, 
-						--			   Cantidad = SRC.cantidad, 
-						--			   Monto = SRC.monto, 
-						--			   Documento = CAST(SRC.documento as nvarchar(4000)),
-						--			   Nro_ec = SRC.nro_ec, 
-						--			   Fch_ec = SRC.fch_ec, 
-						--			   Pag_demas = SRC.pag_demas, 
-						--			   Cod_cajero = SRC.cod_cajero, 
-						--			   Tipo_pago = SRC.tipo_pago, 
-						--			   No_banco = SRC.no_banco, 
-						--			   Cod_dep = SRC.cod_dep
-						WHEN NOT MATCHED BY TARGET THEN
-							INSERT (Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, 
-									Nro_ec, Fch_ec, Eliminado, Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, D_FecCarga, B_Migrable, B_Migrado, D_FecMigrado, I_ProcedenciaID, B_Obligacion, I_OblRowID)
-							VALUES (cod_alu, cod_rc, cuota_pago, ano, p, tipo_oblig, concepto, fch_venc, nro_recibo, fch_pago, id_lug_pag, cantidad, monto, CAST(SRC.documento as nvarchar(4000)), pagado, concepto_f, fch_elimin, 
-									nro_ec, fch_ec, eliminado, pag_demas, cod_cajero, tipo_pago, no_banco, cod_dep, @D_FecProceso, 1, 0, NULL, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', 1, I_OblRowID)
-						--WHEN NOT MATCHED BY SOURCE AND I_ProcedenciaID = ' + CAST(@I_ProcedenciaID as varchar(3)) + ' THEN
-						--	UPDATE SET	TRG.B_Removido	  = 1, 
-						--				TRG.D_FecRemovido = @D_FecProceso,
-						--				TRG.B_Migrable	  = 0, 
-						--				TRG.D_FecEvalua   = NULL,
-						--				TRG.D_FecMigrado  = NULL, 
-						--				TRG.B_Migrado	  = 0 
-						OUTPUT	$ACTION, inserted.I_RowID, inserted.COD_ALU, inserted.COD_RC, inserted.CUOTA_PAGO, inserted.ANO, inserted.P, inserted.TIPO_OBLIG, inserted.CONCEPTO, inserted.FCH_VENC, inserted.ELIMINADO, 
-								inserted.NRO_RECIBO, inserted.FCH_PAGO, inserted.ID_LUG_PAG, inserted.CANTIDAD, inserted.MONTO, inserted.PAGADO, inserted.CONCEPTO_F, inserted.FCH_ELIMIN, inserted.NRO_EC, inserted.FCH_EC, 
-								inserted.PAG_DEMAS, inserted.COD_CAJERO, inserted.TIPO_PAGO, inserted.NO_BANCO, inserted.COD_DEP, deleted.NRO_RECIBO, deleted.FCH_PAGO, deleted.ID_LUG_PAG, deleted.CANTIDAD, deleted.MONTO, 
-								deleted.PAGADO, deleted.CONCEPTO_F, deleted.FCH_ELIMIN, deleted.NRO_EC, deleted.FCH_EC, deleted.PAG_DEMAS, deleted.COD_CAJERO, deleted.TIPO_PAGO, deleted.NO_BANCO, deleted.COD_DEP, 
-								deleted.B_Removido INTO #Tbl_output;
-					'
+		IF (ISNULL(@T_AnioIni, '') <> '' AND ISNULL(@T_AnioFin, '') <> '')
+		BEGIN
+			SET @T_SQL = @T_SQL + 'AND (ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''');' 
+		END
 
 		print @T_SQL
 		Exec sp_executesql @T_SQL
 
-		print @T_Source
+		--print @T_Source
 		
 		SET @T_SQL = 'SELECT cuota_pago, concepto, p, ano, fch_venc, cod_alu, cod_rc, monto, pagado, concepto_f FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det'
 		
-		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+		IF (ISNULL(@T_AnioIni, '') <> '' AND ISNULL(@T_AnioFin, '') <> '')
 		BEGIN
 			SET @T_SQL = @T_SQL + ' WHERE (ano BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''') '
 		END
@@ -166,9 +55,20 @@ BEGIN
 		Exec sp_executesql @T_SQL
 
 		SET @I_EcDet = @@ROWCOUNT
-		SET @I_Insertados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'INSERT')
-		SET @I_Actualizados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
-		SET @I_Removidos = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
+		SET @I_Insertados = @I_EcDet
+
+
+
+		DELETE FROM TI_ObservacionRegistroTabla 
+		WHERE			
+				I_TablaID = 4 
+				AND I_ProcedenciaID = @I_ProcedenciaID
+				AND NOT EXISTS (SELECT I_RowID FROM TR_Ec_Det WHERE I_RowID = I_FilaTablaID);
+
+		IF(@I_Removidos <> 0)
+		BEGIN
+			SET @I_Actualizados = @I_Insertados
+		END
 
 		SELECT @I_EcDet AS tot_obligaciones, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 		

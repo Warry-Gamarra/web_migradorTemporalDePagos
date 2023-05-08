@@ -32,70 +32,46 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY 
 
-		UPDATE	TR_Ec_Obl
-		SET		B_Actualizado = 0, 
-				B_Migrable	  = 1, 
-				D_FecMigrado  = NULL, 
-				B_Migrado	  = 0 
-		WHERE   (Ano BETWEEN @T_AnioIni AND @T_AnioFin)
-				OR @T_AnioIni is null
-
-		SET @T_SQL = '  DECLARE @D_FecProceso datetime = GETDATE()
-					 
-						UPDATE	TR_Ec_Obl
-						SET		TR_Ec_Obl.B_Removido	= 1, 
-								TR_Ec_Obl.D_FecRemovido	= @D_FecProceso,
-								TR_Ec_Obl.B_Migrable	= 0
-						WHERE	NOT EXISTS (SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl SRC  
-											WHERE TR_Ec_Obl.ANO = SRC.ANO AND TR_Ec_Obl.P = SRC.P AND TR_Ec_Obl.COD_ALU = SRC.COD_ALU 
-											AND TR_Ec_Obl.COD_RC = SRC.COD_RC AND TR_Ec_Obl.CUOTA_PAGO = SRC.CUOTA_PAGO 
-											AND ISNULL(TR_Ec_Obl.FCH_VENC, ''19000101'') = ISNULL(SRC.FCH_VENC, ''19000101'')
-											AND ISNULL(TR_Ec_Obl.TIPO_OBLIG, 0) = ISNULL(SRC.TIPO_OBLIG, 0)
-											AND TR_Ec_Obl.MONTO = SRC.MONTO AND TR_Ec_Obl.PAGADO = SRC.PAGADO) '
+		SET @T_SQL = '  DELETE TR_Ec_Det
+						WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + '
+							  AND EXISTS (SELECT * FROM TR_Ec_Obl WHERE TR_Ec_Obl.I_RowID = I_OblRowID'
 						
-		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+
+
+		IF (ISNULL(@T_AnioIni, '') <> '' AND ISNULL(@T_AnioFin, '') <> '')
 		BEGIN
-			SET @T_SQL = @T_SQL + 'AND (TR_Ec_Obl.ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''') '
+			SET @T_SQL = @T_SQL + ' AND (TR_Ec_Obl.ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''') '
 		END
 
-		SET @T_SQL = @T_SQL + 'AND TR_Ec_Obl.B_Migrado = 0 
-							   AND TR_Ec_Obl.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ';'
+		SET @T_SQL = @T_SQL + ' AND TR_Ec_Obl.B_Migrado = 0 
+							    AND TR_Ec_Obl.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ');'
 
-		PRINT @T_SQL
+		--PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
-
 		SET @I_Removidos = @@ROWCOUNT
 
 		
-		SET @T_SQL = '	DECLARE @D_FecProceso datetime = GETDATE()
-			
-						UPDATE	TR_Ec_Obl
-						SET		TR_Ec_Obl.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ', 
-								TR_Ec_Obl.B_Obligacion = 1,
-								TR_Ec_Obl.D_FecActualiza = @D_FecProceso,
-								TR_Ec_Obl.B_Actualizado = 1,
-								TR_Ec_Obl.B_Migrable = 0,
-								TR_Ec_Obl.D_FecEvalua = NULL,
-								TR_Ec_Obl.B_Removido = 0,
-								TR_Ec_Obl.D_FecRemovido = NULL
-						WHERE	EXISTS (SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl SRC  
-										WHERE TR_Ec_Obl.Ano = SRC.ano AND TR_Ec_Obl.P = SRC.p AND TR_Ec_Obl.Cod_alu = SRC.cod_alu 
-										AND TR_Ec_Obl.Cod_rc = SRC.cod_rc AND TR_Ec_Obl.Cuota_pago = SRC.cuota_pago 
-										AND ISNULL(TR_Ec_Obl.Fch_venc, ''19000101'') = ISNULL(SRC.fch_venc, ''19000101'')
-										AND ISNULL(TR_Ec_Obl.Tipo_oblig, 0) = ISNULL(SRC.tipo_oblig, 0)
-										AND TR_Ec_Obl.Monto = SRC.monto AND TR_Ec_Obl.Pagado = SRC.pagado) '
+		SET @T_SQL = 'DELETE TR_Ec_Obl
+					  WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + '
+					 '
 
-		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+		IF (ISNULL(@T_AnioIni, '') <> '' AND ISNULL(@T_AnioFin, '') <> '')
 		BEGIN
-			SET @T_SQL = @T_SQL + 'AND (TR_Ec_Obl.ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''') ' 
+			SET @T_SQL = @T_SQL + ' AND (TR_Ec_Obl.ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''')' 
 		END
 
-		SET @T_SQL = @T_SQL + 'AND TR_Ec_Obl.B_Migrado = 0;' 
+		SET @T_SQL = @T_SQL + ' AND TR_Ec_Obl.B_Migrado = 0;' 
 
-		PRINT @T_SQL
+		--PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
+		SET @I_Removidos = @I_Removidos + @@ROWCOUNT
 
-		SET @I_Actualizados = @@ROWCOUNT
+
+		DELETE FROM TI_ObservacionRegistroTabla 
+		WHERE			
+				I_TablaID = 4 
+				AND I_ProcedenciaID = @I_ProcedenciaID
+				AND NOT EXISTS (SELECT I_RowID FROM TR_Ec_Det WHERE I_RowID = I_FilaTablaID);
 
 
 		SET @T_SQL = '	DECLARE @D_FecProceso datetime = GETDATE()
@@ -110,20 +86,19 @@ BEGIN
 											AND ISNULL(TRG.Tipo_oblig, 0) = ISNULL(OBL.tipo_oblig, 0) AND TRG.Monto = OBL.monto AND TRG.Pagado = OBL.pagado
 											AND TRG.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ') '
 
-		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+		IF (ISNULL(@T_AnioIni, '') <> '' AND ISNULL(@T_AnioFin, '') <> '')
 		BEGIN
 			SET @T_SQL = @T_SQL + 'AND (OBL.ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''');' 
 		END
 
-		PRINT @T_SQL
+		--PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
-
 		SET @I_Insertados = @@ROWCOUNT
 
 		
 		SET @T_SQL = '(SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl'
 
-		IF (@T_AnioIni IS NOT NULL AND @T_AnioFin IS NOT NULL)
+		IF (ISNULL(@T_AnioIni, '') <> '' AND ISNULL(@T_AnioFin, '') <> '')
 		BEGIN
 			SET @T_SQL = @T_SQL + ' WHERE ANO BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''''
 		END
@@ -132,16 +107,28 @@ BEGIN
 
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
-
 		SET @I_EcObl = @@ROWCOUNT
 
-		SELECT @I_EcObl AS tot_obligaciones, @I_Insertados AS cant_inserted, @I_Actualizados AS cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
+
+		IF(@I_Removidos <> 0)
+		BEGIN
+			SET @I_Actualizados = @I_Insertados
+		END
+				
+		DELETE FROM TI_ObservacionRegistroTabla 
+		WHERE	I_TablaID = 5  
+				AND I_ProcedenciaID = @I_ProcedenciaID
+				AND NOT EXISTS (SELECT I_RowID FROM TR_Ec_Obl WHERE I_RowID = I_FilaTablaID);
+
+
+		SELECT @I_EcObl AS tot_obligaciones, @I_Insertados AS cant_inserted, @I_Actualizados AS cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso;
 		
 
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1
 		SET @T_Message =  'Total: ' + CAST(@I_EcObl AS varchar) + '|Insertados: ' + CAST(@I_Insertados AS varchar) 
-						+ '|Actualizados: ' + CAST(@I_Actualizados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
+			  			+ '|Actualizados: ' + CAST(@I_Actualizados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
+						
 
 	END TRY
 	BEGIN CATCH
