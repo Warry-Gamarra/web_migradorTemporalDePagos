@@ -81,7 +81,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             string s_anioFin = anioFin.HasValue ? null : anioIni.ToString();
 
             result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, s_anioIni, s_anioFin);
-            //result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, s_anioIni, s_anioFin);
+            result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, s_anioIni, s_anioFin);
 
             if (result_Cabecera.IsDone && result_Detalle.IsDone)
             {
@@ -129,7 +129,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                     anioFin = "2015";
                     break;
                 case PeriodosValidacion.Del_2016_al_2020:
-                    anioInicio = null;
+                    anioInicio = "2016";
                     anioFin = "2020";
                     break;
             }
@@ -151,7 +151,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                             result_CuotaPagoMigrada.IsDone &&
                             result_Procedencia.IsDone;
 
-
+            result.Message = result_Alumnos.Message + " | " +
+                            result_Anio.Message + " | " +
+                            result_Periodo.Message + " | " +
+                            result_FecVencimiento.Message + " | " +
+                            result_CuotaPagoMigrada.Message + " | " +
+                            result_Procedencia.Message;
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
@@ -170,8 +175,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                 result = obligacionRepository.MigrarDataObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
                 result2 = obligacionRepository.MigrarDataPagoObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
 
-                result.Message += "\r\n" + result2.Message;
+                result.Message += "\r\n" + result2.Message + "\r\n";
             }
+
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }

@@ -44,12 +44,38 @@ BEGIN
 
 		--print @T_Source
 		
-		SET @T_SQL = 'SELECT cuota_pago, concepto, p, ano, fch_venc, cod_alu, cod_rc, monto, pagado, concepto_f FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det'
-		
+
+		DECLARE @T_Source varchar(2000)
+		SET @T_Source = 'SELECT obl.I_RowID AS I_OblRowID , det.* 
+						 FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det det
+							  LEFT JOIN (SELECT I_RowID, obl2.* FROM TR_Ec_Obl obl1 
+										 INNER JOIN (SELECT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, pagado, I_ProcedenciaID
+													 FROM TR_Ec_Obl WHERE  I_ProcedenciaID = ' + CAST(@I_ProcedenciaID as varchar(3)) + ' 
+													 GROUP BY  I_ProcedenciaID, Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Pagado
+													 HAVING count(*) = 1
+													) obl2 ON obl1.Ano = obl2.Ano AND obl1.P = obl2.P AND obl1.Cod_alu = obl2.Cod_alu
+													 		  AND obl1.Cod_rc = obl2.Cod_rc AND obl1.Cuota_pago = obl2.Cuota_pago 
+													 		  AND obl1.Fch_venc = obl2.Fch_venc AND obl1.Pagado = obl2.Pagado 
+													 		  AND obl1.I_ProcedenciaID = obl2.I_ProcedenciaID
+										) obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
+							  			 		 AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
+							  			 		 AND det.fch_venc = obl.fch_venc --AND det.pagado = obl.Pagado 
+						'
+
 		IF (ISNULL(@T_AnioIni, '') <> '' AND ISNULL(@T_AnioFin, '') <> '')
 		BEGIN
-			SET @T_SQL = @T_SQL + ' WHERE (ano BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''') '
+			SET @T_Source = @T_Source + ' ' + char(13)+CHAR(10)+ 'WHERE (det.ano BETWEEN ''' + @T_AnioIni + ''' AND ''' + @T_AnioFin + ''')'
 		END
+
+
+		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE() 
+					  INSERT INTO TR_Ec_Det (Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, 
+											Nro_ec, Fch_ec, Eliminado, Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, D_FecCarga, B_Migrable, B_Migrado, D_FecMigrado, I_ProcedenciaID, B_Obligacion, I_OblRowID)
+					  SELECT cod_alu, cod_rc, cuota_pago, ano, p, tipo_oblig, concepto, fch_venc, nro_recibo, fch_pago, id_lug_pag, cantidad, monto, CAST(SRC.documento as nvarchar(4000)), pagado, concepto_f, fch_elimin, 
+							 nro_ec, fch_ec, eliminado, pag_demas, cod_cajero, tipo_pago, no_banco, cod_dep, @D_FecProceso, 1, 0, NULL, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', 1, I_OblRowID
+					    FROM ('+ @T_Source +') AS SRC'
+
+	
 
 		print @T_SQL
 		Exec sp_executesql @T_SQL
@@ -843,8 +869,8 @@ CREATE PROCEDURE [dbo].[USP_IU_MigrarObligacionesCtasPorCobrar]
 AS
 --declare   @I_ProcedenciaID tinyint = 3,
 --			@I_ProcesoID int = null, 
---			@I_AnioIni	 int = null, 
---			@I_AnioFin	 int = null, 
+--			@I_AnioIni	 int = 2008, 
+--			@I_AnioFin	 int = 2008, 
 --			@B_Resultado  bit, 
 --			@T_Message nvarchar(4000)
 --exec USP_IU_MigrarObligacionesCtasPorCobrar @I_ProcedenciaID, @I_ProcesoID, @I_AnioIni, @I_AnioFin, @B_Resultado output, @T_Message output
@@ -916,6 +942,7 @@ BEGIN
 		INTO #tmp_det_migra
 		FROM  TR_Ec_Det det
 			  INNER JOIN TR_Ec_Obl obl ON det.I_OblRowID = obl.I_RowID
+			  INNER JOIN BD_OCEF_CtasPorCobrar..TI_ConceptoPago CCCP ON CCCP.I_ConcPagID = det.Concepto ---
 		WHERE det.I_ProcedenciaID = @I_ProcedenciaID
 			  AND det.Cuota_pago = IIF(@I_ProcesoID IS NULL, det.Cuota_pago, @I_ProcesoID)
 			  AND (CAST(det.Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin)
@@ -1089,12 +1116,12 @@ BEGIN
 			TRG.C_CodOperacion = SRC.Nro_recibo
 			AND TRG.C_CodDepositante = SRC.Cod_alu
 			AND CAST(TRG.D_FecPago AS date) = CAST(SRC.Fch_pago AS date)
-		WHEN MATCHED AND TRG.B_Migrado = 1 AND TRG.I_UsuarioMod IS NULL THEN
-			UPDATE SET TRG.T_NomDepositante = SRC.T_NomDepositante,
-					   TRG.C_Referencia = SRC.Nro_recibo,
-					   TRG.D_FecPago = SRC.Fch_pago,
-					   TRG.I_MontoPago = SRC.Monto,
-					   TRG.T_LugarPago = SRC.Id_lug_pag				
+		--WHEN MATCHED AND TRG.B_Migrado = 1 AND TRG.I_UsuarioMod IS NULL THEN
+		--	UPDATE SET TRG.T_NomDepositante = SRC.T_NomDepositante,
+		--			   TRG.C_Referencia = SRC.Nro_recibo,
+		--			   TRG.D_FecPago = SRC.Fch_pago,
+		--			   TRG.I_MontoPago = SRC.Monto,
+		--			   TRG.T_LugarPago = SRC.Id_lug_pag				
 		WHEN NOT MATCHED THEN
 			INSERT (I_EntidadFinanID, C_CodOperacion, C_CodDepositante, T_NomDepositante, C_Referencia, D_FecPago, I_Cantidad, C_Moneda, I_MontoPago, T_LugarPago, B_Anulado, 
 					I_UsuarioCre, D_FecCre, T_Observacion, T_InformacionAdicional, I_CondicionPagoID, I_TipoPagoID, I_CtaDepositoID, I_InteresMora, T_MotivoCoreccion, I_UsuarioMod, 

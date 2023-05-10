@@ -1,0 +1,38 @@
+﻿
+@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.TemporalPagos.Obligacion>
+@using GridMvc.Html
+
+@{ 
+    var procedencia_value = ViewBag.Procedencia;
+}
+
+<div class="table-responsive" style="min-height:300px; font-size:13px;">
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(c => c.Ano).Filterable(true);
+        columns.Add(c => c.P).Filterable(true);
+        columns.Add(c => c.Cuota_pago).Filterable(true);
+        columns.Add(c => c.Cod_RC).Filterable(true);
+        columns.Add(c => c.Cod_alu).Filterable(true);
+        columns.Add(c => c.Fch_venc).RenderValueAs(model => model.Fch_venc.ToShortDateString()).Filterable(true);
+        columns.Add(c => c.Monto).Filterable(true);
+        columns.Add(c => c.Pagado).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
+               .RenderValueAs(model => model.Pagado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                                    : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));
+        columns.Add(c => c.Tipo_oblig).Css("text-center").Encoded(false).Sanitized(false).Filterable(true)
+               .RenderValueAs(model => model.Tipo_oblig ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-info\"></i></span>")
+                                                        : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-secondary\"></i></span>"));
+        columns.Add().SetWidth(120).Css("text-right").Encoded(false).Sanitized(false)
+               .RenderValueAs(model => Html.Raw($"<a href=\"{ Url.Action("TemporalPagosDetalle", "Obligaciones", new { procedencia = procedencia_value, cuota_pago = model.Cuota_pago, anio = model.Ano,  p = model.P,  cod_alu= model.Cod_alu,  cod_rc=model.Cod_RC,  fch_venc=model.Fch_venc })}\" class=\"modal-link-xl\">" +
+                                                    $"<i class=\"bi-receipt\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver Detalle</span>" +
+                                                $"</a>"));
+    }
+    ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+</div>
+
+
+<script>
+    $('#btn-tp').addClass('active');
+    $('#btn-mg').removeClass('active');
+    $('#btn-proc').removeClass('active');
+</script>

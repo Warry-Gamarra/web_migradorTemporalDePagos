@@ -15,6 +15,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
     {
         private readonly TemporalPagos.ObligacionService _obligacionServiceTemporalPagos;
         private readonly ObligacionService _obligacionServiceMigracion;
+        private readonly ObligacionDetalleService _obligacionDetalleServiceMigracion;
         private readonly EquivalenciasServices _equivalenciasServices;
         private readonly ObservacionService _observacionService;
 
@@ -24,6 +25,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             _obligacionServiceMigracion = new ObligacionService();
             _observacionService = new ObservacionService();
             _equivalenciasServices = new EquivalenciasServices();
+            _obligacionDetalleServiceMigracion = new ObligacionDetalleService();
         }
 
 

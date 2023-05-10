@@ -1,0 +1,46 @@
+﻿@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.Alumno
+
+<div class="modal-header">
+    <h5 class="modal-title">Datos del estudiante</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <dl class="row">
+        <dt class="col-sm-4">Código:</dt>
+        <dd class="col-sm-8">@Model.C_CodAlu</dd>
+
+        <dt class="col-sm-4">Carrera</dt>
+        <dd class="col-sm-8">@Model.C_RcCod - @Model.T_Carrera</dd>
+
+        <dt class="col-sm-4">Modalidad de ingreso</dt>
+        <dd class="col-sm-8">@Model.C_CodModIng - @Model.T_ModalidadIng</dd>
+
+        <dt class="col-sm-4">Año de ingreso</dt>
+        <dd class="col-sm-8">@Model.C_AnioIngreso</dd>
+
+        <dt class="col-sm-4">Nombre Completo</dt>
+        <dd class="col-sm-8">@Model.T_ApePaterno  @Model.T_ApeMaterno,  @Model.T_Nombre</dd>
+
+        <dt class="col-sm-4">Número Documento</dt>
+        <dd class="col-sm-8">@Model.C_NumDNI</dd>
+
+        <dt class="col-sm-4">Tipo Documento</dt>
+        <dd class="col-sm-8">@Model.C_CodTipDoc</dd>
+
+        <dt class="col-sm-4">Sexo</dt>
+        <dd class="col-sm-8">@Model.C_Sexo</dd>
+
+        <dt class="col-sm-4">Fecha de Nacimiento</dt>
+        <dd class="col-sm-8">
+            @if (Model.D_FecNac.HasValue)
+            {
+                <span>@Model.D_FecNac.Value.ToShortDateString()</span>
+            }
+        </dd>
+    </dl>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+</div>

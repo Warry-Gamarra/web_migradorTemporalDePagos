@@ -1,0 +1,70 @@
+﻿
+@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Migracion.ConceptoPago>
+@using GridMvc.Html
+
+@{
+    string str_procedencia = ViewBag.Procedencia.ToString();
+}
+
+<div class="row mb-5 form-inline">
+    <div class="col-md-2 col-sm-3">
+        <label class="control-label">Filtro observación</label>
+    </div>
+    <div class="">
+        @Html.DropDownList("cboTipoObs", ViewBag.Observaciones as SelectList, "- SIN FILTRO -", new { @class = "form-control" })
+    </div>
+
+    <div class="col-md-2 col-sm-3" id="link-exportar">
+        <a href="@Url.Action("ExportarObservaciones", "ConceptoPago", new { id = ViewBag.IdObservacion, procedencia = ViewBag.Procedencia })">
+            <i class="fa fa-file-excel-o"></i> Exportar Observaciones
+        </a>
+    </div>
+    <div id="spinner-loading" class="spinner-border text-info mx-4" role="status" style="display:none;">
+        <span class="sr-only">Loading...</span>
+    </div>
+</div>
+
+<div class="table-responsive" style="min-height: 300px; font-size: 13px;">
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(c => c.Id_cp).Titled("Codigo").Filterable(true);
+        columns.Add(c => c.Descripcio).Titled("Descripción").Filterable(true);
+        columns.Add(c => c.Ano).Titled("Año").Filterable(true);
+        columns.Add(c => c.P).Titled("Periodo").Filterable(true);
+        columns.Add(c => c.Cuota_pago_desc).Titled("Cuota pago").Filterable(true);
+        columns.Add(c => c.Tipo_oblig).Css("text-center").Encoded(false).Sanitized(false).Titled("Obligación").Filterable(true)
+                .RenderValueAs(model => model.Tipo_oblig ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-info\"></i></span>")
+                                                         : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
+        columns.Add(c => c.Eliminado).Css("text-center").Encoded(false).Sanitized(false).Titled("Eliminado").Filterable(true)
+                .RenderValueAs(model => model.Eliminado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-warning\"></i></span>")
+                                                         : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
+        //columns.Add(c => c.Nro_pagos).Titled("Nro Pagos").Filterable(true);
+        columns.Add(c => c.Monto).Titled("Monto").Filterable(true);
+        columns.Add(c => c.B_Migrable).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrable").Filterable(true)
+                .RenderValueAs(model => model.B_Migrable ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                                         : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));
+        columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrado").Filterable(true)
+                .RenderValueAs(model => model.B_Migrado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                                        : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));
+        columns.Add().SetWidth(150).Css("text-right").Encoded(false).Sanitized(false)
+                     .RenderValueAs(model => model.B_Migrable ? @Html.Raw("")
+                                                              : @Html.Raw($"<a href=\"{ Url.Action("Observaciones", "ConceptoPago", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\">" +
+                                                                              $"<i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span>" +
+                                                                          $"</a>"));
+    }
+    ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+</div>
+
+
+<script>
+    $('#btn-tp').removeClass('active');
+    $('#btn-mg').addClass('active');
+    $('#btn-proc').removeClass('active');
+
+    $('#cboTipoObs').on('change', function () {
+        $('#link-exportar').hide();
+        $('#spinner-loading').show();
+        location.href = '@Url.Action(str_procedencia, "ConceptoPago", new { area = "", partial = "DatosMigracion" })' + '&tipo_obs=' + this.value;
+    })
+
+</script>

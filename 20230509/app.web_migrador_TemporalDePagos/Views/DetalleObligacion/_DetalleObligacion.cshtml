@@ -1,0 +1,145 @@
+﻿
+@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.Obligacion
+
+<div class="modal-header">
+    <h5 class="modal-title">
+        Obligación : [@Model.Cuota_pago_desc  @Model.Ano - @Model.P ] Alumno: [ @Model.Cod_alu ]
+        <span id="error_title" style="font-size:1rem; vertical-align: text-bottom;">@ViewBag.ErrorTitle</span>
+        <span id="error_descrip" class="d-inline-block text-truncate1" style="font-size:1rem; vertical-align: text-bottom;"></span>
+    </h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="row" id="div_msg">
+        <div class="col-12" id="tabla-errores">
+            <table class="table" id ="tbl_det">
+                <thead class="thead-light">
+                    <tr>
+                        <th style="min-width:200px">Concepto</th>
+                        <th style="width:60px" class="text-center">Cantidad</th>
+                        <th style="width:70px" class="text-center">Monto</th>
+                        <th style="width:120px" class="text-center">Estado pago</th>
+                        <th style="width:130px" class="text-center">Estado registro</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DetalleObligaciones)
+                    {
+                        <tr style="font-size:13px;">
+                            <td>@item.Concepto_desc</td>
+                            <td class="text-right">@item.Cantidad</td>
+                            <td class="text-right">@item.Monto</td>
+                            <td class="text-center">
+                                @if (item.Pagado)
+                                {
+                                    <span class="badge badge-pill badge-success"><i class="fa fa-check-circle"></i> pagado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-pill badge-warning"><i class="fa fa-exclamation-circle"></i> Pendiente</span>
+                                }
+                            </td>
+                            <td class="text-center">
+                                @if (item.Eliminado)
+                                {
+                                    <span class="badge badge-pill badge-secondary"><i class="fa fa-minus-circle"></i> Eliminado</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-pill badge-info"><i class="fa fa-check-circle"></i> Activo</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-12" id="edit-target" style="display:none;">
+        </div>
+    </div>
+    <div id="processing" class="container-fluid" style="display:none;">
+        <p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>
+    </div>
+
+</div>
+<div id="main_modal_footer" class="modal-footer">
+    @*<div id="main_modal_footer" class="modal-footer" style="justify-content:space-between">
+        <button type="button" id="btn_addObs" class="btn btn-info" data-dismiss="modal" data-url="@Url.Action("AgregarObservacion", ViewBag.Controller, new { id = ViewBag.RowID })"><i class="fa fa-plus"></i> Agregar</button>*@
+    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+</div>
+
+<script>
+    $('.link-editar').on('click', function () {
+        $.ajax({
+            url: $(this).data('url'),
+            type: 'GET',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#tabla-errores').hide()
+            },
+            success: function (data) {
+                $('#edit-target').html(data);
+                $('#edit-target').show()
+            },
+            error: function () {
+                $('#tabla-errores').show()
+            },
+            complete: function () {
+                $('#processing').hide();
+            }
+
+        })
+    })
+
+    $('#btn_addObs').on('click', function () {
+        debugger;
+        $.ajax({
+            url: $(this).data('url'),
+            type: 'GET',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#tabla-errores').hide()
+                $('#main_modal_footer').hide();
+            },
+            success: function (data) {
+                $('#edit-target').html(data);
+                $('#edit-target').show()
+            },
+            error: function () {
+                $('#tabla-errores').show()
+            },
+            complete: function () {
+                $('#processing').hide();
+            }
+
+        });
+    })
+
+    $('#tbl_det').DataTable({
+        searching: false,
+        pageLength: 9,
+        lengthChange: false,
+        language: {
+            emptyTable: "No se encontraron registros",
+            info: "Mostrando _START_ - _END_ de _TOTAL_",
+            infoEmpty: "Mostrando 0 - 0 de 0 ",
+            infoFiltered: "(Filtrado de _MAX_ registros)",
+            lengthMenu: "Mostrar _MENU_ registros",
+            loadingRecords: "Cargando...",
+            processing: "",
+            search: "Buscar:",
+            zeroRecords: "No se encontró ningun registro",
+            paginate: {
+                first: "Primero",
+                last: "Último",
+                next: "Siguiente",
+                previous: "Anterior"
+            }
+        }
+    });
+
+</script>

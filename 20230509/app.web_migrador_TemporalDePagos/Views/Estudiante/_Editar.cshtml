@@ -1,0 +1,161 @@
+﻿
+@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.Alumno
+
+@{
+    var pregrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Pregrado;
+    var posgrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Posgrado;
+    var cuded = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Cuded;
+
+    var procedencia_value = ViewBag.Procedencia;
+
+}
+
+@Scripts.Render("~/bundles/jqueryval")
+
+<div class="container-fluid">
+    <h5 class="modal-title bi-text-center mb-4"><i class="fa fa-address-book">&nbsp;</i> Corregir información del estudiante</h5>
+    @using (Ajax.BeginForm("Save", "Estudiante", new { area = "" }, new AjaxOptions { HttpMethod = "POST", InsertionMode = InsertionMode.Replace, UpdateTargetId = "div_msg", OnBegin = "Load", OnSuccess = "Submited", OnComplete = "Stop" }))
+    {
+        @Html.Hidden("submited", 0)
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(model => model.I_RowID)
+        @Html.HiddenFor(model => model.C_CodTipDoc)
+
+        <div class="form-row">
+            @Html.Label("Apellido paterno", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(model => model.T_ApePaterno, new { @class = "form-control" })
+                <p class="text-danger small">@Html.ValidationMessageFor(model => model.T_ApePaterno)</p>
+            </div>
+        </div>
+        <div class="form-row">
+            @Html.Label("Apellido materno", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(model => model.T_ApeMaterno, new { @class = "form-control" })
+                <p class="text-danger small">@Html.ValidationMessageFor(model => model.T_ApeMaterno)</p>
+            </div>
+        </div>
+        <div class="form-row">
+            @Html.Label("Nombre", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(model => model.T_Nombre, new { @class = "form-control" })
+                <p class="text-danger small">@Html.ValidationMessageFor(model => model.T_Nombre)</p>
+            </div>
+        </div>
+        <div class="form-row">
+            @Html.Label("Nro Documento", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(model => model.C_NumDNI, new { @class = "form-control" })
+                <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_NumDNI)</p>
+            </div>
+        </div>
+        <div class="form-row">
+            @Html.Label("Sexo", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.C_Sexo, new { @class = "form-control" })
+                <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_Sexo)</p>
+            </div>
+        </div>
+        <div class="form-row">
+            @Html.Label("Fec Nacimiento", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-4">
+                @Html.TextBox("FecNac", Model.D_FecNac, new { @class = "form-control" })
+                <p class="text-danger small"></p>
+            </div>
+        </div>
+        <div class="form-row">
+            @Html.Label("Procedencia", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-4">
+                <select class="form-control" id="cbo-procedencia" name="procedencia">
+                    <option value="@pregrado">PREGRADO</option>
+                    <option value="@posgrado">POSGRADO</option>
+                    <option value="@cuded">CUDED</option>
+                </select>
+                <p class="text-danger small">&nbsp;</p>
+            </div>
+        </div>
+        <div class="form-row">
+            @Html.Label("Código", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.C_CodAlu, new { @class = "form-control" })
+                <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_CodAlu)</p>
+            </div>
+        </div>
+        <div class="form-row">
+            @Html.Label("Año de ingreso", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.C_AnioIngreso, new { @class = "form-control" })
+                <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_AnioIngreso)</p>
+            </div>
+        </div>
+        <div class="form-row">
+            @Html.Label("Mod ingreso", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-4">
+                @*@Html.TextBoxFor(model => model.C_CodModIng, new { @class = "form-control" })*@
+                @Html.DropDownListFor(model => model.C_CodModIng, ViewBag.ModalidadIngreso as SelectList, "[ SELECCIONAR ]", new { @class = "form-control" })
+                <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_CodModIng)</p>
+            </div>
+        </div>
+        <div class="form-row">
+            @Html.Label("Carrera", new { @class = "col-md-4 col-form-label" })
+            <div class="col-md-4">
+                @Html.TextBoxFor(model => model.C_RcCod, new { @class = "form-control" })
+                <p class="text-danger small">@Html.ValidationMessageFor(model => model.C_RcCod)</p>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group offset-sm-4 col-sm-3">
+                <div class="form-check">
+                    @Html.CheckBoxFor(model => model.B_Correcto, new { @class = "form-check-input" })
+                    @Html.Label("Omitir validación", new { @for = "B_Correcto", @class = "col-check-label" })
+                </div>
+            </div>
+            <div class="form-group col-sm-3">
+                <div class="form-check">
+                    @Html.CheckBoxFor(model => model.B_Removido, new { @class = "form-check-input" })
+                    @Html.Label("Remover registro", new { @for= "B_Removido", @class = "col-check-label" })
+                </div>
+            </div>
+        </div>
+
+
+        <div class="text-center" id="div_msg">
+            <div class="col-md-12" style="display:none" id="loading">
+                <h6>Actualizando los datos...</h6>
+
+                <div class="progress">
+                    <div class="indeterminate"></div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="btnsubmit"><i class="fa fa-save"></i>&nbsp;Guardar</button>
+        </div>
+    }
+</div>
+
+<script>
+    $(document).on('ready', function () {
+        $('#btnsubmit').removeClass('disabled');
+    });
+
+    if ('@procedencia_value' === 'Pregrado') {
+        $('#cbo-procedencia option[value=Pregrado]').prop('selected', true)
+    }
+    else if ('@procedencia_value' === 'Posgrado') {
+        $('#cbo-procedencia option[value=Posgrado]').prop('selected', true)
+    }
+    else if ('@procedencia_value' === 'Cuded') {
+        $('#cbo-procedencia option[value=Cuded]').prop('selected', true)
+    }
+    else {
+        $('#cbo-procedencia option[value=""]').prop('selected', true)
+    }
+
+
+    $("form").submit(function () {
+        if (parseInt($("#submited").val()) > 0) {
+            return false;
+        }
+    });
+
+</script>
+

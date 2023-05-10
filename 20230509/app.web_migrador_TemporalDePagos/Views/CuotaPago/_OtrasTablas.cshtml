@@ -1,0 +1,122 @@
+﻿@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.CuotaPago
+
+<div class="col-12">
+    <p class="h6 mt-3">Cuota de pago @Model.Cuota_pago en cp_pri</p>
+    <table id="tbl_pri" class="table table-sm table-hover" style="font-size:12px;">
+        <thead class="thead-dark">
+            <tr>
+                <th>Cuota Pago</th>
+                <th>Concepto</th>
+                <th>Año</th>
+                <th>Periodo</th>
+                <th>Monto</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ConceptosPago)
+            {
+                <tr>
+                    <td>@item.Cuota_pago</td>
+                    <td>@item.Id_cp - @item.Descripcio</td>
+                    <td>@item.Ano</td>
+                    <td>@item.P</td>
+                    <td>@item.Monto</td>
+                    <td class="text-center">
+                        @if (item.Eliminado)
+                        {
+                            <span class="badge badge-danger"><i class="fa fa-times-circle"></i> Eliminado</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-success"><i class="fa fa-check-circle"></i> Activo</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+    <p class="h6 mt-3">Cuota de pago @Model.Cuota_pago en ec_obl</p>
+    <table id="tbl_obl" class="table table-sm table-hover" style="font-size:12px;">
+        <thead class="thead-dark">
+            <tr>
+                <th>Cuota Pago</th>
+                <th>Año</th>
+                <th>Periodo</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Obligaciones)
+            {
+                <tr>
+                    <td>@item.Cuota_pago - @item.Descripcio</td>
+                    <td>@item.Ano</td>
+                    <td>@item.P</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <br />
+    <p class="h6 mt-3">Cuota de pago @Model.Cuota_pago en ec_det</p>
+    <table id="tbl_det" class="table table-sm table-hover" style="font-size:12px;">
+        <thead class="thead-dark">
+            <tr>
+                <th>Cuota Pago</th>
+                <th>Concepto</th>
+                <th>Año</th>
+                <th>Periodo</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.DetalleObligaciones)
+            {
+                <tr>
+                    <td>@item.Cuota_pago</td>
+                    <td>@item.Concepto - @item.Descripcio</td>
+                    <td>@item.Ano</td>
+                    <td>@item.P</td>
+                    <td class="text-center">
+                        @if (item.Eliminado)
+                        {
+                            <span class="badge badge-danger"><i class="fa fa-times-circle"></i> Eliminado</span>
+                        }
+                        else
+                        {
+                            <span class="badge badge-success"><i class="fa fa-check-circle"></i> Activo</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#tbl_pri, #tbl_obl, #tbl_det').DataTable({
+            searching: false,
+            pageLength: 10,
+            lengthChange: false,
+            language: {
+                emptyTable: "No se encontraron registros",
+                info: "Mostrando _START_ - _END_ de _TOTAL_",
+                infoEmpty: "Mostrando 0 - 0 de 0 ",
+                infoFiltered: "(Filtrado de _MAX_ registros)",
+                lengthMenu: "Mostrar _MENU_ registros",
+                loadingRecords: "Cargando...",
+                processing: "",
+                search: "Buscar:",
+                zeroRecords: "No se encontró ningun registro",
+                paginate: {
+                    first: "Primero",
+                    last: "Último",
+                    next: "Siguiente",
+                    previous: "Anterior"
+                }
+            }
+        });
+    })
+</script>

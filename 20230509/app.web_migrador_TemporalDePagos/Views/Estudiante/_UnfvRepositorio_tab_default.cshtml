@@ -1,0 +1,56 @@
+﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.UnfvRepositorio.AlumnoPersona>
+
+<div class="table-responsive" style="min-height:300px; font-size: 13px;">
+    <table id="tbl_default" class="table table-sm table-hover" style="font-size:12px;">
+        <thead class="thead-light">
+            <tr>
+                <th>Codigo</th>
+                <th>Cod RC</th>
+                <th>Nombre completo</th>
+                <th>Num. Doc.</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.C_CodAlu</td>
+                    <td>@item.C_RcCod</td>
+                    <td>@item.T_NomCompleto</td>
+                    <td>@item.C_NumDNI</td>
+                    <td>@item.B_Migrado</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        $('#tbl_default').DataTable({
+            searching: true,
+            pageLength: 20,
+            lengthChange: false,
+            language: {
+                emptyTable: "No se encontraron registros",
+                info: "Mostrando _START_ - _END_ de _TOTAL_",
+                infoEmpty: "Mostrando 0 - 0 de 0 ",
+                infoFiltered: "(Filtrado de _MAX_ registros)",
+                lengthMenu: "Mostrar _MENU_ registros",
+                loadingRecords: "Cargando...",
+                processing: "",
+                search: "Buscar:",
+                zeroRecords: "No se encontró ningun registro",
+                paginate: {
+                    first: "Primero",
+                    last: "Último",
+                    next: "Siguiente",
+                    previous: "Anterior"
+                }
+            }
+        });
+    });
+
+</script>

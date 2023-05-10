@@ -1,0 +1,126 @@
+﻿@{
+    //int min_anio = (int)ViewBag.MinAnio;
+}
+
+<div class="container-fluid">
+    <div class="col-12">
+        <section class="content-header">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb float-right small d-none d-sm-inline-flex">
+                    <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")"><i class="fa fa-home">&nbsp;</i>Inicio</a></li>
+                    <li class="breadcrumb-item"><span><i class="fa bi-tools">&nbsp;</i>@ViewBag.Group </span></li>
+                    <li class="breadcrumb-item active"><span><i class="fa fa-envelope">&nbsp;</i>@ViewBag.Title </span></li>
+                </ol>
+            </nav>
+            <h1 class="">@ViewBag.Title - Posgrado <small></small></h1>
+        </section>
+    </div>
+    <br />
+
+    <div class="col-12 form-inline py-2">
+        <div class="col-4">
+            <select class="form-control" id="cbo-anio">
+                <option value="">SELECCIONE UN AÑO</option>
+                @for (int anio = 2021; anio > 2000; anio--)
+                {
+                    <option value="@anio">@anio</option>
+                }
+            </select>
+        </div>
+        <div class="col-4">
+            <a id="btn-validar" class="btn btn-success disabled" style="color:#fff;">
+                <i class="fa fa-check-circle-o"></i> Validar datos
+            </a>
+        </div>
+        <div class="col-4">
+            <a id="btn-validar" class="btn btn-primary disabled" style="color:#fff;">
+                <i class="fa fa-refresh"></i> Migrar información válida
+            </a>
+        </div>
+    </div>
+
+    <div id="alert-message" class="container-fluid" style="display:none;">
+        <p class="alert alert-info text-center mt-3 mb-5">
+            <span class="d-block"><i class="fa fa-2x fa-exclamation-circle"></i></span>
+        </p>
+    </div>
+
+    <div class="col-12 mt-2" id="search-loader" style="display:none;">
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border text-info" role="status" style="width: 5rem; height: 5rem;">
+                <span class="sr-only">Loading...</span>
+            </div>
+            <div class="d-flex justify-content-center">
+                <span id="load-message" class="h5 mt-4"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 mt-2" id="resultado-busqueda">
+
+    </div>
+</div>
+
+
+<script>
+    $('#cbo-anio').on('change', function () {
+        ObtenerObligacionesAnio($(this).val());
+    });
+
+    $('#btn-validar').on('click', function () {
+        ValidarDatos($(this).val());
+    })
+
+    function ObtenerObligacionesAnio(value, text) {
+
+        $.ajax({
+            url: ('@Url.Action("ObtenerObligacionesAnio", "Posgrado")?anio=' + value),
+            type: 'GET',
+            cache: false,
+            beforeSend: function () {
+                $('#alert-message').hide();
+                $('#search-loader').show();
+            },
+            success: function (data) {
+                $('#resultado-busqueda').html(data);
+                $('#search-loader').hide();
+                $('#btn-validar').removeClass('disabled');
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').removeClass('alert-info').addClass('alert-danger').html(jqXHR.responseText)
+                $('#alert-message').show();
+            },
+            complete: function () {
+                $('#search-loader').hide();
+            }
+        })
+    }
+
+    function ValidarDatos(value, text) {
+
+            $.ajax({
+                url: ('@Url.Action("ValidarDatosObligacionAnio", "Posgrado")?anio=' + value),
+                type: 'POST',
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                cache: false,
+                beforeSend: function () {
+                    $('#alert-message').hide();
+                    $('#search-loader').show();
+                },
+                success: function (data) {
+
+                    $('#search-loader').hide();
+                    $('#btn-validar').removeClass('disabled');
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $('#alert-message p.alert').removeClass('alert-info').addClass('alert-danger').html(jqXHR.responseText)
+                    $('#alert-message').show();
+                },
+                complete: function () {
+                    $('#search-loader').hide();
+                }
+            })
+    }
+
+</script>

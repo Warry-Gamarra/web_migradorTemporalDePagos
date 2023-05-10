@@ -1,0 +1,61 @@
+﻿
+@model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Migracion.Alumno>
+@using GridMvc.Html
+
+<div class="row mb-5 mt-3 form-inline">
+    <div class="col-md-2 col-sm-3">
+        <label class="control-label">Filtro observación</label>
+    </div>
+    <div class="">
+        @Html.DropDownList("cboTipoObs", ViewBag.Observaciones as SelectList, "- SIN FILTRO -", new { @class = "form-control" })
+    </div>
+
+    <div class="col-md-2 col-sm-3" id="link-exportar">
+        <a href="@Url.Action("ExportarObservaciones", "Estudiante", new { id = ViewBag.IdObservacion, procedencia = ViewBag.Procedencia })">
+            <i class="fa fa-file-excel-o"></i> Exportar Observaciones
+        </a>
+    </div>
+
+</div>
+
+<div class="table-responsive" style="min-height:300px; font-size: 13px;">
+    @Html.Grid(Model).Columns(columns =>
+    {
+        columns.Add(c => c.C_CodAlu).Titled("Codigo").Filterable(true);
+        columns.Add(c => c.C_RcCod).Titled("Cod RC").Filterable(true);
+        columns.Add(c => c.T_ApePaterno).Titled("Apellido paterno").Filterable(true);
+        columns.Add(c => c.T_ApeMaterno).Titled("Apellido nombre").Filterable(true);
+        columns.Add(c => c.T_Nombre).Titled("Nombre").Filterable(true);
+        columns.Add(c => c.C_NumDNI).Titled("Num. Doc.").Filterable(true);
+        columns.Add(c => c.B_Migrable).Css("text-center").Encoded(false).Sanitized(false)
+               .RenderValueAs(model => model.B_Migrable? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>"): Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
+               .Titled("Migrable").Filterable(true);
+        columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false)
+               .RenderValueAs(model => model.B_Migrado ? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>") : Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
+               .Titled("Migrado").Filterable(true);
+        columns.Add().SetWidth(100).Css("text-right").Encoded(false).Sanitized(false)
+               .RenderValueAs(model => Html.Raw($"<a href=\"{ Url.Action("VerDatos", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-id-card\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver</span></a>"));
+
+        columns.Add().Css("text-right").Encoded(false).Sanitized(false)
+                     .RenderValueAs(model => model.B_Migrable ?
+                                            Html.Raw("")
+                                            : Html.Raw($"<a href=\"{ Url.Action("Observaciones", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\"><i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span></a>"));
+    }
+    ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+</div>
+
+
+<script>
+    $('#btn-tp').removeClass('active');
+    $('#btn-cpp').removeClass('active');
+    $('#btn-mg').addClass('active');
+    $('#btn-proc').removeClass('active');
+
+    $('#cboTipoObs').on('change', function () {
+        let id_procedencia = $('#cbo-procedencia').val();
+
+        $('#link-exportar').hide();
+        location.href = '@Url.Action("Index", "Estudiante", new { area = "", partial = "DatosMigracion" })' + '&procedencia=' + id_procedencia + '&tipo_obs=' + this.value;
+    })
+
+</script>
