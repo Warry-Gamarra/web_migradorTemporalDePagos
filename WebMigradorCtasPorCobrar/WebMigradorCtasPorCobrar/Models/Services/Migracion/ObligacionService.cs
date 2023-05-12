@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web;
+using System.Reflection;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
@@ -161,8 +163,41 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
+        internal dynamic ObtenerComponenteId(int obsID)
+        {
+            string componentID;
+            ObligacionesPagoObs obligacionesPagoObs = (ObligacionesPagoObs)obsID;
 
-        public Response MigrarDatosTemporalPagos(Procedencia procedencia)
+            
+            switch (obligacionesPagoObs)
+            {
+                case ObligacionesPagoObs.SinAlumno:
+                    componentID = "#Cod_alu";
+                    break;
+                case ObligacionesPagoObs.AnioNoValido:
+                    componentID = "#Ano";
+                    break;
+                case ObligacionesPagoObs.SinPeriodo:
+                    componentID = "#I_Periodo";
+                    break;
+                case ObligacionesPagoObs.FchVencRepetido:
+                    componentID = "#Fch_venc";
+                    break;
+                case ObligacionesPagoObs.ExisteConOtroMonto:
+                    componentID = "#Monto";
+                    break;
+                case ObligacionesPagoObs.SinCuotaPagoMigrable:
+                    componentID = "#Cuota_pago";
+                    break;
+                default:
+                    componentID = string.Empty;
+                    break;
+            }
+
+            return componentID;
+        }
+
+            public Response MigrarDatosTemporalPagos(Procedencia procedencia)
         {
             Response result = new Response();
             Response result2 = new Response();

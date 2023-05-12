@@ -169,6 +169,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
                                                     "I_OpcionID", "T_OpcionCodDesc", model.I_Periodo);
 
+            ViewBag.ComponentId = _obligacionServiceMigracion.ObtenerComponenteId(obsID);
 
             return PartialView("_EditarObligacion", model);
         }

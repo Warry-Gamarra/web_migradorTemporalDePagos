@@ -58,7 +58,7 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             SinConceptoMigrable = 36,
             ObsAnioDetalle =37,
             ObsPeriodoDetalle =38,
-            ObsConceptoDetalle =38,
+            ObsConceptoDetalle =39,
             SinDetalle =40,
             Removido = 45
         }
