@@ -7,6 +7,7 @@ using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -176,10 +177,13 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
 
         [HttpPost]
-        public ActionResult Save(int id)
+        public ActionResult Save(Obligacion model, int tipoObserv)
         {
+            model.D_FecActualiza = DateTime.Now;
 
-            return PartialView("_ProcesoMigracion");
+            var result = _obligacionServiceMigracion.Save(model, tipoObserv);
+
+            return PartialView("_Message", result);
         }
 
 

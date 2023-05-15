@@ -163,6 +163,43 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
+        internal object Save(Obligacion obligacion, int tipoObserv)
+        {
+            Response result = new Response();
+            ObligacionRepository obligacionRepository = new ObligacionRepository();
+            
+            switch ((ObligacionesPagoObs)tipoObserv)    
+            {
+                case ObligacionesPagoObs.SinAlumno:
+                    result = obligacionRepository.SaveEstudianteObligacion(obligacion);
+                    break;
+                case ObligacionesPagoObs.AnioNoValido:
+                    result = obligacionRepository.SaveAnioObligacion(obligacion);
+                    break;
+                case ObligacionesPagoObs.SinPeriodo:
+                    result = obligacionRepository.SavePeriodoObligacion(obligacion);
+                    break;
+                case ObligacionesPagoObs.FchVencRepetido:
+                    result = obligacionRepository.SaveFecVencObligacion(obligacion);
+                    break;
+                case ObligacionesPagoObs.ExisteConOtroMonto:
+                    result = obligacionRepository.SaveMontoObligacion(obligacion);
+                    break;
+                case ObligacionesPagoObs.SinCuotaPagoMigrable:
+                    result = obligacionRepository.SaveCuotaPagoObligacion(obligacion);
+                    break;
+            }
+
+            obligacionRepository.ValidarAlumnoCabeceraObligacion(obligacion.I_ProcedenciaID, obligacion.I_RowID, null, null);
+            obligacionRepository.ValidarAnioEnCabeceraObligacion(obligacion.I_ProcedenciaID, obligacion.I_RowID);
+            obligacionRepository.ValidarPeriodoEnCabeceraObligacion(obligacion.I_ProcedenciaID, obligacion.I_RowID, null, null);
+            obligacionRepository.ValidarFechaVencimientoCuotaObligacion(obligacion.I_ProcedenciaID, obligacion.I_RowID, null, null);
+            obligacionRepository.ValidarObligacionCuotaPagoMigrada(obligacion.I_ProcedenciaID, obligacion.I_RowID, null, null);
+            obligacionRepository.ValidarProcedenciaObligacionCuotaPago(obligacion.I_ProcedenciaID, obligacion.I_RowID, null, null);
+
+            return result;
+        }
+
         internal dynamic ObtenerComponenteId(int obsID)
         {
             string componentID;

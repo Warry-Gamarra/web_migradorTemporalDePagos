@@ -7,7 +7,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
 {
     public class Obligacion
     {
-        public double I_RowID { get; set; }
+        public int I_RowID { get; set; }
         public string Ano { get; set; }
         public string P { get; set; }
         public int I_Periodo { get; set; }

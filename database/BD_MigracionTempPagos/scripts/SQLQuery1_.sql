@@ -852,7 +852,7 @@ SELECT * FROM BD_OCEF_MigracionTP.dbo.TR_Alumnos where C_NumDNI = '75667604'
 
 
 
-exec sp_change_users_login
+exec sp_change_users_login 'report'
 exec sp_change_users_login 'auto_fix', 'UserOCEF'
 exec sp_change_users_login 'auto_fix', 'UserUNFV'
 
