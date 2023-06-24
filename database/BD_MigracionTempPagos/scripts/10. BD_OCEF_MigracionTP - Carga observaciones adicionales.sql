@@ -49,3 +49,46 @@ INSERT INTO TC_CarreraProfesionalProcedencia (C_CodRc, I_ProcedenciaID, T_Descri
 	  WHERE N_Grado = 1 AND C_CodFac = 'ET'
 
 
+
+
+
+--CAMBIOS 20230514
+--Eliminar migracion de obligaciones en ctas por cobrar
+BEGIN TRANSACTION DEL_OBL_MIGRATION;
+BEGIN TRY
+	DELETE cabecera_obligaciones  
+	FROM BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab cabecera_obligaciones
+		 LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet detalle_obligaciones 
+				   ON cabecera_obligaciones.I_ObligacionAluID = detalle_obligaciones.I_ObligacionAluID
+		 WHERE cabecera_obligaciones.B_Migrado = 1 AND detalle_obligaciones.I_ObligacionAluID IS NULL
+	
+	DELETE matricula_alumno
+	FROM BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno matricula_alumno
+		 
+		 WHERE matricula_alumno.B_Migrado = 1
+	
+	DECLARE @I_ObligacionAluID int,
+			@I_MatAluID int
+
+	SET @I_MatAluID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno');
+	SET @I_ObligacionAluID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab');
+	SELECT @I_MatAluID AS 'TC_MatriculaAlumno', @I_ObligacionAluID AS 'TR_ObligacionAluCab'
+
+
+	SET @I_MatAluID = (SELECT MAX(I_MatAluID) FROM BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno);
+	SET @I_ObligacionAluID = (SELECT MAX(I_ObligacionAluID) FROM BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab);
+
+	DBCC CHECKIDENT('BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno', 'RESEED', @I_MatAluID)
+	DBCC CHECKIDENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab', 'RESEED', @I_ObligacionAluID)
+
+
+	SET @I_MatAluID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno');
+	SET @I_ObligacionAluID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab');
+	SELECT @I_MatAluID AS 'TC_MatriculaAlumno', @I_ObligacionAluID AS 'TR_ObligacionAluCab'
+
+	COMMIT TRANSACTION DEL_OBL_MIGRATION;
+END TRY
+BEGIN CATCH
+	ROLLBACK TRANSACTION DEL_OBL_MIGRATION;
+END CATCH
+GO

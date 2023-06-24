@@ -55,6 +55,7 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             FchVencRepetido = 28,
             ExisteConOtroMonto = 29,
             SinCuotaPagoMigrable= 32,
+            ProcedenciaNoCoincide = 34,
             SinConceptoMigrable = 36,
             ObsAnioDetalle =37,
             ObsPeriodoDetalle =38,

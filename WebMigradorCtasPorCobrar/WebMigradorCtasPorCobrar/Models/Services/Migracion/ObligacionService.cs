@@ -163,12 +163,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
-        internal object Save(Obligacion obligacion, int tipoObserv)
+        public Response Save(Obligacion obligacion, int tipoObserv)
         {
             Response result = new Response();
             ObligacionRepository obligacionRepository = new ObligacionRepository();
-            
-            switch ((ObligacionesPagoObs)tipoObserv)    
+
+            switch ((ObligacionesPagoObs)tipoObserv)
             {
                 case ObligacionesPagoObs.SinAlumno:
                     result = obligacionRepository.SaveEstudianteObligacion(obligacion);
@@ -197,15 +197,14 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             obligacionRepository.ValidarObligacionCuotaPagoMigrada(obligacion.I_ProcedenciaID, obligacion.I_RowID, null, null);
             obligacionRepository.ValidarProcedenciaObligacionCuotaPago(obligacion.I_ProcedenciaID, obligacion.I_RowID, null, null);
 
-            return result;
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
-        internal dynamic ObtenerComponenteId(int obsID)
+        public string ObtenerComponenteId(int obsID)
         {
             string componentID;
             ObligacionesPagoObs obligacionesPagoObs = (ObligacionesPagoObs)obsID;
 
-            
             switch (obligacionesPagoObs)
             {
                 case ObligacionesPagoObs.SinAlumno:
@@ -234,7 +233,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return componentID;
         }
 
-            public Response MigrarDatosTemporalPagos(Procedencia procedencia)
+        public Response MigrarDatosTemporalPagos(Procedencia procedencia)
         {
             Response result = new Response();
             Response result2 = new Response();

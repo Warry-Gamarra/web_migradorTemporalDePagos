@@ -98,11 +98,11 @@
     $('#error_title').hide();
     $('#error_descrip').html('@observ_descrip');
 
-    $('@component_id').removeAttr('readonly');
 
     if ('@component_id' !== '') {
-        
+        $('@component_id').removeAttr('readonly');
     }
+
 
     $("#btnsubmit").on('click', function (event) {
         event.preventDefault();

@@ -37,10 +37,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public IList<ConceptoPago> ConceptosPago { get; set; }
         public IList<Obligacion> Obligaciones { get; set; }
         public IList<DetalleObligacion> DetalleObligaciones { get; set; }
+        public bool B_ExisteCtas { get; set; }
 
-        public CuotaPago()
-        {
-            this.Fch_venc_s = Fch_venc.ToShortDateString();
-        }
     }
 }

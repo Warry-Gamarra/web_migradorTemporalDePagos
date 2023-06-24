@@ -47,7 +47,7 @@
                 <fieldset>
                     <legend class="pb-3">OPCIONES</legend>
                     <a class="btn btn-outline-dark btn-block my-3" id="btn-tp" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "TemporalPagos" })">Temporal de pagos</a>
-                    <a class="btn btn-outline-dark btn-block my-3" id="btn-rep" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "RepositorioBD" })">BD Repositorio</a>
+                    @*<a class="btn btn-outline-dark btn-block my-3" id="btn-rep" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "RepositorioBD" })">BD Repositorio</a>*@
                     <a class="btn btn-outline-dark btn-block my-3" id="btn-proc" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "ProcesoMigracion" })">Proceso de migración</a>
                     <a class="btn btn-outline-dark btn-block my-3" id="btn-mg" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "DatosMigracion" })">Registros para migración</a>
                 </fieldset>

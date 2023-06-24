@@ -10,6 +10,7 @@ using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.ViewModels;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -69,12 +70,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             var model = _cuotaPagoServiceTemporalPagos.Obtener(procedencia);
             return PartialView("_TemporalPagos", model);
-        }
-
-        public ActionResult CtasPorCobrar(Procedencia procedencia)
-        {
-            var model = _cuotaPagoServiceCtasPorCobrar.Obtener(procedencia);
-            return PartialView("_CtasPorCobrarProcesos", model);
         }
 
 
@@ -138,10 +133,17 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_Observaciones", model);
         }
 
-        public ActionResult VerDetalleMigracion(int? id, int cuota_pago)
+        public ActionResult VerDatos(int id, Procedencia procedencia)
         {
+            var model = new CuotaPagoViewModel()
+            {
+                CuotaMigracion = _cuotaPagoServiceMigracion.Obtener(id),
+            };
 
-            return PartialView("_VerDetalleMigracion");
+            var cuotaCtasCobrar = _cuotaPagoServiceCtasPorCobrar.Obtener(procedencia).FirstOrDefault(x => x.Cuota_Pago == model.CuotaMigracion.Cuota_pago);
+            model.CuotaCtasCobrar = cuotaCtasCobrar ?? new Models.Entities.CtasPorCobrar.VW_Proceso();
+
+            return PartialView("_DatosCuotaPago", model);
         }
 
         public ActionResult Editar(int id, int obsID)

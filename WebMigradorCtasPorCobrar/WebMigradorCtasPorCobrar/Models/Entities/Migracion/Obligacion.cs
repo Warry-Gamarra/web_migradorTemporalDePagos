@@ -22,7 +22,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public decimal Monto { get; set; }
         public bool Pagado { get; set; }
         public DateTime D_FecCarga { get; set; }
-        public string B_Actualizado { get; set; }
+        public bool B_Actualizado { get; set; }
         public DateTime D_FecActualiza { get; set; }
         public bool B_Migrable { get; set; }
         public DateTime D_FecEvalua { get; set; }

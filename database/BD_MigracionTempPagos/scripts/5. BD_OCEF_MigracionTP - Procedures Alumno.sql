@@ -707,7 +707,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_TablaID = @I_TablaID AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
 			DELETE;
 
 		SET @I_Observados_NULL = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
@@ -1050,12 +1050,11 @@ BEGIN
 		  FROM ##AlumnoPersona_Repositorio APR 
 			   INNER JOIN TR_Alumnos A ON A.C_RcCod = APR.C_RcCod AND A.C_CodAlu = APR.C_CodAlu
 		WHERE  LTRIM(RTRIM(REPLACE(ISNULL(A.C_Sexo,''),' ', ' '))) <> ISNULL(APR.C_Sexo, '' ) 
+			   AND LTRIM(RTRIM(REPLACE(ISNULL(A.C_Sexo,''),' ', ' '))) <> ''
+			   AND ISNULL(APR.C_Sexo, '' ) <> ''
 			   AND I_ProcedenciaID = @I_ProcedenciaID 
 		ORDER BY T_ApePaterno, T_ApeMaterno
 
-		---
-		select * from ##Alumno_Repetidos_sexo_diferente ORDER BY T_ApePaterno, T_ApeMaterno, T_Nombre
-		--
 
 		UPDATE	TR_Alumnos
 		SET		B_Migrable = 0,
@@ -1151,6 +1150,8 @@ BEGIN
 						   FROM #AlumnoPersona_Repositorio APR
 								INNER JOIN TR_Alumnos A ON A.C_RcCod = APR.C_RcCod AND A.C_CodAlu = APR.C_CodAlu
 						  WHERE  LTRIM(RTRIM(REPLACE(ISNULL(A.C_NumDNI,''),' ', ' '))) <> ISNULL(APR.C_NumDNI, '' ) 
+								 AND LTRIM(RTRIM(REPLACE(ISNULL(A.C_NumDNI,''),' ', ' '))) <> ''
+								 AND APR.C_NumDNI <> ''
 								 AND A.I_RowID = TR_Alumnos.I_RowID)
 				AND I_ProcedenciaID = @I_ProcedenciaID 
 				AND ISNULL(B_Correcto, 0) <> 1
@@ -1161,8 +1162,10 @@ BEGIN
 				  WHERE	EXISTS  (SELECT A.*, APR.* 
 								   FROM #AlumnoPersona_Repositorio APR
 										INNER JOIN TR_Alumnos A ON A.C_RcCod = APR.C_RcCod AND A.C_CodAlu = APR.C_CodAlu
-								  WHERE  LTRIM(RTRIM(REPLACE(ISNULL(A.C_NumDNI,''),' ', ' '))) <> ISNULL(APR.C_NumDNI, '' ) 
-								 AND A.I_RowID = TR_Alumnos.I_RowID)
+								  WHERE LTRIM(RTRIM(REPLACE(ISNULL(A.C_NumDNI,''),' ', ' '))) <> ISNULL(APR.C_NumDNI, '' ) 
+										AND LTRIM(RTRIM(REPLACE(ISNULL(A.C_NumDNI,''),' ', ' '))) <> ''
+										AND APR.C_NumDNI <> ''
+										AND A.I_RowID = TR_Alumnos.I_RowID)
 						AND I_ProcedenciaID = @I_ProcedenciaID 
 						AND ISNULL(B_Correcto, 0) <> 1
 				) AS SRC

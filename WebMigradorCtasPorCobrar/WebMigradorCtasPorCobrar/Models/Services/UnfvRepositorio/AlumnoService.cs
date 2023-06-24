@@ -32,13 +32,35 @@ namespace WebMigradorCtasPorCobrar.Models.Services.UnfvRepositorio
 
         public AlumnoPersona ObtenerAlumno(string codRc, string codAlu)
         {
-            throw new NotImplementedException();
+            var data = AlumnoRepository.Obtener(codRc, codAlu);
+
+            if (data == null)
+            {
+                return new AlumnoPersona();
+            }
+
+            return new AlumnoPersona() { 
+                C_CodAlu = data.C_CodAlu,
+                C_RcCod = data.C_RcCod,
+                C_AnioIngreso = data.C_AnioIngreso,
+                C_Sexo = data.C_Sexo,
+                C_NumDNI = data.C_NumDNI,
+                T_ApePaterno = data.T_ApePaterno,
+                T_ApeMaterno = data.T_ApeMaterno,
+                T_Nombre = data.T_Nombre,
+                T_DenomProg = data.T_DenomProg,
+                T_FacDesc = data.T_FacDesc,
+                T_EscDesc = data.T_EscDesc,
+                C_CodTipDoc = data.C_CodTipDoc,
+                C_CodModIng = data.C_CodModIng,
+                T_ModIngDesc = data.T_ModIngDesc
+            };
         }
 
 
-        public Alumno ObtenerAlumno(string codAlu)
+        public AlumnoPersona ObtenerAlumno(string codAlu)
         {
-            throw new NotImplementedException();
+            return new AlumnoPersona();
         }
 
 

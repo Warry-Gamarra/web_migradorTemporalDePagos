@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
+using RepoCtas = WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
@@ -31,6 +32,34 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             return ConceptoPagoRepository.Obtener((int)procedencia);
+        }
+
+        private IEnumerable<ConceptoPago> ObtenerConRepo(IEnumerable<ConceptoPago> conceptosPago, Procedencia procedencia)
+        {
+            var conceptosPagoCtas = RepoCtas.ConceptoPagoRepository.Obtener((int)procedencia);
+
+            var newCuotasPago = from c in conceptosPago
+                                join cr in conceptosPagoCtas on c.Id_cp equals cr.I_ConcPagID
+                                into conceptosPagoConceptosPagoCtasGroup
+                                from cpg in conceptosPagoConceptosPagoCtasGroup.DefaultIfEmpty()
+                                select new ConceptoPago()
+                                {
+                                    Id_cp = c.Id_cp,
+                                    Cuota_pago = c.Cuota_pago,
+                                    Descripcio = c.Descripcio,
+                                    Ano = c.Ano,
+                                    P = c.P,
+                                    Cuota_pago_desc = c.Cuota_pago_desc,
+                                    Tipo_oblig = c.Tipo_oblig,
+                                    Eliminado = c.Eliminado,
+                                    Monto = c.Monto,
+                                    B_Migrable = c.B_Migrable,
+                                    B_Migrado = c.B_Migrado,
+                                    I_RowID = c.I_RowID,
+                                    B_ExisteCtas = cpg == null ? false : true
+                                };
+
+            return newCuotasPago;
         }
 
         public ConceptoPago Obtener(int cuotaID)
@@ -128,29 +157,29 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                             result_cuotaPago.IsDone &&
                             result_equivalencias.IsDone;
 
-            result.Message = $"    <dl class=\"row text-justify\">" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Con código de concepto duplicado</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+            result.Message = $"    <dl class=\"row text-justify pt-3\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Con código de concepto duplicado</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_duplicados.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Estados del concepto de pago </dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Estados del concepto de pago </dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_removidos.Message} | {result_noObligacion.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">No se identificó año del concepto de pago</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">No se identificó año del concepto de pago</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_anio.Message} | {result_anioCp.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">No se identificó periodo del concepto de pago</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">No se identificó periodo del concepto de pago</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_periodo.Message} | {result_periodoCp.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Concepto sin cuota de pago</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Concepto sin cuota de pago</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_cuotaPago.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Codigos de equivalencia para migración</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Codigos de equivalencia para migración</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_equivalencias.Message}</p>" +
                              $"        </dd>" +
                              $"    </dl>";

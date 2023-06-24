@@ -180,8 +180,11 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult Save(Obligacion model, int tipoObserv)
         {
             model.D_FecActualiza = DateTime.Now;
+            model.B_Actualizado = true;
 
             var result = _obligacionServiceMigracion.Save(model, tipoObserv);
+
+            ViewBag.Reload = true;
 
             return PartialView("_Message", result);
         }

@@ -33,5 +33,6 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public DateTime D_FecRemovido { get; set; }
 
         public bool B_Correcto { get; set; }
+        public bool B_ExistsDestino { get; set; }
     }
 }

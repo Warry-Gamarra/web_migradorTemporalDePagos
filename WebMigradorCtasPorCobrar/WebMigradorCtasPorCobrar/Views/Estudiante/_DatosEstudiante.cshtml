@@ -1,4 +1,4 @@
-﻿@model WebMigradorCtasPorCobrar.Models.Entities.Migracion.Alumno
+﻿@model WebMigradorCtasPorCobrar.Models.ViewModels.DatosEstudianteViewModel
 
 <div class="modal-header">
     <h5 class="modal-title">Datos del estudiante</h5>
@@ -7,40 +7,76 @@
     </button>
 </div>
 <div class="modal-body">
-    <dl class="row">
-        <dt class="col-sm-4">Código:</dt>
-        <dd class="col-sm-8">@Model.C_CodAlu</dd>
-
-        <dt class="col-sm-4">Carrera</dt>
-        <dd class="col-sm-8">@Model.C_RcCod - @Model.T_Carrera</dd>
-
-        <dt class="col-sm-4">Modalidad de ingreso</dt>
-        <dd class="col-sm-8">@Model.C_CodModIng - @Model.T_ModalidadIng</dd>
-
-        <dt class="col-sm-4">Año de ingreso</dt>
-        <dd class="col-sm-8">@Model.C_AnioIngreso</dd>
-
-        <dt class="col-sm-4">Nombre Completo</dt>
-        <dd class="col-sm-8">@Model.T_ApePaterno  @Model.T_ApeMaterno,  @Model.T_Nombre</dd>
-
-        <dt class="col-sm-4">Número Documento</dt>
-        <dd class="col-sm-8">@Model.C_NumDNI</dd>
-
-        <dt class="col-sm-4">Tipo Documento</dt>
-        <dd class="col-sm-8">@Model.C_CodTipDoc</dd>
-
-        <dt class="col-sm-4">Sexo</dt>
-        <dd class="col-sm-8">@Model.C_Sexo</dd>
-
-        <dt class="col-sm-4">Fecha de Nacimiento</dt>
-        <dd class="col-sm-8">
-            @if (Model.D_FecNac.HasValue)
-            {
-                <span>@Model.D_FecNac.Value.ToShortDateString()</span>
-            }
-        </dd>
-    </dl>
+    <div class="row px-4">
+        <table class="table table-bordered">
+            <thead class="thead-light">
+                <tr>
+                    <th class="text-center" scope="col"></th>
+                    <th class="text-center" scope="col">Temporal de pagos - Migración</th>
+                    <th class="text-center" scope="col">Recaudación de ingresos</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="thead-light">
+                    <th class="text-right" scope="row">Código</th>
+                    <td class="text-center">@Model.MigracionAlumno.C_CodAlu</td>
+                    <td class="text-center">@Model.RepositorioAlumno.C_CodAlu</td>
+                </tr>
+                <tr class="thead-light">
+                    <th class="text-right" scope="row">Carrera</th>
+                    <td class="text-center">@Model.MigracionAlumno.C_RcCod - @Model.MigracionAlumno.T_Carrera</td>
+                    <td class="text-center">@Model.RepositorioAlumno.C_RcCod - @Model.RepositorioAlumno.T_DenomProg</td>
+                </tr>
+                <tr class="thead-light">
+                    <th class="text-right" scope="row">Modalidad de ingreso</th>
+                    <td class="text-center">@Model.MigracionAlumno.C_CodModIng - @Model.MigracionAlumno.T_ModalidadIng</td>
+                    <td class="text-center">@Model.RepositorioAlumno.C_CodModIng - @Model.RepositorioAlumno.T_ModIngDesc</td>
+                </tr>
+                <tr class="thead-light">
+                    <th class="text-right" scope="row">Año de ingreso</th>
+                    <td class="text-center">@Model.MigracionAlumno.C_AnioIngreso</td>
+                    <td class="text-center">@Model.RepositorioAlumno.C_AnioIngreso</td>
+                </tr>
+                <tr class="thead-light">
+                    <th class="text-right" scope="row">Nombre Completo</th>
+                    <td class="text-center">@Model.MigracionAlumno.T_ApePaterno @Model.MigracionAlumno.T_ApeMaterno, @Model.MigracionAlumno.T_Nombre</td>
+                    <td class="text-center">@Model.RepositorioAlumno.T_ApePaterno @Model.RepositorioAlumno.T_ApeMaterno, @Model.RepositorioAlumno.T_Nombre</td>
+                </tr>
+                <tr class="thead-light">
+                    <th class="text-right" scope="row">Número Documento</th>
+                    <td class="text-center">@Model.MigracionAlumno.C_NumDNI</td>
+                    <td class="text-center">@Model.RepositorioAlumno.C_NumDNI</td>
+                </tr>
+                <tr class="thead-light">
+                    <th class="text-right" scope="row">Tipo Documento</th>
+                    <td class="text-center">@Model.MigracionAlumno.C_CodTipDoc</td>
+                    <td class="text-center">@Model.RepositorioAlumno.C_CodTipDoc</td>
+                </tr>
+                <tr class="thead-light">
+                    <th class="text-right" scope="row">Sexo</th>
+                    <td class="text-center">@Model.MigracionAlumno.C_Sexo</td>
+                    <td class="text-center">@Model.RepositorioAlumno.C_Sexo</td>
+                </tr>
+                <tr class="thead-light">
+                    <th class="text-right" scope="row">Fecha de Nacimiento</th>
+                    <td class="text-center">
+                        @if (Model.MigracionAlumno.D_FecNac.HasValue)
+                        {
+                            <span>@Model.MigracionAlumno.D_FecNac.Value.ToShortDateString()</span>
+                        }
+                    </td>
+                    <td class="text-center">
+                        @if (Model.RepositorioAlumno.D_FecNac.HasValue)
+                        {
+                            <span>@Model.RepositorioAlumno.D_FecNac.Value.ToShortDateString()</span>
+                        }
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 </div>
 <div class="modal-footer">
+    <a class="btn btn-outline-primary modal-link-reload-lg" href="@Url.Action("Editar", "Estudiante", new { id = Model.MigracionAlumno.I_RowID})"><i class="fa fa-pencil"></i> Editar</a>
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
 </div>

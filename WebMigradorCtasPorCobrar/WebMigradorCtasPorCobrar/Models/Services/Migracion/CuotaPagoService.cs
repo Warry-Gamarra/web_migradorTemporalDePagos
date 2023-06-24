@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
+using RepoCtas = WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
@@ -20,10 +21,37 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             if (tipo_obsID.HasValue)
             {
-                return CuotaPagoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Des);
+                return ObtenerConRepo(CuotaPagoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Des), procedencia);
             }
 
-            return CuotaPagoRepository.Obtener((int)procedencia);
+            return ObtenerConRepo(CuotaPagoRepository.Obtener((int)procedencia), procedencia);
+        }
+
+        private IEnumerable<CuotaPago> ObtenerConRepo(IEnumerable<CuotaPago> cuotasPago, Procedencia procedencia)
+        {
+            var cuotasPagoCtas = RepoCtas.ProcesoRepositoty.Obtener((int)procedencia);
+
+            var newCuotasPago = from c in cuotasPago
+                                join cr in cuotasPagoCtas on c.Cuota_pago equals cr.I_ProcesoID
+                                into cuotasPagoProcesoGroup
+                                from cppg in cuotasPagoProcesoGroup.DefaultIfEmpty()
+                                select new CuotaPago()
+                                {
+                                    Cuota_pago = c.Cuota_pago,
+                                    Descripcio = c.Descripcio,
+                                    I_Anio = c.I_Anio,
+                                    PeriodoDesc = c.PeriodoDesc,
+                                    N_cta_cte = c.N_cta_cte,
+                                    Codigo_bnc = c.Codigo_bnc,
+                                    Fch_venc = c.Fch_venc,
+                                    Eliminado = c.Eliminado,
+                                    B_Migrable = c.B_Migrable,
+                                    B_Migrado = c.B_Migrado,
+                                    I_RowID = c.I_RowID,
+                                    B_ExisteCtas = cppg == null ? false : true
+                                };
+
+            return newCuotasPago;
         }
 
         public CuotaPago Obtener(int cuotaID)
@@ -69,7 +97,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             foreach (var Temp_item in Temporal.ObligacionRepository.ObtenerDetallePorCuotaPago(schema, cuotaPago.Cuota_pago.ToString())//.Where(x => x.Eliminado == false)
                                                                    .Select(x => new { x.Ano, x.P, x.Cuota_pago, x.Concepto, x.Descripcio, x.Eliminado })
-                                                                   .Distinct().OrderBy(x => x.Ano ))
+                                                                   .Distinct().OrderBy(x => x.Ano))
             {
                 var detalle = new Entities.TemporalPagos.DetalleObligacion()
                 {
@@ -162,37 +190,37 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                             result_anio.IsDone &&
                             result_periodo.IsDone;
 
-            result.Message = $"    <dl class=\"row text-justify\">" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Con código de cuota duplicado</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+            result.Message = $"    <dl class=\"row text-justify pt-3\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Con código de cuota duplicado :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_duplicados.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Sin categoría equivalente en cuentas por cobrar </dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Sin categoría equivalente en cuentas por cobrar :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_categorias.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observaciones en Año de la cuota de pago</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observaciones en Año de la cuota de pago :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_anio.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observaciones en Periodo de la cuota de pago</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observaciones en Periodo de la cuota de pago :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_periodo.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por estado eliminado</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por estado eliminado :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_removido.Message}</p>" +
                              $"        </dd>" +
-                             //$"        <dt class=\"col-md-4 col-sm-6\">Observados por Modalidades de ingreso</dt>" +
-                             //$"        <dd class=\"col-md-8 col-sm-6\">" +
+                             //$"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Modalidades de ingreso :</dt>" +
+                             //$"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              //$"            <p>{result_ModIngresoAlumno.Message}</p>" +
                              //$"        </dd>" +
-                             //$"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento</dt>" +
-                             //$"        <dd class=\"col-md-8 col-sm-6\">" +
+                             //$"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Número de documento :</dt>" +
+                             //$"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              //$"            <p>{result_CorrespondenciaNumDoc.Message}</p>" +
                              //$"        </dd>" +
-                             //$"        <dt class=\"col-md-4 col-sm-6\">Observados por Sexo duplicado</dt>" +
-                             //$"        <dd class=\"col-md-8 col-sm-6\">" +
+                             //$"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Sexo duplicado :</dt>" +
+                             //$"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              //$"            <p>{result_SexoDiferenteMismoDoc.Message}</p>" +
                              //$"        </dd>" +
                              $"    </dl>";
@@ -218,7 +246,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             Response result = new Response();
             string schemaDb = Schema.SetSchema((Procedencia)cuotaPago.I_ProcedenciaID);
-            cuotaPago.Fch_venc = !string.IsNullOrEmpty(cuotaPago.Fch_venc_s) ? DateTime.Parse(cuotaPago.Fch_venc_s): cuotaPago.Fch_venc;
+            cuotaPago.Fch_venc = !string.IsNullOrEmpty(cuotaPago.Fch_venc_s) ? DateTime.Parse(cuotaPago.Fch_venc_s) : cuotaPago.Fch_venc;
 
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
             cuotaPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID);

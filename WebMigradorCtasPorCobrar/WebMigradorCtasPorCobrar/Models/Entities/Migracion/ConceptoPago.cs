@@ -45,6 +45,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public bool B_Migrado { get; set; }
         public DateTime D_FecMigrado { get; set; }
         public bool B_Removido { get; set; }
+        public bool B_ExisteCtas { get; set; }
         public DateTime D_FecRemovido { get; set; }
 
         public int I_TipPerID { get; set; }

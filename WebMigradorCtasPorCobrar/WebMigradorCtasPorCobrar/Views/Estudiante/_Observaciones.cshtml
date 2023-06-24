@@ -10,7 +10,7 @@
     <div class="row">
         <div class="col-12" id="tabla-errores">
             <table class="table">
-                <thead>
+                <thead class="thead-light">
                     <tr>
                         <th>Tipo</th>
                         <th>Descripción</th>
@@ -26,7 +26,7 @@
                             <td style="width:450px">@item.T_ObservDesc</td>
                             <td style="width:180px">@item.D_FecRegistro</td>
                             <td style="width:90px" class="text-right">
-                                <a class="link-editar" href="javascript:;" data-url="@Url.Action("Editar", "Estudiante", new { id = item.I_FilaTablaID, obsID = item.I_ObservID})"><i class="fa fa-pencil-square-o"></i> Corregir</a>
+                                <a class="modal-link-reload-lg" href="@Url.Action("Editar", "Estudiante", new { id = item.I_FilaTablaID, obsID = item.I_ObservID})"><i class="fa fa-pencil-square-o"></i> Corregir</a>
                             </td>
                         </tr>
                     }
@@ -41,28 +41,3 @@
 <div class="modal-footer">
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
 </div>
-<script>
-    $('.link-editar').on('click', function () {
-        debugger;
-        $.ajax({
-            url: $(this).data('url'),
-            type: 'GET',
-            cache: false,
-            beforeSend: function () {
-                $('#tabla-errores').hide()
-            },
-            success: function (data) {
-                $('#edit-target').html(data);
-                $('#edit-target').show()
-            },
-            error: function () {
-                $('#tabla-errores').show()
-            }
-        })
-    })
-
-    $('#btnCancel').on('click', function () {
-        $('#edit-target').hide()
-        $('#tabla-errores').show()
-    })
-</script>

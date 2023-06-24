@@ -1,4 +1,70 @@
 
+SELECT COUNT(*) FROM BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno
+SELECT COUNT(*) FROM BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno WHERE B_Migrado = 1
+SELECT COUNT(*) FROM BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno WHERE B_Migrado = 0
+
+SELECT  COUNT(*) FROM BD_OCEF_MigracionTP.dbo.TR_Alumnos
+SELECT  COUNT(*) FROM BD_OCEF_MigracionTP.dbo.TR_Alumnos WHERE B_Migrable = 1
+
+select Id_cp  from BD_OCEF_MigracionTP..TR_Cp_Pri where Descripcio like '%Mora_%'
+
+
+select * from BD_OCEF_CtasPorCobrar.dbo.VW_DetalleObligaciones where B_Mora = 1 
+
+SELECT M.C_CodAlu, M.C_CodRc, I_Anio, I_Periodo, COUNT(C.I_ObligacionAluID) FROM TR_ObligacionAluCab C
+		INNER JOIN TC_MatriculaAlumno M ON C.I_MatAluID = M.I_MatAluID
+WHERE M.B_Migrado = 1
+GROUP BY M.C_CodAlu, M.C_CodRc, I_Anio, I_Periodo
+
+SELECT * FROM BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno WHERE B_Migrado = 1
+
+
+SELECT COUNT(*) FROM TR_ObligacionAluCab C
+INNER JOIN TC_MatriculaAlumno M ON C.I_MatAluID = M.I_MatAluID
+WHERE M.B_Migrado = 1 --  M.B_Migrado = 1 AND C.B_Migrado = 1
+
+
+select * from BD_OCEF_TemporalPagos.eupg.ec_det where  nro_ec = 23161 order by cuota_pago
+SELECT * FROM BD_OCEF_TemporalPagos.eupg.ec_pri WHERE nro_ec = 23161 
+select * from BD_OCEF_TemporalPagos.eupg.ec_det where cod_alu = '2008311297' and cod_rc = 'M21' and ano = '2009' and p = 1 and eliminado = 0 order by cuota_pago
+select * from BD_OCEF_TemporalPagos.eupg.ec_det where concepto = 4788 and cod_alu = '2008311297' and cod_rc = 'M21' and ano = '2009' and p = 1 and eliminado = 0 order by cuota_pago
+select * from BD_OCEF_TemporalPagos.eupg.ec_obl where cod_alu = '2008311297' and cod_rc = 'M21' and ano = '2009' and p = 1 order by cuota_pago
+
+
+
+SELECT COUNT(*) FROM TR_ObligacionAluCab C
+INNER JOIN TC_MatriculaAlumno M ON C.I_MatAluID = M.I_MatAluID
+WHERE C.B_Migrado = 1 and  M.B_Migrado = 1 --AND C.B_Migrado = 1
+
+
+SELECT COUNT(*) FROM TR_ObligacionAluCab C
+INNER JOIN TR_ObligacionAluDet D ON C.I_ObligacionAluID = D.I_ObligacionAluID
+WHERE C.B_Migrado = 1
+
+select COUNT(*) 
+FROM BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab cabecera_obligaciones
+		 LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet detalle_obligaciones 
+				   ON cabecera_obligaciones.I_ObligacionAluID = detalle_obligaciones.I_ObligacionAluID
+		 WHERE cabecera_obligaciones.B_Migrado = 1 AND detalle_obligaciones.I_ObligacionAluID IS NULL
+
+
+SELECT m.* FROM TR_ObligacionAluCab C
+INNER JOIN TC_MatriculaAlumno M ON C.I_MatAluID = M.I_MatAluID
+WHERE C.B_Migrado = 1 and  M.B_Migrado = 0
+
+
+
+select * from BD_OCEF_MigracionTP.dbo.TR_Alumnos a
+inner join BD_OCEF_CtasPorCobrar..TC_MatriculaAlumno M on a.C_RcCod = M.C_CodRc and a.C_CodAlu = M.C_CodAlu
+INNER JOIN TR_ObligacionAluCab C ON C.I_MatAluID = M.I_MatAluID
+where M.B_Migrado = 0 and C.B_Migrado = 1 
+
+SELECT * FROM TR_ObligacionAluDet C
+
+
+
+
+
 declare @B_Resultado  bit,
 		@I_ProcedenciaID	tinyint = 3,
 		@T_SchemaDB			varchar(20) = 'euded',
@@ -1125,3 +1191,12 @@ WHERE BD_UNFV_Repositorio..TC_Persona.I_PersonaID = VA.I_PersonaID
 
 
 		select * from ##Alumno_Repetidos_sexo_diferente ORDER BY T_ApePaterno, T_ApeMaterno, T_Nombre
+
+
+
+select * from TR_Ec_Obl where B_Actualizado = 1
+
+select * from TR_Ec_Obl where I_RowID = 5961352
+
+select * from TR_Ec_Obl where Ano = '2007' AND P = 'A' AND Cod_alu = '2006701702'
+select * from VW_ObservacionesEcObl where I_ObservID = 34 --and I_FilaTablaID = 5807925

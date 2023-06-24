@@ -29,6 +29,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.CtasPorCobrar
         public int? I_MigracionTablaID { get; set; }
         public int? I_MigracionRowID { get; set; }
         public string T_TablaNom { get; set; }
-
+        public string C_NumeroCuenta { get; set; }
+        public string B_Mora { get; set; }
     }
 }

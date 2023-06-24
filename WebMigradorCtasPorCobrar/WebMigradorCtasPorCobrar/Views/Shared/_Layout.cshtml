@@ -139,6 +139,29 @@
                 $(this).attr('data-toggle', 'modal');
             });
 
+
+            $('body').on('click', '.modal-link-reload', function (e) {
+                e.preventDefault();
+                var url = $(this).attr("href");
+                var modal = $('#modal-container');
+                modal.find('.modal-content').load(url);
+            });
+
+            $('body').on('click', '.modal-link-reload-lg', function (e) {
+                e.preventDefault();
+                var url = $(this).attr("href");
+                var modal = $('#modal-container-lg');
+                modal.find('.modal-content').load(url);
+            });
+
+            $('body').on('click', '.modal-link-reload-xl', function (e) {
+                e.preventDefault();
+                var url = $(this).attr("href");
+                var modal = $('#modal-container-xl');
+                modal.find('.modal-content').load(url);
+            });
+
+
             $('#modal-container-lg').on('show.bs.modal', function (event) {
                 var button = $(event.relatedTarget);
                 var url = button.attr("href");
@@ -162,7 +185,6 @@
 
             $('#modal-container').on('hide.bs.modal', function () {
                 $(this).removeData('bs.modal');
-                $('#modal-container .modal-dialog').removeClass('modal-lg')
                 $('#modal-container .modal-content').html('<p style="margin:50px;" class="text-center text-muted"><i class="fa fa-spin fa-3x fa-cog"></i></p>');
             });
 

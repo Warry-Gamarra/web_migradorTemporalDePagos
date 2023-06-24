@@ -442,6 +442,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     commandTimeout: 3600,
                     commandType: CommandType.Text);
                 }
+
+                result.IsDone = true;
+                result.Message = "Ok";
             }
             catch (Exception ex)
             {
@@ -475,6 +478,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     commandTimeout: 3600,
                     commandType: CommandType.Text);
                 }
+                
+                result.IsDone = true;
+                result.Message = "Ok";
             }
             catch (Exception ex)
             {
@@ -507,6 +513,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     commandTimeout: 3600,
                     commandType: CommandType.Text);
                 }
+
+                result.IsDone = true;
+                result.Message = "Ok";
             }
             catch (Exception ex)
             {
@@ -539,6 +548,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     commandTimeout: 3600,
                     commandType: CommandType.Text);
                 }
+
+                result.IsDone = true;
+                result.Message = "Ok";
             }
             catch (Exception ex)
             {
@@ -571,6 +583,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     commandTimeout: 3600,
                     commandType: CommandType.Text);
                 }
+
+                result.IsDone = true;
+                result.Message = "Ok";
             }
             catch (Exception ex)
             {
@@ -604,6 +619,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     commandTimeout: 3600,
                     commandType: CommandType.Text);
                 }
+
+                result.IsDone = true;
+                result.Message = "Ok";
             }
             catch (Exception ex)
             {
@@ -636,6 +654,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     commandTimeout: 3600,
                     commandType: CommandType.Text);
                 }
+
+                result.IsDone = true;
+                result.Message = "Ok";
             }
             catch (Exception ex)
             {
@@ -668,6 +689,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                     commandTimeout: 3600,
                     commandType: CommandType.Text);
                 }
+
+                result.IsDone = true;
+                result.Message = "Ok";
             }
             catch (Exception ex)
             {

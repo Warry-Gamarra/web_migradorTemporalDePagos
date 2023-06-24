@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
+using RepoAlu = WebMigradorCtasPorCobrar.Models.Repository.UnfvRepositorio;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
@@ -21,15 +22,40 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             _equivalenciasServices = new EquivalenciasServices();
         }
 
+        private IEnumerable<Alumno> ObtenerAlumnos(IEnumerable<Alumno> alumnos, Procedencia procedencia)
+        {
+            var alumnosRepo = RepoAlu.AlumnoRepository.Obtener((int)procedencia);
+
+            var newAlumnos = from a in alumnos
+                             join ar in alumnosRepo on new { a.C_CodAlu, a.C_RcCod } equals new { ar.C_CodAlu, ar.C_RcCod }
+                             into AlumnosAlumnosRepoGroup
+                             from aarg in AlumnosAlumnosRepoGroup.DefaultIfEmpty()
+                             select new Alumno
+                             {
+                                 C_CodAlu = a.C_CodAlu,
+                                 C_RcCod = a.C_RcCod,
+                                 I_RowID = a.I_RowID,
+                                 B_Migrado = a.B_Migrado,
+                                 B_Migrable = a.B_Migrable,
+                                 C_NumDNI = a.C_NumDNI,
+                                 T_ApeMaterno = a.T_ApeMaterno,
+                                 T_ApePaterno = a.T_ApePaterno,
+                                 T_Nombre = a.T_Nombre,
+                                 I_ProcedenciaID = a.I_ProcedenciaID,
+                                 B_ExistsDestino = aarg == null ? false : true
+                             };
+
+            return newAlumnos;
+        }
 
         public IEnumerable<Alumno> Obtener(Procedencia procedencia, int? tipo_obsID)
         {
             if (tipo_obsID.HasValue)
             {
-                return AlumnoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Alumnos);
+                return ObtenerAlumnos(AlumnoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Alumnos), procedencia);
             }
 
-            return AlumnoRepository.Obtener((int)procedencia);
+            return ObtenerAlumnos(AlumnoRepository.Obtener((int)procedencia), procedencia);
         }
 
         public Alumno Obtener(int alumnoId)
@@ -124,41 +150,41 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                             result_DniDiferenteMismoCodAlu.IsDone &&
                             result_SexoDiferenteMismoDocRepo.IsDone;
 
-            result.Message = $"    <dl class=\"row text-justify\">" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por caracteres especiales</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+            result.Message = $"    <dl class=\"row text-justify pt-3\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por caracteres especiales :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_CaracteresEspeciales.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por codigos de carrera</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por códigos de carrera :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_CodigoCarreraAlumno.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por codigos de alumno repetidos</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por códigos de alumno repetidos :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_CodigosAlumnoRepetidos.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Años de ingreso</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Años de ingreso :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_AnioIngresoAlumno.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Número de documento :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_CorrespondenciaNumDoc.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Número de documento :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_DniDiferenteMismoCodAlu.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Número de documento Repositorio</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Número de documento Repositorio :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_CorrespondenciaNumDocRepo.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Sexo difernte</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Sexo diferente :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_SexoDiferenteMismoDoc.Message}</p>" +
                              $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Observados por Sexo difernte con el repositorio</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
+                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Sexo diferente con el repositorio :</dt>" +
+                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
                              $"            <p>{result_SexoDiferenteMismoDocRepo.Message}</p>" +
                              $"        </dd>" +
                              $"    </dl>";

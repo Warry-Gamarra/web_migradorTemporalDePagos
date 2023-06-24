@@ -650,7 +650,7 @@ BEGIN
 		WHEN NOT MATCHED BY TARGET THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID AND TRG.I_FilaTablaID = @I_RowID THEN
 			DELETE;
 
 		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
@@ -670,6 +670,115 @@ BEGIN
 	END CATCH
 END
 GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarMatriculaObligacionesCtasPorCobrar')
+	DROP PROCEDURE [dbo].[USP_IU_MigrarMatriculaObligacionesCtasPorCobrar]
+GO
+
+
+CREATE PROCEDURE [dbo].[USP_IU_MigrarMatriculaObligacionesCtasPorCobrar]	
+	@I_ProcedenciaID	tinyint,
+	@I_ProcesoID		int = NULL,
+	@I_Anio				int = NULL,
+	@B_Resultado		bit output,
+	@T_Message			nvarchar(4000) OUTPUT	
+AS
+--declare   @I_ProcedenciaID tinyint = 3,
+--			@I_ProcesoID	 int = null, 
+--			@I_Anio			 int = 2011, 
+--			@B_Resultado	 bit, 
+--			@T_Message nvarchar(4000)
+--exec USP_IU_MigrarMatriculaObligacionesCtasPorCobrar @I_ProcedenciaID, @I_ProcesoID, @I_Anio, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	BEGIN TRANSACTION
+
+	BEGIN TRY
+	WITH alumnos_matricula AS (
+		SELECT DISTINCT Cod_alu, Cod_rc, CAST(Ano as int) AS Ano, I_Periodo, 'S' AS C_EstMat 
+		FROM TR_Ec_Obl
+		WHERE ISNUMERIC(ANO) = 1
+			  AND I_ProcedenciaID = @I_ProcedenciaID
+			  AND B_Migrable = 1
+	)
+
+	INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno (C_CodRc, C_CodAlu, I_Anio, I_Periodo, C_EstMat, C_Ciclo, B_Ingresante, I_CredDesaprob, B_Habilitado, B_Eliminado, B_Migrado)
+	SELECT A.Cod_rc, A.Cod_alu, A.Ano, A.I_Periodo, A.C_EstMat, NULL as C_Ciclo, NULL as B_Ingresante, NULL as I_CredDesaprob, 1 as B_Habilitado, 0 as B_Eliminado, 1 as B_Migrado
+	  FROM alumnos_matricula A 
+		   LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno MA ON MA.C_CodAlu = A.Cod_alu 
+																		AND MA.C_CodRc = A.Cod_rc 
+																		AND MA.I_Anio  = A.Ano
+																		AND MA.I_Periodo = A.I_Periodo
+	WHERE Ano = @I_Anio
+		  AND MA.I_MatAluID IS NULL;
+
+	SET @T_Message = CAST(@@ROWCOUNT AS varchar);
+	SET @B_Resultado = 1;
+
+	COMMIT TRANSACTION;
+
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @T_Message = 'DESCRIPCION: ' + CAST(ERROR_MESSAGE() AS varchar) + CHAR(10) +  CHAR(13) +  
+						 'LINEA: '  + CAST(ERROR_LINE() AS varchar);
+		SET @B_Resultado = 1;
+	END CATCH
+END
+GO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarObligacionesCtasPorCobrar')
@@ -716,24 +825,24 @@ BEGIN
 	BEGIN TRY 
 		DECLARE @I_RowID  int
 								
-		SELECT * 
-		INTO #Numeric_Year_Ec_Obl
-		FROM TR_Ec_Obl
-		WHERE ISNUMERIC(ANO) = 1
-			  AND I_ProcedenciaID = @I_ProcedenciaID
+		--SELECT * 
+		--INTO #Numeric_Year_Ec_Obl
+		--FROM TR_Ec_Obl
+		--WHERE ISNUMERIC(ANO) = 1
+		--	  AND I_ProcedenciaID = @I_ProcedenciaID
 
-		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno AS TRG
-		USING (SELECT DISTINCT Cod_alu, Cod_rc, Ano, P, I_Periodo FROM  #Numeric_Year_Ec_Obl
-				WHERE CAST(Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin) AS SRC
-		ON TRG.C_CodAlu = SRC.cod_alu 
-		   AND TRG.C_CodRc = SRC.cod_rc 
-		   AND TRG.I_Anio  = CAST(SRC.ano AS int) 
-		   AND TRG.I_Periodo = SRC.I_Periodo
-		WHEN NOT MATCHED THEN
-			INSERT (C_CodRc, C_CodAlu, I_Anio, I_Periodo, C_EstMat, C_Ciclo, B_Ingresante, I_CredDesaprob, B_Habilitado, B_Eliminado, B_Migrado)
-			VALUES (SRC.Cod_rc, SRC.Cod_alu, CAST(SRC.Ano as int), SRC.I_Periodo, 'S', NULL, NULL, NULL, 1, 0, 1);
+		--MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno AS TRG
+		--USING (SELECT DISTINCT Cod_alu, Cod_rc, Ano, P, I_Periodo FROM  #Numeric_Year_Ec_Obl
+		--		WHERE CAST(Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin) AS SRC
+		--ON TRG.C_CodAlu = SRC.cod_alu 
+		--   AND TRG.C_CodRc = SRC.cod_rc 
+		--   AND TRG.I_Anio  = CAST(SRC.ano AS int) 
+		--   AND TRG.I_Periodo = SRC.I_Periodo
+		--WHEN NOT MATCHED THEN
+		--	INSERT (C_CodRc, C_CodAlu, I_Anio, I_Periodo, C_EstMat, C_Ciclo, B_Ingresante, I_CredDesaprob, B_Habilitado, B_Eliminado, B_Migrado)
+		--	VALUES (SRC.Cod_rc, SRC.Cod_alu, CAST(SRC.Ano as int), SRC.I_Periodo, 'S', NULL, NULL, NULL, 1, 0, 1);
 
-
+		
 		SET @I_RowID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab')
 
 		SELECT @I_RowID + ROW_NUMBER() OVER (ORDER BY obl.I_RowID ASC) as OblCabAluID, ROW_NUMBER() OVER (ORDER BY obl.I_RowID ASC) as TempRowID, obl.I_RowID, 
@@ -851,7 +960,7 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_IU_MigrarPagoObligacionesCtasPorCobrar]
 GO
 
-CREATE PROCEDURE [dbo].[USP_IU_MigrarPagoObligacionesCtasPorCobrar]	
+CREATE PROCEDURE [dbo].[USP_IU_MigrarPagoObligacionesCtasPorCobrar]
 	@I_ProcedenciaID tinyint,
 	@I_ProcesoID		int = NULL,
 	@I_AnioIni			int = NULL,
@@ -897,7 +1006,7 @@ BEGIN
 	)
 
 	BEGIN TRANSACTION;
-	BEGIN TRY 
+
 		DECLARE @I_RowID  int
 					
 		--SELECT * INTO #temp_obl_migrados FROM TR_Ec_Obl 
@@ -930,7 +1039,7 @@ BEGIN
 				FROM  #temp_pagos_banco det
 					  INNER JOIN  TR_Alumnos a ON det.Cod_alu = a.C_CodAlu AND det.Cod_rc = a.C_RcCod
 					  INNER JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
-					  LEFT JOIN  #temp_pagos_interes_mora mora ON det.Ano = mora.Ano AND det.P = mora.P AND det.Cuota_pago = mora.Cuota_pago 
+					   LEFT JOIN  #temp_pagos_interes_mora mora ON det.Ano = mora.Ano AND det.P = mora.P AND det.Cuota_pago = mora.Cuota_pago 
 																  AND det.Cod_Alu = mora.Cod_Alu AND det.Cod_rc = mora.Cod_rc
 			  ) AS SRC
 		ON
