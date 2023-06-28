@@ -1,5 +1,34 @@
 
+truncate table  BD_OCEF_MigracionTP.dbo.TR_Ec_Pri
+select * from BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv where I_ObligacionAluDetID = 382 
+select * from BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet where I_ObligacionAluDetID = 149424
+SELECT * FROM BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco where I_ProcesoIDArchivo is null
+
+select * from BD_OCEF_MigracionTP.dbo.TR_Ec_Det WHERE Concepto = 4788 and Ano  = 2011
+SELECT * FROM BD_OCEF_CtasPorCobrar.dbo.TC_EntidadFinanciera
+SELECT * FROM BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco
+SELECT * FROM BD_OCEF_CtasPorCobrar.dbo.TC_CatalogoOpcion WHERE I_ParametroID = 10
+
+select * from  BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet  where B_Pagado = 0 and B_Eliminado = 0
+
+SELECT *  FROM BD_UNFV_Repositorio.dbo.TC_Alumno
+select COUNT(*) from BD_OCEF_TemporalPagos.euded.ec_pri WHERE ano = 2011
+SELECT * FROM BD_OCEF_MigracionTP.dbo.TR_Ec_Pri where Ano <> 2011
+select COUNT(*) from BD_OCEF_MigracionTP.dbo.TR_Ec_Pri where Ano  = 2011
+select distinct COUNT(nro_ec) from BD_OCEF_MigracionTP.dbo.TR_Ec_Pri where Ano  = 2011
+select * from BD_OCEF_TemporalPagos.euded.ec_pri order by cod_alu, nro_ec
+select * from BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv
+
+select * from BD_OCEF_TemporalPagos.euded.ec_obl where cod_alu = '1999700465' and cod_rc =  'E01' and p = 2 and ano = 2005
+select * from BD_OCEF_TemporalPagos.euded.ec_det WHERE nro_ec = 49 AND eliminado = 0
+
+select * from BD_OCEF_TemporalPagos.dbo.alumnos where C_CodAlu = '2019232117'
+select * from BD_OCEF_MigracionTP.dbo.TR_Alumnos where C_CodAlu = '2019232117'
+
+select distinct COUNT(nro_ec) from BD_OCEF_TemporalPagos.euded.ec_pri WHERE  ano = 2011
+
 SELECT COUNT(*) FROM BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno
+
 SELECT COUNT(*) FROM BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno WHERE B_Migrado = 1
 SELECT COUNT(*) FROM BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno WHERE B_Migrado = 0
 
@@ -8,11 +37,13 @@ SELECT  COUNT(*) FROM BD_OCEF_MigracionTP.dbo.TR_Alumnos WHERE B_Migrable = 1
 
 select Id_cp  from BD_OCEF_MigracionTP..TR_Cp_Pri where Descripcio like '%Mora_%'
 
+select * from BD_OCEF_TemporalPagos.euded.ec_det WHERE ano = 2011
 
 select * from BD_OCEF_CtasPorCobrar.dbo.VW_DetalleObligaciones where B_Mora = 1 
 
 SELECT M.C_CodAlu, M.C_CodRc, I_Anio, I_Periodo, COUNT(C.I_ObligacionAluID) FROM TR_ObligacionAluCab C
 		INNER JOIN TC_MatriculaAlumno M ON C.I_MatAluID = M.I_MatAluID
+
 WHERE M.B_Migrado = 1
 GROUP BY M.C_CodAlu, M.C_CodRc, I_Anio, I_Periodo
 
