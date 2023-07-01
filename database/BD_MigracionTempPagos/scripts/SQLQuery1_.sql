@@ -1,4 +1,6 @@
-
+select * from BD_UNFV_Repositorio.dbo.TC_Alumno where C_CodAlu = '2016017156'
+SELECT * FROM BD_UNFV_Repositorio.dbo.TC_Persona where I_PersonaID = 14267
+select * from BD_OCEF_MigracionTP.dbo.TR_Alumnos where C_CodAlu = '2005022777'
 truncate table  BD_OCEF_MigracionTP.dbo.TR_Ec_Pri
 select * from BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv where I_ObligacionAluDetID = 382 
 select * from BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet where I_ObligacionAluDetID = 149424
@@ -10,6 +12,22 @@ SELECT * FROM BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco
 SELECT * FROM BD_OCEF_CtasPorCobrar.dbo.TC_CatalogoOpcion WHERE I_ParametroID = 10
 
 select * from  BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet  where B_Pagado = 0 and B_Eliminado = 0
+
+--2015321838	
+			SELECT	DISTINCT A.I_PersonaID, LTRIM(RTRIM(REPLACE(ISNULL(P.C_NumDNI, TA.C_NumDNI),' ', ' '))) AS C_NumDNI, 
+					ISNULL(P.C_CodTipDoc, TA.C_CodTipDoc) as C_CodTipDoc, ISNULL(P.T_ApePaterno, TA.T_ApePaterno) as T_ApePaterno, 
+					ISNULL(P.T_ApeMaterno, TA.T_ApeMaterno) as T_ApeMaterno, ISNULL(P.T_Nombre, TA.T_Nombre) as T_Nombre, 
+					IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo) AS C_Sexo, TA.C_CodAlu, TA.C_RcCod, TA.C_CodModIng, TA.I_RowID, 
+					ISNULL(A.C_AnioIngreso, TA.C_AnioIngreso) as C_AnioIngreso, ISNULL(P.D_FecNac, TA.D_FecNac) AS D_FecNac
+			FROM	BD_UNFV_Repositorio.dbo.TC_Persona P
+					INNER JOIN BD_UNFV_Repositorio.dbo.TC_Alumno A ON A.I_PersonaID = P.I_PersonaID 
+					RIGHT JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod 
+			WHERE   TA.B_Migrable = 1
+					AND TA.I_ProcedenciaID = 3
+					AND P.B_Eliminado = 0
+					AND A.B_Eliminado = 0
+
+select C_AnioIngreso, cofrom BD_OCEF_MigracionTP.dbo.TR_Alumnos where I_ProcedenciaID = 1 order by 1
 
 SELECT *  FROM BD_UNFV_Repositorio.dbo.TC_Alumno
 select COUNT(*) from BD_OCEF_TemporalPagos.euded.ec_pri WHERE ano = 2011

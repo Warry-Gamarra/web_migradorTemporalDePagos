@@ -17,6 +17,7 @@ AS
 --exec USP_IU_MigrarDataAlumnosUnfvRepositorio @I_ProcedenciaID, @C_CodAlu, @C_AnioIng, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
+	SET NOCOUNT ON
 	
 	DECLARE @I_CantAlu int = 0
 	DECLARE @I_Removidos int = 0
@@ -46,33 +47,35 @@ BEGIN
 			C_AnioIngreso	smallint, 
 			C_CodModIng		varchar(2), 
 			I_RowID			int,
-			D_FecNac		date
+			D_FecNac		date,
+			C_RepoCodAlu	varchar(20)
 		)
 
 
 		;WITH cte_alumnos_persona_repo (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo,
-									   C_CodAlu, C_RcCod, C_CodModIng, C_AnioIngreso, I_RowID, D_FecNac)
+									   C_CodAlu, C_RcCod, C_CodModIng,I_RowID, C_AnioIngreso, D_FecNac, C_RepoCodAlu)
 		AS
 		(
-			SELECT	DISTINCT A.I_PersonaID, LTRIM(RTRIM(REPLACE(ISNULL(P.C_NumDNI, TA.C_NumDNI),' ', ' '))) AS C_NumDNI, 
+			SELECT	A.I_PersonaID, LTRIM(RTRIM(REPLACE(ISNULL(P.C_NumDNI, TA.C_NumDNI),' ', ' '))) AS C_NumDNI, 
 					ISNULL(P.C_CodTipDoc, TA.C_CodTipDoc) as C_CodTipDoc, ISNULL(P.T_ApePaterno, TA.T_ApePaterno) as T_ApePaterno, 
 					ISNULL(P.T_ApeMaterno, TA.T_ApeMaterno) as T_ApeMaterno, ISNULL(P.T_Nombre, TA.T_Nombre) as T_Nombre, 
 					IIF(P.C_Sexo IS NULL, TA.C_Sexo, P.C_Sexo) AS C_Sexo, TA.C_CodAlu, TA.C_RcCod, TA.C_CodModIng, TA.I_RowID, 
-					TA.C_AnioIngreso, ISNULL(P.D_FecNac, TA.D_FecNac) AS D_FecNac
+					ISNULL(A.C_AnioIngreso, TA.C_AnioIngreso) as C_AnioIngreso, ISNULL(P.D_FecNac, TA.D_FecNac) AS D_FecNac,
+					A.C_CodAlu as C_RepoCodAlu
 			FROM	BD_UNFV_Repositorio.dbo.TC_Persona P
-					INNER JOIN BD_UNFV_Repositorio.dbo.TC_Alumno A ON A.I_PersonaID = P.I_PersonaID
-					RIGHT JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod
+					INNER JOIN BD_UNFV_Repositorio.dbo.TC_Alumno A ON A.I_PersonaID = P.I_PersonaID 
+					RIGHT JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod 
 			WHERE   TA.B_Migrable = 1
-					AND TA.I_ProcedenciaID = @I_ProcedenciaID
 					AND P.B_Eliminado = 0
 					AND A.B_Eliminado = 0
+					AND TA.I_ProcedenciaID = @I_ProcedenciaID
 		)
 
 
 		INSERT INTO @tbl_alumnos_persona_repo (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo,
-											   C_CodAlu, C_RcCod, C_CodModIng, C_AnioIngreso)
-									    SELECT I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo,
-										 	   C_CodAlu, C_RcCod, C_CodModIng, C_AnioIngreso
+											   C_CodAlu, C_RcCod, C_CodModIng, C_AnioIngreso, I_RowID, C_RepoCodAlu)
+									    SELECT DISTINCT I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo,
+										 	   C_CodAlu, C_RcCod, C_CodModIng, C_AnioIngreso, I_RowID, C_RepoCodAlu
 									      FROM cte_alumnos_persona_repo
 
 		UPDATE P
@@ -80,6 +83,8 @@ BEGIN
 			   ,T_ApePaterno = TA.T_ApePaterno
 			   ,T_ApeMaterno = TA.T_ApeMaterno
 			   ,T_Nombre = TA.T_Nombre
+			   ,C_AnioIngreso = TA.C_AnioIngreso
+			   ,D_FecNac = TA.D_FecNac
 		  FROM @tbl_alumnos_persona_repo P 
 			   INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = P.C_CodAlu AND TA.C_RcCod = P.C_RcCod
 		 WHERE 
@@ -87,7 +92,7 @@ BEGIN
 
 		SET @I_CantAlu = (SELECT COUNT(*) FROM @tbl_alumnos_persona_repo)
 
-		--SELECT * FROM @tbl_alumnos_persona_repo WHERE C_CodAlu IS NULL
+
 		DECLARE @I_RowID		int, 
 				@I_PersonaID	int,
 				@C_RcCod		varchar(3),
@@ -100,11 +105,12 @@ BEGIN
 				@C_Sexo			char(1), 
 				@D_FecNac		date, 
 				@C_CodModIng	varchar(2), 
-				@C_AnioIngreso	smallint
+				@C_AnioIngreso	smallint,
+				@C_RepoCodAlu	varchar(20)
 
 		DECLARE cursor_alumnos_migracion CURSOR FAST_FORWARD
 			FOR SELECT I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, 
-					   T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, I_PersonaID
+					   T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, I_PersonaID, C_RepoCodAlu
 				  FROM @tbl_alumnos_persona_repo 
 				 WHERE C_AnioIngreso = ISNULL(@C_AnioIng, C_AnioIngreso)
 					   AND C_CodAlu = ISNULL(@C_CodAlu, C_CodAlu)
@@ -113,8 +119,8 @@ BEGIN
 		OPEN cursor_alumnos_migracion;
 
 		FETCH NEXT FROM cursor_alumnos_migracion INTO @I_RowID, @C_RcCod, @C_CodAluCur, @C_NumDNI, @C_CodTipDoc, 
-													  @T_ApePaterno, @T_ApeMaterno, @T_Nombre, @C_Sexo, 
-													  @D_FecNac, @C_CodModIng, @C_AnioIngreso, @I_PersonaID
+													  @T_ApePaterno, @T_ApeMaterno, @T_Nombre, @C_Sexo, @D_FecNac, 
+													  @C_CodModIng, @C_AnioIngreso, @I_PersonaID, @C_RepoCodAlu
 						
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
@@ -146,10 +152,10 @@ BEGIN
 				SET @I_Actualizados_persona = @I_Actualizados_persona + 1
 			END
 
-			IF EXISTS (SELECT C_CodAlu FROM BD_UNFV_Repositorio.dbo.TC_Alumno WHERE C_CodAlu = @C_CodAluCur AND C_RcCod = @C_RcCod AND B_Eliminado = 0)
+			IF (@C_RepoCodAlu IS NULL)
 			BEGIN
 				UPDATE BD_UNFV_Repositorio.dbo.TC_Alumno
-					SET C_AnioIngreso =  ISNULL(C_AnioIngreso,@C_AnioIng),
+					SET C_AnioIngreso =  ISNULL(C_AnioIngreso, @C_AnioIngreso),
 						C_CodModIng = ISNULL(C_CodModIng, @C_CodModIng),
 						I_UsuarioMod = @I_UserId,
 						D_FecMod = @D_FecProceso
@@ -173,11 +179,14 @@ BEGIN
 			   SET B_Migrado = 1
 			 WHERE I_RowID = @I_RowID
 
+			PRINT  @C_RcCod + '|' + @C_CodAluCur
+
 			FETCH NEXT FROM cursor_alumnos_migracion INTO @I_RowID, @C_RcCod, @C_CodAluCur, @C_NumDNI, @C_CodTipDoc, 
-														  @T_ApePaterno, @T_ApeMaterno, @T_Nombre, @C_Sexo, 
-														  @D_FecNac, @C_CodModIng, @C_AnioIngreso, @I_PersonaID
+														  @T_ApePaterno, @T_ApeMaterno, @T_Nombre, @C_Sexo, @D_FecNac, 
+														  @C_CodModIng, @C_AnioIngreso, @I_PersonaID,@C_RepoCodAlu
 						
 		END
+
 
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1

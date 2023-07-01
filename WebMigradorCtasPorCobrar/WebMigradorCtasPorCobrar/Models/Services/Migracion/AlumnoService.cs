@@ -195,14 +195,25 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
         public  Response MigrarDatosTemporalPagos(Procedencia procedencia)
         {
-            Response result = new Response();
+            Response result = new Response() { IsDone = true };
+
             string schemaDb = Schema.SetSchema(procedencia);
 
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
-            result = alumnoRepository.MigrarDataAlumnosUnfvRepositorio((int)procedencia);
+            var aniosIngreso = AlumnoRepository.Obtener((int)procedencia).Select(x => x.C_AnioIngreso).Distinct().OrderBy(x => x);
 
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            foreach (var anio in aniosIngreso)
+            {
+                Response response = alumnoRepository.MigrarDataAlumnosUnfvRepositorio((int)procedencia, null, anio);
+                response = response.IsDone ? response.Success(false) : response.Error(false);
+
+                result.IsDone = result.IsDone && response.IsDone;
+                result.Message += $"<p>Año {anio}:<p><p class=\"alert alert-{response.Color}\">{response.Message} <i class=\"{response.Icon}\"></i></p>";
+            }
+
+            return result.IsDone ? result.Success(false) : result.Error(false)
+;
         }
     }
 }

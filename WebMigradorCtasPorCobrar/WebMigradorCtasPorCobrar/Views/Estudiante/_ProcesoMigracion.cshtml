@@ -123,10 +123,11 @@
             confirmButtonText: 'Sí, migrar datos.'
         }).then((result) => {
             if (result.isConfirmed) {
-                $.ajax({
-                    url: '@Url.Action("MigrarDatosTemporalPagos", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
+                   $.ajax({
+                    url: '@Url.Action("MigrarDatosTemporalPagos", "Estudiante", new { area = "" })',
                     type: 'POST',
                     cache: false,
+                    data: { procedencia:'@procedencia' },
                     beforeSend: function () {
                         $('#processing').show();
                         $('#result-message').hide();

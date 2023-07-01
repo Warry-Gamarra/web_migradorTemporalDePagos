@@ -93,7 +93,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
         [HttpPost]
-        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
+        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia, string codAlu, Int16? anioIngreso)
         {
             Response result = _alumnoServiceMigracion.MigrarDatosTemporalPagos(procedencia);
 
@@ -137,10 +137,12 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult Save(Alumno model, string FecNac, Procedencia procedencia)
         {
             Response result = new Response();
+            DateTime D_FecNac;
 
             if (ModelState.IsValid)
             {
-                model.D_FecNac = DateTime.Parse(FecNac);
+                model.D_FecNac = DateTime.TryParse(FecNac, out D_FecNac) ? D_FecNac : model.D_FecNac;
+
                 result = _alumnoServiceMigracion.Save(model, procedencia);
             }
             else

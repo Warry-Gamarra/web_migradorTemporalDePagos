@@ -545,9 +545,6 @@
     <Content Include="Views\ConceptoPago\_EditarPeriodo.cshtml" />
     <Content Include="Views\Shared\_ObservacionRegistro.cshtml" />
     <Content Include="Views\Estudiante\_UnfvRepositorio.cshtml" />
-    <Content Include="Views\Estudiante\_UnfvRepositorio_tab_personas.cshtml" />
-    <Content Include="Views\Estudiante\_UnfvRepositorio_tab_default.cshtml" />
-    <Content Include="Views\Estudiante\_UnfvRepositorio_tab_alumnos.cshtml" />
     <Content Include="Views\DetalleObligacion\_DetalleObligacion.cshtml" />
     <Content Include="Views\Obligaciones\_EditarObligacion.cshtml" />
     <Content Include="Views\CuotaPago\_CtasPorCobrarProcesos.cshtml" />

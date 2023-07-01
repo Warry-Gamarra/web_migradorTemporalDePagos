@@ -487,7 +487,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        public Response MigrarDataAlumnosUnfvRepositorio(int procedenciaID)
+        public Response MigrarDataAlumnosUnfvRepositorio(int procedenciaID, string codAlu, Int16? anioIng)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -497,6 +497,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "C_CodAlu", dbType: DbType.String, size: 20 , value: codAlu);
+                    parameters.Add(name: "C_AnioIng", dbType: DbType.Int16, value: anioIng);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
