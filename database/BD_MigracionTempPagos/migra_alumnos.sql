@@ -34,7 +34,13 @@ BEGIN
 		DECLARE @I_TempPersonaID int
 		SET @I_TempPersonaID = IDENT_CURRENT('BD_UNFV_Repositorio.dbo.TC_Persona') 
 
-		DECLARE @tbl_alumnos_persona_repo AS TABLE (
+		IF (OBJECT_ID (N'tempdb.dbo.#tbl_alumnos_persona_repo') IS NOT NULL)
+		BEGIN
+			DROP TABLE #tbl_alumnos_persona_repo
+		END
+		
+		CREATE TABLE #tbl_alumnos_persona_repo (
+
 			I_PersonaID		int,
 			C_NumDNI		varchar(20),
 			C_CodTipDoc		varchar(5),
@@ -63,18 +69,15 @@ BEGIN
 					ISNULL(A.C_AnioIngreso, TA.C_AnioIngreso) as C_AnioIngreso, ISNULL(P.D_FecNac, TA.D_FecNac) AS D_FecNac,
 					A.C_CodAlu as C_RepoCodAlu
 			FROM	BD_UNFV_Repositorio.dbo.TC_Persona P
-					INNER JOIN BD_UNFV_Repositorio.dbo.TC_Alumno A ON A.I_PersonaID = P.I_PersonaID 
+					INNER JOIN BD_UNFV_Repositorio.dbo.TC_Alumno A ON A.I_PersonaID = P.I_PersonaID AND P.B_Eliminado = 0 AND A.B_Eliminado = 0
 					RIGHT JOIN TR_Alumnos TA ON TA.C_CodAlu = A.C_CodAlu AND TA.C_RcCod = A.C_RcCod 
 			WHERE   TA.B_Migrable = 1
-					AND P.B_Eliminado = 0
-					AND A.B_Eliminado = 0
-					AND TA.I_ProcedenciaID = @I_ProcedenciaID
 		)
 
 
-		INSERT INTO @tbl_alumnos_persona_repo (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo,
+		INSERT INTO #tbl_alumnos_persona_repo (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac,
 											   C_CodAlu, C_RcCod, C_CodModIng, C_AnioIngreso, I_RowID, C_RepoCodAlu)
-									    SELECT DISTINCT I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo,
+									    SELECT DISTINCT I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac,
 										 	   C_CodAlu, C_RcCod, C_CodModIng, C_AnioIngreso, I_RowID, C_RepoCodAlu
 									      FROM cte_alumnos_persona_repo
 
@@ -85,108 +88,206 @@ BEGIN
 			   ,T_Nombre = TA.T_Nombre
 			   ,C_AnioIngreso = TA.C_AnioIngreso
 			   ,D_FecNac = TA.D_FecNac
-		  FROM @tbl_alumnos_persona_repo P 
-			   INNER JOIN TR_Alumnos TA ON TA.C_CodAlu = P.C_CodAlu AND TA.C_RcCod = P.C_RcCod
+		  FROM #tbl_alumnos_persona_repo P 
+			   INNER JOIN TR_Alumnos TA ON TA.I_RowID = P.I_RowID
 		 WHERE 
 			   TA.B_Correcto = 1
 
-		SET @I_CantAlu = (SELECT COUNT(*) FROM @tbl_alumnos_persona_repo)
+
+		IF (OBJECT_ID (N'tempdb.dbo.#tbl_persona_sin_id') IS NOT NULL)
+		BEGIN
+			DROP TABLE #tbl_persona_sin_id
+		END
+		
+		CREATE TABLE #tbl_persona_sin_id (
+			I_PersonaID		int,
+			C_NumDNI		varchar(20),
+			C_CodTipDoc		varchar(5),
+			T_ApePaterno	varchar(50),
+			T_ApeMaterno	varchar(50),
+			T_Nombre		varchar(50),
+			C_Sexo			char(1),
+			D_FecNac		date
+		)
+
+		INSERT INTO #tbl_persona_sin_id (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
+						SELECT DISTINCT  I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac 
+								   FROM  #tbl_alumnos_persona_repo
+								  WHERE  I_PersonaID IS NULL
+
+
+		IF (OBJECT_ID (N'tempdb.dbo.#tbl_persona_con_id') IS NOT NULL)
+		BEGIN
+			DROP TABLE #tbl_persona_con_id
+		END
+		
+		CREATE TABLE #tbl_persona_con_id (
+			I_PersonaID		int,
+			C_NumDNI		varchar(20),
+			C_CodTipDoc		varchar(5),
+			T_ApePaterno	varchar(50),
+			T_ApeMaterno	varchar(50),
+			T_Nombre		varchar(50),
+			C_Sexo			char(1),
+			D_FecNac		date
+		)
+		
+		INSERT INTO #tbl_persona_con_id (I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac)
+						SELECT DISTINCT  I_PersonaID, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, C_Sexo, D_FecNac 
+								   FROM  #tbl_alumnos_persona_repo
+								  WHERE  I_PersonaID IS NOT NULL
+
+		UPDATE persona_repositorio
+		   SET C_NumDNI		= temp_persona.C_NumDNI,
+			   C_CodTipDoc	= temp_persona.C_CodTipDoc,
+			   T_ApePaterno = temp_persona.T_ApePaterno,
+			   T_ApeMaterno = temp_persona.T_ApeMaterno,
+			   T_Nombre		= temp_persona.T_Nombre,
+			   C_Sexo		= temp_persona.C_Sexo,
+			   I_UsuarioMod = @I_UserId,
+			   D_FecMod		= @D_FecProceso
+		 FROM BD_UNFV_Repositorio.dbo.TC_Persona persona_repositorio
+			  INNER JOIN #tbl_persona_con_id temp_persona ON persona_repositorio.I_PersonaID = temp_persona.I_PersonaID
 
 
 		DECLARE @I_RowID		int, 
 				@I_PersonaID	int,
 				@C_RcCod		varchar(3),
 				@C_CodAluCur	varchar(20), 
-				@C_NumDNI		varchar(20), 
-				@C_CodTipDoc	varchar(5), 
-				@T_ApePaterno	varchar(50), 
-				@T_ApeMaterno	varchar(50), 
-				@T_Nombre		varchar(50), 
-				@C_Sexo			char(1), 
-				@D_FecNac		date, 
 				@C_CodModIng	varchar(2), 
 				@C_AnioIngreso	smallint,
 				@C_RepoCodAlu	varchar(20)
 
 		DECLARE cursor_alumnos_migracion CURSOR FAST_FORWARD
-			FOR SELECT I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, 
-					   T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, I_PersonaID, C_RepoCodAlu
-				  FROM @tbl_alumnos_persona_repo 
-				 WHERE C_AnioIngreso = ISNULL(@C_AnioIng, C_AnioIngreso)
-					   AND C_CodAlu = ISNULL(@C_CodAlu, C_CodAlu)
-
+		 	FOR SELECT PA.I_RowID, C_RcCod, C_CodAlu, C_CodModIng, C_AnioIngreso, C_RepoCodAlu
+				  FROM #tbl_persona_con_id P
+					   INNER JOIN #tbl_alumnos_persona_repo PA ON P.I_PersonaID = PA.I_PersonaID
+				 --WHERE C_AnioIngreso = ISNULL(@C_AnioIng, C_AnioIngreso)
+					--   AND C_CodAlu = ISNULL(@C_CodAlu, C_CodAlu)
 
 		OPEN cursor_alumnos_migracion;
 
-		FETCH NEXT FROM cursor_alumnos_migracion INTO @I_RowID, @C_RcCod, @C_CodAluCur, @C_NumDNI, @C_CodTipDoc, 
-													  @T_ApePaterno, @T_ApeMaterno, @T_Nombre, @C_Sexo, @D_FecNac, 
-													  @C_CodModIng, @C_AnioIngreso, @I_PersonaID, @C_RepoCodAlu
+		FETCH NEXT FROM cursor_alumnos_migracion INTO @I_RowID, @C_RcCod, @C_CodAluCur, @C_CodModIng, @C_AnioIngreso, @C_RepoCodAlu
 						
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
-			IF (@I_PersonaID IS NULL)
-			BEGIN
-
-				INSERT INTO BD_UNFV_Repositorio.dbo.TC_Persona (C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, 
-																D_FecNac, C_Sexo, B_Habilitado, B_Eliminado, I_UsuarioMod, D_FecMod)
-														VALUES (@C_NumDNI, @C_CodTipDoc, @T_ApePaterno, @T_ApeMaterno, @T_Nombre,
-																@D_FecNac, @C_Sexo, 1, 0, @I_UserId, @D_FecProceso)
-
-				SET @I_PersonaID = SCOPE_IDENTITY();
-				SET @I_Insertados_persona = @I_Insertados_persona + 1
-			END
-			ELSE
-			BEGIN 
-
-				UPDATE BD_UNFV_Repositorio.dbo.TC_Persona
-				   SET C_NumDNI	 = @C_NumDNI,
-				   	   C_CodTipDoc	 = @C_CodTipDoc,
-				   	   T_ApePaterno = @T_ApePaterno,
-				   	   T_ApeMaterno = @T_ApeMaterno,
-				   	   T_Nombre	 = @T_Nombre,
-				   	   C_Sexo		 = @C_Sexo,
-				   	   I_UsuarioMod = @I_UserId,
-				   	   D_FecMod	 = @D_FecProceso
-				WHERE I_PersonaID = @I_PersonaID
-
-				SET @I_Actualizados_persona = @I_Actualizados_persona + 1
-			END
-
-			IF (@C_RepoCodAlu IS NULL)
+			IF EXISTS (SELECT I_PersonaID FROM BD_UNFV_Repositorio.dbo.TC_Alumno WHERE C_RcCod = @C_RcCod AND C_CodAlu = @C_CodAluCur)
 			BEGIN
 				UPDATE BD_UNFV_Repositorio.dbo.TC_Alumno
 					SET C_AnioIngreso =  ISNULL(C_AnioIngreso, @C_AnioIngreso),
-						C_CodModIng = ISNULL(C_CodModIng, @C_CodModIng),
-						I_UsuarioMod = @I_UserId,
-						D_FecMod = @D_FecProceso
+						C_CodModIng	  =	 ISNULL(C_CodModIng, @C_CodModIng),
+						I_UsuarioMod  = @I_UserId,
+						D_FecMod	  = @D_FecProceso
 					WHERE
 						C_CodAlu = @C_CodAlu 
-						AND C_RcCod = @C_RcCod
-
-				SET @I_Actualizados_alumno = @I_Actualizados_alumno + 1 
+						AND C_RcCod = @C_RcCod				
 			END
 			ELSE
-			BEGIN 
+			BEGIN
 				INSERT INTO BD_UNFV_Repositorio.dbo.TC_Alumno (C_RcCod, C_CodAlu, I_PersonaID, C_CodModIng, C_AnioIngreso, B_Habilitado, B_Eliminado, I_UsuarioMod, D_FecMod)
-														VALUES (@C_RcCod, @C_CodAluCur, @I_PersonaID, @C_CodModIng, @C_AnioIngreso, 1, 0, @I_UserId, @D_FecProceso)
-
-				SET @I_Insertados_alumno = @I_Insertados_alumno + 1
-				 
+													   VALUES (@C_RcCod, @C_CodAluCur, @I_PersonaID, @C_CodModIng, @C_AnioIngreso, 1, 0, @I_UserId, @D_FecProceso)
 			END
 
-
-			UPDATE TR_Alumnos
-			   SET B_Migrado = 1
-			 WHERE I_RowID = @I_RowID
-
-			PRINT  @C_RcCod + '|' + @C_CodAluCur
-
-			FETCH NEXT FROM cursor_alumnos_migracion INTO @I_RowID, @C_RcCod, @C_CodAluCur, @C_NumDNI, @C_CodTipDoc, 
-														  @T_ApePaterno, @T_ApeMaterno, @T_Nombre, @C_Sexo, @D_FecNac, 
-														  @C_CodModIng, @C_AnioIngreso, @I_PersonaID,@C_RepoCodAlu
-						
+			FETCH NEXT FROM cursor_alumnos_migracion INTO @I_RowID, @C_RcCod, @C_CodAluCur, @C_CodModIng, @C_AnioIngreso, @C_RepoCodAlu
 		END
+		--DECLARE @I_RowID		int, 
+		--		@I_PersonaID	int,
+		--		@C_RcCod		varchar(3),
+		--		@C_CodAluCur	varchar(20), 
+		--		@C_NumDNI		varchar(20), 
 
+
+
+		--		@C_CodTipDoc	varchar(5), 
+		--		@T_ApePaterno	varchar(50), 
+		--		@T_ApeMaterno	varchar(50), 
+		--		@T_Nombre		varchar(50), 
+		--		@C_Sexo			char(1), 
+		--		@D_FecNac		date, 
+		--		@C_CodModIng	varchar(2), 
+		--		@C_AnioIngreso	smallint,
+		--		@C_RepoCodAlu	varchar(20)
+
+		--DECLARE cursor_alumnos_migracion CURSOR FAST_FORWARD
+		--	FOR SELECT I_RowID, C_RcCod, C_CodAlu, C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, 
+		--			   T_Nombre, C_Sexo, D_FecNac, C_CodModIng, C_AnioIngreso, I_PersonaID, C_RepoCodAlu
+		--		  FROM @tbl_alumnos_persona_repo 
+		--		 WHERE C_AnioIngreso = ISNULL(@C_AnioIng, C_AnioIngreso)
+		--			   AND C_CodAlu = ISNULL(@C_CodAlu, C_CodAlu)
+
+
+		--OPEN cursor_alumnos_migracion;
+
+		--FETCH NEXT FROM cursor_alumnos_migracion INTO @I_RowID, @C_RcCod, @C_CodAluCur, @C_NumDNI, @C_CodTipDoc, 
+		--											  @T_ApePaterno, @T_ApeMaterno, @T_Nombre, @C_Sexo, @D_FecNac, 
+		--											  @C_CodModIng, @C_AnioIngreso, @I_PersonaID, @C_RepoCodAlu
+						
+		--WHILE @@FETCH_STATUS = 0
+		--BEGIN
+		--	IF (@I_PersonaID IS NULL)
+		--	BEGIN
+
+		--		INSERT INTO BD_UNFV_Repositorio.dbo.TC_Persona (C_NumDNI, C_CodTipDoc, T_ApePaterno, T_ApeMaterno, T_Nombre, 
+		--														D_FecNac, C_Sexo, B_Habilitado, B_Eliminado, I_UsuarioMod, D_FecMod)
+		--												VALUES (@C_NumDNI, @C_CodTipDoc, @T_ApePaterno, @T_ApeMaterno, @T_Nombre,
+		--														@D_FecNac, @C_Sexo, 1, 0, @I_UserId, @D_FecProceso)
+
+		--		SET @I_PersonaID = SCOPE_IDENTITY();
+		--		SET @I_Insertados_persona = @I_Insertados_persona + 1
+		--	END
+		--	ELSE
+		--	BEGIN 
+
+		--		UPDATE BD_UNFV_Repositorio.dbo.TC_Persona
+		--		   SET C_NumDNI	 = @C_NumDNI,
+		--		   	   C_CodTipDoc	 = @C_CodTipDoc,
+		--		   	   T_ApePaterno = @T_ApePaterno,
+		--		   	   T_ApeMaterno = @T_ApeMaterno,
+		--		   	   T_Nombre	 = @T_Nombre,
+		--		   	   C_Sexo		 = @C_Sexo,
+		--		   	   I_UsuarioMod = @I_UserId,
+		--		   	   D_FecMod	 = @D_FecProceso
+		--		WHERE I_PersonaID = @I_PersonaID
+
+		--		SET @I_Actualizados_persona = @I_Actualizados_persona + 1
+		--	END
+
+		--	IF (@C_RepoCodAlu IS NULL)
+		--	BEGIN
+		--		UPDATE BD_UNFV_Repositorio.dbo.TC_Alumno
+		--			SET C_AnioIngreso =  ISNULL(C_AnioIngreso, @C_AnioIngreso),
+		--				C_CodModIng = ISNULL(C_CodModIng, @C_CodModIng),
+		--				I_UsuarioMod = @I_UserId,
+		--				D_FecMod = @D_FecProceso
+		--			WHERE
+		--				C_CodAlu = @C_CodAlu 
+		--				AND C_RcCod = @C_RcCod
+
+		--		SET @I_Actualizados_alumno = @I_Actualizados_alumno + 1 
+		--	END
+		--	ELSE
+		--	BEGIN 
+		--		INSERT INTO BD_UNFV_Repositorio.dbo.TC_Alumno (C_RcCod, C_CodAlu, I_PersonaID, C_CodModIng, C_AnioIngreso, B_Habilitado, B_Eliminado, I_UsuarioMod, D_FecMod)
+		--												VALUES (@C_RcCod, @C_CodAluCur, @I_PersonaID, @C_CodModIng, @C_AnioIngreso, 1, 0, @I_UserId, @D_FecProceso)
+
+		--		SET @I_Insertados_alumno = @I_Insertados_alumno + 1
+				 
+		--	END
+
+
+		--	UPDATE TR_Alumnos
+		--	   SET B_Migrado = 1
+		--	 WHERE I_RowID = @I_RowID
+
+		--	PRINT  @C_RcCod + '|' + @C_CodAluCur
+
+		--	FETCH NEXT FROM cursor_alumnos_migracion INTO @I_RowID, @C_RcCod, @C_CodAluCur, @C_NumDNI, @C_CodTipDoc, 
+		--												  @T_ApePaterno, @T_ApeMaterno, @T_Nombre, @C_Sexo, @D_FecNac, 
+		--												  @C_CodModIng, @C_AnioIngreso, @I_PersonaID,@C_RepoCodAlu
+						
+		--END
+
+		DEALLOCATE cursor_alumnos_migracion
 
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1

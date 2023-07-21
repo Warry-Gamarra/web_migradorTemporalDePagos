@@ -212,8 +212,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                 result.Message += $"<p>Año {anio}:<p><p class=\"alert alert-{response.Color}\">{response.Message} <i class=\"{response.Icon}\"></i></p>";
             }
 
-            return result.IsDone ? result.Success(false) : result.Error(false)
-;
+            return result.IsDone ? result.Success(false) : result.Error(false);
         }
     }
 }
