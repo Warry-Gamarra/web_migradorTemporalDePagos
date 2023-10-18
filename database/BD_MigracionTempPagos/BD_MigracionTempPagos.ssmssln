@@ -5,13 +5,16 @@ VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{4F2E2C19-372F-40D8-9FA7-9D2138C6997A}") = "scripts", "scripts\scripts.ssmssqlproj", "{42B3937E-E693-47F7-B58B-A5112F6089EA}"
 EndProject
+Project("{4F2E2C19-372F-40D8-9FA7-9D2138C6997A}") = "migracionCuded", "migracionCuded\migracionCuded.ssmssqlproj", "{268D78F0-5F08-4D34-ACAF-1BC10BD2BFF5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Default|Default = Default|Default
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7DC1A526-7921-43CC-A1B0-3D29413FDB04}.Default|Default.ActiveCfg = Default
 		{42B3937E-E693-47F7-B58B-A5112F6089EA}.Default|Default.ActiveCfg = Default
+		{268D78F0-5F08-4D34-ACAF-1BC10BD2BFF5}.Default|Default.ActiveCfg = Default
+		{65FE57CA-52C2-4E23-B704-B815E2587CD6}.Default|Default.ActiveCfg = Default
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
