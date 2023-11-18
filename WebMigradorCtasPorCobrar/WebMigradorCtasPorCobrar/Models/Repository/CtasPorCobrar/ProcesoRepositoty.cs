@@ -19,7 +19,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar
             {
                 using (var _dbConnection = new SqlConnection(Databases.CtasPorCobrarConnectionString))
                 {
-                    command = @"SELECT p.I_ProcesoID, cp.I_CatPagoID, cp.T_CatPagoDesc, per.T_OpcionDesc AS T_PeriodoDesc, p.I_Periodo, per.T_OpcionCod AS C_PeriodoCod,  
+                    command = @"SELECT DISTINCT p.I_ProcesoID, cp.I_CatPagoID, cp.T_CatPagoDesc, per.T_OpcionDesc AS T_PeriodoDesc, p.I_Periodo, per.T_OpcionCod AS C_PeriodoCod,  
                                        p.I_Anio, p.D_FecVencto, p.I_Prioridad, p.N_CodBanco, p.T_ProcesoDesc, cp.B_Obligacion, cp.I_Nivel, niv.T_OpcionCod AS C_Nivel, 
 		                               cp.I_TipoAlumno, tipAlu.T_OpcionDesc AS T_TipoAlumno, tipAlu.T_OpcionCod as C_TipoAlumno, 
                                        p.I_MigracionRowID, p.I_MigracionTablaID, cp_des.cuota_pago,  cta.C_NumeroCuenta, p.B_Mora,
