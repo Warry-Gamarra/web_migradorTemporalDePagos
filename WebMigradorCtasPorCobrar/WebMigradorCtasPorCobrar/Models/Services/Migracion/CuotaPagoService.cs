@@ -229,16 +229,18 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
-        public Response MigrarDatosTemporalPagos(Procedencia procedencia)
+        public IEnumerable<Response> MigrarDatosTemporalPagos(Procedencia procedencia)
         {
-            Response result = new Response();
+            List<Response> result = new List<Response>();
             string schemaDb = Schema.SetSchema(procedencia);
 
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
-            result = cuotaPagoRepository.MigrarDataCuotaPagoCtasPorCobrar((int)procedencia, null, null, null);
+            Response result_part = cuotaPagoRepository.MigrarDataCuotaPagoCtasPorCobrar((int)procedencia, null, null, null);
 
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            result.Add(result_part.IsDone ? result_part.Success(false) : result_part.Error(false));
+
+            return result;
         }
 
 

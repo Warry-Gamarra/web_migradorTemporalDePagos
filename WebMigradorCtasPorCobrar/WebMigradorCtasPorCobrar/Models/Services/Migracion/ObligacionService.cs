@@ -233,24 +233,28 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return componentID;
         }
 
-        public Response MigrarDatosTemporalPagos(Procedencia procedencia)
+        public IEnumerable<Response> MigrarDatosTemporalPagos(Procedencia procedencia)
         {
-            Response result = new Response();
-            Response result2 = new Response();
+            List<Response> resultObligaciones = new List<Response>();
+            List<Response> resultPagos = new List<Response>();
+
             string schemaDb = Schema.SetSchema(procedencia);
 
             ObligacionRepository obligacionRepository = new ObligacionRepository();
 
             for (int anio = 2005; anio < 2023; anio++)
             {
-                result = obligacionRepository.MigrarDataObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
-                result2 = obligacionRepository.MigrarDataPagoObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
+                Response responseObl = new Response();
+                Response responsePago = new Response();
 
-                result.Message += "\r\n" + result2.Message + "\r\n";
+                responseObl = obligacionRepository.MigrarDataObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
+                responsePago = obligacionRepository.MigrarDataPagoObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
+
+                resultObligaciones.Add(responseObl);
+                resultPagos.Add(responsePago);
             }
 
-
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            return resultObligaciones;
         }
 
     }

@@ -275,6 +275,9 @@ BEGIN
 				D_FecMigrado = NULL, 
 				B_Migrado = 0
 		 WHERE I_ProcedenciaID = @I_ProcedenciaID
+		       AND B_Migrable = 0
+			   AND B_Migrado = 0
+				
 
 		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
 		SET @B_Resultado = 1
@@ -1093,14 +1096,14 @@ BEGIN
 		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
 	END CATCH
 
-	--IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##NumDoc_Repetidos_sexo_diferente')
-	--BEGIN
-	--	DROP TABLE ##AlumnoPersona_Repositorio
-	--END 
-	--	IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_Persona')
-	--BEGIN
-	--	DROP TABLE ##Alumno_Repetidos_sexo_diferente
-	--END
+	IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##NumDoc_Repetidos_sexo_diferente')
+	BEGIN
+		DROP TABLE ##AlumnoPersona_Repositorio
+	END 
+		IF EXISTS (SELECT * FROM tempdb.INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '##TEMP_Persona')
+	BEGIN
+		DROP TABLE ##Alumno_Repetidos_sexo_diferente
+	END
 END
 GO
 

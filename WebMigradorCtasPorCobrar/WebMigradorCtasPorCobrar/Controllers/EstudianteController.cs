@@ -87,15 +87,23 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
-            Response result = _alumnoServiceMigracion.EjecutarValidaciones(procedencia);
+            IEnumerable<Response> result = _alumnoServiceMigracion.EjecutarValidaciones(procedencia, null);
 
             return PartialView("_ResultadoValidarRegistros", result);
         }
 
-        [HttpPost]
-        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia, string codAlu, Int16? anioIngreso)
+
+        public ActionResult MigrarDatosAluTPagos(int procedencia, string codAlu)
         {
-            Response result = _alumnoServiceMigracion.MigrarDatosTemporalPagos(procedencia);
+            Response result = _alumnoServiceMigracion.MigrarDatosTemporalPagosCodAlu(procedencia, codAlu);
+
+            return PartialView("_ResultadoMigrarRegistrosModal", result);
+        }
+
+        [HttpPost]
+        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia, int? anioIngreso)
+        {
+            IEnumerable<Response> result = _alumnoServiceMigracion.MigrarDatosTemporalPagos(procedencia, anioIngreso);
 
             return PartialView("_ResultadoMigrarRegistros", result);
         }

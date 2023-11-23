@@ -75,7 +75,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             tipo_obsID = tipo_obsID.HasValue ? tipo_obsID : 0;
             var data = AlumnoRepository.ObtenerReporteObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Alumnos);
 
-            var sheet = excel_book.Worksheets.Add( data,"Observaciones");
+            var sheet = excel_book.Worksheets.Add(data, "Observaciones");
             sheet.ColumnsUsed().AdjustToContents();
 
             excel_book.SaveAs(result);
@@ -86,32 +86,33 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
         public Response Save(Alumno alumno, Procedencia procedencia)
         {
-            Response result = new Response();
+            Response result;
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
-            alumnoRepository.InicializarEstadoValidacionAlumno((int)procedencia);
+            alumnoRepository.InicializarEstadoValidacionPorAlumno(alumno.I_RowID);
 
             alumno.I_ProcedenciaID = (byte)procedencia;
             result = AlumnoRepository.Save(alumno);
 
-            alumnoRepository.ValidarCaracteresEspeciales((int)procedencia);
-            alumnoRepository.ValidarCodigoCarreraAlumno((int)procedencia);
-            alumnoRepository.ValidarCodigosAlumnoRepetidos((int)procedencia);
-            alumnoRepository.ValidarAnioIngresoAlumno((int)procedencia);
+            alumnoRepository.ValidarCaracteresEspecialesPorAlumno(alumno.I_RowID);
+            alumnoRepository.ValidarCodigoCarreraAlumno(alumno.I_RowID);
+            alumnoRepository.ValidarCodigosAlumnoRepetidosPorAlumno(alumno.I_RowID);
+            alumnoRepository.ValidarAnioIngresoPorAlumno(alumno.I_RowID);
 
-            alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona((int)procedencia);
-            alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersona((int)procedencia);
-            alumnoRepository.ValidarCodigosAlumnoRemovidos((int)procedencia);
-            alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo((int)procedencia);
-            alumnoRepository.ValidarSexoDiferenteMismoAlumnoRepo((int)procedencia);
-            alumnoRepository.ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo((int)procedencia);
+            alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaPorAlumno(alumno.I_RowID);
+            alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersonaPorAlumno(alumno.I_RowID);
+            alumnoRepository.ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepoPorAlumno(alumno.I_RowID);
+            alumnoRepository.ValidarCodigosAlumnoRemovidosPorAlumno(alumno.I_RowID);
+            alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepoPorAlumno(alumno.I_RowID);
+            alumnoRepository.ValidarSexoDiferenteMismoAlumnoRepoPorAlumno(alumno.I_RowID);
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
+
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {
-            Response result = new Response();
+            Response result;
             string schemaDb = Schema.SetSchema(procedencia);
 
             AlumnoRepository alumnoRepository = new AlumnoRepository();
@@ -121,98 +122,300 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
-        public Response EjecutarValidaciones(Procedencia procedencia)
-        {
-            Response result = new Response();
 
+        public IEnumerable<Response> EjecutarValidaciones(Procedencia procedencia, int? aluRowId)
+        {
+            List<Response> result = new List<Response>();
+            int procedenciaId = (int)procedencia;
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
-            Response result_InicializarEstados = alumnoRepository.InicializarEstadoValidacionAlumno((int)procedencia);
-            Response result_CaracteresEspeciales = alumnoRepository.ValidarCaracteresEspeciales((int)procedencia);
-            Response result_CodigoCarreraAlumno = alumnoRepository.ValidarCodigoCarreraAlumno((int)procedencia);
-            Response result_CodigosAlumnoRepetidos = alumnoRepository.ValidarCodigosAlumnoRepetidos((int)procedencia);
-            Response result_AnioIngresoAlumno = alumnoRepository.ValidarAnioIngresoAlumno((int)procedencia);
+            alumnoRepository.InicializarEstadoValidacionAlumno(procedenciaId);
 
-            Response result_CorrespondenciaNumDoc = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona((int)procedencia);
-            Response result_SexoDiferenteMismoDoc = alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersona((int)procedencia);
-            Response result_DniDiferenteMismoCodAlu = alumnoRepository.ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo((int)procedencia);
-            Response result_CodigosAlumnoRemovidos = alumnoRepository.ValidarCodigosAlumnoRemovidos((int)procedencia);
+            result.Add(ValidarCaracteresEspeciales(procedenciaId, aluRowId));
+            result.Add(ValidarCodigoCarreraAlumno(procedenciaId, aluRowId));
+            result.Add(ValidarCodigosAlumnoRepetidos(procedenciaId, aluRowId));
+            result.Add(ValidarAnioIngresoAlumno(procedenciaId, aluRowId));
+            result.Add(ValidarCorrespondenciaNumDocumentoPersona(procedenciaId, aluRowId));
+            result.Add(ValidarSexoDiferenteMismoDocumentoPersona(procedenciaId, aluRowId));
+            result.Add(ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo(procedenciaId, aluRowId));
+            result.Add(ValidarCodigosAlumnoRemovidos(procedenciaId, aluRowId));
+            result.Add(ValidarCorrespondenciaNumDocumentoPersonaRepo(procedenciaId, aluRowId));
+            result.Add(ValidarSexoDiferenteMismoAlumnoRepo(procedenciaId, aluRowId));
 
-            Response result_CorrespondenciaNumDocRepo = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo((int)procedencia);
-            Response result_SexoDiferenteMismoDocRepo = alumnoRepository.ValidarSexoDiferenteMismoAlumnoRepo((int)procedencia);
-
-            result.IsDone = result_CaracteresEspeciales.IsDone &&
-                            result_CodigoCarreraAlumno.IsDone &&
-                            result_CodigosAlumnoRepetidos.IsDone &&
-                            result_AnioIngresoAlumno.IsDone &&
-                            result_CorrespondenciaNumDoc.IsDone &&
-                            result_SexoDiferenteMismoDoc.IsDone &&
-                            result_DniDiferenteMismoCodAlu.IsDone &&
-                            result_SexoDiferenteMismoDocRepo.IsDone;
-
-            result.Message = $"    <dl class=\"row text-justify pt-3\">" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por caracteres especiales :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_CaracteresEspeciales.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por códigos de carrera :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_CodigoCarreraAlumno.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por códigos de alumno repetidos :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_CodigosAlumnoRepetidos.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Años de ingreso :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_AnioIngresoAlumno.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Número de documento :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_CorrespondenciaNumDoc.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Número de documento :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_DniDiferenteMismoCodAlu.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Número de documento Repositorio :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_CorrespondenciaNumDocRepo.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Sexo diferente :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_SexoDiferenteMismoDoc.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Sexo diferente con el repositorio :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_SexoDiferenteMismoDocRepo.Message}</p>" +
-                             $"        </dd>" +
-                             $"    </dl>";
-
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            return result;
         }
 
 
-        public  Response MigrarDatosTemporalPagos(Procedencia procedencia)
+        private Response ValidarCaracteresEspeciales(int procedencia, int? aluRowId)
         {
-            Response result = new Response() { IsDone = true };
-
-            string schemaDb = Schema.SetSchema(procedencia);
-
+            Response response;
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
-            var aniosIngreso = AlumnoRepository.Obtener((int)procedencia).Select(x => x.C_AnioIngreso).Distinct().OrderBy(x => x);
-
-            foreach (var anio in aniosIngreso)
+            if (aluRowId.HasValue)
             {
-                Response response = alumnoRepository.MigrarDataAlumnosUnfvRepositorio((int)procedencia, null, anio);
-                response = response.IsDone ? response.Success(false) : response.Error(false);
-
-                result.IsDone = result.IsDone && response.IsDone;
-                result.Message += $"<p>Año {anio}:<p><p class=\"alert alert-{response.Color}\">{response.Message} <i class=\"{response.Icon}\"></i></p>";
+                response = alumnoRepository.ValidarCaracteresEspecialesPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarCaracteresEspeciales(procedencia);
             }
 
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por caracteres especiales";
+            response.Message += " registros encontrados";
+
+            return response;
         }
+
+        private Response ValidarCodigoCarreraAlumno(int procedencia, int? aluRowId)
+        {
+            Response response;
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            if (aluRowId.HasValue)
+            {
+                response = alumnoRepository.ValidarCodigoCarreraPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarCodigoCarreraAlumno(procedencia);
+            }
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por códigos de carrera";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarCodigosAlumnoRepetidos(int procedencia, int? aluRowId)
+        {
+            Response response;
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            if (aluRowId.HasValue)
+            {
+                response = alumnoRepository.ValidarCodigosAlumnoRepetidosPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarCodigosAlumnoRepetidos(procedencia);
+            }
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por códigos de alumno repetidos";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarAnioIngresoAlumno(int procedencia, int? aluRowId)
+        {
+            Response response;
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            if (aluRowId.HasValue)
+            {
+                response = alumnoRepository.ValidarAnioIngresoPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarAnioIngresoAlumno(procedencia);
+            }
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por Años de ingreso";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarCorrespondenciaNumDocumentoPersona(int procedencia, int? aluRowId)
+        {
+            Response response;
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            if (aluRowId.HasValue)
+            {
+                response = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona(procedencia);
+            }
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por Número de documento";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarSexoDiferenteMismoDocumentoPersona(int procedencia, int? aluRowId)
+        {
+            Response response;
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            if (aluRowId.HasValue)
+            {
+                response = alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersonaPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersona(procedencia);
+            }
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por presentar diferente cod_sexo para el mismo num_doc";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarCodigosAlumnoRemovidos(int procedencia, int? aluRowId)
+        {
+            Response response;
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            if (aluRowId.HasValue)
+            {
+                response = alumnoRepository.ValidarCodigosAlumnoRemovidosPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarCodigosAlumnoRemovidos(procedencia);
+            }
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por estar con estado eliminado";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarCorrespondenciaNumDocumentoPersonaRepo(int procedencia, int? aluRowId)
+        {
+            Response response;
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            if (aluRowId.HasValue)
+            {
+                response = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepoPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo(procedencia);
+            }
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por Número de documento en Repositorio";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarSexoDiferenteMismoAlumnoRepo(int procedencia, int? aluRowId)
+        {
+            Response response;
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            if (aluRowId.HasValue)
+            {
+                response = alumnoRepository.ValidarSexoDiferenteMismoAlumnoRepoPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarSexoDiferenteMismoAlumnoRepo(procedencia);
+            }
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por sexo diferente para el mismo codigo de alumno en repositorio";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo(int procedencia, int? aluRowId)
+        {
+            Response response;
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            if (aluRowId.HasValue)
+            {
+                response = alumnoRepository.ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepoPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo(procedencia);
+            }
+
+            response = response.IsDone? response.Success(false) : response.Error(false);
+            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por diferente num_doc para el mismo alumno en repositorio";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+
+        public IEnumerable<Response> MigrarDatosTemporalPagos(Procedencia procedencia, int? anio)
+        {
+            List<Response> result = new List<Response>();
+            int int_procedencia = (int)procedencia;
+            string schemaDb = Schema.SetSchema(procedencia);
+
+            if (anio.HasValue)
+            {
+                result.Add(MigrarDatosTemporalPagosAnio(int_procedencia, anio.Value));
+
+                return result;
+            }
+
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            var aniosIngreso = AlumnoRepository.Obtener(int_procedencia).Select(x => x.C_AnioIngreso).Distinct().OrderBy(x => x);
+
+            foreach (var anioIngreso in aniosIngreso)
+            {
+                Response response = MigrarDatosTemporalPagosAnio((int)procedencia, anioIngreso.Value);
+                response.CurrentID = anioIngreso.ToString();
+
+                result.Add(response);
+
+            }
+
+            return result;
+        }
+
+
+        public Response MigrarDatosTemporalPagosCodAlu(int procedencia, string codAlu)
+        {
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            Response result = alumnoRepository.MigrarDataAlumnosUnfvRepositorioCodAlu(procedencia, codAlu);
+            result = result.IsDone ? result.Success(false) : result.Error(false);
+
+            return result;
+        }
+
+        public Response MigrarDatosTemporalPagosAnio(int procedencia, int anioIngreso)
+        {            
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            Response result = alumnoRepository.MigrarDataAlumnosUnfvRepositorioAnio(procedencia, anioIngreso);
+            result = result.IsDone ? result.Success(false) : result.Error(false);
+
+            return result;
+        }
+
     }
 }

@@ -28,10 +28,10 @@
         columns.Add(c => c.T_Nombre).Titled("Nombre").Filterable(true);
         columns.Add(c => c.C_NumDNI).Titled("Num. Doc.").Filterable(true);
         columns.Add(c => c.B_ExistsDestino).Css("text-center").Encoded(false).Sanitized(false)
-               .RenderValueAs(model => model.B_ExistsDestino ? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>"): Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
+               .RenderValueAs(model => model.B_ExistsDestino ? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>") : Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
                .Titled("Unfv Repo").Filterable(true);
         columns.Add(c => c.B_Migrable).Css("text-center").Encoded(false).Sanitized(false)
-               .RenderValueAs(model => model.B_Migrable? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>"): Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
+               .RenderValueAs(model => model.B_Migrable ? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>") : Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
                .Titled("Migrable").Filterable(true);
         columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false)
                .RenderValueAs(model => model.B_Migrado ? Html.Raw("<i class=\"fa fa-check-circle text-success\"></i>") : Html.Raw("<i class=\"fa fa-times-circle text-danger\"></i>"))
@@ -42,8 +42,11 @@
                      .RenderValueAs(model => model.B_Migrable ?
                                             Html.Raw("")
                                             : Html.Raw($"<a href=\"{ Url.Action("Observaciones", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\"><i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span></a>"));
-    }
-    ).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
+        columns.Add().Css("text-right").Encoded(false).Sanitized(false)
+                     .RenderValueAs(model => model.B_Migrable && !model.B_Migrado ?
+                                            Html.Raw($"<a href=\"{ Url.Action("MigrarDatosAluTPagos", "Estudiante", new { procedencia = model.I_ProcedenciaID, codAlu = model.C_CodAlu, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-exchange\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Migrar</span></a>")
+                                                : Html.Raw(""));
+    }).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
 </div>
 
 

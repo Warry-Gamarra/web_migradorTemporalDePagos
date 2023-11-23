@@ -143,7 +143,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
         {
-            Response result = _obligacionServiceMigracion.MigrarDatosTemporalPagos(procedencia);
+            IEnumerable<Response> result = _obligacionServiceMigracion.MigrarDatosTemporalPagos(procedencia);
 
             return PartialView("_ResultadoMigrarRegistros", result);
         }

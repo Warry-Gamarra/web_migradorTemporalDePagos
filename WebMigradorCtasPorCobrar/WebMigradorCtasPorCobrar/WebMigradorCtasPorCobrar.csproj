@@ -554,6 +554,7 @@
     <Content Include="Views\DetalleObligacion\_EditarDetalleObligacion.cshtml" />
     <Content Include="Views\Obligaciones\_ValidarRegistrosObligacion.cshtml" />
     <Content Include="Views\Obligaciones\_MigrarRegistrosObligacion.cshtml" />
+    <Content Include="Views\Shared\_ResultadoMigrarRegistrosModal.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
