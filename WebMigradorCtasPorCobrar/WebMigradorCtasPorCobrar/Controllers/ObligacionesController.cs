@@ -8,6 +8,7 @@ using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
+using WebMigradorCtasPorCobrar.Models.ViewModels;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -132,9 +133,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
 
         [HttpPost]
-        public ActionResult ValidarRegistros(int? id, Procedencia procedencia, PeriodosValidacion periodo)
+        public ActionResult ValidarRegistros(Procedencia procedencia, PeriodosValidacion periodo)
         {
-            Response result = _obligacionServiceMigracion.EjecutarValidaciones(procedencia, id, periodo);
+            IEnumerable<Response> result = _obligacionServiceMigracion.EjecutarValidaciones(procedencia, periodo);
 
             return PartialView("_ResultadoValidarRegistros", result);
         }
@@ -148,6 +149,12 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_ResultadoMigrarRegistros", result);
         }
 
+        public ActionResult MigrarObligacion(int id)
+        {
+            IEnumerable<Response> result = _obligacionServiceMigracion.MigrarDatosTemporalPagosObligacionID(id);
+
+            return PartialView("_ResultadoListMigrarRegistrosModal", result);
+        }
 
         public ActionResult Observaciones(int id)
         {
@@ -181,8 +188,27 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             model.D_FecActualiza = DateTime.Now;
             model.B_Actualizado = true;
+            Response result = new Response();
 
-            var result = _obligacionServiceMigracion.Save(model, tipoObserv);
+            if (ModelState.IsValid)
+            {
+
+                result = _obligacionServiceMigracion.Save(model, tipoObserv);
+            }
+            else
+            {
+                string details = "";
+
+                foreach (ModelState modelState in ViewData.ModelState.Values)
+                {
+                    foreach (ModelError error in modelState.Errors)
+                    {
+                        details += error.ErrorMessage + " / ";
+                    }
+                }
+
+                result.Error("Ha ocurrido un error con el envio de datos. " + details, false);
+            }
 
             ViewBag.Reload = true;
 

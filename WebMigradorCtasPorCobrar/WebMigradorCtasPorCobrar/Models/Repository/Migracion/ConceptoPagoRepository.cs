@@ -528,6 +528,47 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
+        public Response Save(ConceptoPago conceptoPago)
+        {
+            Response result = new Response();
+            int rowCount = 0;
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri " +
+                                                  "SET I_TipPerID = @I_TipPerID, " +
+                                                      "P = @T_PerCod, " +
+                                                      "B_Actualizado = 1, " +
+                                                      "B_MantenerPeriodo = 1, " +
+                                                      "D_FecActualiza = GETDATE() " +
+                                                  "WHERE I_RowID = @I_RowID;",
+                                                  new
+                                                  {
+                                                      I_TipPerID = conceptoPago.I_TipPerID,
+                                                      I_RowID = conceptoPago.I_RowID,
+                                                      T_PerCod = conceptoPago.P
+                                                  },
+                                                  commandType: CommandType.Text);
+
+                    if (rowCount > 0)
+                    {
+                        result.IsDone = true;
+                        result.Message = "Periodo actualizado correctamente";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
         public Response SavePeriodo(ConceptoPago conceptoPago)
         {
             Response result = new Response();

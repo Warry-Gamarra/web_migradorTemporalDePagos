@@ -28,10 +28,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         {
             if (tipo_obsID.HasValue)
             {
-                return ConceptoPagoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Pri);
+                return ObtenerConRepo(ConceptoPagoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Pri), procedencia);
             }
 
-            return ConceptoPagoRepository.Obtener((int)procedencia);
+            return ObtenerConRepo(ConceptoPagoRepository.Obtener((int)procedencia), procedencia);
         }
 
         private IEnumerable<ConceptoPago> ObtenerConRepo(IEnumerable<ConceptoPago> conceptosPago, Procedencia procedencia)
@@ -260,7 +260,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                 case ConceptoPagoObs.NoObligacion:
                     result = conceptoPagoRepository.SaveEstadoObligacion(conceptoPago);
                     break;
-
+                default:
+                    result = conceptoPagoRepository.Save(conceptoPago);
+                    break;
             }
 
             conceptoPagoRepository.ValidarDuplicadoConceptosPago(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);

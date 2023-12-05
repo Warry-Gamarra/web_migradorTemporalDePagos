@@ -155,6 +155,8 @@
     <Compile Include="Models\Databases.cs" />
     <Compile Include="Models\Entities\Config\Password.cs" />
     <Compile Include="Models\Entities\Config\User.cs" />
+    <Compile Include="Models\Entities\CtasPorCobrar\TR_ObligacionAluDet.cs" />
+    <Compile Include="Models\Entities\CtasPorCobrar\TR_ObligacionAluCab.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\VW_Proceso.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\TC_CatalogoOpcion.cs" />
     <Compile Include="Models\Entities\CtasPorCobrar\TC_CategoriaPago.cs" />
@@ -175,6 +177,7 @@
     <Compile Include="Models\Helpers\CtasPorCobrar.cs" />
     <Compile Include="Models\Helpers\Tablas.cs" />
     <Compile Include="Models\Repository\Config\UserServices.cs" />
+    <Compile Include="Models\Repository\CtasPorCobrar\ObligacionesRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\CatalogoOpcionRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\CarreraProfesionalRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\CategoriaPagoRepository.cs" />
@@ -208,6 +211,7 @@
     <Compile Include="Models\Repository\UnfvRepositorio\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\UnfvRepositorio\PersonaRepository.cs" />
     <Compile Include="Models\Services\CtasPorCobrar\ConceptoPagoServices.cs" />
+    <Compile Include="Models\Services\CtasPorCobrar\ObligacionServices.cs" />
     <Compile Include="Models\Services\CtasPorCobrar\ProcesoServices.cs" />
     <Compile Include="Models\Services\CtasPorCobrar\EquivalenciasServices.cs" />
     <Compile Include="Models\Services\Migracion\AlumnoService.cs" />
@@ -222,6 +226,7 @@
     <Compile Include="Models\Services\TemporalPagos\AlumnoService.cs" />
     <Compile Include="Models\Services\TemporalPagos\ObligacionService.cs" />
     <Compile Include="Models\Services\UnfvRepositorio\AlumnoService.cs" />
+    <Compile Include="Models\ViewModels\ConceptoPagoViewModel.cs" />
     <Compile Include="Models\ViewModels\CuotaPagoViewModel.cs" />
     <Compile Include="Models\ViewModels\DetalleMigracionCuotaPago.cs" />
     <Compile Include="Models\ViewModels\EstudianteViewModel.cs" />
@@ -555,6 +560,9 @@
     <Content Include="Views\Obligaciones\_ValidarRegistrosObligacion.cshtml" />
     <Content Include="Views\Obligaciones\_MigrarRegistrosObligacion.cshtml" />
     <Content Include="Views\Shared\_ResultadoMigrarRegistrosModal.cshtml" />
+    <Content Include="Views\Shared\_ResultadoListMigrarRegistrosModal.cshtml" />
+    <Content Include="Views\ConceptoPago\_DatosConceptoPago.cshtml" />
+    <Content Include="Views\ConceptoPago\_EditarConceptoPago.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

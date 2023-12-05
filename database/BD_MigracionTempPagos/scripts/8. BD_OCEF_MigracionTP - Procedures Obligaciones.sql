@@ -730,57 +730,6 @@ END
 GO
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarObligacionesCtasPorCobrar')
 	DROP PROCEDURE [dbo].[USP_IU_MigrarObligacionesCtasPorCobrar]
 GO
@@ -825,22 +774,22 @@ BEGIN
 	BEGIN TRY 
 		DECLARE @I_RowID  int
 								
-		--SELECT * 
-		--INTO #Numeric_Year_Ec_Obl
-		--FROM TR_Ec_Obl
-		--WHERE ISNUMERIC(ANO) = 1
-		--	  AND I_ProcedenciaID = @I_ProcedenciaID
+		SELECT * 
+		INTO #Numeric_Year_Ec_Obl
+		FROM TR_Ec_Obl
+		WHERE ISNUMERIC(ANO) = 1
+			  AND I_ProcedenciaID = @I_ProcedenciaID
 
-		--MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno AS TRG
-		--USING (SELECT DISTINCT Cod_alu, Cod_rc, Ano, P, I_Periodo FROM  #Numeric_Year_Ec_Obl
-		--		WHERE CAST(Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin) AS SRC
-		--ON TRG.C_CodAlu = SRC.cod_alu 
-		--   AND TRG.C_CodRc = SRC.cod_rc 
-		--   AND TRG.I_Anio  = CAST(SRC.ano AS int) 
-		--   AND TRG.I_Periodo = SRC.I_Periodo
-		--WHEN NOT MATCHED THEN
-		--	INSERT (C_CodRc, C_CodAlu, I_Anio, I_Periodo, C_EstMat, C_Ciclo, B_Ingresante, I_CredDesaprob, B_Habilitado, B_Eliminado, B_Migrado)
-		--	VALUES (SRC.Cod_rc, SRC.Cod_alu, CAST(SRC.Ano as int), SRC.I_Periodo, 'S', NULL, NULL, NULL, 1, 0, 1);
+		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno AS TRG
+		USING (SELECT DISTINCT Cod_alu, Cod_rc, Ano, P, I_Periodo FROM  #Numeric_Year_Ec_Obl
+				WHERE CAST(Ano AS int) BETWEEN @I_AnioIni AND @I_AnioFin) AS SRC
+		ON TRG.C_CodAlu = SRC.cod_alu 
+		   AND TRG.C_CodRc = SRC.cod_rc 
+		   AND TRG.I_Anio  = CAST(SRC.ano AS int) 
+		   AND TRG.I_Periodo = SRC.I_Periodo
+		WHEN NOT MATCHED THEN
+			INSERT (C_CodRc, C_CodAlu, I_Anio, I_Periodo, C_EstMat, C_Ciclo, B_Ingresante, I_CredDesaprob, B_Habilitado, B_Eliminado, B_Migrado)
+			VALUES (SRC.Cod_rc, SRC.Cod_alu, CAST(SRC.Ano as int), SRC.I_Periodo, 'S', NULL, NULL, NULL, 1, 0, 1);
 
 		
 		SET @I_RowID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab')
@@ -1006,7 +955,7 @@ BEGIN
 	)
 
 	BEGIN TRANSACTION;
-
+	BEGIN TRY
 		DECLARE @I_RowID  int
 					
 		--SELECT * INTO #temp_obl_migrados FROM TR_Ec_Obl 

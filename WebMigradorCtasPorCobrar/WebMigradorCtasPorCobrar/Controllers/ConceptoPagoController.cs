@@ -152,6 +152,23 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
+        public ActionResult VerDatos(int id, Procedencia procedencia)
+        {
+            var model = new ConceptoPagoViewModel()
+            {
+                ConceptoPagoMigracion = _conceptoPagoServiceMigracion.Obtener(id),
+            };
+
+            var conceptoPagoCtasCobrar = _conceptoPagoServiceCtasPorCobrar.Obtener(procedencia)
+                                                                          .FirstOrDefault(x => x.I_ConcPagID == model.ConceptoPagoMigracion.Id_cp);
+
+            model.ConceptoPagoCtasCobrar = conceptoPagoCtasCobrar ?? new Models.Entities.CtasPorCobrar.TI_ConceptoPago();
+
+            return PartialView("_DatosConceptoPago", model);
+        }
+
+
+
         public ActionResult Editar(int id, int obsID)
         {
             Response viewResult = ObtenerVistaEdicion(obsID);
@@ -163,9 +180,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
             else
             {
                 var model = _conceptoPagoServiceMigracion.ObtenerConRelaciones(id);
-
+                var observacion = _observacionService.ObtenerCatalogo(obsID);
                 ViewBag.TipoObserv = obsID.ToString();
-                ViewBag.Observacion = _observacionService.ObtenerCatalogo(obsID).T_ObservDesc;
+                ViewBag.Observacion = observacion == null ? "" : observacion.T_ObservDesc;
                 ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
                                                   "I_OpcionID", "T_OpcionDesc", model.I_TipPerID);
 
@@ -175,7 +192,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
                 ViewBag.Grados = new SelectList(_equivalenciasServices.ObtenerTipoGrado(),
                                                   "I_OpcionID", "T_OpcionDesc", model.I_TipGradoID);
 
-                ViewBag.Procedencia = new SelectList(ListEnums.Procedencias(), "Value", "Descripcion", 
+                ViewBag.Procedencia = new SelectList(ListEnums.Procedencias(), "Value", "Descripcion",
                                                      model.I_ProcedenciaID);
 
                 return PartialView(viewResult.CurrentID, model);
@@ -237,6 +254,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
                     break;
                 case ConceptoPagoObs.NoObligacion:
                     viewName = "_EditarEsObligacion";
+                    break;
+                default:
+                    viewName = "_EditarConceptoPago";
                     break;
             }
 

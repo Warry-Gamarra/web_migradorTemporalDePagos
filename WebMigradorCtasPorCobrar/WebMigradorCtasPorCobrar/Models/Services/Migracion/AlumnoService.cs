@@ -161,7 +161,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
-            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
             response.CurrentID = "Observados por caracteres especiales";
             response.Message += " registros encontrados";
 
@@ -183,7 +184,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
-            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
             response.CurrentID = "Observados por códigos de carrera";
             response.Message += " registros encontrados";
 
@@ -205,7 +207,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
-            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
             response.CurrentID = "Observados por códigos de alumno repetidos";
             response.Message += " registros encontrados";
 
@@ -227,7 +230,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
-            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
             response.CurrentID = "Observados por Años de ingreso";
             response.Message += " registros encontrados";
 
@@ -249,7 +253,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
-            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
             response.CurrentID = "Observados por Número de documento";
             response.Message += " registros encontrados";
 
@@ -271,7 +276,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
-            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
             response.CurrentID = "Observados por presentar diferente cod_sexo para el mismo num_doc";
             response.Message += " registros encontrados";
 
@@ -293,7 +299,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
-            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
             response.CurrentID = "Observados por estar con estado eliminado";
             response.Message += " registros encontrados";
 
@@ -315,7 +322,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
-            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
             response.CurrentID = "Observados por Número de documento en Repositorio";
             response.Message += " registros encontrados";
 
@@ -337,7 +345,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
-            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
             response.CurrentID = "Observados por sexo diferente para el mismo codigo de alumno en repositorio";
             response.Message += " registros encontrados";
 
@@ -359,7 +368,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             response = response.IsDone? response.Success(false) : response.Error(false);
-            response = int.Parse(response.Message) == 0 ? response : response.Warning(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
             response.CurrentID = "Observados por diferente num_doc para el mismo alumno en repositorio";
             response.Message += " registros encontrados";
 

@@ -1,45 +1,33 @@
 USE BD_OCEF_MigracionTP
 GO
 
-
--- ACTUALIZAR ESTADO DE REGISTROS MIGRADOS DEL TEMPORAL DEL PAGOS.
-
-UPDATE OBL
-   SET OBL.B_Migrable = 1, 
-	   OBL.B_Migrado = 1,
-	   OBL.D_FecMigrado = TBL.D_FecCre
-  FROM TR_Ec_Obl OBL
-	   INNER JOIN (SELECT o.* FROM BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab o
-			INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_Proceso p on o.I_ProcesoID = p.I_ProcesoID
-			WHERE o.B_Migrado = 1) TBL ON OBL.I_RowID = TBL.I_MigracionRowID AND TBL.I_MigracionTablaID = 5
-GO
-
--- ACTUALIZAR CUOTA PROCEDENCIA
-
-DECLARE @row_id  int
-
-SET @row_id = (SELECT I_RowID FROM  TR_Ec_Obl WHERE Cod_alu = '0009662048' AND Cuota_pago = 142 AND Ano = '2009' AND I_ProcedenciaID = 3)
-DELETE TI_ObservacionRegistroTabla WHERE I_FilaTablaID = @row_id AND I_TablaID = 5 
-
-UPDATE TR_Ec_Obl 
-SET I_ProcedenciaID = 2
-WHERE I_RowID = @row_id
+UPDATE TC_CatalogoObservacion SET I_TablaID = 1  WHERE I_ObservID IN (1, 2, 21, 22, 23, 30, 31, 41, 47, 48)
+UPDATE TC_CatalogoObservacion SET I_TablaID = 2  WHERE I_ObservID IN (3, 4, 5, 6, 7, 8, 9, 10, 11)
+UPDATE TC_CatalogoObservacion SET I_TablaID = 3  WHERE I_ObservID IN (12, 13, 14, 16, 18, 19, 20, 46)
+UPDATE TC_CatalogoObservacion SET I_TablaID = 4  WHERE I_ObservID IN (15, 17, 25, 33, 35, 42, 43, 44)
+UPDATE TC_CatalogoObservacion SET I_TablaID = 5  WHERE I_ObservID IN (24, 26, 27, 28, 29, 32, 34, 36, 37, 38, 39, 40, 49)
 
 
-SET @row_id = (SELECT I_RowID FROM  TR_Ec_Obl WHERE Cod_alu = '2002319959' AND Cuota_pago = 133 AND Ano = '2009' AND I_ProcedenciaID = 3)
-DELETE TI_ObservacionRegistroTabla WHERE I_FilaTablaID = @row_id AND I_TablaID = 5 
+UPDATE TC_CatalogoObservacion
+   SET T_ObservDesc = 'Año del concepto en el detalle no coincide con año del concepto en cp_pri'
+ WHERE I_ObservID = 43
 
-UPDATE TR_Ec_Obl 
-SET I_ProcedenciaID = 2
-WHERE I_RowID = @row_id
+UPDATE TC_CatalogoObservacion
+   SET T_ObservDesc = 'Periodo del concepto en el detalle no coincide con periodo del concepto en cp_pri'
+ WHERE I_ObservID = 44
+
+UPDATE TC_CatalogoObservacion
+   SET T_ObservDesc = 'El año del concepto en el detalle de la obligación no coincide con el año del concepto en cp_pri'
+ WHERE I_ObservID = 15
+
+UPDATE TC_CatalogoObservacion
+   SET T_ObservDesc = 'El periodo del concepto en el detalle de la obligación. no coincide con el periodo del concepto en cp_pri.'
+ WHERE I_ObservID = 17
 
 
-SET @row_id = (SELECT I_RowID FROM  TR_Ec_Obl WHERE Cod_alu = '2002319959' AND Cuota_pago = 134 AND Ano = '2009' AND I_ProcedenciaID = 3)
-DELETE TI_ObservacionRegistroTabla WHERE I_FilaTablaID = @row_id AND I_TablaID = 5 
-
-UPDATE TR_Ec_Obl 
-SET I_ProcedenciaID = 2
-WHERE I_RowID = @row_id
-
-GO
-
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'El monto acumulado de los conceptos en el detalle no corresponde con el monto indicado en la obligación', 'AÑO CONCEPTO', NULL)
+--INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
+--INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
+--INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
+--INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
+select LEN('El año del concepto en el detalle de la obligación no corresponde con el año del concepto en cp_pri')

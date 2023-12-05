@@ -20,7 +20,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar
                 string s_command = @"SELECT c.I_ConcPagID, cp.I_ConceptoID, catg.T_CatPagoDesc, p.T_ProcesoDesc, ISNULL(c.T_ConceptoPagoDesc, cp.T_ConceptoDesc) as T_ConceptoPagoDesc,
 	                                        c.I_Anio, c.I_Periodo, c.M_Monto, c.M_MontoMinimo, c.B_Habilitado, c.I_MigracionTablaID, c.I_MigracionRowID, 
 	                                        IIF(c.I_MigracionTablaID IS NULL, 'S/MIGRAR', ct.T_TablaNom) AS T_TablaNom, per.T_OpcionDesc AS T_PeriodoDesc, 
-	                                        IIF(c.I_MigracionRowID IS NULL, 0, 1) AS B_Migrado 	   
+	                                        IIF(c.I_MigracionRowID IS NULL, 0, 1) AS B_Migrado, per.T_OpcionCod AS T_PeriodoCod
                                        FROM dbo.TI_ConceptoPago c
 	                                        INNER JOIN dbo.TC_Concepto cp ON cp.I_ConceptoID = c.I_ConceptoID
 	                                        INNER JOIN dbo.TC_Proceso p ON p.I_ProcesoID = c.I_ProcesoID

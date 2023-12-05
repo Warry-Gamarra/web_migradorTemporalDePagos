@@ -21,6 +21,22 @@
             <button type="button" id="btn-validate-per" class="btn btn-primary">Validar registros</button>
         </div>
     </form>
+    <div id="processing" class="container-fluid py-4" style="display:none;">
+        <div class="d-flex justify-content-center">
+            <div class="spinner-border text-info" role="status" style="width: 5rem; height: 5rem;">
+                <span class="sr-only" id="sr-message"></span>
+            </div>
+            <div class="d-flex justify-content-center">
+                <span id="load-message" class="h5 mt-4"></span>
+            </div>
+        </div>
+    </div>
+    <div id="result-message" class="container-fluid">
+        <div class="card-body">
+            <h5 class="card-title">Seleccione una opción del proceso</h5>
+        </div>
+    </div>
+
 </div>
 
 <script>

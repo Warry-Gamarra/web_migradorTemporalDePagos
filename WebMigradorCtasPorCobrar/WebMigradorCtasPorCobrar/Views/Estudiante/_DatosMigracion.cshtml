@@ -39,12 +39,11 @@
         columns.Add().SetWidth(100).Css("text-right").Encoded(false).Sanitized(false)
                .RenderValueAs(model => Html.Raw($"<a href=\"{ Url.Action("VerDatos", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\"><i class=\"fa fa-id-card\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver</span></a>"));
         columns.Add().Css("text-right").Encoded(false).Sanitized(false)
-                     .RenderValueAs(model => model.B_Migrable ?
-                                            Html.Raw("")
-                                            : Html.Raw($"<a href=\"{ Url.Action("Observaciones", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\"><i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span></a>"));
+                     .RenderValueAs(model => model.B_Migrable ? Html.Raw("")
+                                                              : Html.Raw($"<a href=\"{ Url.Action("Observaciones", "Estudiante", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\"><i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span></a>"));
         columns.Add().Css("text-right").Encoded(false).Sanitized(false)
                      .RenderValueAs(model => model.B_Migrable && !model.B_Migrado ?
-                                            Html.Raw($"<a href=\"{ Url.Action("MigrarDatosAluTPagos", "Estudiante", new { procedencia = model.I_ProcedenciaID, codAlu = model.C_CodAlu, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-exchange\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Migrar</span></a>")
+                                                Html.Raw($"<a href=\"{ Url.Action("MigrarDatosAluTPagos", "Estudiante", new { procedencia = model.I_ProcedenciaID, codAlu = model.C_CodAlu, area = "" })}\" class=\"modal-link\"><i class=\"fa fa-exchange\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Migrar</span></a>")
                                                 : Html.Raw(""));
     }).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
 </div>
