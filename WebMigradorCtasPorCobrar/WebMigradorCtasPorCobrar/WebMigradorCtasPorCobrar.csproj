@@ -554,7 +554,7 @@
     <Content Include="Views\Obligaciones\_EditarObligacion.cshtml" />
     <Content Include="Views\CuotaPago\_CtasPorCobrarProcesos.cshtml" />
     <Content Include="Views\ConceptoPago\_CtasPorCobrarConceptos.cshtml" />
-    <Content Include="Views\CuotaPago\_DatosCuotaPago.cshtml" />
+    <Content Include="Views\CuotaPago\_DatosCuotaPagoCompara.cshtml" />
     <Content Include="Views\Obligaciones\_CtasPorCobrarObligaciones.cshtml" />
     <Content Include="Views\DetalleObligacion\_EditarDetalleObligacion.cshtml" />
     <Content Include="Views\Obligaciones\_ValidarRegistrosObligacion.cshtml" />
@@ -563,6 +563,8 @@
     <Content Include="Views\Shared\_ResultadoListMigrarRegistrosModal.cshtml" />
     <Content Include="Views\ConceptoPago\_DatosConceptoPago.cshtml" />
     <Content Include="Views\ConceptoPago\_EditarConceptoPago.cshtml" />
+    <Content Include="Views\CuotaPago\_EditarCuotaPago.cshtml" />
+    <Content Include="Views\CuotaPago\_DatosCuotaPago.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

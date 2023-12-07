@@ -14,7 +14,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public bool Eliminado { get; set; }
         public string Codigo_bnc { get; set; }
         public DateTime Fch_venc { get; set; }
-        public string Fch_venc_s { get; set; }
+        public string Fch_venc_s { get; set; } 
         public string Prioridad { get; set; }
         public bool C_mora { get; set; }
         public int I_Anio { get; set; }
@@ -38,6 +38,8 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public IList<Obligacion> Obligaciones { get; set; }
         public IList<DetalleObligacion> DetalleObligaciones { get; set; }
         public bool B_ExisteCtas { get; set; }
-
     }
+
+
+
 }

@@ -10,7 +10,6 @@ using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
-using WebMigradorCtasPorCobrar.Models.ViewModels;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -133,18 +132,17 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult VerDatos(int id, Procedencia procedencia)
         {
-            var model = new CuotaPagoViewModel()
+            var model = _cuotaPagoServiceMigracion.ObtenerVistaDatos(id, procedencia);
+
+            if (model.CuotaCtasCobrar == null)
             {
-                CuotaMigracion = _cuotaPagoServiceMigracion.Obtener(id),
-            };
+                return PartialView("_DatosCuotaPago", model);
+            }
 
-            var cuotaCtasCobrar = _cuotaPagoServiceCtasPorCobrar.Obtener(procedencia).FirstOrDefault(x => x.Cuota_Pago == model.CuotaMigracion.Cuota_pago);
-            model.CuotaCtasCobrar = cuotaCtasCobrar ?? new Models.Entities.CtasPorCobrar.VW_Proceso();
-
-            return PartialView("_DatosCuotaPago", model);
+            return PartialView("_DatosCuotaPagoCompara", model);
         }
 
-        public ActionResult Editar(int id, int obsID)
+        public ActionResult Editar(int id, int obsID = 0)
         {
             var model = _cuotaPagoServiceMigracion.ObtenerConRelaciones(id);
             ViewBag.TipoObserv = obsID.ToString();
@@ -208,6 +206,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
                     break;
                 case CuotaPagoObs.SinCategoria:
                     viewName = "_EditarEquivalencia";
+                    break;
+                default:
+                    viewName = "_EditarCuotaPago";
                     break;
             }
 

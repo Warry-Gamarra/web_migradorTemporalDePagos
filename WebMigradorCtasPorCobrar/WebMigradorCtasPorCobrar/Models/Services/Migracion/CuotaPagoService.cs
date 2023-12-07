@@ -12,6 +12,7 @@ using ClosedXML.Excel;
 using System.IO;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 {
@@ -66,9 +67,26 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return CuotaPagoRepository.ObtenerPorId(cuotaID);
         }
 
+        public CuotaPagoViewModel ObtenerVistaDatos(int id, Procedencia procedencia)
+        {
+            ProcesoServices _cuotaPagoServiceCtasPorCobrar = new ProcesoServices();
+            var result = new CuotaPagoViewModel()
+            {
+                CuotaMigracion = Obtener(id),
+            };
+
+            result.CuotaCtasCobrar = _cuotaPagoServiceCtasPorCobrar.Obtener(procedencia)
+                                                                   .FirstOrDefault(x => x.Cuota_Pago == result.CuotaMigracion.Cuota_pago);
+
+            return result;
+        }
+
+
         public CuotaPago ObtenerConRelaciones(int cuotaID)
         {
             var cuotaPago = CuotaPagoRepository.ObtenerPorId(cuotaID);
+
+            cuotaPago.Fch_venc_s = cuotaPago.Fch_venc.ToShortDateString();
             cuotaPago.ConceptosPago = new List<ConceptoPago>();
             cuotaPago.Obligaciones = new List<Obligacion>();
             cuotaPago.DetalleObligaciones = new List<DetalleObligacion>();

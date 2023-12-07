@@ -24,7 +24,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar
 		                               cp.I_TipoAlumno, tipAlu.T_OpcionDesc AS T_TipoAlumno, tipAlu.T_OpcionCod as C_TipoAlumno, 
                                        p.I_MigracionRowID, p.I_MigracionTablaID, cp_des.cuota_pago,  cta.C_NumeroCuenta, p.B_Mora,
                                        IIF(p.I_MigracionTablaID IS NULL, 'S/MIGRAR', ct.T_TablaNom) AS T_TablaNom, 
-                                       IIF(I_MigracionRowID IS NULL, 0, 1) AS B_Migrado 
+                                       IIF(I_MigracionRowID IS NULL, 0, 1) AS B_Migrado, p.B_Eliminado 
                                  FROM  dbo.TC_Proceso p
                                        INNER JOIN BD_OCEF_MigracionTP.dbo.TR_Cp_Des cp_des ON p.I_ProcesoID = cp_des.cuota_pago AND cp_des.I_ProcedenciaID = @I_ProcedenciaID
                                        LEFT JOIN BD_OCEF_MigracionTP.dbo.TC_CatalogoTabla ct ON p.I_MigracionTablaID = ct.I_TablaID

@@ -47,7 +47,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
         public Observacion ObtenerCatalogo(int observacionID)
         {
-            return ObservacionRepository.ObtenerCatalogo(observacionID);
+
+            return ObservacionRepository.ObtenerCatalogo(observacionID) ?? new Observacion();
         }
     }
 }

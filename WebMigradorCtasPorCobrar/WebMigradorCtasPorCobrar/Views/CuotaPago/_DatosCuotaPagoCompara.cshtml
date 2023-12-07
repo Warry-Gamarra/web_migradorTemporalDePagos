@@ -13,44 +13,54 @@
                 <tr>
                     <th class="text-center" scope="col"></th>
                     <th class="text-center" scope="col">Temporal de pagos - Migración</th>
+                    <th class="text-center" scope="col">Recaudación de ingresos</th>
                 </tr>
             </thead>
             <tbody>
                 <tr class="thead-light">
                     <th class="text-right" scope="row">Código</th>
                     <td class="text-center">@Model.CuotaMigracion.Cuota_pago</td>
+                    <td class="text-center">@Model.CuotaCtasCobrar.Cuota_Pago</td>
                 </tr>
                 <tr class="thead-light">
                     <th class="text-right" scope="row">Descripcion</th>
                     <td class="text-center">@Model.CuotaMigracion.Descripcio</td>
+                    <td class="text-center">@Model.CuotaCtasCobrar.T_CatPagoDesc - @Model.CuotaCtasCobrar.T_ProcesoDesc</td>
                 </tr>
                 <tr class="thead-light">
                     <th class="text-right" scope="row">Código BNC</th>
                     <td class="text-center">@Model.CuotaMigracion.Codigo_bnc</td>
+                    <td class="text-center">@Model.CuotaCtasCobrar.N_CodBanco</td>
                 </tr>
                 <tr class="thead-light">
                     <th class="text-right" scope="row">Año</th>
                     <td class="text-center">@Model.CuotaMigracion.I_Anio</td>
+                    <td class="text-center">@Model.CuotaCtasCobrar.I_Anio</td>
                 </tr>
                 <tr class="thead-light">
                     <th class="text-right" scope="row">Nro de cuenta</th>
                     <td class="text-center">@Model.CuotaMigracion.N_cta_cte</td>
+                    <td class="text-center">@Model.CuotaCtasCobrar.C_NumeroCuenta</td>
                 </tr>
                 <tr class="thead-light">
                     <th class="text-right" scope="row">Fecha Vencimiento</th>
                     <td class="text-center">@Model.CuotaMigracion.Fch_venc.ToShortDateString()</td>
+                    <td class="text-center">@(Model.CuotaCtasCobrar.D_FecVencto.HasValue ? Model.CuotaCtasCobrar.D_FecVencto.Value.ToShortDateString() : "")</td>
                 </tr>
                 <tr class="thead-light">
                     <th class="text-right" scope="row">Flag Mora</th>
                     <td class="text-center">@Model.CuotaMigracion.C_mora</td>
+                    <td class="text-center">@Model.CuotaCtasCobrar.B_Mora</td>
                 </tr>
                 <tr class="thead-light">
                     <th class="text-right" scope="row">Prioridad</th>
                     <td class="text-center">@Model.CuotaMigracion.Prioridad</td>
+                    <td class="text-center">@Model.CuotaCtasCobrar.I_Prioridad</td>
                 </tr>
                 <tr class="thead-light">
                     <th class="text-right" scope="row">Eliminado</th>
                     <td class="text-center">@Model.CuotaMigracion.Eliminado</td>
+                    <td class="text-center">@Model.CuotaCtasCobrar.B_Eliminado</td>
                 </tr>
             </tbody>
         </table>
@@ -59,7 +69,7 @@
 <div class="modal-footer">
     @if (!Model.CuotaMigracion.Eliminado)
     {
-        <a class="btn btn-outline-primary modal-link-reload-lg" href="@Url.Action("Editar", "CuotaPago", new { id = Model.CuotaMigracion.I_RowID})"><i class="fa fa-pencil"></i> Editar</a>
+        <a class="btn btn-outline-primary modal-link-reload-lg" href="@Url.Action("Editar", "CuotaPago", new { id = Model.CuotaMigracion.I_RowID })"><i class="fa fa-pencil"></i> Editar</a>
     }
     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
 </div>
