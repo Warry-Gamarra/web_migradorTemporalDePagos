@@ -38,6 +38,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public IList<Obligacion> Obligaciones { get; set; }
         public IList<DetalleObligacion> DetalleObligaciones { get; set; }
         public bool B_ExisteCtas { get; set; }
+        public bool B_Correcto { get; set; }
     }
 
 

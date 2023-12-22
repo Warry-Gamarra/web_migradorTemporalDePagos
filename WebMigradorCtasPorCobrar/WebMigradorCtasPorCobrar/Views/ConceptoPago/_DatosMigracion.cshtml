@@ -50,7 +50,7 @@
             .RenderValueAs(model => model.B_Migrado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
                                                     : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));
     columns.Add().SetWidth(120).Css("text-right").Encoded(false).Sanitized(false)
-            .RenderValueAs(model => Html.Raw($"<a href=\"{ Url.Action("VerDatos", "ConceptoPago", new { id = model.I_RowID, procedencia = str_procedencia, area = "" })}\" class=\"modal-link-lg\"><i class=\"fa fa-copy\"aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Comparar</span></a>"));
+            .RenderValueAs(model => Html.Raw($"<a href=\"{ Url.Action("VerDatos", "ConceptoPago", new { id = model.I_RowID })}\" class=\"modal-link-lg\"><i class=\"fa fa-copy\"aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Comparar</span></a>"));
     columns.Add().SetWidth(150).Css("text-right").Encoded(false).Sanitized(false)
                  .RenderValueAs(model => model.B_Migrable ? @Html.Raw("")
                                                           : @Html.Raw($"<a href=\"{ Url.Action("Observaciones", "ConceptoPago", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\">" +

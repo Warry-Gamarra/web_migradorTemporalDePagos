@@ -56,6 +56,6 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.CtasPorCobrar
         public string T_PeriodoDesc { get; set; }
         public string T_ProcesoDesc { get; set; }
         public string T_PeriodoCod { get; set; }
-
+        public string T_Obligigacion { get; set; }
     }
 }

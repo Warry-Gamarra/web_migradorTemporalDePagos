@@ -115,78 +115,192 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
-        public Response EjecutarValidaciones(Procedencia procedencia)
+
+        public IEnumerable<Response> EjecutarValidaciones(Procedencia procedencia, int? cuotaPagoRowID)
         {
-            Response result = new Response();
-            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
-
-            Response result_inicializarEstados = new Response();
-            Response result_duplicados = new Response();
-            Response result_removidos = new Response();
-            Response result_noObligacion = new Response();
-            Response result_anio = new Response();
-            Response result_anioCp = new Response();
-            Response result_periodo = new Response();
-            Response result_periodoCp = new Response();
-            Response result_cuotaPago = new Response();
-            Response result_equivalencias = new Response();
-            Response result_catalogoConceptos = new Response();
-
+            List<Response> result = new List<Response>();
+            int procedenciaId = (int)procedencia;
             string schemaDb = Schema.SetSchema(procedencia);
 
-            result_inicializarEstados = conceptoPagoRepository.InicializarEstadoValidacionCuotaPago(null, (int)procedencia);
-
-            result_duplicados = conceptoPagoRepository.ValidarDuplicadoConceptosPago(null, (int)procedencia);
-            result_removidos = conceptoPagoRepository.ValidarEliminadoConceptosPago(null, (int)procedencia);
-            result_noObligacion = conceptoPagoRepository.ValidarConceptosPagoNoObligacion(null, (int)procedencia);
-            result_anio = conceptoPagoRepository.ValidarConceptosPagoObligSinAnioAsignado(null, (int)procedencia);
-            result_anioCp = conceptoPagoRepository.ValidarConceptosPagoConAnioDiferenteCuotaPago(null, (int)procedencia);
-            result_periodo = conceptoPagoRepository.ValidarConceptosPagoObligSinPeriodoAsignado(null, (int)procedencia);
-            result_periodoCp = conceptoPagoRepository.ValidarConceptosPagoConPeriodoDiferenteCuotaPago(null, (int)procedencia);
-            result_cuotaPago = conceptoPagoRepository.ValidarConceptosPagoObligSinCuotaPago(null, (int)procedencia);
-            result_equivalencias = conceptoPagoRepository.AsignarIdEquivalenciasConceptoPago(null, (int)procedencia);
-            result_catalogoConceptos = conceptoPagoRepository.GrabarTablaCatalogoConceptos((int)procedencia);
-
-            result.IsDone = result_duplicados.IsDone &&
-                            result_removidos.IsDone &&
-                            result_noObligacion.IsDone &&
-                            result_anio.IsDone &&
-                            result_anioCp.IsDone &&
-                            result_periodo.IsDone &&
-                            result_periodoCp.IsDone &&
-                            result_cuotaPago.IsDone &&
-                            result_equivalencias.IsDone;
-
-            result.Message = $"    <dl class=\"row text-justify pt-3\">" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Con código de concepto duplicado</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_duplicados.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Estados del concepto de pago </dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_removidos.Message} | {result_noObligacion.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">No se identificó año del concepto de pago</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_anio.Message} | {result_anioCp.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">No se identificó periodo del concepto de pago</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_periodo.Message} | {result_periodoCp.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Concepto sin cuota de pago</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_cuotaPago.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Codigos de equivalencia para migración</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_equivalencias.Message}</p>" +
-                             $"        </dd>" +
-                             $"    </dl>";
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
 
 
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            _ = conceptoPagoRepository.InicializarEstadoValidacionCuotaPago(null, (int)procedencia);
+
+            result.Add(ValidarDuplicadoConceptosPago(cuotaPagoRowID, procedenciaId));
+            result.Add(ValidarEliminadoConceptosPago(cuotaPagoRowID,procedenciaId));
+            result.Add(ValidarConceptosPagoNoObligacion(cuotaPagoRowID, procedenciaId));
+            result.Add(ValidarConceptosPagoObligSinAnioAsignado(cuotaPagoRowID, procedenciaId));
+            result.Add(ValidarConceptosPagoConAnioDiferenteCuotaPago(cuotaPagoRowID, procedenciaId));
+            result.Add(ValidarConceptosPagoObligSinPeriodoAsignado(cuotaPagoRowID, procedenciaId));
+            result.Add(ValidarConceptosPagoConPeriodoDiferenteCuotaPago(cuotaPagoRowID, procedenciaId));
+            result.Add(ValidarConceptosPagoObligSinCuotaPago(cuotaPagoRowID, procedenciaId));
+            result.Add(AsignarIdEquivalenciasConceptoPago(cuotaPagoRowID, procedenciaId));
+            result.Add(GrabarTablaCatalogoConceptos(cuotaPagoRowID, procedenciaId));
+
+            return result;
         }
+
+        private Response GrabarTablaCatalogoConceptos(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.GrabarTablaCatalogoConceptos(procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Grabar en tabla de conceptos";
+            response.Message += " filas registradas";
+
+            return response;
+        }
+
+        private Response AsignarIdEquivalenciasConceptoPago(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.AsignarIdEquivalenciasConceptoPago(cuotaPagoRowID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por no tener id de equivalencia en catalogo de conceptos de pago";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarConceptosPagoObligSinCuotaPago(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.ValidarConceptosPagoObligSinCuotaPago(cuotaPagoRowID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por no tener cuota de pago asociada";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarConceptosPagoConPeriodoDiferenteCuotaPago(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.ValidarConceptosPagoConPeriodoDiferenteCuotaPago(cuotaPagoRowID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observado por tener periodo de concepto de pago diferente al periodo de la cuota de pago asociada";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarConceptosPagoObligSinPeriodoAsignado(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.ValidarConceptosPagoObligSinPeriodoAsignado(cuotaPagoRowID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observado por no tener periodo asignado a la cuota de pago";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarConceptosPagoConAnioDiferenteCuotaPago(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.ValidarConceptosPagoConAnioDiferenteCuotaPago(cuotaPagoRowID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observado por tener año de concepto de pago diferente al año de la cuota de pago asociada";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarConceptosPagoObligSinAnioAsignado(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.ValidarConceptosPagoObligSinAnioAsignado(cuotaPagoRowID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por no tener un año asignado en el concepto de pago";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarConceptosPagoNoObligacion(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.ValidarConceptosPagoNoObligacion(cuotaPagoRowID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observado por no tener obligaciones asociadas";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarEliminadoConceptosPago(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.ValidarEliminadoConceptosPago(cuotaPagoRowID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observador por tener estado eliminado en el concepto de pago";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarDuplicadoConceptosPago(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.ValidarDuplicadoConceptosPago(cuotaPagoRowID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por tener código de concepto duplicado";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
 
         public ConceptoPago ObtenerConRelaciones(int conceptoPagoID)
         {
@@ -212,18 +326,25 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             }
 
             foreach (var detalleObligacion in Temporal.ObligacionRepository.ObtenerDetallePorConceptoPago(schema, str_conceptoPago)//.Where (x => x.Eliminado == false)
-                                                                           .Select(x => new { x.Cuota_pago, x.Ano, x.P, x.Concepto,
-                                                                                              x.Descripcio, x.Eliminado }).Distinct())
+                                                                           .Select(x => new
+                                                                           {
+                                                                               x.Cuota_pago,
+                                                                               x.Ano,
+                                                                               x.P,
+                                                                               x.Concepto,
+                                                                               x.Descripcio,
+                                                                               x.Eliminado
+                                                                           }).Distinct())
             {
                 conceptoPago.DetalleObligaciones.Add(new DetalleObligacion()
-                                                     {
-                                                         Cuota_pago = detalleObligacion.Cuota_pago,
-                                                         Ano = detalleObligacion.Ano,
-                                                         P = detalleObligacion.P,
-                                                         Concepto = detalleObligacion.Concepto,
-                                                         Descripcio = detalleObligacion.Descripcio,
-                                                         Eliminado = detalleObligacion.Eliminado
-                                                     });
+                {
+                    Cuota_pago = detalleObligacion.Cuota_pago,
+                    Ano = detalleObligacion.Ano,
+                    P = detalleObligacion.P,
+                    Concepto = detalleObligacion.Concepto,
+                    Descripcio = detalleObligacion.Descripcio,
+                    Eliminado = detalleObligacion.Eliminado
+                });
             }
 
             return conceptoPago;
@@ -265,15 +386,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                     break;
             }
 
-            conceptoPagoRepository.ValidarDuplicadoConceptosPago(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.ValidarDuplicadoConceptosPago(conceptoPago.I_RowID, conceptoPago.I_ProcedenciaID);
             conceptoPagoRepository.ValidarEliminadoConceptosPago(conceptoPago.I_RowID, conceptoPago.I_ProcedenciaID);
             conceptoPagoRepository.ValidarConceptosPagoNoObligacion(conceptoPago.I_RowID, conceptoPago.I_ProcedenciaID);
-            conceptoPagoRepository.ValidarConceptosPagoObligSinAnioAsignado(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
-            conceptoPagoRepository.ValidarConceptosPagoConAnioDiferenteCuotaPago(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
-            conceptoPagoRepository.ValidarConceptosPagoObligSinPeriodoAsignado(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
-            conceptoPagoRepository.ValidarConceptosPagoConPeriodoDiferenteCuotaPago(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
-            conceptoPagoRepository.ValidarConceptosPagoObligSinCuotaPago(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
-            conceptoPagoRepository.AsignarIdEquivalenciasConceptoPago(conceptoPago.I_RowID,  conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.ValidarConceptosPagoObligSinAnioAsignado(conceptoPago.I_RowID, conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.ValidarConceptosPagoConAnioDiferenteCuotaPago(conceptoPago.I_RowID, conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.ValidarConceptosPagoObligSinPeriodoAsignado(conceptoPago.I_RowID, conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.ValidarConceptosPagoConPeriodoDiferenteCuotaPago(conceptoPago.I_RowID, conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.ValidarConceptosPagoObligSinCuotaPago(conceptoPago.I_RowID, conceptoPago.I_ProcedenciaID);
+            conceptoPagoRepository.AsignarIdEquivalenciasConceptoPago(conceptoPago.I_RowID, conceptoPago.I_ProcedenciaID);
 
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
@@ -289,7 +410,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
             result.Add(result_part.IsDone ? result_part.Success(false) : result_part.Error(false));
 
-            return result;            
+            return result;
         }
     }
 

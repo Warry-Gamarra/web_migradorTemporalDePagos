@@ -30,38 +30,39 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             var obligacionesCtas = RepoCtas.ObligacionesRepository.Obtener((int)procedencia);
 
             var newObligacion = from o in obligaciones
-                                join oc in obligacionesCtas on o.I_RowID equals oc.I_MigracionRowID
-                                into obligacionesPagoGroup
-                                from og in obligacionesPagoGroup.DefaultIfEmpty()
-                                select new Obligacion()
-                                {
-                                    I_RowID = o.I_RowID,
-                                    Ano = o.Ano,
-                                    P = o.P,
-                                    I_Periodo = o.I_Periodo,
-                                    Cod_alu = o.Cod_alu,
-                                    Cod_RC = o.Cod_RC,
-                                    NomAlumno = o.NomAlumno,
-                                    T_Carrera = o.T_Carrera,
-                                    Cuota_pago = o.Cuota_pago,
-                                    Cuota_pago_desc = o.Cuota_pago_desc,
-                                    Tipo_oblig = o.Tipo_oblig,
-                                    Fch_venc = o.Fch_venc,
-                                    Monto = o.Monto,
-                                    Pagado = o.Pagado,
-                                    D_FecCarga = o.D_FecCarga,
-                                    B_Actualizado = o.B_Actualizado,
-                                    D_FecActualiza = o.D_FecActualiza,
-                                    B_Migrable = o.B_Migrable,
-                                    D_FecEvalua = o.D_FecEvalua,
-                                    B_Migrado = o.B_Migrado,
-                                    D_FecMigrado = o.D_FecMigrado,
-                                    B_Removido = o.B_Removido,
-                                    D_FecRemovido = o.D_FecRemovido,
-                                    DetalleObligaciones = o.DetalleObligaciones,
-                                    I_ProcedenciaID = o.I_ProcedenciaID,
-                                    B_ExisteCtas = og == null ? false : true
-                                };
+                                select o;
+                                //join oc in obligacionesCtas on o.I_RowID equals oc.I_MigracionRowID
+                                //into obligacionesPagoGroup
+                                //from og in obligacionesPagoGroup.DefaultIfEmpty()
+                                //select new Obligacion()
+                                //{
+                                //    I_RowID = o.I_RowID,
+                                //    Ano = o.Ano,
+                                //    P = o.P,
+                                //    I_Periodo = o.I_Periodo,
+                                //    Cod_alu = o.Cod_alu,
+                                //    Cod_RC = o.Cod_RC,
+                                //    NomAlumno = o.NomAlumno,
+                                //    T_Carrera = o.T_Carrera,
+                                //    Cuota_pago = o.Cuota_pago,
+                                //    Cuota_pago_desc = o.Cuota_pago_desc,
+                                //    Tipo_oblig = o.Tipo_oblig,
+                                //    Fch_venc = o.Fch_venc,
+                                //    Monto = o.Monto,
+                                //    Pagado = o.Pagado,
+                                //    D_FecCarga = o.D_FecCarga,
+                                //    B_Actualizado = o.B_Actualizado,
+                                //    D_FecActualiza = o.D_FecActualiza,
+                                //    B_Migrable = o.B_Migrable,
+                                //    D_FecEvalua = o.D_FecEvalua,
+                                //    B_Migrado = o.B_Migrado,
+                                //    D_FecMigrado = o.D_FecMigrado,
+                                //    B_Removido = o.B_Removido,
+                                //    D_FecRemovido = o.D_FecRemovido,
+                                //    DetalleObligaciones = o.DetalleObligaciones,
+                                //    I_ProcedenciaID = o.I_ProcedenciaID,
+                                //    B_ExisteCtas = og == null ? false : true
+                                //};
 
             return newObligacion;
         }

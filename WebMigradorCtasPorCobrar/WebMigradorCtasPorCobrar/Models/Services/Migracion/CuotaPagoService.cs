@@ -33,7 +33,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             var cuotasPagoCtas = RepoCtas.ProcesoRepositoty.Obtener((int)procedencia);
 
             var newCuotasPago = from c in cuotasPago
-                                join cr in cuotasPagoCtas on c.Cuota_pago equals cr.I_ProcesoID
+                                join cr in cuotasPagoCtas on c.Cuota_pago equals cr.I_ProcesoID 
                                 into cuotasPagoProcesoGroup
                                 from cppg in cuotasPagoProcesoGroup.DefaultIfEmpty()
                                 select new CuotaPago()
@@ -49,7 +49,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                                     B_Migrable = c.B_Migrable,
                                     B_Migrado = c.B_Migrado,
                                     I_RowID = c.I_RowID,
-                                    B_ExisteCtas = cppg == null ? false : true
+                                    B_ExisteCtas = cppg == null ? false : (cppg.I_MigracionRowID.HasValue ? (cppg.I_MigracionRowID.Value == c.I_RowID ? true : false) : true)
                                 };
 
             return newCuotasPago;
@@ -181,71 +181,126 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return result.IsDone ? result.Success(false) : result.Error(false);
         }
 
-        public Response EjecutarValidaciones(Procedencia procedencia, int? cuotaPagoRowID)
+        public IEnumerable<Response> EjecutarValidaciones(Procedencia procedencia, int? cuotaPagoRowID)
         {
-            Response result = new Response();
+            List<Response> result = new List<Response>();
+            int procedenciaId = (int)procedencia;
+            string schemaDb = Schema.SetSchema(procedencia);
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
-            Response result_InicializarEstados = new Response();
-            Response result_duplicados = new Response();
-            Response result_categorias = new Response();
-            Response result_anio = new Response();
-            Response result_periodo = new Response();
-            Response result_removido = new Response();
+            _ = cuotaPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPagoRowID, (int)procedencia);
 
-            string schemaDb = Schema.SetSchema(procedencia);
+            result.Add(MarcarDuplicadosCuotaPago(procedenciaId));
+            result.Add(MarcarDuplicadosConDiferenteProcedenciaCuotaPago(procedenciaId));
+            result.Add(MarcarEliminadosCuotaPago(cuotaPagoRowID, procedenciaId));
+            result.Add(AsignarCategoriaCuotaPago(cuotaPagoRowID, procedenciaId));
+            result.Add(AsignarAnioCuotaPago(cuotaPagoRowID, procedenciaId, schemaDb));
+            result.Add(AsignarPeriodoCuotaPago(cuotaPagoRowID, procedenciaId, schemaDb));
 
-            result_InicializarEstados = cuotaPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPagoRowID, (int)procedencia);
-            result_duplicados = cuotaPagoRepository.MarcarDuplicadosCuotaPago((int)procedencia);
-            result_removido = cuotaPagoRepository.MarcarEliminadosCuotaPago(cuotaPagoRowID, (int)procedencia);
-            result_categorias = cuotaPagoRepository.AsignarCategoriaCuotaPago(cuotaPagoRowID, (int)procedencia);
-            result_anio = cuotaPagoRepository.AsignarAnioCuotaPago(cuotaPagoRowID, (int)procedencia, schemaDb);
-            result_periodo = cuotaPagoRepository.AsignarPeriodoCuotaPago(cuotaPagoRowID, (int)procedencia, schemaDb);
-
-            result.IsDone = result_duplicados.IsDone &&
-                            result_removido.IsDone &&
-                            result_categorias.IsDone &&
-                            result_anio.IsDone &&
-                            result_periodo.IsDone;
-
-            result.Message = $"    <dl class=\"row text-justify pt-3\">" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Con código de cuota duplicado :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_duplicados.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Sin categoría equivalente en cuentas por cobrar :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_categorias.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observaciones en Año de la cuota de pago :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_anio.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observaciones en Periodo de la cuota de pago :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_periodo.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por estado eliminado :</dt>" +
-                             $"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             $"            <p>{result_removido.Message}</p>" +
-                             $"        </dd>" +
-                             //$"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Modalidades de ingreso :</dt>" +
-                             //$"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             //$"            <p>{result_ModIngresoAlumno.Message}</p>" +
-                             //$"        </dd>" +
-                             //$"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Número de documento :</dt>" +
-                             //$"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             //$"            <p>{result_CorrespondenciaNumDoc.Message}</p>" +
-                             //$"        </dd>" +
-                             //$"        <dt class=\"col-md-6 col-sm-8 col-10 text-right\">Observados por Sexo duplicado :</dt>" +
-                             //$"        <dd class=\"col-md-6 col-sm-4 col-2\">" +
-                             //$"            <p>{result_SexoDiferenteMismoDoc.Message}</p>" +
-                             //$"        </dd>" +
-                             $"    </dl>";
-
-
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            return result;
         }
+
+        private Response MarcarDuplicadosCuotaPago(int procedenciaId)
+        {
+            Response response;
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            response = cuotaPagoRepository.MarcarDuplicadosCuotaPago(procedenciaId);
+            
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por código de cuota duplicado";
+            response.Message += " registros encontrados";
+
+
+            return response;
+        }
+
+        private Response MarcarDuplicadosConDiferenteProcedenciaCuotaPago(int procedenciaId)
+        {
+            Response response;
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            response = cuotaPagoRepository.MarcarDuplicadosDiferenteProcedenciaCuotaPago(procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por código de cuota duplicado con diferentes procedencias";
+            response.Message += " registros encontrados";
+
+
+            return response;
+        }
+
+        private Response MarcarEliminadosCuotaPago(int? cuotaPagoID, int procedenciaId)
+        {
+            Response response;
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            response = cuotaPagoRepository.MarcarEliminadosCuotaPago(cuotaPagoID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por estado eliminado";
+            response.Message += " registros encontrados";
+
+
+            return response;
+        }
+
+        private Response AsignarCategoriaCuotaPago(int? cuotaPagoID, int procedenciaId)
+        {
+            Response response;
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            response = cuotaPagoRepository.AsignarCategoriaCuotaPago(cuotaPagoID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por no tener categoría equivalente en cuentas por cobrar";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response AsignarAnioCuotaPago(int? cuotaPagoID, int procedenciaId, string  schema)
+        {
+            Response response;
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            response = cuotaPagoRepository.AsignarAnioCuotaPago(cuotaPagoID, procedenciaId, schema);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados al asignar el valor del año de la cuota de pago";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response AsignarPeriodoCuotaPago(int? cuotaPagoID, int procedenciaId, string schema)
+        {
+            Response response;
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            response = cuotaPagoRepository.AsignarPeriodoCuotaPago(cuotaPagoID, procedenciaId, schema);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados al asignar el valor del periodo de la cuota de pago";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+
+
 
         public IEnumerable<Response> MigrarDatosTemporalPagos(Procedencia procedencia)
         {
@@ -262,7 +317,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
         }
 
 
-        public Response Save(CuotaPago cuotaPago, int tipoObsID)
+        public Response Save(CuotaPago cuotaPago, int? tipoObsID)
         {
             Response result = new Response();
             string schemaDb = Schema.SetSchema((Procedencia)cuotaPago.I_ProcedenciaID);
@@ -271,7 +326,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
             cuotaPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID);
 
-            switch ((CuotaPagoObs)tipoObsID)
+            switch ((CuotaPagoObs)(tipoObsID ?? 0))
             {
                 case CuotaPagoObs.Repetido:
                     result = cuotaPagoRepository.SaveRepetido(cuotaPago);
@@ -294,9 +349,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                 case CuotaPagoObs.SinCategoria:
                     result = cuotaPagoRepository.SaveCategoria(cuotaPago);
                     break;
+                default:
+                    result = cuotaPagoRepository.SaveCorrecto(cuotaPago);
+                    break;
             }
 
             cuotaPagoRepository.MarcarDuplicadosCuotaPago(cuotaPago.I_ProcedenciaID);
+            cuotaPagoRepository.MarcarDuplicadosDiferenteProcedenciaCuotaPago(cuotaPago.I_ProcedenciaID);
             cuotaPagoRepository.AsignarCategoriaCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID);
             cuotaPagoRepository.AsignarAnioCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
             cuotaPagoRepository.AsignarPeriodoCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);

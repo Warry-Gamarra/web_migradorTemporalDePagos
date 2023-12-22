@@ -116,7 +116,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
 
-            Response result = _conceptoPagoServiceMigracion.EjecutarValidaciones(procedencia);
+            IEnumerable<Response> result = _conceptoPagoServiceMigracion.EjecutarValidaciones(procedencia, null);
 
             return PartialView("_ResultadoValidarRegistros", result);
         }
@@ -152,15 +152,14 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
-        public ActionResult VerDatos(int id, Procedencia procedencia)
+        public ActionResult VerDatos(int id)
         {
             var model = new ConceptoPagoViewModel()
             {
                 ConceptoPagoMigracion = _conceptoPagoServiceMigracion.Obtener(id),
             };
 
-            var conceptoPagoCtasCobrar = _conceptoPagoServiceCtasPorCobrar.Obtener(procedencia)
-                                                                          .FirstOrDefault(x => x.I_ConcPagID == model.ConceptoPagoMigracion.Id_cp);
+            var conceptoPagoCtasCobrar = _conceptoPagoServiceCtasPorCobrar.Obtener(model.ConceptoPagoMigracion.Id_cp);
 
             model.ConceptoPagoCtasCobrar = conceptoPagoCtasCobrar ?? new Models.Entities.CtasPorCobrar.TI_ConceptoPago();
 

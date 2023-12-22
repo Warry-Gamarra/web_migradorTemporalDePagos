@@ -10,6 +10,7 @@ CREATE PROCEDURE [dbo].[USP_U_MarcarConceptosPagoObligSinCuotaPago]
 	@I_RowID	  int = NULL,
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
+
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 --declare @B_Resultado  bit,
@@ -27,46 +28,68 @@ BEGIN
 	DECLARE @I_Observados_CuotaNoM int = 0
 	
 	BEGIN TRY 
-		UPDATE	TR_Cp_Pri
+		UPDATE	cp_pri
 		SET		B_Migrable = 0,
+				B_Migrado = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO) AND TIPO_OBLIG = 1
-				AND Eliminado = 0
-				AND I_ProcedenciaID = @I_ProcedenciaID
-				AND I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID)
+		FROM    TR_Cp_Pri cp_pri
+				LEFT JOIN TR_Cp_Des cp_des ON cp_pri.Cuota_pago = cp_des.Cuota_pago
+											  AND cp_pri.I_ProcedenciaID = cp_des.I_ProcedenciaID
+		WHERE   cp_pri.Eliminado = 0
+				AND cp_des.I_RowID IS NULL
+				AND cp_pri.I_ProcedenciaID = @I_ProcedenciaID
+				AND cp_pri.I_RowID = ISNULL(@I_RowID, cp_pri.I_RowID)
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID_sinCuota AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_Cp_Pri WHERE NOT EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO) 
-									  AND TIPO_OBLIG = 1
-									  AND I_ProcedenciaID = @I_ProcedenciaID
-									  AND Eliminado = 0
-			  ) AS SRC
-		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		USING (SELECT @I_ObservID_sinCuota AS I_ObservID, @I_TablaID AS I_TablaID, cp_pri.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Cp_Pri cp_pri
+					  LEFT JOIN TR_Cp_Des cp_des ON cp_pri.Cuota_pago = cp_des.Cuota_pago
+
+													AND cp_pri.I_ProcedenciaID = cp_des.I_ProcedenciaID
+				WHERE cp_pri.Eliminado = 0
+					  AND cp_des.I_RowID IS NULL
+					  AND cp_pri.I_ProcedenciaID = @I_ProcedenciaID
+					  AND cp_pri.I_RowID = ISNULL(@I_RowID, cp_pri.I_RowID)
+				) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID 
+		   AND TRG.I_TablaID = SRC.I_TablaID 
+		   AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
 					   B_Resuelto = 0
 		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = IIF(@I_RowID IS NULL, SRC.I_FilaTablaID, @I_RowID) THEN
 			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
 			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinCuota AND TRG.I_ProcedenciaID = @I_ProcedenciaID 
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID_sinCuota 
+								   AND TRG.I_ProcedenciaID = @I_ProcedenciaID 
 								   AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
 			UPDATE SET D_FecResuelto = GETDATE(),
 					   B_Resuelto = 1;
 
 
-		UPDATE	TR_Cp_Pri
+		UPDATE	cp_pri
 		SET		B_Migrable = 0,
+				B_Migrado = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO 
-													  AND Eliminado = 0 AND B_Migrable = 0)
-				AND I_ProcedenciaID = @I_ProcedenciaID
+		FROM	TR_Cp_Pri cp_pri
+				INNER JOIN TR_Cp_Des cp_des ON cp_pri.Cuota_pago = cp_des.Cuota_pago
+											  AND cp_des.B_Migrado = 0
+											  AND cp_pri.I_ProcedenciaID = cp_des.I_ProcedenciaID
+		WHERE	cp_pri.Eliminado = 0
+				AND cp_des.Eliminado = 0
+				AND cp_pri.I_ProcedenciaID = @I_ProcedenciaID
+				AND cp_pri.I_RowID = ISNULL(@I_RowID, cp_pri.I_RowID)
 			
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID_CuotaNoM AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				 FROM TR_Cp_Pri WHERE EXISTS (SELECT * FROM TR_Cp_Des WHERE CUOTA_PAGO = TR_Cp_Pri.CUOTA_PAGO 
-																			AND Eliminado = 0 AND B_Migrable = 0)
-									  AND I_ProcedenciaID = @I_ProcedenciaID
+		USING (SELECT @I_ObservID_CuotaNoM AS I_ObservID, @I_TablaID AS I_TablaID, cp_pri.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Cp_Pri cp_pri
+					  INNER JOIN TR_Cp_Des cp_des ON cp_pri.Cuota_pago = cp_des.Cuota_pago
+													 AND cp_des.B_Migrado = 0
+													 AND cp_pri.I_ProcedenciaID = cp_des.I_ProcedenciaID
+				WHERE cp_pri.Eliminado = 0
+					  AND cp_des.Eliminado = 0
+					  AND cp_pri.I_ProcedenciaID = @I_ProcedenciaID
+					  AND cp_pri.I_RowID = ISNULL(@I_RowID, cp_pri.I_RowID)
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
@@ -80,8 +103,8 @@ BEGIN
 			UPDATE SET D_FecResuelto = GETDATE(),
 					   B_Resuelto = 1;
 
-		SET @I_Observados_sinCuota = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_sinCuota AND I_TablaID = @I_TablaID)
-		SET @I_Observados_CuotaNoM = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_CuotaNoM AND I_TablaID = @I_TablaID)
+		SET @I_Observados_sinCuota = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE B_Resuelto = 0 AND I_ObservID = @I_ObservID_sinCuota AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados_CuotaNoM = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE B_Resuelto = 0 AND I_ObservID = @I_ObservID_CuotaNoM AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
 
 		SET @B_Resultado = 1
 		SET @T_Message = CAST(@I_Observados_sinCuota AS varchar) + ' sin cuota de pago |' + CAST(@I_Observados_CuotaNoM AS varchar) +  ' con cuota de pago sin migrar.'
@@ -91,3 +114,4 @@ BEGIN
 		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
 	END CATCH
 END
+GO

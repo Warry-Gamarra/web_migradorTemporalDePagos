@@ -49,7 +49,10 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar
 
             try
             {
-                string s_command = @"SELECT c.* FROM TI_ConceptoPago c where c.I_ConcPagID = @I_ConcPagID AND c.B_Eliminado = 0";
+                string s_command = "SELECT c.*, per.T_OpcionCod as T_PeriodoCod, tOblig.T_OpcionDesc as T_Obligigacion, c.T_Clasificador as T_Clasificador2 FROM TI_ConceptoPago c " +
+                                                    "LEFT JOIN dbo.TC_CatalogoOpcion per ON per.I_OpcionID = c.I_Periodo " +
+                                                    "LEFT JOIN dbo.TC_CatalogoOpcion tOblig ON tOblig.I_OpcionID = c.I_TipoObligacion " +
+                                    "WHERE c.I_ConcPagID = @I_ConcPagID AND c.B_Eliminado = 0";
 
                 using (var _dbConnection = new SqlConnection(Databases.CtasPorCobrarConnectionString))
                 {

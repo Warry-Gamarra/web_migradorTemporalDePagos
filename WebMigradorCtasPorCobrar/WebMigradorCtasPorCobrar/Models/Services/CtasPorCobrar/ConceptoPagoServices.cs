@@ -14,5 +14,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar
         {
             return ConceptoPagoRepository.Obtener((int)procedencia);
         }
+
+        public TI_ConceptoPago Obtener(int conceptoPagoId)
+        {
+            return ConceptoPagoRepository.ObtenerPorID(conceptoPagoId);
+        }
+
     }
 }

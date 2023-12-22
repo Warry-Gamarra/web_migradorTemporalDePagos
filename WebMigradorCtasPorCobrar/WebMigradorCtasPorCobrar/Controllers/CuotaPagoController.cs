@@ -104,7 +104,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
-            Response result = _cuotaPagoServiceMigracion.EjecutarValidaciones(procedencia, null);
+            IEnumerable<Response> result = _cuotaPagoServiceMigracion.EjecutarValidaciones(procedencia, null);
 
             return PartialView("_ResultadoValidarRegistros", result);
         }
@@ -160,9 +160,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
         [HttpPost]
-        public ActionResult Save(CuotaPago model, int tipoObserv)
+        public ActionResult Save(CuotaPago model, int? tipoObserv)
         {
-            var result = _cuotaPagoServiceMigracion.Save(model, tipoObserv);
+            Response result = _cuotaPagoServiceMigracion.Save(model, tipoObserv);
 
             ViewBag.Reload = true;
 

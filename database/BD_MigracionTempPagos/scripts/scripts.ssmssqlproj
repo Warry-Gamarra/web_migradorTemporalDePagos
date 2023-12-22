@@ -139,12 +139,6 @@
           <AssociatedConnUserName />
           <FullPath>9. BD_OCEF_MigracionTP - Esquema de tablas Control.sql</FullPath>
         </FileNode>
-        <FileNode Name="SQLQuery1_.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
-          <AssociatedConnUserName />
-          <FullPath>SQLQuery1_.sql</FullPath>
-        </FileNode>
         <FileNode Name="Test_posgrado.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
