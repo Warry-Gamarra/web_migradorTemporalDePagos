@@ -49,6 +49,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                                     B_Migrable = c.B_Migrable,
                                     B_Migrado = c.B_Migrado,
                                     I_RowID = c.I_RowID,
+                                    Prioridad = c.Prioridad,
+                                    C_mora = c.C_mora,
                                     B_ExisteCtas = cppg == null ? false : (cppg.I_MigracionRowID.HasValue ? (cppg.I_MigracionRowID.Value == c.I_RowID ? true : false) : true)
                                 };
 
@@ -152,11 +154,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {
-            Response result = new Response();
+            Response result;
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
             string schemaDb = Schema.SetSchema(procedencia);
-            string codigos_bnc = "";
+            string codigos_bnc;
 
             switch (procedencia)
             {
@@ -171,6 +173,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                                 + Constant.PROLICE_TEMPORAL_CODIGOS_BNC + ", "
                                 + Constant.PROCUNED_TEMPORAL_CODIGOS_BNC;
                     break;
+                case Procedencia.Tasas:
+                    codigos_bnc = "";
+                    result = cuotaPagoRepository.CopiarRegistrosTasas((int)procedencia, codigos_bnc);
+
+                    return result.IsDone ? result.Success(false) : result.Error(false); 
                 default:
                     codigos_bnc = "''";
                     break;

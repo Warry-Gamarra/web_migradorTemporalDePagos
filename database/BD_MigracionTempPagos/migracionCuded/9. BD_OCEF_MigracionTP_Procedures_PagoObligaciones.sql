@@ -119,13 +119,13 @@ BEGIN
 		CREATE TABLE #Tbl_output_pago_det (T_Action	varchar(20), I_rowID float)
 		
 
-		SELECT @Cod_alu = Cod_alu, @I_Periodo = I_Periodo, @I_Anio = CAST(Ano as int)
+		SELECT /*@Cod_alu = Cod_alu, @I_Periodo = I_Periodo, @I_Anio = CAST(Ano as int)*/ *
 		  FROM TR_Ec_Obl
-		 WHERE I_RowID = @I_RowID
+		 WHERE I_RowID = 9006217-- @I_RowID
 		 		
-		SELECT @I_ObligacionAluID = I_ObligacionAluID
+		SELECT /* @I_ObligacionAluID = */I_ObligacionAluID
 		  FROM BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab
-		 WHERE I_MigracionRowID = @I_RowID AND I_MigracionTablaID = @I_MigracionTablaOblID
+		 WHERE I_MigracionRowID = 9006217 /* @I_RowID*/ AND I_MigracionTablaID = 5 -- @I_MigracionTablaOblID
 
 
 		IF(@I_ObligacionAluID IS NULL)
@@ -136,13 +136,13 @@ BEGIN
 			GOTO END_TRANSACTION
 		END
 		
-		SELECT @I_CountPagoBancoID = COUNT(*) 
+		SELECT /*@I_CountPagoBancoID =*/ COUNT(*) 
 		  FROM BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco PB
-			   INNER JOIN TR_Ec_Det D ON D.I_RowID = PB.I_MigracionRowID AND I_MigracionTablaID = @I_MigracionTablaDetID
-		 WHERE I_OblRowID = @I_RowID 
+			   INNER JOIN TR_Ec_Det D ON D.I_RowID = PB.I_MigracionRowID AND I_MigracionTablaID = 4 -- @I_MigracionTablaDetID
+		 WHERE I_OblRowID = 9006217 --@I_RowID 
 
 
-		SELECT  @I_CountPagoProcID = COUNT(*) 
+		SELECT /* @I_CountPagoProcID =*/ COUNT(*) 
 		  FROM BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv PPU
 			   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet D ON PPU.I_MigracionRowID = D.I_MigracionRowID
 		 WHERE I_ObligacionAluID = @I_ObligacionAluID

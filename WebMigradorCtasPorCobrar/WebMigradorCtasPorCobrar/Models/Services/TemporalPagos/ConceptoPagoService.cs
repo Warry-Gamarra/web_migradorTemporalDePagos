@@ -28,6 +28,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.TemporalPagos
                                 + Constant.PROLICE_TEMPORAL_CODIGOS_BNC + ", "
                                 + Constant.PROCUNED_TEMPORAL_CODIGOS_BNC;
                     break;
+                case Procedencia.Tasas:
+                    codigos_bnc = "''";
+                    return ConceptoPagoRepository.ObtenerTasas(schemaDb, codigos_bnc);
                 default:
                     codigos_bnc = "''";
                     break;

@@ -148,7 +148,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ObligacionesController.cs" />
     <Compile Include="Controllers\ReportesController.cs" />
-    <Compile Include="Controllers\TasasController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -185,8 +184,10 @@
     <Compile Include="Models\Repository\CtasPorCobrar\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\ProcesoRepositoty.cs" />
     <Compile Include="Models\Repository\Migracion\AlumnoRepository.cs" />
+    <Compile Include="Models\Repository\Migracion\TasasConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Configuracion.cs" />
+    <Compile Include="Models\Repository\Migracion\TasasCuotaPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\CuotaPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\DetalleObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\ObligacionRepository.cs" />
@@ -477,11 +478,9 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Posgrado\Index.cshtml" />
     <Content Include="Views\Shared\_Tablas.cshtml" />
     <Content Include="Views\Shared\_GridPager.cshtml" />
     <Content Include="Views\Shared\_Grid.cshtml" />
-    <Content Include="Views\Posgrado\CuotaPago.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -492,10 +491,6 @@
     <Content Include="Files\Help\ManualUsuario.pdf" />
     <Content Include="Assets\bootstrap-toggle\js\bootstrap4-toggle.min.js.map" />
     <None Include="packages.config" />
-    <Content Include="Views\Posgrado\ConceptoPago.cshtml" />
-    <Content Include="Views\Posgrado\Obligacion.cshtml" />
-    <Content Include="Views\Posgrado\Migracion.cshtml" />
-    <Content Include="Views\Posgrado\_ObligacionesAnio.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\Shared\_Sidebar.cshtml" />
     <Content Include="Views\Estudiante\Index.cshtml" />
@@ -565,6 +560,10 @@
     <Content Include="Views\ConceptoPago\_EditarConceptoPago.cshtml" />
     <Content Include="Views\CuotaPago\_EditarCuotaPago.cshtml" />
     <Content Include="Views\CuotaPago\_DatosCuotaPago.cshtml" />
+    <Content Include="Views\CuotaPago\Tasas.cshtml" />
+    <Content Include="Views\ConceptoPago\Tasas.cshtml" />
+    <Content Include="Views\ConceptoPago\_DatosMigracionTasas.cshtml" />
+    <Content Include="Views\CuotaPago\_DatosMigracionTasas.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
