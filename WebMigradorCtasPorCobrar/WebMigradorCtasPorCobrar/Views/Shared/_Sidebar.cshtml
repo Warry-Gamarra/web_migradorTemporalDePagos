@@ -21,6 +21,7 @@
                 <li><a href="@Url.Action("Pregrado", "CuotaPago", new { area = "" })"><i class="fa fa-fw bi-person-lines-fill"></i>&nbsp; Pregrado</a></li>
                 <li><a href="@Url.Action("Posgrado", "CuotaPago", new { area = "" })"><i class="fa fa-fw fa-graduation-cap"></i>&nbsp; Posgrado</a></li>
                 <li><a href="@Url.Action("Cuded", "CuotaPago", new { area = "" })"><i class="fa fa-fw bi-globe2"></i>&nbsp; CUDED</a></li>
+                <li><a href="@Url.Action("Tasas", "CuotaPago", new { area = "" })"><i class="fa fa-fw bi-receipt-cutoff""></i>&nbsp; Tasas</a></li>
             </ul>
         </li>
 
@@ -32,19 +33,22 @@
                 <li><a href="@Url.Action("Pregrado", "ConceptoPago", new { area = "" })"><i class="fa fa-fw bi-person-lines-fill"></i>&nbsp; Pregrado</a></li>
                 <li><a href="@Url.Action("Posgrado", "ConceptoPago", new { area = "" })"><i class="fa fa-fw fa-graduation-cap"></i>&nbsp; Posgrado</a></li>
                 <li><a href="@Url.Action("Cuded", "ConceptoPago", new { area = "" })"><i class="fa fa-fw bi-globe2"></i>&nbsp; CUDED</a></li>
+                <li><a href="@Url.Action("Tasas", "ConceptoPago", new { area = "" })"><i class="fa fa-fw bi-receipt-cutoff""></i>&nbsp; Tasas</a></li>
             </ul>
         </li>
 
         <li class="nav-item">
             <a href="javascript:;" class="nav-link" data-toggle="collapse" data-target="#obligaciones">
-                <i class="fa fa-fw bi-calculator"></i> Obligaciones y pagos<span class="pull-right"><i class="fa fa-fw fa-caret-down"></i></span>
+                <i class="fa fa-fw bi-calculator"></i> Obligaciones, Tasas y pagos<span class="pull-right"><i class="fa fa-fw fa-caret-down"></i></span>
             </a>
             <ul id="obligaciones" class="collapse">
                 <li><a href="@Url.Action("Pregrado", "Obligaciones", new { area = "" })"><i class="fa fa-fw bi-person-lines-fill"></i>&nbsp; Pregrado</a></li>
                 <li><a href="@Url.Action("Posgrado", "Obligaciones", new { area = "" })"><i class="fa fa-fw fa-graduation-cap"></i>&nbsp; Posgrado</a></li>
                 <li><a href="@Url.Action("Cuded", "Obligaciones", new { area = "" })"><i class="fa fa-fw bi-globe2"></i>&nbsp; CUDED</a></li>
+                <li><a href="@Url.Action("Tasas", "Obligaciones", new { area = "" })"><i class="fa fa-fw bi-receipt-cutoff"></i>&nbsp; Tasas</a></li>
             </ul>
         </li>
+
 
         <li class="nav-item">
             <a href="javascript:;" class="nav-link" data-toggle="collapse" data-target="#reportes">
@@ -54,6 +58,7 @@
                 <li><a href="@Url.Action("Pregrado", "Reportes", new { area = "" })"><i class="fa fa-fw bi-person-lines-fill"></i>&nbsp; Pregrado</a></li>
                 <li><a href="@Url.Action("Posgrado", "Reportes", new { area = "" })"><i class="fa fa-fw fa-graduation-cap"></i>&nbsp; Posgrado</a></li>
                 <li><a href="@Url.Action("Cuded", "Reportes", new { area = "" })"><i class="fa fa-fw bi-globe2"></i>&nbsp; CUDED</a></li>
+                <li><a href="@Url.Action("Cuded", "Reportes", new { area = "" })"><i class="fa fa-fw bi-receipt-cutoff""></i>&nbsp; Tasas</a></li>
             </ul>
         </li>
 
@@ -94,7 +99,7 @@
         </li>
         <li class="nav-item">
             <a href="javascript:;" class="nav-link" data-toggle="collapse" title="Obligaciones y pagos" data-target="#obligaciones">
-                <i class="fa fa-3x fa-fw bi-calculator"></i><br />Obligaciones y pagos
+                <i class="fa fa-3x fa-fw bi-calculator"></i><br />Obligaciones, Tasas y pagos
             </a>
         </li>
         <li class="nav-item">

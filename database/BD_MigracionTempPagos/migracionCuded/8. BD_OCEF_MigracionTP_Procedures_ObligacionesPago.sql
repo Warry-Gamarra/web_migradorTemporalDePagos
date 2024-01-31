@@ -1,3 +1,4 @@
+
 USE BD_OCEF_MigracionTP
 GO
 
@@ -79,7 +80,7 @@ BEGIN
 															   T_DescDocumento, B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, B_Mora, 
 															   B_Migrado, I_MigracionTablaID, I_MigracionRowID)
 														SELECT @I_ObligacionAluID, SRC.Concepto, SRC.Monto, 0 as pagado, SRC.Fch_venc, CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, 
-															   CAST(Documento as varchar(max)) AS T_DescDocumento, 1 as habilitado,  0 as eliminado,  1 as I_UsuarioCre, @D_FecProceso, 0 AS Mora, 
+															   CAST(Documento as varchar(max)) AS T_DescDocumento, 1 as habilitado,  Eliminado as eliminado,  1 as I_UsuarioCre, @D_FecProceso, 0 AS Mora, 
 															   1 as migrado, @I_TablaID, I_RowID
 														  FROM TR_Ec_Det SRC
 														 WHERE SRC.I_OblRowID =  @I_OblRowID
@@ -217,7 +218,7 @@ BEGIN
 				DECLARE @Tbl_outputObl AS TABLE (T_Action varchar(20), I_RowID int)
 
 				MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet AS TRG
-				USING (SELECT @I_ObligacionAluID as I_ObligacionAluID, Concepto, Monto, 0 as pagado, Fch_venc, 0 AS Mora, 1 as habilitado,  0 as eliminado, 
+				USING (SELECT @I_ObligacionAluID as I_ObligacionAluID, Concepto, Monto, 0 as pagado, Fch_venc, 0 AS Mora, 1 as habilitado, Eliminado as eliminado, 
 							  CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, 1 as migrado, 
 							  CAST(Documento as varchar(max)) AS T_DescDocumento, NULL as I_UsuarioCre, @D_FecProceso as D_FecMod, 
 							  @I_MigracionTablaDetID as I_MigracionTablaID, I_RowID as I_DetMigracionRowID
@@ -237,6 +238,7 @@ BEGIN
 							   TRG.I_TipoDocumento = SRC.I_TipoDocumento, 
 							   TRG.T_DescDocumento = SRC.T_DescDocumento, 
 							   TRG.B_Mora = SRC.Mora, 
+							   TRG.B_Eliminado = SRC.Eliminado, 
 							   TRG.I_UsuarioMod = 1, 
 							   TRG.D_FecMod = @D_FecProceso
 				WHEN NOT MATCHED THEN

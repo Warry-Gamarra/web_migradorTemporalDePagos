@@ -111,6 +111,7 @@ BEGIN
 				SET	B_Actualizado = 0, B_Migrable = 1, D_FecMigrado = NULL, B_Migrado = 0,
 					I_TipAluID = NULL, I_TipGradoID = NULL, I_TipOblID = NULL, I_TipCalcID = NULL, 
 					I_TipPerID = NULL, I_DepID = NULL, I_TipGrpRc = NULL, I_CodIngID = NULL
+		WHERE I_ProcedenciaID = @I_ProcedenciaID
 
 		UPDATE	t_CpPri
 		SET		t_CpPri.B_Actualizado = 1,

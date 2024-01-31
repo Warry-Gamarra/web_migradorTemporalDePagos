@@ -43,6 +43,12 @@
           <AssociatedConnUserName />
           <FullPath>10. BD_OCEF_MigracionTP_Procedures_ValidacionesDetObl.sql</FullPath>
         </FileNode>
+        <FileNode Name="2. BD_OCEF_CtasPorCobrar_Data.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnUserName />
+          <FullPath>2. BD_OCEF_CtasPorCobrar_Data.sql</FullPath>
+        </FileNode>
         <FileNode Name="2. BD_OCEF_MigracionTP_Data.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>

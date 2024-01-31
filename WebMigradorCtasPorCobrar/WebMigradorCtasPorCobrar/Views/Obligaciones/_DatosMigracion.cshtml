@@ -33,6 +33,9 @@
         columns.Add(c => c.Cod_alu).Titled("Cod. Alumno").Filterable(true);
         columns.Add(c => c.Fch_venc).RenderValueAs(model => model.Fch_venc.ToShortDateString()).Titled("Fec. Venc.").Filterable(true);
         columns.Add(c => c.Monto).Css("text-right").Titled("Monto").Filterable(true);
+        columns.Add(c => c.Pagado).Css("text-center").Encoded(false).Sanitized(false).Titled("Pagado").Filterable(true)
+            .RenderValueAs(model => model.Pagado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                                 : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
         columns.Add().SetWidth(150).Css("text-center").Encoded(false).Sanitized(false).Titled("Detalle conceptos")
                      .RenderValueAs(model => @Html.Raw($"<a href=\"{ Url.Action("CargarDetalle", "DetalleObligacion", new { id = model.I_RowID, procedencia = str_procedencia, area = "" })}\" class=\"btn btn-xs btn-warning modal-link-lg\">" +
                                                            $"<i class=\"bi-list-check\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver detalle</span>" +

@@ -23,6 +23,18 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             return result;
         }
 
+        public static IEnumerable<CuotaPago> ObtenerTasas(string schemaDb, string codigos_bnc)
+        {
+            IEnumerable<CuotaPago> result;
+
+            using (var connection = new SqlConnection(Databases.TemporalTasasConnectionString))
+            {
+                result = connection.Query<CuotaPago>($"SELECT * FROM {schemaDb}.cp_des WHERE codigo_bnc IN ({codigos_bnc})", commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
         public static IEnumerable<CuotaPago> ObtenerPorConceptoPago(string schemaDb, int conceptoPagoID)
         {
             IEnumerable<CuotaPago> result;

@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 using CtasPorCobrar = WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
-using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.Migracion;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
@@ -19,7 +18,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
     public class ConceptoPagoController : Controller
     {
         private readonly TemporalPagos.ConceptoPagoService _conceptoPagoServiceTemporalPagos;
-        private readonly Migracion.ConceptoPagoService _conceptoPagoServiceMigracion;
+        private readonly ConceptoPagoService _conceptoPagoServiceMigracion;
         private readonly CtasPorCobrar.ConceptoPagoServices _conceptoPagoServiceCtasPorCobrar;
         private readonly EquivalenciasServices _equivalenciasServices;
         private readonly ObservacionService _observacionService;
@@ -27,7 +26,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ConceptoPagoController()
         {
             _conceptoPagoServiceTemporalPagos = new TemporalPagos.ConceptoPagoService();
-            _conceptoPagoServiceMigracion = new Migracion.ConceptoPagoService();
+            _conceptoPagoServiceMigracion = new ConceptoPagoService();
             _conceptoPagoServiceCtasPorCobrar = new CtasPorCobrar.ConceptoPagoServices();
             _observacionService = new ObservacionService();
             _equivalenciasServices = new EquivalenciasServices();
@@ -69,6 +68,18 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
+        public ActionResult Tasas(string partial)
+        {
+            if (!string.IsNullOrEmpty(partial))
+            {
+                ViewBag.Action = partial;
+                ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
+            }
+
+            return View();
+        }
+
+
         public ActionResult TemporalPagos(Procedencia procedencia)
         {
             var model = _conceptoPagoServiceTemporalPagos.Obtener(procedencia);
@@ -92,6 +103,11 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             ViewBag.IdObservacion = tipo_obs;
             ViewBag.Procedencia = procedencia;
+
+            if (Procedencia.Tasas == procedencia)
+            {
+                return PartialView("_DatosMigracionTasas", model);
+            }
 
             return PartialView("_DatosMigracion", model);
         }

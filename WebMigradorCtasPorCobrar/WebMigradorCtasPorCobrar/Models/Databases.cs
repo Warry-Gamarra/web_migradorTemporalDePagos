@@ -39,6 +39,14 @@ namespace WebMigradorCtasPorCobrar.Models
             }
         }
 
+        public static string TemporalTasasConnectionString
+        {
+            get
+            {
+                return ConfigurationManager.ConnectionStrings["BD_TemporalTasasConnection"].ConnectionString;
+            }
+        }
+
 
     }
 }

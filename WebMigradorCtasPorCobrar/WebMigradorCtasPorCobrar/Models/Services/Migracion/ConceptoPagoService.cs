@@ -105,6 +105,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                                 + Constant.PROLICE_TEMPORAL_CODIGOS_BNC + ", "
                                 + Constant.PROCUNED_TEMPORAL_CODIGOS_BNC;
                     break;
+                case Procedencia.Tasas:
+                    codigos_bnc = "";
+                    result = conceptoPagoRepository.CopiarRegistrosTasas((int)procedencia, codigos_bnc);
+
+                    return result.IsDone ? result.Success(false) : result.Error(false);
+
                 default:
                     codigos_bnc = "''";
                     break;

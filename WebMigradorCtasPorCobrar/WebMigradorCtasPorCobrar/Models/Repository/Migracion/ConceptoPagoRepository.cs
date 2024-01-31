@@ -10,7 +10,7 @@ using WebMigradorCtasPorCobrar.Models.Helpers;
 
 namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
 {
-    public class ConceptoPagoRepository
+    public partial class ConceptoPagoRepository
     {
         public static IEnumerable<ConceptoPago> Obtener(int procedenciaID)
         {
