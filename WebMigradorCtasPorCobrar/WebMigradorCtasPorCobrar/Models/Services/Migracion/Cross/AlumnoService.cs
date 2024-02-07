@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
+using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
 using RepoAlu = WebMigradorCtasPorCobrar.Models.Repository.UnfvRepositorio;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
@@ -11,7 +11,7 @@ using System.IO;
 using ClosedXML.Excel;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 
-namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
+namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 {
     public class AlumnoService
     {

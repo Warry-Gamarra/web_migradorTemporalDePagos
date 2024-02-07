@@ -8,7 +8,7 @@ using System.Web;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 
-namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
+namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Tasas
 {
     public partial class ConceptoPagoRepository
     {
@@ -43,34 +43,34 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         }
 
 
-        //public Response InicializarEstadoValidacionCuotaPago(int? rowID, int procedenciaID)
-        //{
-        //    Response result = new Response();
-        //    DynamicParameters parameters = new DynamicParameters();
+        public Response InicializarEstadoValidacionCuotaPago(int? rowID, int procedenciaID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
 
-        //    try
-        //    {
-        //        using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
-        //        {
-        //            parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
-        //            parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
-        //            parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
-        //            parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-        //            connection.Execute("USP_U_InicializarEstadoValidacionConceptoPago", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_MigracionTP_Tasas_U_ConceptoPago_InicializarEstadosValidacion", parameters, commandType: CommandType.StoredProcedure);
 
-        //            result.IsDone = parameters.Get<bool>("B_Resultado");
-        //            result.Message = parameters.Get<string>("T_Message");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.IsDone = false;
-        //        result.Message = ex.Message;
-        //    }
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
 
-        //    return result;
-        //}
+            return result;
+        }
 
 
         //public Response ValidarDuplicadoConceptosPago(int? rowID, int procedenciaID)
@@ -401,36 +401,34 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
         //}
 
 
-        //public Response MigrarDataConceptoPagoCtasPorCobrar(int procedenciaID, int? procesoID, int? anioIni, int? anioFin)
-        //{
-        //    Response result = new Response();
-        //    DynamicParameters parameters = new DynamicParameters();
+        public Response MigrarDataConceptoPagoCtasPorCobrar(int procedenciaID, int? procesoID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
 
-        //    try
-        //    {
-        //        using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
-        //        {
-        //            parameters.Add(name: "I_ProcesoID", dbType: DbType.Int32, value: procesoID);
-        //            parameters.Add(name: "I_AnioIni", dbType: DbType.Int16, value: anioIni);
-        //            parameters.Add(name: "I_AnioFin", dbType: DbType.Int16, value: anioFin);
-        //            parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Int32, value: procedenciaID);
-        //            parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
-        //            parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_ProcesoID", dbType: DbType.Int32, value: procesoID);
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Int32, value: procedenciaID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-        //            connection.Execute("USP_IU_MigrarDataConceptoPagoObligacionesCtasPorCobrar", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_MigracionTP_Tasas_IU_ConceptoPago_MigrarDataTemporalPagos", parameters, commandType: CommandType.StoredProcedure);
 
-        //            result.IsDone = parameters.Get<bool>("B_Resultado");
-        //            result.Message = parameters.Get<string>("T_Message");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.IsDone = false;
-        //        result.Message = ex.Message;
-        //    }
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
 
-        //    return result;
-        //}
+            return result;
+        }
 
 
         //public Response Save(ConceptoPago conceptoPago)

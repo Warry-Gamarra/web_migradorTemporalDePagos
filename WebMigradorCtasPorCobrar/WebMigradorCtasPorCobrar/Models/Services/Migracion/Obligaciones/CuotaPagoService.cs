@@ -2,163 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
-using RepoCtas = WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
-using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
+using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
-using ClosedXML.Excel;
-using System.IO;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
-using WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
-using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 
-namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
+namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
     public class CuotaPagoService
     {
-        public IEnumerable<CuotaPago> Obtener(Procedencia procedencia, int? tipo_obsID)
-        {
-            if (tipo_obsID.HasValue)
-            {
-                return ObtenerConRepo(CuotaPagoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Des), procedencia);
-            }
-
-            return ObtenerConRepo(CuotaPagoRepository.Obtener((int)procedencia), procedencia);
-        }
-
-        private IEnumerable<CuotaPago> ObtenerConRepo(IEnumerable<CuotaPago> cuotasPago, Procedencia procedencia)
-        {
-            var cuotasPagoCtas = RepoCtas.ProcesoRepositoty.Obtener((int)procedencia);
-
-            var newCuotasPago = from c in cuotasPago
-                                join cr in cuotasPagoCtas on c.Cuota_pago equals cr.I_ProcesoID 
-                                into cuotasPagoProcesoGroup
-                                from cppg in cuotasPagoProcesoGroup.DefaultIfEmpty()
-                                select new CuotaPago()
-                                {
-                                    Cuota_pago = c.Cuota_pago,
-                                    Descripcio = c.Descripcio,
-                                    I_Anio = c.I_Anio,
-                                    PeriodoDesc = c.PeriodoDesc,
-                                    N_cta_cte = c.N_cta_cte,
-                                    Codigo_bnc = c.Codigo_bnc,
-                                    Fch_venc = c.Fch_venc,
-                                    Eliminado = c.Eliminado,
-                                    B_Migrable = c.B_Migrable,
-                                    B_Migrado = c.B_Migrado,
-                                    I_RowID = c.I_RowID,
-                                    Prioridad = c.Prioridad,
-                                    C_mora = c.C_mora,
-                                    B_ExisteCtas = cppg == null ? false : (cppg.I_MigracionRowID.HasValue ? (cppg.I_MigracionRowID.Value == c.I_RowID ? true : false) : true)
-                                };
-
-            return newCuotasPago;
-        }
-
-        public CuotaPago Obtener(int cuotaID)
-        {
-            var result = CuotaPagoRepository.ObtenerPorId(cuotaID);
-
-            if (result.I_CatPagoID.HasValue)
-            {
-                result.CatPagoDesc = CategoriaPagoRepository.Obtener(result.I_CatPagoID.Value).T_CatPagoDesc;
-            }
-
-            return CuotaPagoRepository.ObtenerPorId(cuotaID);
-        }
-
-        public CuotaPagoViewModel ObtenerVistaDatos(int id, Procedencia procedencia)
-        {
-            ProcesoServices _cuotaPagoServiceCtasPorCobrar = new ProcesoServices();
-            var result = new CuotaPagoViewModel()
-            {
-                CuotaMigracion = Obtener(id),
-            };
-
-            result.CuotaCtasCobrar = _cuotaPagoServiceCtasPorCobrar.Obtener(procedencia)
-                                                                   .FirstOrDefault(x => x.Cuota_Pago == result.CuotaMigracion.Cuota_pago);
-
-            return result;
-        }
-
-
-        public CuotaPago ObtenerConRelaciones(int cuotaID)
-        {
-            var cuotaPago = CuotaPagoRepository.ObtenerPorId(cuotaID);
-
-            cuotaPago.Fch_venc_s = cuotaPago.Fch_venc.ToShortDateString();
-            cuotaPago.ConceptosPago = new List<ConceptoPago>();
-            cuotaPago.Obligaciones = new List<Obligacion>();
-            cuotaPago.DetalleObligaciones = new List<DetalleObligacion>();
-
-            string schema = Schema.SetSchema((Procedencia)cuotaPago.I_ProcedenciaID);
-
-            foreach (var Temp_conceptoPago in Temporal.ConceptoPagoRepository.ObtenerPorCuotaPago(schema, cuotaPago.Cuota_pago.ToString()))
-            {
-                cuotaPago.ConceptosPago.Add(new ConceptoPago(Temp_conceptoPago));
-            }
-
-            foreach (var Temp_item in Temporal.ObligacionRepository.ObtenerObligacionPorCuotaPago(schema, cuotaPago.Cuota_pago.ToString())
-                                                                   .Select(x => new { x.Ano, x.P, x.Cuota_pago, x.Descripcio })
-                                                                   .Distinct())
-            {
-                var obligacion = new Entities.TemporalPagos.Obligacion()
-                {
-                    Ano = Temp_item.Ano,
-                    P = Temp_item.P,
-                    Cuota_pago = Temp_item.Cuota_pago,
-                    Descripcio = Temp_item.Descripcio,
-                };
-
-                cuotaPago.Obligaciones.Add(new Obligacion(obligacion));
-            }
-
-            foreach (var Temp_item in Temporal.ObligacionRepository.ObtenerDetallePorCuotaPago(schema, cuotaPago.Cuota_pago.ToString())//.Where(x => x.Eliminado == false)
-                                                                   .Select(x => new { x.Ano, x.P, x.Cuota_pago, x.Concepto, x.Descripcio, x.Eliminado })
-                                                                   .Distinct().OrderBy(x => x.Ano))
-            {
-                var detalle = new Entities.TemporalPagos.DetalleObligacion()
-                {
-                    Ano = Temp_item.Ano,
-                    P = Temp_item.P,
-                    Cuota_pago = Temp_item.Cuota_pago,
-                    Concepto = Temp_item.Concepto,
-                    Descripcio = Temp_item.Descripcio,
-                    Eliminado = Temp_item.Eliminado
-                };
-
-                cuotaPago.DetalleObligaciones.Add(new DetalleObligacion(detalle));
-            }
-
-            return cuotaPago;
-        }
-
-        public byte[] ObtenerDatosObservaciones(Procedencia procedencia, int? tipo_obsID)
-        {
-            XLWorkbook excel_book = new XLWorkbook();
-            MemoryStream result = new MemoryStream();
-
-            tipo_obsID = tipo_obsID.HasValue ? tipo_obsID : 0;
-            var data = CuotaPagoRepository.ObtenerReporteObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Cp_Des);
-
-            var sheet = excel_book.Worksheets.Add(data, "Observaciones");
-            sheet.ColumnsUsed().AdjustToContents();
-
-            excel_book.SaveAs(result);
-
-            return result.ToArray();
-        }
-
-
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {
-            Response result;
-            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
-
             string schemaDb = Schema.SetSchema(procedencia);
-            string codigos_bnc;
+            string codigos_bnc = "''";
+
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
             switch (procedencia)
             {
@@ -173,20 +32,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
                                 + Constant.PROLICE_TEMPORAL_CODIGOS_BNC + ", "
                                 + Constant.PROCUNED_TEMPORAL_CODIGOS_BNC;
                     break;
-                case Procedencia.Tasas:
-                    codigos_bnc = "";
-                    result = cuotaPagoRepository.CopiarRegistrosTasas((int)procedencia, codigos_bnc);
-
-                    return result.IsDone ? result.Success(false) : result.Error(false); 
-                default:
-                    codigos_bnc = "''";
-                    break;
             }
 
-            result = cuotaPagoRepository.CopiarRegistros((int)procedencia, schemaDb, codigos_bnc);
-
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            return cuotaPagoRepository.CopiarRegistros((int)procedencia, schemaDb, codigos_bnc);
         }
+
 
         public IEnumerable<Response> EjecutarValidaciones(Procedencia procedencia, int? cuotaPagoRowID)
         {
@@ -213,7 +63,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
             response = cuotaPagoRepository.MarcarDuplicadosCuotaPago(procedenciaId);
-            
+
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
             response = observados == 0 ? response : response.Warning(false);
@@ -274,7 +124,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return response;
         }
 
-        private Response AsignarAnioCuotaPago(int? cuotaPagoID, int procedenciaId, string  schema)
+        private Response AsignarAnioCuotaPago(int? cuotaPagoID, int procedenciaId, string schema)
         {
             Response response;
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
@@ -306,9 +156,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             return response;
         }
 
-
-
-
         public IEnumerable<Response> MigrarDatosTemporalPagos(Procedencia procedencia)
         {
             List<Response> result = new List<Response>();
@@ -326,9 +173,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
 
         public Response Save(CuotaPago cuotaPago, int? tipoObsID)
         {
-            Response result = new Response();
+            Response result;
             string schemaDb = Schema.SetSchema((Procedencia)cuotaPago.I_ProcedenciaID);
-            cuotaPago.Fch_venc = !string.IsNullOrEmpty(cuotaPago.Fch_venc_s) ? DateTime.Parse(cuotaPago.Fch_venc_s) : cuotaPago.Fch_venc;
 
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
             cuotaPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID);
@@ -367,7 +213,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
             cuotaPagoRepository.AsignarAnioCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
             cuotaPagoRepository.AsignarPeriodoCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
 
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            return result;
         }
+
     }
 }

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Web;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
-using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
+using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
-namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
+namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 {
     public class ObligacionDetalleService
     {

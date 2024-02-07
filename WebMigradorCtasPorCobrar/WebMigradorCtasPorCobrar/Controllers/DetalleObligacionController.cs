@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using WebMigradorCtasPorCobrar.Models.Helpers;
-using WebMigradorCtasPorCobrar.Models.Services.Migracion;
+using WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {

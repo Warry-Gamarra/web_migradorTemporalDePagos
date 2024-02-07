@@ -6,7 +6,7 @@ using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion;
 
-namespace WebMigradorCtasPorCobrar.Models.Services.Migracion
+namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 {
     public class ObservacionService
     {

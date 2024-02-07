@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
-using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion;
+using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
 using UnfvRepositorio = WebMigradorCtasPorCobrar.Models.Services.UnfvRepositorio;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.ViewModels;

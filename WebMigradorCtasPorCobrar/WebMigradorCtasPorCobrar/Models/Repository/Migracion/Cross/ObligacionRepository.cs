@@ -8,7 +8,7 @@ using System.Web;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 
-namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
+namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
 {
     public class ObligacionRepository
     {

@@ -6,7 +6,7 @@ using System.Web.Mvc;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 using CtasPorCobrar = WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
-using WebMigradorCtasPorCobrar.Models.Services.Migracion;
+using WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
@@ -120,6 +120,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_ProcesoMigracion");
         }
 
+
         [HttpPost]
         public ActionResult CopiarRegistros(Procedencia procedencia)
         {
@@ -127,6 +128,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             return PartialView("_ResultadoCopiarRegistros", result);
         }
+
 
         [HttpPost]
         public ActionResult ValidarRegistros(Procedencia procedencia)
@@ -136,6 +138,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             return PartialView("_ResultadoValidarRegistros", result);
         }
+
 
         [HttpPost]
         public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
