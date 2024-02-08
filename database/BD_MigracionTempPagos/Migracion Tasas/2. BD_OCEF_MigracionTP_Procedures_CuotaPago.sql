@@ -1,13 +1,13 @@
 USE BD_OCEF_MigracionTP
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Tasas_IU_CuotaPago_CopiarTablaTemporalPagos')
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Tasas_CuotaPago_IU_CopiarTablaTemporalPagos')
 BEGIN
-	DROP PROCEDURE dbo.USP_MigracionTP_Tasas_IU_CuotaPago_CopiarTablaTemporalPagos
+	DROP PROCEDURE dbo.USP_MigracionTP_Tasas_CuotaPago_IU_CopiarTablaTemporalPagos
 END
 GO
 
-CREATE PROCEDURE dbo.USP_MigracionTP_Tasas_IU_CuotaPago_CopiarTablaTemporalPagos
+CREATE PROCEDURE dbo.USP_MigracionTP_Tasas_CuotaPago_IU_CopiarTablaTemporalPagos
 (
 	@I_ProcedenciaID tinyint,
 	@T_Codigo_bnc	 varchar(250),
@@ -19,7 +19,7 @@ AS
 --		@I_ProcedenciaID	tinyint = 4,
 --		@T_Codigo_bnc		nvarchar(250) = N'',
 --		@T_Message			nvarchar(4000)
---exec USP_MigracionTP_Tasas_IU_CuotaPago_CopiarTablaTemporalPagos @I_ProcedenciaID, @T_Codigo_bnc, @B_Resultado output, @T_Message output
+--exec USP_MigracionTP_Tasas_CuotaPago_IU_CopiarTablaTemporalPagos @I_ProcedenciaID, @T_Codigo_bnc, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE()
@@ -120,11 +120,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Tasas_U_CuotaPago_InicializarEstadosValidacion')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Tasas_U_CuotaPago_InicializarEstadosValidacion]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Tasas_CuotaPago_U_InicializarEstadosValidacion')
+	DROP PROCEDURE [dbo].[USP_MigracionTP_Tasas_CuotaPago_U_InicializarEstadosValidacion]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Tasas_U_CuotaPago_InicializarEstadosValidacion	
+CREATE PROCEDURE USP_MigracionTP_Tasas_CuotaPago_U_InicializarEstadosValidacion	
 	@I_RowID	  int = NULL,
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
@@ -134,7 +134,7 @@ AS
 --		@I_RowID	  int = NULL,
 --		@I_ProcedenciaID	tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Tasas_U_CuotaPago_InicializarEstadosValidacion @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_MigracionTP_Tasas_CuotaPago_U_InicializarEstadosValidacion @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	BEGIN TRANSACTION
@@ -164,13 +164,13 @@ GO
 
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Tasas_IU_CuotaPago_AsignarCategoríaPagoCtasPorCobrar')
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Tasas_CuotaPago_IU_AsignarCategoríaPagoCtasPorCobrar')
 BEGIN
-	DROP PROCEDURE dbo.USP_MigracionTP_Tasas_IU_CuotaPago_AsignarCategoríaPagoCtasPorCobrar
+	DROP PROCEDURE dbo.USP_MigracionTP_Tasas_CuotaPago_IU_AsignarCategoríaPagoCtasPorCobrar
 END
 GO
 
-CREATE PROCEDURE dbo.USP_MigracionTP_Tasas_IU_CuotaPago_AsignarCategoríaPagoCtasPorCobrar
+CREATE PROCEDURE dbo.USP_MigracionTP_Tasas_CuotaPago_IU_AsignarCategoríaPagoCtasPorCobrar
 (
 	@I_ProcedenciaID tinyint,
 	@T_Codigo_bnc	 varchar(250),
@@ -182,7 +182,7 @@ AS
 --		@I_ProcedenciaID	tinyint = 4,
 --		@T_Codigo_bnc		nvarchar(250) = N'',
 --		@T_Message			nvarchar(4000)
---exec USP_MigracionTP_Tasas_IU_CuotaPago_AsignarCategoríaPagoCtasPorCobrar @I_ProcedenciaID, @T_Codigo_bnc, @B_Resultado output, @T_Message output
+--exec USP_MigracionTP_Tasas_CuotaPago_IU_AsignarCategoríaPagoCtasPorCobrar @I_ProcedenciaID, @T_Codigo_bnc, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE()

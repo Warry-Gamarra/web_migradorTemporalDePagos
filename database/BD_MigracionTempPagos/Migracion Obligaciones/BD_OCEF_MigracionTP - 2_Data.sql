@@ -8,6 +8,10 @@ UPDATE TC_CatalogoObservacion SET I_TablaID = 4  WHERE I_ObservID IN (15, 17, 25
 UPDATE TC_CatalogoObservacion SET I_TablaID = 5  WHERE I_ObservID IN (24, 26, 27, 28, 29, 32, 34, 36, 37, 38, 39, 40, 49)
 GO
 
+/*
+	Actualización de descripción de observaciones
+*/
+
 
 UPDATE TC_CatalogoObservacion
    SET T_ObservDesc = 'Año del concepto en el detalle no coincide con año del concepto en cp_pri'
@@ -30,12 +34,8 @@ UPDATE TC_CatalogoObservacion
 GO
 
 
+
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'El monto acumulado de los conceptos en el detalle no corresponde con el monto indicado en la obligación', 'ERROR MONTO', NULL)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (50, 'La cuota de pago existe repetida en otra procedenca', 'REPETIDO', NULL)
 GO
 
-
---INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
---INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
---INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
---select LEN('El año del concepto en el detalle de la obligación no corresponde con el año del concepto en cp_pri')
