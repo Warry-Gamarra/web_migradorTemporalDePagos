@@ -30,8 +30,8 @@ UPDATE TC_CatalogoObservacion
 GO
 
 
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'El monto acumulado de los conceptos en el detalle no corresponde con el monto indicado en la obligación', 'ERROR MONTO', NULL)
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (50, 'La cuota de pago existe repetida en otra procedenca', 'REPETIDO', NULL)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (49, 'El monto acumulado de los conceptos en el detalle no corresponde con el monto indicado en la obligación', 'ERROR MONTO', NULL, 4)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (50, 'La cuota de pago existe repetida en otra procedenca', 'REPETIDO', NULL, 2)
 GO
 
 
@@ -39,3 +39,5 @@ GO
 --INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
 --INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
 --select LEN('El año del concepto en el detalle de la obligación no corresponde con el año del concepto en cp_pri')
+
+

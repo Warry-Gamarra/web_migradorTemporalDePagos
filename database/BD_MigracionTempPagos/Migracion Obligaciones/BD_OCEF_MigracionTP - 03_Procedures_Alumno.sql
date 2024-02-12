@@ -10,11 +10,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_IU_MigrarDataAlumnosPorAnio_UnfvRepositorio]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorAnio')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorAnio]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorAnio')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorAnio]
 GO
 
-CREATE PROCEDURE [dbo].[USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorAnio]
+CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorAnio]
 (
 	@I_ProcedenciaID tinyint,
 	@C_AnioIng	  smallint,	
@@ -26,10 +26,10 @@ AS
 --		@I_ProcedenciaID tinyint = 3,
 --		@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Repositorio_Cross_IU_MigrarDataAlumnosPorAnio @I_ProcedenciaID, @C_AnioIng, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataAlumnosPorAnio @I_ProcedenciaID, @C_AnioIng, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
-	PRINT 'INICIANDO - USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorAnio'
+	PRINT 'INICIANDO - USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorAnio'
 		
 	DECLARE @D_FecProceso	datetime = GETDATE() 
 	DECLARE @I_TablaID		int = 1
@@ -265,7 +265,7 @@ BEGIN
 
 		COMMIT TRANSACTION
 
-		PRINT 'FINALIZANDO - USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorAnio'
+		PRINT 'FINALIZANDO - USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorAnio'
 
 		SET @B_Resultado = 1
 		SET @T_Message =  'Insertados Persona: ' + CAST(@I_Insertados_persona AS varchar) + ' | Insertados Alumno: ' + CAST(@I_Insertados_alumno AS varchar)
@@ -282,13 +282,13 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Repositorio_Alumnos_U_ActualizarTablaPersona')
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_Repositorio_U_ActualizarTablaPersona')
 BEGIN
-	DROP PROCEDURE dbo.USP_Repositorio_Alumnos_U_ActualizarTablaPersona
+	DROP PROCEDURE dbo.USP_Alumnos_Repositorio_U_ActualizarTablaPersona
 END
 GO
 
-CREATE PROCEDURE dbo.USP_Repositorio_Alumnos_U_ActualizarTablaPersona
+CREATE PROCEDURE dbo.USP_Alumnos_Repositorio_U_ActualizarTablaPersona
 (
 	@C_CodAlu		varchar(20),
 	@C_RcCod		varchar(5),
@@ -336,13 +336,13 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Repositorio_Alumnos_U_ActualizarTablaAlumno')
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_Repositorio_U_ActualizarTablaAlumno')
 BEGIN
-	DROP PROCEDURE dbo.USP_Repositorio_Alumnos_U_ActualizarTablaAlumno
+	DROP PROCEDURE dbo.USP_Alumnos_Repositorio_U_ActualizarTablaAlumno
 END
 GO
 
-CREATE PROCEDURE dbo.USP_Repositorio_Alumnos_U_ActualizarTablaAlumno
+CREATE PROCEDURE dbo.USP_Alumnos_Repositorio_U_ActualizarTablaAlumno
 (
 	@C_CodAlu		varchar(20),
 	@C_RcCod		varchar(5),
@@ -386,13 +386,13 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Repositorio_Alumnos_I_InsertarAlumnoTablaAlumno')
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_Repositorio_I_InsertarAlumnoTablaAlumno')
 BEGIN
-	DROP PROCEDURE dbo.USP_Repositorio_Alumnos_I_InsertarAlumnoTablaAlumno
+	DROP PROCEDURE dbo.USP_Alumnos_Repositorio_I_InsertarAlumnoTablaAlumno
 END
 GO
 
-CREATE PROCEDURE dbo.USP_Repositorio_Alumnos_I_InsertarAlumnoTablaAlumno
+CREATE PROCEDURE dbo.USP_Alumnos_Repositorio_I_InsertarAlumnoTablaAlumno
 (
 	@C_CodAlu		varchar(20),
 	@C_RcCod		varchar(5),
@@ -414,12 +414,12 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorCodigo')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorCodigo]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo]
 GO
 
 
-CREATE PROCEDURE USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorCodigo
+CREATE PROCEDURE USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo
 	@I_ProcedenciaID tinyint,
 	@C_CodAlu	  varchar(20),
 	@B_Resultado  bit OUTPUT,
@@ -429,11 +429,11 @@ AS
 --		@I_ProcedenciaID tinyint = 3,
 --		@B_Resultado  bit,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorCodigo @I_ProcedenciaID, @C_CodAlu, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo @I_ProcedenciaID, @C_CodAlu, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	
-	PRINT 'INICIANDO - USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorCodigo'
+	PRINT 'INICIANDO - USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo'
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
@@ -455,10 +455,10 @@ BEGIN
 			PRINT 'PERSONA EXISTE EN BD_REPOSITORIO'
 
 			PRINT 'ACTUALIZANDO REGISTRO CON ID ' + CAST(@I_PersonaID as varchar(10)) + '...'
-			EXECUTE USP_Repositorio_Alumnos_U_ActualizarTablaPersona @C_CodAlu, @C_RcCod, @D_FecProceso, @B_Correcto, @I_TablaID;
+			EXECUTE USP_Alumnos_Repositorio_U_ActualizarTablaPersona @C_CodAlu, @C_RcCod, @D_FecProceso, @B_Correcto, @I_TablaID;
 
 			PRINT 'ACTUALIZANDO ALUMNO CON COD ' + @C_CodAlu + '...'
-			EXECUTE USP_Repositorio_Alumnos_U_ActualizarTablaAlumno @C_CodAlu, @C_RcCod, @I_PersonaID, @D_FecProceso, @B_Correcto, @I_TablaID;
+			EXECUTE USP_Alumnos_Repositorio_U_ActualizarTablaAlumno @C_CodAlu, @C_RcCod, @I_PersonaID, @D_FecProceso, @B_Correcto, @I_TablaID;
 
 			UPDATE TR_Alumnos 
 			   SET B_Migrado = 1,
@@ -474,10 +474,10 @@ BEGIN
 			IF (@I_PersonaID IS NOT NULL)
 			BEGIN
 				PRINT 'ACTUALIZANDO REGISTRO CON ID ' +  CAST(@I_PersonaID as varchar(10)) + '...'
-				EXECUTE USP_Repositorio_Alumnos_U_ActualizarTablaPersona @C_CodAlu, @C_RcCod, @D_FecProceso, @B_Correcto, @I_TablaID;
+				EXECUTE USP_Alumnos_Repositorio_U_ActualizarTablaPersona @C_CodAlu, @C_RcCod, @D_FecProceso, @B_Correcto, @I_TablaID;
 
 				PRINT 'INSERTANDO ALUMNO CON COD ' + @C_CodAlu + '...'
-				EXECUTE USP_Repositorio_Alumnos_I_InsertarAlumnoTablaAlumno @C_CodAlu, @C_RcCod, @I_PersonaID, @D_FecProceso, @I_TablaID, @I_RowID;
+				EXECUTE USP_Alumnos_Repositorio_I_InsertarAlumnoTablaAlumno @C_CodAlu, @C_RcCod, @I_PersonaID, @D_FecProceso, @I_TablaID, @I_RowID;
 
 				UPDATE TR_Alumnos 
 				   SET B_Migrado = 1,
@@ -503,10 +503,10 @@ BEGIN
 								   )
 
 				PRINT 'ACTUALIZANDO REGISTRO CON ID ' + CAST(@I_PersonaID as varchar(10)) + '...'
-				EXECUTE USP_Repositorio_Alumnos_U_ActualizarTablaPersona @C_CodAlu, @C_RcCod, @D_FecProceso, @B_Correcto, @I_TablaID;
+				EXECUTE USP_Alumnos_Repositorio_U_ActualizarTablaPersona @C_CodAlu, @C_RcCod, @D_FecProceso, @B_Correcto, @I_TablaID;
 
 				PRINT 'INSERTANDO ALUMNO CON COD ' + @C_CodAlu + '...'
-				EXECUTE USP_Repositorio_Alumnos_I_InsertarAlumnoTablaAlumno @C_CodAlu, @C_RcCod, @I_PersonaID, @D_FecProceso, @I_TablaID, @I_RowID;
+				EXECUTE USP_Alumnos_Repositorio_I_InsertarAlumnoTablaAlumno @C_CodAlu, @C_RcCod, @I_PersonaID, @D_FecProceso, @I_TablaID, @I_RowID;
 
 				UPDATE TR_Alumnos 
 				   SET B_Migrado = 1,
@@ -526,7 +526,7 @@ BEGIN
 				SET @I_PersonaID = SCOPE_IDENTITY();
 
 				PRINT 'INSERTAR ALUMNO CON COD ' + @C_CodAlu + '...'
-				EXECUTE USP_Repositorio_Alumnos_I_InsertarAlumnoTablaAlumno @C_CodAlu, @C_RcCod, @I_PersonaID, @D_FecProceso, @I_TablaID, @I_RowID;
+				EXECUTE USP_Alumnos_Repositorio_I_InsertarAlumnoTablaAlumno @C_CodAlu, @C_RcCod, @I_PersonaID, @D_FecProceso, @I_TablaID, @I_RowID;
 
 				UPDATE TR_Alumnos 
 				   SET B_Migrado = 1,
@@ -538,7 +538,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = 'Migrado: ' + @C_CodAlu
 
-		PRINT 'FINALIZANDO - USP_MigracionTP_Repositorio_Alumnos_IU_MigrarDataPorCodigo'
+		PRINT 'FINALIZANDO - USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo'
 
 		COMMIT TRANSACTION
 	END TRY
@@ -551,11 +551,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno]
 GO
 
-CREATE PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno]	
+CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno]	
 	@I_RowID	  int,
 	@I_TablaID	  int,
 	@I_ObservID	  int,
@@ -578,11 +578,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno]
 GO
 
-CREATE PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno]	
+CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno]	
 	@I_RowID	   int,
 	@I_TablaID	   int,
 	@I_ObservID	   int,
@@ -613,11 +613,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_InicializarEstadoValidacionAlumno]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_InicializarEstadoValidacion')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_InicializarEstadoValidacion]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion]
 GO
 
-CREATE PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_InicializarEstadoValidacion]	
+CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion]	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -625,7 +625,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID	tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_InicializarEstadoValidacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	BEGIN TRANSACTION
@@ -653,11 +653,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_InicializarEstadoValidacionPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_InicializarEstadoValidacionPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_InicializarEstadoValidacionPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_InicializarEstadoValidacionPorAlumnoID]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_InicializarEstadoValidacionPorAlumnoID	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_InicializarEstadoValidacionPorAlumnoID	
 	@I_RowID      int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -665,7 +665,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID	tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_InicializarEstadoValidacionPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_InicializarEstadoValidacionPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	BEGIN TRANSACTION
@@ -695,11 +695,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ValidarCaracteresEspeciales]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCaracteresEspeciales')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCaracteresEspeciales]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCaracteresEspeciales	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -707,7 +707,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID	tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarCaracteresEspeciales @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -760,11 +760,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCaracteresEspecialesPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCaracteresEspecialesPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspecialesPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspecialesPorAlumnoID]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCaracteresEspecialesPorAlumnoID	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspecialesPorAlumnoID	
 	@I_RowID	  int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -772,7 +772,7 @@ AS
 --declare @B_Resultado  bit,
 --		  @I_ProcedenciaID	tinyint = 3,
 --		  @T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarCaracteresEspecialesPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspecialesPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -790,7 +790,7 @@ BEGIN
 
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
@@ -802,11 +802,11 @@ BEGIN
 			
 			IF (@I_CaractEsp = 0)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END		
 
@@ -827,11 +827,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ValidarAnioIngresoAlumno]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarAnioIngreso')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarAnioIngreso]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarAnioIngreso	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -839,7 +839,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarAnioIngreso @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -887,11 +887,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarAnioIngresoPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarAnioIngresoPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_22_AnioIngresoPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_22_AnioIngresoPorAlumnoID]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarAnioIngresoPorAlumnoID	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_22_AnioIngresoPorAlumnoID	
 	@I_RowID	  int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -899,7 +899,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarAnioIngresopAlumnoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_22_AnioIngresoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -917,17 +917,17 @@ BEGIN
 
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
 			IF EXISTS(SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso WHERE C_CodModIng = @C_CodModIng)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END		
 
@@ -948,11 +948,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ValidarCodigoCarreraAlumno]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCodigoCarrera')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCodigoCarrera]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCodigoCarrera	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -960,7 +960,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarCodigoCarrera @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1010,11 +1010,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCodigoCarreraPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCodigoCarreraPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarreraPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarreraPorAlumnoID]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCodigoCarreraPorAlumnoID	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarreraPorAlumnoID	
 	@I_RowID	  int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1022,7 +1022,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarCodigoCarreraAlumnoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarreraPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1039,17 +1039,17 @@ BEGIN
 
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
 			IF EXISTS (SELECT * FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional WHERE C_RcCod = @C_RcCod)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END		
 		
@@ -1070,11 +1070,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ValidarModalidadIngresoAlumno]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarModalidadIngreso')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarModalidadIngreso]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarModalidadIngreso	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1082,7 +1082,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarModalidadIngreso @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1131,11 +1131,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarModalidadIngresoPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarModalidadIngresoPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngresoPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngresoPorAlumnoID]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarModalidadIngresoPorAlumnoID	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngresoPorAlumnoID	
 	@I_RowID	  int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1143,7 +1143,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarModalidadIngresoPorAlumnoID @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngresoPorAlumnoID @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1161,17 +1161,17 @@ BEGIN
 
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
 			IF (ISNULL(@C_AnioIngreso, 0) > 0)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END		
 				
@@ -1192,11 +1192,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_UnfvRepo_ValidarSexoDiferenteMismoAlumno]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoAlumno')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoAlumno]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoAlumno	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1204,7 +1204,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 1,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1299,11 +1299,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoAlumnoPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoAlumnoPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumnoPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumnoPorAlumnoID]
 GO
 
-CREATE PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoAlumnoPorAlumnoID]
+CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumnoPorAlumnoID]
 	@I_RowID	  int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1311,7 +1311,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_RowID tinyint = 1,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoAlumnoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumnoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1336,7 +1336,7 @@ BEGIN
 		
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
@@ -1347,11 +1347,11 @@ BEGIN
 
 			IF (@C_Sexo_Repo = @C_Sexo)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END			
 
@@ -1373,11 +1373,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ValidarSexoDiferenteMismoDocumento]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoDocumento')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoDocumento]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoDocumento	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1385,7 +1385,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarSexoDiferenteMismoDocumento @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1447,11 +1447,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoDocumentoPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoDocumentoPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumentoPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumentoPorAlumnoID]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoDocumentoPorAlumnoID	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumentoPorAlumnoID	
 	@I_RowID	  int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1459,7 +1459,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_RowID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarSexoDiferenteMismoDocumentoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumentoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1487,7 +1487,7 @@ BEGIN
 		
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
@@ -1502,11 +1502,11 @@ BEGIN
 
 			IF (ISNULL(@I_Distincts, 1) = 1)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END		
 		
@@ -1527,11 +1527,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ValidarCorrespondenciaNumDocRepositorioPersona]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocRepositorioPersona')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocRepositorioPersona]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocRepositorioPersona	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1539,7 +1539,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocRepositorioPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1621,11 +1621,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocRepositorioPersonaPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocRepositorioPersonaPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersonaPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersonaPorAlumnoID]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocRepositorioPersonaPorAlumnoID	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersonaPorAlumnoID	
 	@I_RowID	  int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1633,7 +1633,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_RowID int = 7765,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocRepositorioPersonaPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersonaPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1661,7 +1661,7 @@ BEGIN
 		
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
@@ -1676,11 +1676,11 @@ BEGIN
 
 			IF (ISNULL(@num_dni_repo,'') = ISNULL(@num_dni,'') AND @I_PersonaID IS NOT NULL)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END					   
 				
@@ -1701,11 +1701,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ValidarCorrespondenciaNumDocumentoPersona]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocumentoPersona')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocumentoPersona]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocumentoPersona	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1713,7 +1713,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocumentoPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1777,11 +1777,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocumentoPersonaPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocumentoPersonaPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersonaPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersonaPorAlumnoID]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocumentoPersonaPorAlumnoID	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersonaPorAlumnoID	
 	@I_RowID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1789,7 +1789,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_RowID	  int = 2,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarCorrespondenciaNumDocumentoPersonaPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersonaPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1816,7 +1816,7 @@ BEGIN
 		
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
@@ -1830,11 +1830,11 @@ BEGIN
 			
 			IF (ISNULL(@I_Distincts, 1) <= 1)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END		
 
@@ -1855,11 +1855,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ValidarCodigosAlumnoRemovidos]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCodigosRemovidos')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCodigosRemovidos]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCodigosRemovidos	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado	 bit output,
 	@T_Message		 nvarchar(4000) OUTPUT	
@@ -1867,7 +1867,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarCodigosRemovidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1915,11 +1915,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCodigosRemovidosPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCodigosRemovidosPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidosPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidosPorAlumnoID]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCodigosRemovidosPorAlumnoID	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidosPorAlumnoID	
 	@I_RowID	  tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1927,7 +1927,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_U_ValidarCodigosAlumnoRemovidosPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidosPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -1945,17 +1945,17 @@ BEGIN
 
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
 			IF (@B_Removido = 0)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END		
 				
@@ -1976,11 +1976,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ValidarCodigosAlumnoRepetidos]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCodigosRepetidos')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCodigosRepetidos]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCodigosRepetidos	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -1988,7 +1988,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarCodigosRepetidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -2040,11 +2040,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarCodigosRepetidosPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarCodigosRepetidosPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidosPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidosPorAlumnoID]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarCodigosRepetidosPorAlumnoID	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidosPorAlumnoID	
 	@I_RowID		 int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -2052,7 +2052,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_RowID	  int = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarCodigosRepetidosPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidosPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -2071,7 +2071,7 @@ BEGIN
 
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
@@ -2079,11 +2079,11 @@ BEGIN
 			
 			IF (@I_Repetidos <= 1)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END
 
@@ -2104,106 +2104,21 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ValidarTipoDocumentoIdentidadAlumno]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarTipoDocumentoIdentidad')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarTipoDocumentoIdentidad]
-GO
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_ValidarTipoDocumentoIdentidad')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_ValidarTipoDocumentoIdentidad]
+GO		
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarTipoDocumentoIdentidad	
-	@I_ProcedenciaID tinyint,
-	@B_Resultado  bit output,
-	@T_Message	  nvarchar(4000) OUTPUT	
-AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarTipoDocumentoIdentidad @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
-BEGIN
-	DECLARE @I_Observados_NULL int = 0
-	DECLARE @I_Observados_SEQV int = 0
-	DECLARE @D_FecProceso datetime = GETDATE() 
-	DECLARE @I_ObservID int
-	DECLARE @I_TablaID int = 1
-
-	BEGIN TRANSACTION
-	BEGIN TRY 
-
-		SET @I_ObservID = 23
-		UPDATE	A1
-		SET		B_Migrable = 0,
-				D_FecEvalua = @D_FecProceso
-		FROM	TR_Alumnos A1
-				INNER JOIN (SELECT * FROM TR_Alumnos WHERE C_NumDNI IS NOT NULL) A2 ON A1.C_CodAlu = A2.C_CodAlu AND A1.C_RcCod = A2.C_RcCod
-		WHERE	A1.I_ProcedenciaID = @I_ProcedenciaID 
-				AND A1.C_CodTipDoc IS NULL
-		
-		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
-				  WHERE	I_ProcedenciaID = @I_ProcedenciaID 
-						AND NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
-										WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)) AS SRC
-		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
-			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID 
-		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_TablaID = @I_TablaID AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
-			DELETE;
-
-		SET @I_Observados_NULL = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
-
-		SET @I_ObservID = 23
-		UPDATE	A1
-		SET		B_Migrable = 0,
-				D_FecEvalua = @D_FecProceso
-		FROM	TR_Alumnos A1
-				INNER JOIN BD_UNFV_Repositorio.dbo.TC_TipoDocumentoIdentidad TD ON A1.C_CodTipDoc = TD.C_CodTipDoc
-		WHERE	A1.I_ProcedenciaID = @I_ProcedenciaID 
-				AND TD.C_CodTipDoc IS NULL
-
-		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
-				  WHERE	I_ProcedenciaID = @I_ProcedenciaID 
-						AND NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
-										WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)) AS SRC
-		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
-			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID 
-		WHEN MATCHED THEN
-			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
-		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
-			DELETE;
-
-		SET @I_Observados_SEQV = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
-
-		SELECT @I_Observados_NULL as cant_obs_null, @I_Observados_SEQV as cant_obs_seqv, @D_FecProceso as fec_proceso
-				
-		COMMIT TRANSACTION
-		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados_NULL AS varchar) + ' | ' + CAST(@I_Observados_SEQV AS varchar)
-	END TRY
-	BEGIN CATCH
-		ROLLBACK TRANSACTION
-		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
-	END CATCH
-END
-GO
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_UnfvRepo_ValidarDocumentoDiferenteMismoAlumno')
 	DROP PROCEDURE [dbo].[USP_U_UnfvRepo_ValidarDocumentoDiferenteMismoAlumno]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarDocumentoDiferenteMismoAlumno')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarDocumentoDiferenteMismoAlumno]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ValidarDocumentoDiferenteMismoAlumno	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -2211,7 +2126,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_ProcedenciaID tinyint = 3,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarDocumentoDiferenteMismoAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -2286,11 +2201,11 @@ END
 GO
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ValidarDocumentoDiferenteMismoAlumnoPorAlumnoID')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarDocumentoDiferenteMismoAlumnoPorAlumnoID]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumnoPorAlumnoID')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumnoPorAlumnoID]
 GO
 
-CREATE PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ValidarDocumentoDiferenteMismoAlumnoPorAlumnoID]	
+CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumnoPorAlumnoID]	
 	@I_RowID	  int,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
@@ -2298,7 +2213,7 @@ AS
 --declare @B_Resultado  bit,
 --		@I_RowID	  int,
 --		@T_Message	  nvarchar(4000)
---exec USP_MigracionTP_Alumnos_U_ValidarDocumentoDiferenteMismoAlumnoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumnoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @I_Observados int = 0
@@ -2321,17 +2236,17 @@ BEGIN
 
 		IF (@B_Correcto = 1)
 		BEGIN
-			EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+			EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 		END
 		ELSE
 		BEGIN
 			IF(@num_dni = @num_dni_repo)
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 			ELSE
 			BEGIN
-				EXECUTE USP_MigracionTP_Alumnos_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
+				EXECUTE USP_Alumnos_MigracionTP_U_RegistrarObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
 		END
 
@@ -2352,11 +2267,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_IU_CopiarTablaAlumno]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_IU_CopiarTabla')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_IU_CopiarTabla]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_IU_CopiarTabla')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_IU_CopiarTabla]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_IU_CopiarTabla	
+CREATE PROCEDURE USP_Alumnos_MigracionTP_IU_CopiarTabla	
 	@I_ProcedenciaID tinyint,
 	@T_SchemaDB		 varchar(20),
 	@B_Resultado  bit output,
@@ -2366,7 +2281,7 @@ AS
 --		  @I_ProcedenciaID	tinyint = 1,
 --		  @T_SchemaDB	varchar(20) = 'pregrado',
 --		  @T_Message	nvarchar(4000)
---exec USP_MigracionTP_Alumnos_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
+--exec USP_Alumnos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @T_SQL nvarchar(max)
@@ -2505,11 +2420,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_U_ActualizarRegistroAlumno]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Alumnos_U_ActualizarRegistro')
-	DROP PROCEDURE [dbo].[USP_MigracionTP_Alumnos_U_ActualizarRegistro]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Alumnos_MigracionTP_U_ActualizarRegistro')
+	DROP PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_ActualizarRegistro]
 GO
 
-CREATE PROCEDURE USP_MigracionTP_Alumnos_U_ActualizarRegistro
+CREATE PROCEDURE USP_Alumnos_MigracionTP_U_ActualizarRegistro
 	@I_RowID	  int,
 	@C_RcCod	  varchar(3),
 	@C_CodAlu	  varchar(20), 

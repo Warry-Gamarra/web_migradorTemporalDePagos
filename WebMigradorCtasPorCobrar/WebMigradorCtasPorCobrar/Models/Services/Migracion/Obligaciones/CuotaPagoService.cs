@@ -47,22 +47,45 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             _ = cuotaPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPagoRowID, (int)procedencia);
 
-            result.Add(MarcarDuplicadosCuotaPago(procedenciaId));
+            result.Add(ValidarDuplicadosCuotaPagoActivos(procedenciaId));
+            result.Add(ValidarDuplicadosCuotaPagoEliminados(procedenciaId));
             result.Add(MarcarDuplicadosConDiferenteProcedenciaCuotaPago(procedenciaId));
             result.Add(MarcarEliminadosCuotaPago(cuotaPagoRowID, procedenciaId));
-            result.Add(AsignarCategoriaCuotaPago(cuotaPagoRowID, procedenciaId));
-            result.Add(AsignarAnioCuotaPago(cuotaPagoRowID, procedenciaId, schemaDb));
-            result.Add(AsignarPeriodoCuotaPago(cuotaPagoRowID, procedenciaId, schemaDb));
+            result.Add(ValidarCuotaPagoSinCategoria(cuotaPagoRowID, procedenciaId));
+            result.Add(ValidarCuotaPagoConVariasCategorías(cuotaPagoRowID, procedenciaId));
+            result.Add(ValidarCuotaPagoSinAnio(cuotaPagoRowID, procedenciaId, schemaDb));
+            result.Add(ValidarMismaCuotaPagoVariosAnios(cuotaPagoRowID, procedenciaId, schemaDb));
+            result.Add(ValidarCuotaPagoSinPeriodo(cuotaPagoRowID, procedenciaId, schemaDb));
+            result.Add(ValidarMismaCuotaPagoVariosPeriodos(cuotaPagoRowID, procedenciaId, schemaDb));
 
             return result;
         }
 
-        private Response MarcarDuplicadosCuotaPago(int procedenciaId)
+        private Response ValidarDuplicadosCuotaPagoActivos(int procedenciaId)
         {
             Response response;
+
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
-            response = cuotaPagoRepository.MarcarDuplicadosCuotaPago(procedenciaId);
+            response = cuotaPagoRepository.ValidarDuplicadosCuotaPagoActivos(procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados por código de cuota duplicado";
+            response.Message += " registros encontrados";
+
+
+            return response;
+        }
+
+        private Response ValidarDuplicadosCuotaPagoEliminados(int procedenciaId)
+        {
+            Response response;
+
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            response = cuotaPagoRepository.ValidarDuplicadosCuotaPagoEliminados(procedenciaId);
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
@@ -108,12 +131,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return response;
         }
 
-        private Response AsignarCategoriaCuotaPago(int? cuotaPagoID, int procedenciaId)
+        private Response ValidarCuotaPagoSinCategoria(int? cuotaPagoID, int procedenciaId)
         {
             Response response;
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
-            response = cuotaPagoRepository.AsignarCategoriaCuotaPago(cuotaPagoID, procedenciaId);
+            response = cuotaPagoRepository.ValidarCuotaPagoSinCategoria(cuotaPagoID, procedenciaId);
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
@@ -124,12 +147,28 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return response;
         }
 
-        private Response AsignarAnioCuotaPago(int? cuotaPagoID, int procedenciaId, string schema)
+        private Response ValidarCuotaPagoConVariasCategorías(int? cuotaPagoID, int procedenciaId)
         {
             Response response;
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
-            response = cuotaPagoRepository.AsignarAnioCuotaPago(cuotaPagoID, procedenciaId, schema);
+            response = cuotaPagoRepository.ValidarCuotaPagoVariasCategorias(cuotaPagoID, procedenciaId);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados tener más de una posible categoría equivalente en cuentas por cobrar";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarCuotaPagoSinAnio(int? cuotaPagoID, int procedenciaId, string schema)
+        {
+            Response response;
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            response = cuotaPagoRepository.ValidarSinAnioCuotaPago(cuotaPagoID, procedenciaId, schema);
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
@@ -140,12 +179,44 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return response;
         }
 
-        private Response AsignarPeriodoCuotaPago(int? cuotaPagoID, int procedenciaId, string schema)
+        private Response ValidarMismaCuotaPagoVariosAnios(int? cuotaPagoID, int procedenciaId, string schema)
         {
             Response response;
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
-            response = cuotaPagoRepository.AsignarPeriodoCuotaPago(cuotaPagoID, procedenciaId, schema);
+            response = cuotaPagoRepository.ValidarVariosAniosMismaCuotaPago(cuotaPagoID, procedenciaId, schema);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados al asignar el valor del año de la cuota de pago";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarCuotaPagoSinPeriodo(int? cuotaPagoID, int procedenciaId, string schema)
+        {
+            Response response;
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            response = cuotaPagoRepository.ValidarSinPeriodoCuotaPago(cuotaPagoID, procedenciaId, schema);
+
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+            response = observados == 0 ? response : response.Warning(false);
+            response.CurrentID = "Observados al asignar el valor del periodo de la cuota de pago";
+            response.Message += " registros encontrados";
+
+            return response;
+        }
+
+        private Response ValidarMismaCuotaPagoVariosPeriodos(int? cuotaPagoID, int procedenciaId, string schema)
+        {
+            Response response;
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            response = cuotaPagoRepository.ValidarVariosPeriodoMismaCuotaPago(cuotaPagoID, procedenciaId, schema);
 
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
@@ -207,11 +278,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                     break;
             }
 
-            cuotaPagoRepository.MarcarDuplicadosCuotaPago(cuotaPago.I_ProcedenciaID);
+            cuotaPagoRepository.ValidarDuplicadosCuotaPagoActivos(cuotaPago.I_ProcedenciaID);
+            cuotaPagoRepository.ValidarDuplicadosCuotaPagoEliminados(cuotaPago.I_ProcedenciaID);
             cuotaPagoRepository.MarcarDuplicadosDiferenteProcedenciaCuotaPago(cuotaPago.I_ProcedenciaID);
-            cuotaPagoRepository.AsignarCategoriaCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID);
-            cuotaPagoRepository.AsignarAnioCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
-            cuotaPagoRepository.AsignarPeriodoCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
+            cuotaPagoRepository.ValidarCuotaPagoSinCategoria(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID);
+            cuotaPagoRepository.ValidarCuotaPagoVariasCategorias(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID);
+            cuotaPagoRepository.ValidarSinAnioCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
+            cuotaPagoRepository.ValidarVariosAniosMismaCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
+            cuotaPagoRepository.ValidarSinPeriodoCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
+            cuotaPagoRepository.ValidarVariosPeriodoMismaCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
 
             return result;
         }

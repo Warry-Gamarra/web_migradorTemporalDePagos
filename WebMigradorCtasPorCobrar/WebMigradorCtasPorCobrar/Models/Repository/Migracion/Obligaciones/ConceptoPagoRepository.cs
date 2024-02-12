@@ -28,7 +28,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_IU_CopiarTablaConceptoDePago", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_IU_CopiarTabla", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -58,7 +58,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_InicializarEstadoValidacionConceptoPago", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_InicializarEstadoValidacion", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -88,7 +88,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_MarcarConceptosPagoRepetidos", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_12_13_Repetidos", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -118,7 +118,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_MarcarConceptosPagoEliminados", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_45_Eliminados", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -148,7 +148,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_MarcarConceptosPagoNoObligacion", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_46_TipoObligacion", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -178,7 +178,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_MarcarConceptosPagoObligSinAnioAsignado", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_14_SinAnio", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -208,7 +208,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_MarcarConceptosPagoConAnioDiferenteCuotaPago", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_15_AnioDiferenteCuotaPago", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -238,7 +238,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_MarcarConceptosPagoObligSinPeriodoAsignado", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_16_SinPeriodoAsignado", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -284,6 +284,36 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         }
 
 
+        public Response ValidarConceptosPagoObligSinCuotaPagoMigrada(int? rowID, int procedenciaID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_19_SinCuotaPagoMigrada", parameters, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
         public Response ValidarConceptosPagoObligSinCuotaPago(int? rowID, int procedenciaID)
         {
             Response result = new Response();
@@ -298,7 +328,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_MarcarConceptosPagoObligSinCuotaPago", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_18_SinCuotaPago", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -328,7 +358,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_AsignarIdEquivalenciasConceptoPago", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_AsignarIdEquivalencias", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -357,7 +387,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_U_ActualizarEquivalenciaCtasPorCobrar", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalencia", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -386,7 +416,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_IU_GrabarTablaCatalogoConceptos", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_CtasPorCobrar_IU_GrabarTablaCatalogoConceptos", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -418,7 +448,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_IU_MigrarDataConceptoPagoObligacionesCtasPorCobrar", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ConceptoPago_MigracionTP_CtasPorCobrar_IU_MigrarData", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
