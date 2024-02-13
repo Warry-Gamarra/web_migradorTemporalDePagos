@@ -148,6 +148,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ObligacionesController.cs" />
     <Compile Include="Controllers\ReportesController.cs" />
+    <Compile Include="Controllers\TasasController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -168,6 +169,8 @@
     <Compile Include="Models\Entities\Migracion\Obligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Observacion.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tabla.cs" />
+    <Compile Include="Models\Entities\TemporalPagos\Tasa_EcObl.cs" />
+    <Compile Include="Models\Entities\TemporalPagos\Tasa_EcDet.cs" />
     <Compile Include="Models\Entities\UnfvRepositorio\Alumno.cs" />
     <Compile Include="Models\Entities\UnfvRepositorio\AlumnoPersona.cs" />
     <Compile Include="Models\Entities\UnfvRepositorio\Persona.cs" />
@@ -196,6 +199,7 @@
     <Compile Include="Models\Repository\Migracion\Cross\ObservacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Tasas\ObligacionRepository.cs" />
     <Compile Include="Models\Repository\TemporalPagos\AlumnoRepository.cs" />
+    <Compile Include="Models\Repository\TemporalPagos\TasasRepository.cs" />
     <Compile Include="Models\Repository\TemporalPagos\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\TemporalPagos\Configuracion.cs" />
     <Compile Include="Models\Repository\TemporalPagos\ObligacionRepository.cs" />
@@ -230,10 +234,12 @@
     <Compile Include="Models\Services\Migracion\Tasas\CuotaPagoService.cs" />
     <Compile Include="Models\Services\Migracion\Cross\ObligacionService.cs" />
     <Compile Include="Models\Services\Migracion\Cross\ObservacionService.cs" />
+    <Compile Include="Models\Services\Migracion\Tasas\PagoTasasService.cs" />
     <Compile Include="Models\Services\TemporalPagos\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\TemporalPagos\CuotaPagoService.cs" />
     <Compile Include="Models\Services\TemporalPagos\AlumnoService.cs" />
     <Compile Include="Models\Services\TemporalPagos\ObligacionService.cs" />
+    <Compile Include="Models\Services\TemporalPagos\TasasService.cs" />
     <Compile Include="Models\Services\UnfvRepositorio\AlumnoService.cs" />
     <Compile Include="Models\ViewModels\ConceptoPagoViewModel.cs" />
     <Compile Include="Models\ViewModels\CuotaPagoViewModel.cs" />
@@ -570,6 +576,7 @@
     <Content Include="Views\CuotaPago\Tasas.cshtml" />
     <Content Include="Views\ConceptoPago\Tasas.cshtml" />
     <Content Include="Views\ConceptoPago\_DatosMigracionTasas.cshtml" />
+    <Content Include="Views\Tasas\Index.cshtml" />
     <Content Include="Views\CuotaPago\_DatosMigracionTasas.cshtml" />
   </ItemGroup>
   <PropertyGroup>

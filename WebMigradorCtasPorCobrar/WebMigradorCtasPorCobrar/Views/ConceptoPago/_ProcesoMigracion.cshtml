@@ -1,8 +1,9 @@
 ﻿@{
     var procedencia = ViewBag.Procedencia;
+    var boundary = ViewBag.Boundary;
 }
 
-<h2>Proceso de migración</h2>
+<h2>Proceso de migración (@boundary)</h2>
 <div class="row my-2">
     <div class="col-md-4 py-1"><button id="btn-copy" class="btn btn-warning btn-block">1. Copiar datos desde Temporal de pagos</button></div>
     <div class="col-md-4 py-1"><button id="btn-validate" class="btn btn-info btn-block">2. Validar consistencia de datos</button></div>
@@ -39,7 +40,7 @@
 
     $('#btn-copy').on('click', function () {
         Swal.fire({
-            title: 'Copiar Conceptos desde el temporal de pagos',
+            title: 'Copiar Conceptos desde el temporal de pagos (' + '@boundary' + ')',
             text: "Al copiar datos desde el temporal de pagos se perderá cualquier validacion y cambio que no hayan sido migrados",
             icon: 'warning',
             showCancelButton: true,
@@ -76,9 +77,9 @@
 
     $('#btn-validate').on('click', function () {
         Swal.fire({
-            title: 'Validar Conceptos de pago del temporal de pagos',
+            title: 'Validar Conceptos de pago del temporal de pagos (' + '@boundary' + ')',
             text: 'Al aceptar se procederá con la validación de consistencia de los conceptos de pago ' +
-                'del sistema temporal de pagos con la base de datos de recaudacion de ingresos.',
+                  'del sistema temporal de pagos con la base de datos de recaudacion de ingresos.',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonColor: '#ff830f',
@@ -113,7 +114,7 @@
 
     $('#btn-migrate').on('click', function () {
         Swal.fire({
-            title: 'Migrar Conceptos de pago desde el temporal de pagos',
+            title: 'Migrar Conceptos de pago desde el temporal de pagos (' + '@boundary' + ')',
             text: 'Al aceptar los registros con correctamente validados serán copiados a la base de Recaudación de ingresos.',
             icon: 'warning',
             showCancelButton: true,

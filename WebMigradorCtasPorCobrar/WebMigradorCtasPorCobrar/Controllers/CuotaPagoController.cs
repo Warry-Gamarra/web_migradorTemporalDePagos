@@ -105,6 +105,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult ProcesoMigracion(Procedencia procedencia)
         {
             ViewBag.Procedencia = procedencia;
+            ViewBag.Boundary = procedencia == Procedencia.Tasas ? "Tasas" : "Obligaciones";
 
             return PartialView("_ProcesoMigracion");
         }
