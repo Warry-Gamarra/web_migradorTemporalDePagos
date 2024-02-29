@@ -40,5 +40,11 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             return View();
         }
+
+
+        public ActionResult Tasas()
+        {
+            return View();
+        }
     }
 }

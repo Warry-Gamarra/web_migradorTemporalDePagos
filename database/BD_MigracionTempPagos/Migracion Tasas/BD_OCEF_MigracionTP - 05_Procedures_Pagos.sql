@@ -4,14 +4,14 @@ GO
 /*
 	copiar ec_obl y ec_det
 */
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_MigracionTP_Tasas_IU_Pagos_CopiarTablaTemporalPagos')
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Tasas_PagoTasas_TemporalPagos_MigracionTP_IU_CopiarTabla')
 BEGIN
-	DROP PROCEDURE dbo.USP_MigracionTP_Tasas_IU_Pagos_CopiarTablaTemporalPagos
+	DROP PROCEDURE dbo.USP_Tasas_PagoTasas_TemporalPagos_MigracionTP_IU_CopiarTabla
 END
 GO
 
 
-CREATE PROCEDURE dbo.USP_MigracionTP_Tasas_IU_Pagos_CopiarTablaTemporalPagos
+CREATE PROCEDURE dbo.USP_Tasas_PagoTasas_TemporalPagos_MigracionTP_IU_CopiarTabla
 (
 	@I_RowID	  int = NULL,
 	@I_ProcedenciaID tinyint,
@@ -19,6 +19,12 @@ CREATE PROCEDURE dbo.USP_MigracionTP_Tasas_IU_Pagos_CopiarTablaTemporalPagos
 	@T_Message	  nvarchar(4000) OUTPUT	
 ) 
 AS
+--declare @I_ProcedenciaID	tinyint = 4,
+--		@I_RowID	  int = NULL
+--		@B_Resultado  bit,
+--		@T_Message	  nvarchar(4000)
+--exec USP_Tasas_PagoTasas_TemporalPagos_MigracionTP_IU_CopiarTabla @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	
@@ -48,7 +54,11 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -69,4 +79,96 @@ GO
 /*
 	Marcar registro como existente en
 */
+
+
+
+
+/*
+	Migrar Tasa por lotes
+*/
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Tasas_PagoTasas_MigracionTP_CtasPorCobrar_IU_MigrarData')
+BEGIN
+	DROP PROCEDURE [dbo].[USP_Tasas_PagoTasas_MigracionTP_CtasPorCobrar_IU_MigrarData]
+END
+GO
+
+CREATE PROCEDURE [dbo].[USP_Tasas_PagoTasas_MigracionTP_CtasPorCobrar_IU_MigrarData]
+(
+	@I_RowID	int,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+)
+AS
+--declare @I_ProcedenciaID	tinyint = 4,
+--		@I_RowID	  int = NULL
+--		@B_Resultado  bit,
+--		@T_Message	  nvarchar(4000)
+--exec USP_Tasas_PagoTasas_MigracionTP_CtasPorCobrar_IU_MigrarData @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN 
+	DECLARE @D_FecProceso datetime = GETDATE() 
+
+	BEGIN TRANSACTION 
+	BEGIN TRY
+		SELECT * FROM TR_Ec_Det 
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
+	END CATCH
+
+END
+GO
+
+
+
+/*
+	Migrar una Tasa a la vez
+*/
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Tasas_PagoTasas_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID')
+BEGIN
+	DROP PROCEDURE [dbo].[USP_Tasas_PagoTasas_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID]
+END
+GO
+
+CREATE PROCEDURE [dbo].[USP_Tasas_PagoTasas_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID]
+(
+	@I_RowID	int,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+)
+AS
+--declare @I_ProcedenciaID	tinyint = 4,
+--		@I_RowID	  int = NULL
+--		@B_Resultado  bit,
+--		@T_Message	  nvarchar(4000)
+--exec USP_Tasas_PagoTasas_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN 
+	DECLARE @D_FecProceso datetime = GETDATE() 
+
+	BEGIN TRANSACTION 
+	BEGIN TRY
+		SELECT * FROM TR_Ec_Det 
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
+	END CATCH
+
+END
+GO
+
 

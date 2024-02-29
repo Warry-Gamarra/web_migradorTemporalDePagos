@@ -2403,14 +2403,41 @@ BEGIN
 		COMMIT TRANSACTION;
 
 		SET @B_Resultado = 1
-		SET @T_Message =  'Total Alumnos: ' + CAST(@I_CantAlu AS varchar) + ' | Total ' + @T_SchemaDB + ': ' + CAST(@I_CantAlu_schema AS varchar) + 
-						  '| Insertados: ' + CAST(@I_Insertados AS varchar) + ' | Actualizados: ' + CAST(@I_Actualizados AS varchar) + ' | Removidos: ' + CAST(@I_Removidos AS varchar)
+		SET @T_Message =  '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Total Alumnos", '+ 
+							 'Value: ' + CAST(@I_CantAlu AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Total ' + UPPER(@T_SchemaDB) + '", ' + 
+							 'Value: ' + CAST(@I_CantAlu_schema AS varchar) + 
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Insertados", ' + 
+							 'Value: ' + CAST(@I_Insertados AS varchar) +
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Removidos", ' + 
+							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
+						  '}]'
 
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION;
-		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+		SET @B_Resultado = 0 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO

@@ -72,7 +72,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
             response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por código de cuota duplicado";
+            response.CurrentID = "Observados por código de cuota duplicado activos";
             response.Message += " registros encontrados";
 
 
@@ -90,7 +90,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
             response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por código de cuota duplicado";
+            response.CurrentID = "Observados por código de cuota duplicado eliminados";
             response.Message += " registros encontrados";
 
 
@@ -173,7 +173,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
             response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados al asignar el valor del año de la cuota de pago";
+            response.CurrentID = "Observados por no poder relacionarse año a la cuota";
             response.Message += " registros encontrados";
 
             return response;
@@ -189,7 +189,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
             response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados al asignar el valor del año de la cuota de pago";
+            response.CurrentID = "Observados por cuota relacionada a varios años";
             response.Message += " registros encontrados";
 
             return response;
@@ -205,7 +205,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
             response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados al asignar el valor del periodo de la cuota de pago";
+            response.CurrentID = "Observados por no tener asignado periodo";
             response.Message += " registros encontrados";
 
             return response;
@@ -221,7 +221,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             response = response.IsDone ? response.Success(false) : response.Error(false);
             int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
             response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados al asignar el valor del periodo de la cuota de pago";
+            response.CurrentID = "Observados por cuota relacionada a varios periodos";
             response.Message += " registros encontrados";
 
             return response;

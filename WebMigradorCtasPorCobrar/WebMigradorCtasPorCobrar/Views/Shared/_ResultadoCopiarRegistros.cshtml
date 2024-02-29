@@ -1,7 +1,47 @@
 ﻿@model WebMigradorCtasPorCobrar.Models.Helpers.Response
 
+@{
+    var result = Json.Decode(Model.Message);
+}
 
-<div class="card-body">
-    <h5 class="card-title">Resultado:</h5>
-    <div class="card-text alert alert-@Model.Color">@Html.Raw(Model.Message)</div>
+<div class="row">
+
+    @foreach (var item in result)
+    {
+        if (item["Type"] == "summary")
+        {
+            <div class="col-sm-12">
+                <div class="card text-white bg-info my-3">
+                    <div class="card-header"><strong>@item["Title"]</strong></div>
+                    <div class="card-body">
+                        <p class="card-text h5">@item["Value"]</p>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (item["Type"] == "detail")
+        {
+            <div class="col-sm-2 col-sm-4">
+                <div class="card text-white bg-@Model.Color my-3">
+                    <div class="card-header"><strong>@item["Title"]</strong></div>
+                    <div class="card-body">
+                        <p class="card-text h5">@item["Value"]</p>
+                    </div>
+                </div>
+            </div>
+        }
+        else if (item["Type"] == "error")
+        {
+            <div class="col-sm-12">
+                <div class="card text-white bg-@Model.Color my-3">
+                    <div class="card-header"><strong>@item["Title"]</strong></div>
+                    <div class="card-body">
+                        <p class="card-text h5">@item["Value"]</p>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
 </div>
+

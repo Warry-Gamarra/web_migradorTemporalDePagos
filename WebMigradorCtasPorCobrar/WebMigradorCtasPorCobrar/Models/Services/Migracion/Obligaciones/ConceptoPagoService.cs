@@ -73,6 +73,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result;
         }
 
+
         private Response GrabarTablaCatalogoConceptos(int? cuotaPagoRowID, int procedenciaId)
         {
             Response response;
@@ -88,6 +89,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             return response;
         }
+
 
         private Response AsignarIdEquivalenciasConceptoPago(int? cuotaPagoRowID, int procedenciaId)
         {

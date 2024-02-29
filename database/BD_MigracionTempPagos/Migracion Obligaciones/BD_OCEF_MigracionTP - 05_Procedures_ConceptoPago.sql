@@ -6,12 +6,12 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_IU_CopiarTablaConceptoDePago]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ConceptoPago_MigracionTP_IU_CopiarTabla')
-	DROP PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_MigracionTP_IU_CopiarTabla]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ConceptoPago_TemporalPagos_MigracionTP_IU_CopiarTabla')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_TemporalPagos_MigracionTP_IU_CopiarTabla]
 GO
 
 
-CREATE PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_MigracionTP_IU_CopiarTabla]
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_TemporalPagos_MigracionTP_IU_CopiarTabla]
 	@I_ProcedenciaID tinyint,
 	@T_SchemaDB		 varchar(20),
 	@T_Codigo_bnc	 varchar(250),
@@ -23,7 +23,7 @@ AS
 --		@T_SchemaDB			varchar(20) = 'euded',
 --		@T_Codigo_bnc		varchar(250) = '''0658'', ''0685'', ''0687'', ''0688''',
 --		@T_Message	  nvarchar(4000)
---exec USP_Obligaciones_ConceptoPago_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
+--exec USP_Obligaciones_ConceptoPago_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @T_SQL nvarchar(max)
@@ -166,12 +166,35 @@ BEGIN
 		SELECT @I_CpPri AS tot_concetoPago, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 		
 		SET @B_Resultado = 1
-		SET @T_Message =  'Total: ' + CAST(@I_CpPri AS varchar) + '|Insertados: ' + CAST(@I_Insertados AS varchar) 
-						+ '|Actualizados: ' + CAST(@I_Actualizados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
+		SET @T_Message =  '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Total", '+ 
+							 'Value: ' + CAST(@I_CpPri AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Insertados", ' + 
+							 'Value: ' + CAST(@I_Insertados AS varchar) +
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Removidos", ' + 
+							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
+						  '}]'
+
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -217,7 +240,11 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -284,12 +311,16 @@ BEGIN
 						 )
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados AS varchar) + ' con estado Eliminado true' 
+		SET @T_Message = CAST(@I_Observados AS varchar)
 
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -401,7 +432,11 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -473,12 +508,16 @@ BEGIN
 							)
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados AS varchar) + ' con estado obligación falso' 
+		SET @T_Message = CAST(@I_Observados AS varchar)
 
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -551,12 +590,16 @@ BEGIN
 									)
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados_sinAnio AS varchar) + ' sin año asignado' 
+		SET @T_Message = CAST(@I_Observados_sinAnio AS varchar)
 
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -634,12 +677,16 @@ BEGIN
 									)
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados_AnioDif AS varchar) +  ' año no coincide con cuota de pago.'
+		SET @T_Message = CAST(@I_Observados_AnioDif AS varchar)
 
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -704,11 +751,15 @@ BEGIN
 									WHERE I_ObservID = @I_ObservID_sinPer AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados_sinPer AS varchar) + ' sin periodo asignado.'
+		SET @T_Message = CAST(@I_Observados_sinPer AS varchar)
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -776,11 +827,15 @@ BEGIN
 									WHERE I_ObservID = @I_ObservID_PerDif AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados_PerDif AS varchar) +  ' periodo no coincide con cuota de pago.'
+		SET @T_Message = CAST(@I_Observados_PerDif AS varchar) 
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -844,11 +899,15 @@ BEGIN
 		SET @I_Observados_sinCuota = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_sinCuota AND I_TablaID = @I_TablaID)
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados_sinCuota AS varchar) + ' sin cuota de pago.'
+		SET @T_Message = CAST(@I_Observados_sinCuota AS varchar)
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -903,11 +962,15 @@ BEGIN
 		SET @I_Observados_CuotaNoM = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_CuotaNoM AND I_TablaID = @I_TablaID)
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados_CuotaNoM AS varchar) +  ' con cuota de pago sin migrar.'
+		SET @T_Message = CAST(@I_Observados_CuotaNoM AS varchar)
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -998,7 +1061,11 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -1177,9 +1244,13 @@ BEGIN
 		SET @T_Message = CAST(@I_ConceptoPago_Inserted AS varchar) + ' | ' + CAST(@I_ConceptoPago_Updated AS varchar)
 	END TRY
 	BEGIN CATCH
-		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
 		ROLLBACK TRANSACTION;
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -1259,9 +1330,13 @@ BEGIN
 		SET @T_Message = CAST(@I_ConceptoPago_Updated AS varchar) + ' filas actualizadas'
 	END TRY
 	BEGIN CATCH
-		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
 		ROLLBACK TRANSACTION;
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO

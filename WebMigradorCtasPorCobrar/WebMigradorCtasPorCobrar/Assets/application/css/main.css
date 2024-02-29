@@ -13,6 +13,8 @@
     --cs-orange: #ff8330;
     --cs-orange-hover: #ff8a3b;
     --cs-orange-border: #ff6a007e;
+    --cs-success: #28a77d;
+    --cs-warning: #ffb007fc;
 }
 
 html {
@@ -103,6 +105,14 @@ body {
   background: var(--cs-green) !important;
   border: 1px solid var(--cs-green) !important;
   color: #fff;
+}
+
+.bg-success {
+    background: var(--cs-success) !important;
+}
+
+.bg-warning {
+    background: var(--cs-warning) !important;
 }
 
 .bg-red {

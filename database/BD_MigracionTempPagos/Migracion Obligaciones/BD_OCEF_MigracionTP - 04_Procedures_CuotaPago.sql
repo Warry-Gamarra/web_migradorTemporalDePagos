@@ -6,11 +6,11 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_IU_CopiarTablaCuotaDePago]
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_IU_CopiarTabla')
-	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_IU_CopiarTabla]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_TemporalPagos_MigracionTP_IU_CopiarTabla')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_TemporalPagos_MigracionTP_IU_CopiarTabla]
 GO
 
-CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_IU_CopiarTabla
+CREATE PROCEDURE USP_Obligaciones_CuotaPago_TemporalPagos_MigracionTP_IU_CopiarTabla
 	@I_ProcedenciaID tinyint,
 	@T_SchemaDB		 varchar(20),
 	@T_Codigo_bnc	 varchar(250),
@@ -22,7 +22,7 @@ AS
 --		@T_SchemaDB			varchar(20) = 'euded',
 --		@T_Codigo_bnc		varchar(250) = '''0658'', ''0685'', ''0687'', ''0688''',
 --		@T_Message			nvarchar(4000)
---exec USP_Obligaciones_CuotaPago_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
+--exec USP_Obligaciones_CuotaPago_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
 --select @B_Resultado as resultado, @T_Message as mensaje
 BEGIN
 	DECLARE @T_SQL nvarchar(max)
@@ -117,12 +117,39 @@ BEGIN
 		SELECT @I_CpDes AS tot_cuotaPago, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 		
 		SET @B_Resultado = 1
-		SET @T_Message =  'Total: ' + CAST(@I_CpDes AS varchar) + '|Insertados: ' + CAST(@I_Insertados AS varchar) 
-						+ '|Actualizados: ' + CAST(@I_Actualizados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
+		--SET @T_Message =  'Total: ' + CAST(@I_CpDes AS varchar) + '|Insertados: ' + CAST(@I_Insertados AS varchar) 
+		--				+ '|Actualizados: ' + CAST(@I_Actualizados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
+
+		SET @T_Message =  '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Total:", '+ 
+							 'Value: ' + CAST(@I_CpDes AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Insertados", ' + 
+							 'Value: ' + CAST(@I_Insertados AS varchar) +
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Removidos", ' + 
+							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
+						  '}]'
+
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		--SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -167,7 +194,11 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -233,7 +264,11 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -312,11 +347,16 @@ BEGIN
 		SET @I_Observados_activos = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_activo AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados_activos AS varchar) + ' con estado activo '
+		SET @T_Message = CAST(@I_Observados_activos AS varchar) 
+
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -381,11 +421,15 @@ BEGIN
 		SET @I_Observados_eliminados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID_eliminado AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados_eliminados AS varchar) +  ' con estado eliminado'
+		SET @T_Message = CAST(@I_Observados_eliminados AS varchar)
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -499,7 +543,7 @@ BEGIN
 		END
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_cant_MasUnAnio AS varchar) + ' más de un año.'
+		SET @T_Message = CAST(@I_cant_MasUnAnio AS varchar)
 		
 	END TRY
 	BEGIN CATCH
@@ -509,7 +553,11 @@ BEGIN
 		END
 
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -609,7 +657,7 @@ BEGIN
 		END
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_cant_SinAnio AS varchar) + '  sin año.'
+		SET @T_Message = CAST(@I_cant_SinAnio AS varchar)
 		
 	END TRY
 	BEGIN CATCH
@@ -619,7 +667,11 @@ BEGIN
 		END
 
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -716,7 +768,7 @@ BEGIN
 		END
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_cant_MasUnPeriodo AS varchar) + ' más de un periodo.' 
+		SET @T_Message = CAST(@I_cant_MasUnPeriodo AS varchar)
 
 	END TRY
 	BEGIN CATCH
@@ -727,7 +779,11 @@ BEGIN
 
 
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -813,7 +869,7 @@ BEGIN
 		END
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_cant_SinPeriodo AS varchar) + ' Sin periodo.' 
+		SET @T_Message = CAST(@I_cant_SinPeriodo AS varchar)
 
 	END TRY
 	BEGIN CATCH
@@ -823,7 +879,11 @@ BEGIN
 		END
 
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -892,13 +952,17 @@ BEGIN
 		
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_cant_masCategorias AS varchar) + ' relacionadas a más de una categoría.'
+		SET @T_Message = CAST(@I_cant_masCategorias AS varchar)
 
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
  		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -962,12 +1026,16 @@ BEGIN
 		
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_cant_sinCategorias AS varchar) + ' sin categoría'
+		SET @T_Message = CAST(@I_cant_sinCategorias AS varchar)
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
  		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -1035,11 +1103,15 @@ BEGIN
 		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
 
 		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_Observados AS varchar) + ' encontrados'
+		SET @T_Message = CAST(@I_Observados AS varchar) 
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
 	END CATCH
 END
 GO
