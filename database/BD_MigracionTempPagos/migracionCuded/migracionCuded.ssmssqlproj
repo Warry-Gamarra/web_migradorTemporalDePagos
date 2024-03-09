@@ -80,8 +80,8 @@
           <FullPath>6. BD_OCEF_MigracionTP_Procedures_ConceptoPago.sql</FullPath>
         </FileNode>
         <FileNode Name="7. BD_OCEF_MigracionTP_Procedures_ValidacionObligaciones.sql">
-          <AssociatedConnectionMoniker />
-          <AssociatedConnSrvName />
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:C16-OCGTI-OD-02\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>C16-OCGTI-OD-02\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>7. BD_OCEF_MigracionTP_Procedures_ValidacionObligaciones.sql</FullPath>
         </FileNode>

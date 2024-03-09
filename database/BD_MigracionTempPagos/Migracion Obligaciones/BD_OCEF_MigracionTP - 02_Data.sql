@@ -1,6 +1,11 @@
 USE BD_OCEF_MigracionTP
 GO
 
+
+INSERT INTO TC_CatalogoTabla(I_TablaID, T_TablaNom) VALUES (7, 'TR_Ec_Det_Pagos')
+GO
+
+
 UPDATE TC_CatalogoObservacion SET I_TablaID = 1  WHERE I_ObservID IN (1, 2, 21, 22, 23, 30, 31, 41, 47, 48)
 UPDATE TC_CatalogoObservacion SET I_TablaID = 2  WHERE I_ObservID IN (3, 4, 5, 6, 7, 8, 9, 10, 11)
 UPDATE TC_CatalogoObservacion SET I_TablaID = 3  WHERE I_ObservID IN (12, 13, 14, 16, 18, 19, 20, 46)
@@ -33,9 +38,25 @@ UPDATE TC_CatalogoObservacion
  WHERE I_ObservID = 17
 GO
 
+/*
+	Observaciones para tabla de cp_des, ec_obl y ec_det
+*/
+
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (49, 'El monto acumulado de los conceptos en el detalle no corresponde con el monto indicado en la obligación', 'ERROR MONTO', NULL, 4)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (50, 'La cuota de pago existe repetida en otra procedenca', 'REPETIDO', NULL, 2)
 
 
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'El monto acumulado de los conceptos en el detalle no corresponde con el monto indicado en la obligación', 'ERROR MONTO', NULL)
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (50, 'La cuota de pago existe repetida en otra procedenca', 'REPETIDO', NULL)
+/*
+	Observaciones para tabla de pagos detalle
+*/
+
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (53, 'El monto pagado no corresponde con los conceptos relacionados en el detalle', 'ERROR MONTO', NULL, 6)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (52, 'No se pudo asociar una obligaciòn con el pago registrado', 'SIN OBLIGACION', NULL, 6)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (54, 'Se encontró un pago para una obligación con estado Pagado = NO', 'ERROR ESTADO', NULL, 5)
+
+
+
+--INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
+
 GO
 
