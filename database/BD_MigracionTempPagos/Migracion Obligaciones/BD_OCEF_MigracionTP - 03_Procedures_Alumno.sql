@@ -22,12 +22,14 @@ CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorAnio
 	@T_Message	  nvarchar(4000) OUTPUT	
 )
 AS
---declare @C_AnioIng  smallint = 2012,
---		@I_ProcedenciaID tinyint = 3,
---		@B_Resultado  bit,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataAlumnosPorAnio @I_ProcedenciaID, @C_AnioIng, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @C_AnioIng  smallint = 2012,
+			@I_ProcedenciaID tinyint = 3,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataAlumnosPorAnio @I_ProcedenciaID, @C_AnioIng, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	PRINT 'INICIANDO - USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorAnio'
 		
@@ -425,12 +427,14 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo
 	@B_Resultado  bit OUTPUT,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @C_CodAlu  varchar(20) = '2014706791',
---		@I_ProcedenciaID tinyint = 3,
---		@B_Resultado  bit,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo @I_ProcedenciaID, @C_CodAlu, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @C_CodAlu  varchar(20) = '2014706791',
+			@I_ProcedenciaID tinyint = 3,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo @I_ProcedenciaID, @C_CodAlu, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	
 	PRINT 'INICIANDO - USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo'
@@ -622,11 +626,13 @@ CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion]
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID	tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado		bit,
+			@I_ProcedenciaID	tinyint = 3,
+			@T_Message			nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY 
@@ -662,11 +668,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_InicializarEstadoValidacionPorAlumnoI
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID	tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_InicializarEstadoValidacionPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_InicializarEstadoValidacionPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY 
@@ -704,11 +712,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID	tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado		bit,
+			@I_ProcedenciaID	tinyint = 3,
+			@T_Message			nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -769,11 +779,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspecialesPorAlu
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		  @I_ProcedenciaID	tinyint = 3,
---		  @T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspecialesPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare	  @B_Resultado  bit,
+			  @I_RowID		int = 3,
+			  @T_Message	nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspecialesPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -836,11 +848,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -896,11 +910,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_22_AnioIngresoPorAlumnoID
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_22_AnioIngresoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_22_AnioIngresoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -957,11 +973,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1019,11 +1037,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarreraPorAlumnoID
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarreraPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarreraPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1079,11 +1099,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1140,11 +1162,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngresoPorAlumnoI
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngresoPorAlumnoID @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngresoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1201,11 +1225,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 1,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 1,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1308,11 +1334,13 @@ CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoA
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_RowID tinyint = 1,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumnoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int = 1,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumnoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1382,11 +1410,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocument
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1456,11 +1486,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocument
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_RowID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumentoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumentoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1536,11 +1568,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepos
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1630,11 +1664,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepos
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_RowID int = 7765,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersonaPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int = 7765,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersonaPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1710,11 +1746,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocument
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1786,11 +1824,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocument
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_RowID	  int = 2,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersonaPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int = 2,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersonaPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1864,11 +1904,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos
 	@B_Resultado	 bit output,
 	@T_Message		 nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1924,11 +1966,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidosPorAlumnoI
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidosPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidosPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1985,11 +2029,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -2049,11 +2095,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidosPorAlumnoI
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_RowID	  int = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidosPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidosPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -2123,11 +2171,13 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlu
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*	
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -2210,11 +2260,13 @@ CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteM
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_RowID	  int,
---		@T_Message	  nvarchar(4000)
---exec USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumnoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int,
+			@T_Message	  nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumnoPorAlumnoID @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -2277,12 +2329,14 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_IU_CopiarTabla
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		  @I_ProcedenciaID	tinyint = 1,
---		  @T_SchemaDB	varchar(20) = 'pregrado',
---		  @T_Message	nvarchar(4000)
---exec USP_Alumnos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare   @B_Resultado		bit,
+			  @I_ProcedenciaID	tinyint = 1,
+			  @T_SchemaDB		varchar(20) = 'pregrado',
+			  @T_Message		nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @T_SQL nvarchar(max)
 
@@ -2470,25 +2524,27 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_ActualizarRegistro
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @I_RowID		int,
---		  @C_RcCod		varchar(3),
---		  @C_CodAlu		varchar(20),
---		  @C_NumDNI		varchar(20),
---		  @C_CodTipDoc  varchar(5), 
---		  @T_ApePaterno varchar(50),
---		  @T_ApeMaterno varchar(50),
---		  @T_Nombre		varchar(50),
---		  @C_Sexo		char(1), 
---		  @D_FecNac		date, 
---		  @C_CodModIng  varchar(2), 
---		  @C_AnioIngreso	smallint,
---		  @I_ProcedenciaID	tinyint,
---		  @B_Correcto   bit,
---		  @B_Removido   bit,
---		  @B_Resultado  bit output,
---		  @T_Message	nvarchar(4000)
---exec USP_U_ActualizarRegistroAlumno @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @I_RowID	  int,
+			@C_RcCod	  varchar(3),
+			@C_CodAlu	  varchar(20),
+			@C_NumDNI	  varchar(20),
+			@C_CodTipDoc  varchar(5), 
+			@T_ApePaterno varchar(50),
+			@T_ApeMaterno varchar(50),
+			@T_Nombre	  varchar(50),
+			@C_Sexo		  char(1), 
+			@D_FecNac	  date, 
+			@C_CodModIng  varchar(2), 
+			@C_AnioIngreso		smallint,
+			@I_ProcedenciaID	tinyint,
+			@B_Correcto   bit,
+			@B_Removido   bit,
+			@B_Resultado  bit output,
+			@T_Message	nvarchar(4000)
+	exec USP_U_ActualizarRegistroAlumno @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 
 	DECLARE @D_FecProceso datetime = GETDATE() 
