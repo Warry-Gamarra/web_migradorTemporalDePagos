@@ -693,7 +693,7 @@ AS
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID_sinOblId int = 54
-	DECLARE @I_TablaID int = 5
+	DECLARE @I_TablaID int = 7
 
 	BEGIN TRANSACTION
 	BEGIN TRY
@@ -836,4 +836,8 @@ BEGIN
 END
 GO
 
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBanco')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBanco]
+GO
 
