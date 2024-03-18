@@ -204,7 +204,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 	
-		--1. Se actualiza pagos con ID de obligaci�n del mismo monto
+		--1. Se actualiza pagos con ID de obligación del mismo monto
 		UPDATE det_pg
 		   SET I_OblRowID = obl.I_RowID
 		  FROM TR_Ec_Det_Pagos det_pg
@@ -219,7 +219,7 @@ BEGIN
 			   AND det_pg.I_ProcedenciaID = @I_ProcedenciaID
 
 		SET @I_Actualizados = @@ROWCOUNT
-		--2. Se actualiza pagos por mora con ID de obligaci�n pagada con el mismo n�mero de recibo
+		--2. Se actualiza pagos por mora con ID de obligación pagada con el mismo número de recibo
 
 		UPDATE pg_mora
 		   SET I_OblRowID = det_pg.I_OblRowID
@@ -256,7 +256,7 @@ GO
 
 /*	
 	===============================================================================================
-		Inicializar par�metros para validaciones de tablas ec_obl y ec_det segun procedencia	
+		Inicializar parámetros para validaciones de tablas ec_obl y ec_det segun procedencia	
 	===============================================================================================
 */ 
 
@@ -320,7 +320,7 @@ GO
 
 /*	
 	===============================================================================================
-		Validaciones de tablas ec_obl y ec_det segun procedencia y a�o	
+		Validaciones de tablas ec_obl y ec_det segun procedencia y año	
 	===============================================================================================
 */ 
 
@@ -927,7 +927,7 @@ BEGIN
 	
 		SET @Nro_recibo = (SELECT DISTINCT Nro_recibo FROM TR_Ec_Det WHERE I_RowID = @I_RowID)
 
-		
+
 
 		COMMIT TRANSACTION
 					
