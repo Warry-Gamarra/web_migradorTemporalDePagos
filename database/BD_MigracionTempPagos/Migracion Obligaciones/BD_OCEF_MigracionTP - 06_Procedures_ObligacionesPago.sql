@@ -320,7 +320,7 @@ BEGIN
 											AND OBL1.Pagado = OBL2.Pagado
 											AND OBL1.Monto = OBL2.Monto
 
-		--Se actualiza los detalles con ID de obligaci�n que no se encuentre repetido
+		--Se actualiza los detalles con ID de obligación que no se encuentre repetido
 
 		UPDATE det
 		   SET I_OblRowID = obl.I_RowID
@@ -413,7 +413,7 @@ GO
 
 /*	
 	===============================================================================================
-		Inicializar par�metros para validaciones de tablas ec_obl y ec_det segun procedencia	
+		Inicializar parámetros para validaciones de tablas ec_obl y ec_det segun procedencia	
 	===============================================================================================
 */ 
 
