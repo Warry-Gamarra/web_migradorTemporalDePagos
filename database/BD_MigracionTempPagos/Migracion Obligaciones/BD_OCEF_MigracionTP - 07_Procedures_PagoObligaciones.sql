@@ -204,7 +204,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 	
-		--1. Se actualiza pagos con ID de obligación del mismo monto
+		--1. Se actualiza pagos con ID de obligaciï¿½n del mismo monto
 		UPDATE det_pg
 		   SET I_OblRowID = obl.I_RowID
 		  FROM TR_Ec_Det_Pagos det_pg
@@ -219,7 +219,7 @@ BEGIN
 			   AND det_pg.I_ProcedenciaID = @I_ProcedenciaID
 
 		SET @I_Actualizados = @@ROWCOUNT
-		--2. Se actualiza pagos por mora con ID de obligación pagada con el mismo número de recibo
+		--2. Se actualiza pagos por mora con ID de obligaciï¿½n pagada con el mismo nï¿½mero de recibo
 
 		UPDATE pg_mora
 		   SET I_OblRowID = det_pg.I_OblRowID
@@ -256,7 +256,7 @@ GO
 
 /*	
 	===============================================================================================
-		Inicializar parámetros para validaciones de tablas ec_obl y ec_det segun procedencia	
+		Inicializar parï¿½metros para validaciones de tablas ec_obl y ec_det segun procedencia	
 	===============================================================================================
 */ 
 
@@ -320,7 +320,7 @@ GO
 
 /*	
 	===============================================================================================
-		Validaciones de tablas ec_obl y ec_det segun procedencia y año	
+		Validaciones de tablas ec_obl y ec_det segun procedencia y aï¿½o	
 	===============================================================================================
 */ 
 
@@ -841,3 +841,167 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBanco]
 GO
 
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBanco]	
+	@I_ProcedenciaID	tinyint,
+	@T_Anio				varchar(4),
+	@B_Resultado		bit output,
+	@T_Message			nvarchar(4000) OUTPUT	
+AS
+/*
+	declare @I_ProcedenciaID tinyint = 3,
+			@T_Anio		 varchar(4) = '2010', 
+			@B_Resultado  bit, 
+			@T_Message nvarchar(4000)
+	exec USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBanco @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	BEGIN TRANSACTION;
+	BEGIN TRY 
+
+
+	
+		COMMIT TRANSACTION
+					
+		SET @B_Resultado = 1
+		SET @T_Message = '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						  '}]' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBancoPorID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBancoPorID]
+GO
+
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBancoPorID]	
+	@I_ProcedenciaID	tinyint,
+	@I_RowID			int,
+	@B_Resultado		bit output,
+	@T_Message			nvarchar(4000) OUTPUT	
+AS
+/*
+	declare @I_ProcedenciaID tinyint = 3,
+			@I_RowID	 int,
+			@B_Resultado  bit, 
+			@T_Message nvarchar(4000)
+	exec USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBancoPorID @I_ProcedenciaID, @I_RowID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @Cuota_pago int
+	DECLARE @Anio int
+	DECLARE @P varchar(3)
+	DECLARE @fch_venc date
+	DECLARE @monto decimal(10,2)
+	DECLARE @cod_alu varchar(20)
+	DECLARE @cod_rc varchar(5)
+	DECLARE @Nro_recibo varchar(20)
+	
+	BEGIN TRANSACTION;
+	BEGIN TRY 
+
+		SELECT @Cod_Alu = Cod_Alu,
+			   @Cod_rc = Cod_rc,
+			   @Cuota_pago = Cuota_pago,
+			   @P = P,
+			   @Fch_venc = Fch_venc,
+			   @Monto = Monto
+		  FROM TR_Ec_Obl
+		 WHERE I_RowID = @I_RowID
+	
+		SET @Nro_recibo = (SELECT DISTINCT Nro_recibo FROM TR_Ec_Det WHERE I_RowID = @I_RowID)
+
+		
+
+		COMMIT TRANSACTION
+					
+		SET @B_Resultado = 1
+		SET @T_Message = '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						  '}]' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarPagoObligacionesCtasPorCobrar')
+	DROP PROCEDURE [dbo].[USP_IU_MigrarPagoObligacionesCtasPorCobrar]
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio]
+GO
+
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio]	
+	@I_ProcedenciaID	tinyint,
+	@T_Anio				varchar(4),
+	@B_Resultado		bit output,
+	@T_Message			nvarchar(4000) OUTPUT	
+AS
+/*
+	declare @I_ProcedenciaID tinyint = 3,
+			@T_Anio		 varchar(4) = '2010', 
+			@B_Resultado  bit, 
+			@T_Message nvarchar(4000)
+	exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	BEGIN TRANSACTION;
+	BEGIN TRY 
+
+
+	
+		COMMIT TRANSACTION
+					
+		SET @B_Resultado = 1
+		SET @T_Message = '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						  '}]' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
+	END CATCH
+END
+GO
