@@ -320,7 +320,7 @@ BEGIN
 											AND OBL1.Pagado = OBL2.Pagado
 											AND OBL1.Monto = OBL2.Monto
 
-		--Se actualiza los detalles con ID de obligaciÛn que no se encuentre repetido
+		--Se actualiza los detalles con ID de obligaci√≥n que no se encuentre repetido
 
 		UPDATE det
 		   SET I_OblRowID = obl.I_RowID
@@ -413,7 +413,7 @@ GO
 
 /*	
 	===============================================================================================
-		Inicializar par·metros para validaciones de tablas ec_obl y ec_det segun procedencia	
+		Inicializar par√°metros para validaciones de tablas ec_obl y ec_det segun procedencia	
 	===============================================================================================
 */ 
 
@@ -1021,3 +1021,76 @@ END
 GO
 
 
+
+
+
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarObligacionesCtasPorCobrar')
+	DROP PROCEDURE [dbo].[USP_IU_MigrarObligacionesCtasPorCobrar]
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio]
+GO
+
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio]	
+	@I_ProcedenciaID	tinyint,
+	@T_Anio				varchar(4),
+	@B_Resultado		bit output,
+	@T_Message			nvarchar(4000) OUTPUT	
+AS
+/*
+	declare @I_ProcedenciaID tinyint = 3,
+			@T_Anio		 varchar(4) = '2010', 
+			@B_Resultado  bit, 
+			@T_Message nvarchar(4000)
+	exec USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	BEGIN TRANSACTION;
+	BEGIN TRY 
+		SELECT Ano, P, I_Periodo, Cod_alu, Cod_rc, Cuota_pago, Tipo_oblig, Fch_venc, Monto, Pagado, 
+			   D_FecCarga, B_Migrable, B_Migrado, I_ProcedenciaID, B_Obligacion
+		  INTO #temp_obl_migrable_anio
+		  FROM TR_Ec_Obl
+		 WHERE B_Migrable = 1 
+		 	   AND Ano = @T_Anio
+
+		
+		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno AS TRG
+		USING (SELECT DISTINCT Cod_alu, Cod_rc, Ano, P, I_Periodo FROM #temp_obl_migrable_anio) AS SRC
+		ON TRG.C_CodAlu = SRC.cod_alu 
+		   AND TRG.C_CodRc = SRC.cod_rc 
+		   AND TRG.I_Anio  = CAST(SRC.ano AS int) 
+		   AND TRG.I_Periodo = SRC.I_Periodo
+		WHEN NOT MATCHED THEN
+			INSERT (C_CodRc, C_CodAlu, I_Anio, I_Periodo, C_EstMat, C_Ciclo, B_Ingresante, I_CredDesaprob, B_Habilitado, B_Eliminado, B_Migrado)
+			VALUES (SRC.Cod_rc, SRC.Cod_alu, CAST(SRC.Ano as int), SRC.I_Periodo, 'S', NULL, NULL, NULL, 1, 0, 1);
+
+
+	
+		COMMIT TRANSACTION
+					
+		SET @B_Resultado = 1
+		SET @T_Message = '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						  '}]' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
+	END CATCH
+END
+GO
