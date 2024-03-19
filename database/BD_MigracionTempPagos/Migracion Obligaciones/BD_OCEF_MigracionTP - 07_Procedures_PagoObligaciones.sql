@@ -980,18 +980,21 @@ AS
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
+	DECLARE @I_Obl_Actualizados int = 0
+	DECLARE @I_Obl_Insertados int = 0
+
 	BEGIN TRANSACTION;
 	BEGIN TRY 
 
-
+		
 	
 		COMMIT TRANSACTION
 					
 		SET @B_Resultado = 1
 		SET @T_Message = '[{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
-							 'Value: ' + CAST(@I_Observados AS varchar) +
+							 'Title: "Pagos Insertados", ' + 
+							 'Value: ' + CAST(@I_Obl_Insertados AS varchar) +
 						  '}]' 
 	END TRY
 	BEGIN CATCH
