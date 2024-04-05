@@ -61,3 +61,17 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 
 GO
 
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION' AND ROUTINE_NAME = 'Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID')
+	DROP FUNCTION [dbo].[Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID]
+GO
+
+CREATE FUNCTION dbo.Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID ()
+RETURNS INT
+AS
+BEGIN
+	RETURN (SELECT UserId FROM BD_OCEF_CtasPorCobrar.dbo.TC_Usuario WHERE UserName = 'User_Migracion')
+END
+GO
+

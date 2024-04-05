@@ -980,8 +980,22 @@ AS
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_TablaID_Obl int = 5
+	DECLARE @I_TablaID_Det int = 4
+	DECLARE @I_UsuarioID int = (SELECT dbo.Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID())
+	DECLARE @I_CtasCabObl_RowID  int
+	DECLARE @I_CtasDetObl_RowID  int
+	DECLARE @T_Moneda varchar(3) = 'PEN'
+
 	DECLARE @I_Obl_Actualizados int = 0
 	DECLARE @I_Obl_Insertados int = 0
+
+	DECLARE @I_Det_Actualizados int = 0
+	DECLARE @I_Det_Insertados int = 0
+
+	DECLARE @Tbl_outputObl AS TABLE (T_Action varchar(20), I_RowID int, I_Inserted_RowID int, I_Deleted_RowID int)
+	DECLARE @Tbl_outputDet AS TABLE (T_Action varchar(20), I_RowID int, I_Inserted_RowID int, I_Deleted_RowID int)
 
 	BEGIN TRANSACTION;
 	BEGIN TRY 

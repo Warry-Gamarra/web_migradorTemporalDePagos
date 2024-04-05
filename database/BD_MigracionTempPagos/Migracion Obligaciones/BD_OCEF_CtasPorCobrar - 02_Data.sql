@@ -203,3 +203,12 @@ WHERE I_ObligacionAluID IN (SELECT DISTINCT I_ObligacionAluID FROM TR_Obligacion
 
 DELETE FROM TR_ObligacionAluCab WHERE ISNULL(I_MigracionRowID, 0) > 0 
 
+/*
+	CREACIÓN DE USUARIO PARA MIGRACION DE DATOS EN BD SIN LOGIN NI DATOS DE USUARIO
+*/
+
+DECLARE @UserId int = IDENT_CURRENT('TC_Usuario')
+SET IDENTITY_INSERT TC_Usuario ON
+INSERT INTO TC_Usuario (UserId, UserName, B_Habilitado, B_Eliminado, B_CambiaPassword) VALUES (@UserId + 1, 'User_Migracion', 0, 1, 0)
+
+SET IDENTITY_INSERT TC_Usuario OFF
