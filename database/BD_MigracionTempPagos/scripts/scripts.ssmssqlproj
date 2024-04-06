@@ -3,19 +3,7 @@
   <Items>
     <LogicalFolder Name="Connections" Type="2" Sorted="true">
       <Items>
-        <ConnectionNode Name="14-CEUC-DESA-05\SQL_2016E:UNFV\wgamarra">
-          <Created>2021-10-12T12:20:16.8959196-05:00</Created>
-          <Type>SQL</Type>
-          <Server>14-CEUC-DESA-05\SQL_2016E</Server>
-          <UserName />
-          <Authentication>Windows Authentication</Authentication>
-          <InitialDB />
-          <LoginTimeout>30</LoginTimeout>
-          <ExecutionTimeout>0</ExecutionTimeout>
-          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
-          <ApplicationName />
-        </ConnectionNode>
-        <ConnectionNode Name="C16-OCGTI-OD-02\SQL_2016E:UNFV\wgamarra">
+        <ConnectionNode Name="C16-OCGTI-OD-02\SQL_2016E:DESKTOP-LL7ITM0\gamar">
           <Created>2024-02-08T12:58:47.7296545-05:00</Created>
           <Type>SQL</Type>
           <Server>C16-OCGTI-OD-02\SQL_2016E</Server>
@@ -27,97 +15,49 @@
           <ConnectionProtocol>NotSpecified</ConnectionProtocol>
           <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
         </ConnectionNode>
-        <ConnectionNode Name="DESKTOP-5082GII\SQL_2016E:UNFV\wgamarra">
-          <Created>2023-02-07T11:01:33.4727794-05:00</Created>
-          <Type>SQL</Type>
-          <Server>DESKTOP-5082GII\SQL_2016E</Server>
-          <UserName />
-          <Authentication>Windows Authentication</Authentication>
-          <InitialDB />
-          <LoginTimeout>30</LoginTimeout>
-          <ExecutionTimeout>0</ExecutionTimeout>
-          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
-          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
-        </ConnectionNode>
-        <ConnectionNode Name="DESKTOP-B34HJML\SQL_2016E:UNFV\wgamarra">
-          <Created>2021-10-13T12:00:57.5227069-05:00</Created>
-          <Type>SQL</Type>
-          <Server>DESKTOP-B34HJML\SQL_2016E</Server>
-          <UserName />
-          <Authentication>Windows Authentication</Authentication>
-          <InitialDB />
-          <LoginTimeout>30</LoginTimeout>
-          <ExecutionTimeout>0</ExecutionTimeout>
-          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
-          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
-        </ConnectionNode>
-        <ConnectionNode Name="DESKTOP-PAFCR6S\SQL_2016E:sa">
-          <Created>2022-07-16T04:04:32.3804623-05:00</Created>
-          <Type>SQL</Type>
-          <Server>DESKTOP-PAFCR6S\SQL_2016E</Server>
-          <UserName>sa</UserName>
-          <Authentication>SQL</Authentication>
-          <InitialDB />
-          <LoginTimeout>30</LoginTimeout>
-          <ExecutionTimeout>0</ExecutionTimeout>
-          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
-          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
-        </ConnectionNode>
-        <ConnectionNode Name="PX12404HOW10\BDT:sa">
-          <Created>2023-01-27T16:30:23.839218-05:00</Created>
-          <Type>SQL</Type>
-          <Server>PX12404HOW10\BDT</Server>
-          <UserName>sa</UserName>
-          <Authentication>SQL</Authentication>
-          <InitialDB />
-          <LoginTimeout>30</LoginTimeout>
-          <ExecutionTimeout>0</ExecutionTimeout>
-          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
-          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
-        </ConnectionNode>
       </Items>
     </LogicalFolder>
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
       <Items>
         <FileNode Name="1. BD_OCEF_CtasPorCobrar - Creación de columnas de migracion.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>1. BD_OCEF_CtasPorCobrar - Creación de columnas de migracion.sql</FullPath>
         </FileNode>
         <FileNode Name="1. BD_OCEF_MigracionTP - Creación de base de datos.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>1. BD_OCEF_MigracionTP - Creación de base de datos.sql</FullPath>
         </FileNode>
         <FileNode Name="10. BD_OCEF_MigracionTP - Carga observaciones adicionales.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>10. BD_OCEF_MigracionTP - Carga observaciones adicionales.sql</FullPath>
         </FileNode>
         <FileNode Name="2. BD_OCEF_MigracionTP - Esquema de tablas.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-B34HJML\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-B34HJML\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>2. BD_OCEF_MigracionTP - Esquema de tablas.sql</FullPath>
         </FileNode>
         <FileNode Name="3. BD_OCEF_MigracionTP - Carga de datos iniciales.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>3. BD_OCEF_MigracionTP - Carga de datos iniciales.sql</FullPath>
         </FileNode>
         <FileNode Name="4. BD_OCEF_MigracionTP - Vistas y Funciones.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>4. BD_OCEF_MigracionTP - Vistas y Funciones.sql</FullPath>
         </FileNode>
         <FileNode Name="5. BD_OCEF_MigracionTP - Procedures Alumno.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>5. BD_OCEF_MigracionTP - Procedures Alumno.sql</FullPath>
         </FileNode>
@@ -140,26 +80,26 @@
           <FullPath>8. BD_OCEF_MigracionTP - Procedures Detalle de obligaciones.sql</FullPath>
         </FileNode>
         <FileNode Name="8. BD_OCEF_MigracionTP - Procedures Obligaciones.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:C16-OCGTI-OD-02\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>C16-OCGTI-OD-02\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>8. BD_OCEF_MigracionTP - Procedures Obligaciones.sql</FullPath>
         </FileNode>
         <FileNode Name="9. BD_OCEF_MigracionTP - Esquema de tablas Control.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-5082GII\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-5082GII\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>9. BD_OCEF_MigracionTP - Esquema de tablas Control.sql</FullPath>
         </FileNode>
         <FileNode Name="Test_posgrado.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>Test_posgrado.sql</FullPath>
         </FileNode>
         <FileNode Name="Test_pregrado.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:14-CEUC-DESA-05\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>14-CEUC-DESA-05\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>Test_pregrado.sql</FullPath>
         </FileNode>

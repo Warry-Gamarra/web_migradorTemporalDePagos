@@ -1000,8 +1000,96 @@ BEGIN
 	BEGIN TRANSACTION;
 	BEGIN TRY 
 
+
 		
 	
+		COMMIT TRANSACTION
+					
+		SET @B_Resultado = 1
+		SET @T_Message = '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Pagos Insertados", ' + 
+							 'Value: ' + CAST(@I_Obl_Insertados AS varchar) +
+						  '}]' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarPagoObligacionesCtasPorCobrar')
+	DROP PROCEDURE [dbo].[USP_IU_MigrarPagoObligacionesCtasPorCobrar]
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID]
+GO
+
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID]	
+	@I_OblRowID		int,
+	@B_Resultado	bit output,
+	@T_Message		nvarchar(4000) OUTPUT	
+AS
+/*
+	declare @I_OblRowID	  int = 3,
+			@B_Resultado  bit, 
+			@T_Message nvarchar(4000)
+	exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_TablaID_Obl int = 5
+	DECLARE @I_TablaID_Det int = 4
+	DECLARE @I_UsuarioID int = (SELECT dbo.Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID())
+	DECLARE @I_CtasCabObl_RowID  int
+	DECLARE @I_CtasDetObl_RowID  int
+	DECLARE @T_Moneda varchar(3) = 'PEN'
+
+	DECLARE @I_Obl_Actualizados int = 0
+	DECLARE @I_Obl_Insertados int = 0
+
+	DECLARE @I_Det_Actualizados int = 0
+	DECLARE @I_Det_Insertados int = 0
+
+	DECLARE @Tbl_outputObl AS TABLE (T_Action varchar(20), I_RowID int, I_Inserted_RowID int, I_Deleted_RowID int)
+	DECLARE @Tbl_outputDet AS TABLE (T_Action varchar(20), I_RowID int, I_Inserted_RowID int, I_Deleted_RowID int)
+
+	BEGIN TRANSACTION;
+	BEGIN TRY 
+		
+		SELECT I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
+			   Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, 
+			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, B_Obligacion, D_FecCarga, B_Actualizado, 
+			   D_FecActualiza, B_Migrable, D_FecEvalua, B_Migrado, D_FecMigrado, B_Removido, D_FecRemovido, B_Correcto, 
+			   B_MigradoPago, D_FecMigradoPago
+		  INTO #temp_det_obl
+		  FROM TR_Ec_Det
+		 WHERE I_OblRowID = @I_OblRowID
+
+		SELECT I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
+			   Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, 
+			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, B_Obligacion, D_FecCarga, B_Actualizado, 
+			   D_FecActualiza, B_Migrable, D_FecEvalua, B_Migrado, D_FecMigrado, B_Removido, D_FecRemovido, B_Correcto
+		  INTO #temp_det_pago
+		  FROM TR_Ec_Det_Pagos
+		 WHERE I_OblRowID = @I_OblRowID
+	
+
+		--DECLARE CURSOR 
+
+
 		COMMIT TRANSACTION
 					
 		SET @B_Resultado = 1
