@@ -1071,24 +1071,35 @@ BEGIN
 		
 		SELECT I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
 			   Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, 
-			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, B_Obligacion, D_FecCarga, B_Actualizado, 
-			   D_FecActualiza, B_Migrable, D_FecEvalua, B_Migrado, D_FecMigrado, B_Removido, D_FecRemovido, B_Correcto, 
-			   B_MigradoPago, D_FecMigradoPago
+			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, B_Obligacion, B_Migrable 
 		  INTO #temp_det_obl
-		  FROM TR_Ec_Det
+		  FROM TR_Ec_Det 
 		 WHERE I_OblRowID = @I_OblRowID
 
 		SELECT I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
 			   Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, 
-			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, B_Obligacion, D_FecCarga, B_Actualizado, 
-			   D_FecActualiza, B_Migrable, D_FecEvalua, B_Migrado, D_FecMigrado, B_Removido, D_FecRemovido, B_Correcto
+			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, B_Obligacion, B_Migrable 
 		  INTO #temp_det_pago
 		  FROM TR_Ec_Det_Pagos
 		 WHERE I_OblRowID = @I_OblRowID
 	
 
-		--DECLARE CURSOR 
+		DECLARE det_Cursor CURSOR 
+		FOR (SELECT I_RowID, Nro_recibo, Fch_pago, Id_lug_pag, Pagado, Pag_demas, Cod_cajero FROM #temp_det_obl WHERE B_Migrable = 1)
 
+		OPEN det_Cursor
+		FETCH NEXT FROM det_Cursor INTO @I_RowID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero;
+		
+		WHILE @@FETCH_STATUS = 0
+		BEGIN
+			UPDATE BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet SET B_Pagado = @Pagado
+			WHERE I_MigracionRowID = @I_RowID
+
+			FETCH NEXT FROM det_Cursor;
+		END
+
+		CLOSE det_Cursor
+		DEALLOCATE det_Cursor
 
 		COMMIT TRANSACTION
 					
