@@ -857,6 +857,8 @@ AS
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
+	DECLARE @I_Observados int = 0
+
 	BEGIN TRANSACTION;
 	BEGIN TRY 
 
@@ -912,6 +914,8 @@ BEGIN
 	DECLARE @cod_alu varchar(20)
 	DECLARE @cod_rc varchar(5)
 	DECLARE @Nro_recibo varchar(20)
+
+	DECLARE @I_Observados int = 0
 	
 	BEGIN TRANSACTION;
 	BEGIN TRY 
@@ -1053,8 +1057,8 @@ BEGIN
 	DECLARE @I_TablaID_Obl int = 5
 	DECLARE @I_TablaID_Det int = 4
 	DECLARE @I_UsuarioID int = (SELECT dbo.Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID())
-	DECLARE @I_CtasCabObl_RowID  int
-	DECLARE @I_CtasDetObl_RowID  int
+	DECLARE @I_CtasPago_RowID  int
+	DECLARE @I_CtasMora_RowID  int
 	DECLARE @T_Moneda varchar(3) = 'PEN'
 
 	DECLARE @I_Obl_Actualizados int = 0
@@ -1069,37 +1073,122 @@ BEGIN
 	BEGIN TRANSACTION;
 	BEGIN TRY 
 		
-		SELECT I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
+		SELECT det.I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
 			   Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, 
-			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, B_Obligacion, B_Migrable 
+			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, det.I_ProcedenciaID, B_Obligacion, det.B_Migrable, 
+			   det.I_CtasDetTableRowID 
 		  INTO #temp_det_obl
-		  FROM TR_Ec_Det 
+		  FROM TR_Ec_Det det
 		 WHERE I_OblRowID = @I_OblRowID
+			   AND det.B_Migrable = 1
 
-		SELECT I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
+
+		SELECT det.I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
 			   Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, 
-			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, B_Obligacion, B_Migrable 
+			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, det.I_ProcedenciaID, B_Obligacion, det.B_Migrable, 
+			   (a.T_ApePaterno + ' ' + a.T_ApeMaterno + ', ' + a.T_Nombre) AS T_NomDepositante, det.I_CtasPagoBncTableRowID
 		  INTO #temp_det_pago
+		  FROM TR_Ec_Det_Pagos det
+			   INNER JOIN  TR_Alumnos a ON det.Cod_alu = a.C_CodAlu AND det.Cod_rc = a.C_RcCod
+			   INNER JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
+		 WHERE I_OblRowID = @I_OblRowID
+			   AND Concepto = 0
+			   AND det.B_Migrable = 1
+
+	
+		SELECT I_RowID, I_OblRowID, Monto 
+		  INTO #temp_det_pago_mora
 		  FROM TR_Ec_Det_Pagos
 		 WHERE I_OblRowID = @I_OblRowID
-	
+			   AND Concepto <> 0
+			   AND B_Migrable = 1
 
-		DECLARE det_Cursor CURSOR 
-		FOR (SELECT I_RowID, Nro_recibo, Fch_pago, Id_lug_pag, Pagado, Pag_demas, Cod_cajero FROM #temp_det_obl WHERE B_Migrable = 1)
+		DECLARE @mora decimal(10,2)
+		DECLARE @I_RowID	int, 
+				@Nro_recibo varchar(20), 
+				@Fch_pago	date, 
+				@Id_lug_pag	varchar(10), 
+				@Pagado		bit, 
+				@Pag_demas	bit, 
+				@Cod_cajero varchar(20),
+				@Cod_alu	varchar(20),
+				@NombreDep	varchar(200),
+				@Cantidad	decimal,
+				@Monto		decimal(15, 2),
+				@Eliminado	bit,
+				@Fch_ec		date,				
+				@I_CtasID	int
 
-		OPEN det_Cursor
-		FETCH NEXT FROM det_Cursor INTO @I_RowID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero;
-		
+
+		DECLARE pago_Cursor CURSOR 
+		FOR SELECT I_RowID, Nro_recibo, Fch_pago, Id_lug_pag, Pagado, Pag_demas, Cod_cajero, Monto, Cantidad, T_NomDepositante, 
+				   Cod_alu, Eliminado, Fch_ec, I_CtasPagoBncTableRowID 
+			  FROM #temp_det_pago
+
+		OPEN pago_Cursor
+		FETCH NEXT FROM pago_Cursor INTO @I_RowID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero, @Monto, 
+										 @Cantidad, @NombreDep, @Cod_alu, @Eliminado, @Fch_ec, @I_CtasID;
+
+
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
-			UPDATE BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet SET B_Pagado = @Pagado
-			WHERE I_MigracionRowID = @I_RowID
 
-			FETCH NEXT FROM det_Cursor;
-		END
+			SET @mora = (SELECT SUM(monto) FROM #temp_det_pago_mora WHERE I_OblRowID = @I_OblRowID)
 
-		CLOSE det_Cursor
-		DEALLOCATE det_Cursor
+			IF (@I_CtasID IS NULL)
+			BEGIN
+				INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco (I_EntidadFinanID, C_CodOperacion, C_CodDepositante, T_NomDepositante, C_Referencia, D_FecPago, 
+																	I_Cantidad, C_Moneda, I_MontoPago, T_LugarPago, B_Anulado, I_UsuarioCre, D_FecCre, T_Observacion,
+																	T_InformacionAdicional, I_CondicionPagoID, I_TipoPagoID, I_CtaDepositoID, I_InteresMora, T_MotivoCoreccion, 
+																	I_UsuarioCre, D_FecCre, C_CodigoInterno, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
+															SELECT  IIF(@Cod_cajero = 'BCP', 2, 1) AS I_EntidadFinanID, @Nro_recibo, @Cod_alu, @NombreDep, @Nro_recibo, @Fch_pago,  
+																	@Cantidad, @T_Moneda, @Monto, @Id_lug_pag, @Eliminado, 1 as usuario, IIF(ISDATE(CAST(@Fch_ec as varchar)) = 0, NULL, @Fch_ec),
+																	NULL as observacion, NULL as adicional, 131 as condpago, 133 as tipoPago, cdp.I_CtaDepositoID, ISNULL(@mora, 0) as mora,
+																	NULL as motivo, @I_UsuarioID, @D_FecProceso, @Nro_recibo, 1 AS migrado, @I_TablaID_Det, det.I_RowID
+
+
+				SET @I_CtasPago_RowID = SCOPE_IDENTITY()
+			END
+			ELSE
+			BEGIN
+				UPDATE BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco
+				   SET T_NomDepositante = @NombreDep,
+					   C_Referencia = @Nro_recibo,
+					   D_FecPago = @Fch_pago,
+					   C_Moneda = @T_Moneda,
+					   I_MontoPago = @Monto,
+					   T_LugarPago = @Id_lug_pag,
+					   B_Migrado = 1,
+					   D_FecMod = @D_FecProceso
+				 WHERE I_PagoBancoID = @I_CtasID
+
+				 SET @I_CtasPago_RowID = @I_CtasID
+			END
+
+			DECLARE Det_Cursor CURSOR 
+			FOR SELECT I_RowID, Nro_recibo, Fch_pago, Id_lug_pag, Pagado, Pag_demas, Cod_cajero, Monto, Cantidad, T_NomDepositante, 
+					   Cod_alu, Eliminado, Fch_ec 
+				  FROM #temp_det_pago
+
+			OPEN Det_Cursor
+			FETCH NEXT FROM Det_Cursor INTO @I_RowID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero, @Monto, 
+											 @Cantidad, @NombreDep, @Cod_alu, @Eliminado, @Fch_ec;
+
+
+			WHILE @@FETCH_STATUS = 0
+			BEGIN
+
+
+				FETCH NEXT FROM Det_Cursor INTO @I_RowID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero;
+			END
+
+			CLOSE Det_Cursor
+			DEALLOCATE Det_Cursor
+
+
+
+		CLOSE pago_Cursor
+		DEALLOCATE pago_Cursor
 
 		COMMIT TRANSACTION
 					

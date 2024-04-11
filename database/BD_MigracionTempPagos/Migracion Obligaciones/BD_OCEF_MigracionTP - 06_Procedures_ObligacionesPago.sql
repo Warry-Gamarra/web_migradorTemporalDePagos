@@ -1044,7 +1044,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarData
 	@T_Message			nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_ProcedenciaID tinyint = 3,
+	declare @I_ProcedenciaID tinyint = 1,
 			@T_Anio		 varchar(4) = '2010', 
 			@B_Resultado  bit, 
 			@T_Message nvarchar(4000)
@@ -1077,23 +1077,13 @@ BEGIN
 	BEGIN TRY 
 		
 		SELECT ROW_NUMBER() OVER(PARTITION BY Ano, P, Cod_alu, Cod_rc ORDER BY I_RowID) as I_Obl_Nro, 
-			   Ano, P, I_Periodo, Cod_alu, Cod_rc, Cuota_pago, Tipo_oblig, Fch_venc, Monto, Pagado, 
+			   Ano, P, I_Periodo, Cod_alu, Cod_rc, Cuota_pago, Tipo_oblig, Fch_venc, Monto, 0 as Pagado, 
 			   D_FecCarga, B_Migrable, B_Migrado, I_ProcedenciaID, B_Obligacion, I_RowID
 		  INTO #temp_obl_migrable_anio
 		  FROM TR_Ec_Obl
 		 WHERE B_Migrable = 1 
 			   AND I_ProcedenciaID = @I_ProcedenciaID
 		 	   AND Ano =  @T_Anio
-
-		SELECT I_OblRowID, I_RowID, Ano, P, Cod_alu, Cod_rc, Cuota_pago, Tipo_oblig, Cantidad, Monto, 
-			   Concepto, Tipo_pago, No_banco, Fch_elimin, Concepto_f, Fch_venc, Pagado, Documento, 
-			   D_FecCarga, B_Migrable, B_Migrado, I_ProcedenciaID, B_Obligacion
-		  INTO #temp_det_migrable_anio
-		  FROM TR_Ec_Det
-		 WHERE B_Migrable = 1 
-			   AND I_ProcedenciaID = @I_ProcedenciaID
-		 	   AND Ano = @T_Anio
-
 		
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno AS TRG
 		USING (SELECT Cod_alu, Cod_rc, Ano, P, I_Periodo, I_RowID
@@ -1104,33 +1094,50 @@ BEGIN
 		   AND TRG.I_Periodo = SRC.I_Periodo
 		WHEN MATCHED THEN
 			UPDATE SET TRG.I_MigracionTablaID = @I_TablaID_Obl, 
-					   TRG.I_MigracionTablaID = SRC.I_RowID,
+					   TRG.I_MigracionRowID = SRC.I_RowID,
 					   TRG.D_FecMod = @D_FecProceso,
+					   TRG.I_UsuarioMod = @I_UsuarioID,
 					   TRG.B_Migrado = 1
 		WHEN NOT MATCHED THEN
-			INSERT (C_CodRc, C_CodAlu, I_Anio, I_Periodo, C_EstMat, C_Ciclo, B_Ingresante, I_CredDesaprob, 
+			INSERT (C_CodRc, C_CodAlu, I_Anio, I_Periodo, C_EstMat, C_Ciclo, B_Ingresante, I_CredDesaprob, I_UsuarioCre,   
 					D_FecCre, B_Habilitado, B_Eliminado, B_Migrado, I_MigracionRowID, I_MigracionTablaID)
-			VALUES (SRC.Cod_rc, SRC.Cod_alu, CAST(SRC.Ano as int), SRC.I_Periodo, 'S', NULL, NULL, NULL, 
-					@D_FecProceso, 0, 1, SRC.I_RowID, @I_TablaID_Obl)
+			VALUES (SRC.Cod_rc, SRC.Cod_alu, CAST(SRC.Ano as int), SRC.I_Periodo, 'S', NULL, NULL, NULL, @I_UsuarioID,
+					@D_FecProceso, 1, 0, 1, SRC.I_RowID, @I_TablaID_Obl)
 		OUTPUT $action, SRC.I_RowID, inserted.I_MatAluID, deleted.I_MatAluID INTO @Tbl_outputMat;
 
 		SET @I_Mat_Insertados = (SELECT COUNT(*) FROM @Tbl_outputMat WHERE T_Action = 'INSERT')
 		SET @I_Mat_Actualizados = (SELECT COUNT(*) FROM @Tbl_outputMat WHERE T_Action = 'UPDATE')
 
+		select * from  @Tbl_outputMat
 
-		SET @I_CtasCabObl_RowID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab')
+		UPDATE Obl
+		   SET I_CtasMatTableRowID = OM.I_Inserted_RowID
+		  FROM @Tbl_outputMat OM
+			   INNER JOIN TR_Ec_Obl Obl ON OM.I_RowID = Obl.I_RowID
 
-		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab ON
+		UPDATE Obl
+		   SET I_CtasMatTableRowID = OblMat.I_CtasMatTableRowID
+		  FROM TR_Ec_Obl Obl
+			   INNER JOIN (SELECT * FROM TR_Ec_Obl WHERE I_CtasMatTableRowID IS NOT NULL) OblMat 
+							ON obl.Ano = OblMat.Ano	
+							   AND obl.I_Periodo = OblMat.I_Periodo
+							   AND obl.Cod_alu = OblMat.Cod_alu
+							   AND obl.Cod_rc = OblMat.Cod_rc
 
-		;WITH CTE_OBL_MIGRABLE (OblCabAluID, I_MigracionTablaID, CTE_RowID, I_OblRowID, Ano, P, I_Periodo, 
-								Cod_alu, Cod_rc, Cuota_pago, Tipo_oblg, Fch_venc, Monto, Pagado, I_MatAluID)
+
+		;WITH CTE_OBL_MIGRABLE (CTE_RowID, I_OblRowID, Ano, P, I_Periodo, Cod_alu, Cod_rc, Cuota_pago, 
+								Tipo_oblg, Fch_venc, Monto, Pagado, I_MatAluID, I_MigracionTablaID )
 		AS
 		(
-			SELECT @I_CtasCabObl_RowID + ROW_NUMBER() OVER (ORDER BY obl.I_RowID ASC) as OblCabAluID, mat.I_MigracionTablaID, 
-				   ROW_NUMBER() OVER (ORDER BY obl.I_RowID ASC) as CTE_RowID, obl.I_RowID as I_OblRowID, obl.Ano, obl.P, obl.I_Periodo, 
-				   obl.Cod_alu, obl.Cod_rc, obl.Cuota_pago, obl.Tipo_oblig, obl.Fch_venc, obl.Monto, obl.Pagado, mat.I_MatAluID
+			SELECT ROW_NUMBER() OVER (ORDER BY obl.I_RowID ASC) as CTE_RowID, obl.I_RowID as I_OblRowID, 
+				   obl.Ano, obl.P, obl.I_Periodo, obl.Cod_alu, obl.Cod_rc, obl.Cuota_pago, obl.Tipo_oblig, 
+				   obl.Fch_venc, obl.Monto, obl.Pagado, mat.I_MatAluID, mat.I_MigracionTablaID 
 			  FROM #temp_obl_migrable_anio obl
-				   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno mat ON obl.I_RowID = mat.I_MigracionRowID						
+				   LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno mat ON CAST(obl.Ano AS int) = mat.I_Anio	
+																				 AND obl.I_Periodo = mat.I_Periodo
+																				 AND obl.Cod_alu = mat.C_CodAlu
+																				 AND obl.Cod_rc = mat.C_CodRc
+			 WHERE mat.I_MigracionRowID IS NOT NULL
 		)
 
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab AS TRG
@@ -1142,26 +1149,28 @@ BEGIN
 					   TRG.I_MatAluID = SRC.I_MatAluID, 
 					   TRG.I_MontoOblig = SRC.Monto, 
 					   TRG.D_FecVencto = SRC.Fch_venc, 
-					   TRG.B_Pagado = 0, 
+					   TRG.B_Pagado = SRC.Pagado, 
 					   TRG.I_UsuarioMod = @I_UsuarioID, 
 					   TRG.D_FecMod = @D_FecProceso
 		WHEN NOT MATCHED THEN
-			INSERT (I_ObligacionAluID, I_ProcesoID, I_MatAluID, C_Moneda, I_MontoOblig, D_FecVencto, B_Pagado, B_Habilitado, 
+			INSERT (I_ProcesoID, I_MatAluID, C_Moneda, I_MontoOblig, D_FecVencto, B_Pagado, B_Habilitado, 
 					B_Eliminado, I_UsuarioCre, D_FecCre, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
-			VALUES (SRC.OblCabAluID, SRC.Cuota_pago, SRC.I_MatAluID, @T_Moneda, SRC.Monto, SRC.Fch_venc, 0, 1, 
+			VALUES (SRC.Cuota_pago, SRC.I_MatAluID, @T_Moneda, SRC.Monto, SRC.Fch_venc, 0, 1, 
 					0, @I_UsuarioID, @D_FecProceso, 1, I_MigracionTablaID, SRC.I_OblRowID)
 		OUTPUT $action, SRC.I_OblRowID, inserted.I_ObligacionAluID, deleted.I_ObligacionAluID INTO @Tbl_outputObl;
 			
 		UPDATE OBL
 		   SET B_Migrado = 1,
-			   B_Migrado = @D_FecProceso
+			   D_FecMigrado = @D_FecProceso,
+			   I_CtasCabTableRowID = I_Inserted_RowID
 		  FROM TR_Ec_Obl OBL
 			   INNER JOIN @Tbl_outputObl O ON O.I_RowID = OBL.I_RowID
 		 WHERE O.T_Action = 'INSERT'
 
 		UPDATE OBL
 		   SET B_Migrado = 1,
-			   D_FecMigrado = @D_FecProceso
+			   D_FecMigrado = @D_FecProceso,
+			   I_CtasCabTableRowID = I_Inserted_RowID
 		  FROM TR_Ec_Obl OBL
 			   INNER JOIN @Tbl_outputObl O ON O.I_RowID = OBL.I_RowID
 		 WHERE O.T_Action = 'UPDATE'
@@ -1171,21 +1180,30 @@ BEGIN
 		SET @I_Obl_Actualizados = (SELECT COUNT(*) FROM @Tbl_outputObl WHERE T_Action = 'UPDATE')
 
 
-		SET IDENTITY_INSERT BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab OFF
+		select * from  @Tbl_outputObl
 
-		SET @I_CtasDetObl_RowID = IDENT_CURRENT('BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet')
 
-		;WITH CTE_DET_MIGRABLE (OblDetAluID, I_MigracionTablaID, CTE_RowID, I_OblRowID, I_DetRowID, Concepto, Monto, Pagado,
+		SELECT I_OblRowID, I_RowID, Ano, P, Cod_alu, Cod_rc, Cuota_pago, Tipo_oblig, Cantidad, Monto, 
+			   Concepto, Tipo_pago, No_banco, Fch_elimin, Concepto_f, Fch_venc, 0 as Pagado, Documento, 
+			   Eliminado, D_FecCarga, B_Migrable, B_Migrado, I_ProcedenciaID, B_Obligacion
+		  INTO #temp_det_migrable_anio
+		  FROM TR_Ec_Det
+		 WHERE B_Migrable = 1 
+			   AND I_ProcedenciaID = @I_ProcedenciaID
+		 	   AND Ano = @T_Anio
+
+
+
+		;WITH CTE_DET_MIGRABLE (I_MigracionTablaID, CTE_RowID, I_OblRowID, I_DetRowID, I_CtasOblID, Concepto, Monto, Pagado,
 								Fch_venc, I_TipoDocumento, T_DescDocumento, Habilitado, Eliminado, D_FecCre, Mora)
 		AS
 		(
-			SELECT @I_CtasDetObl_RowID + ROW_NUMBER() OVER (ORDER BY det.I_OblRowID, det.I_RowID ASC) as OblDetAluID, @I_TablaID_Det, 
-				   ROW_NUMBER() OVER (ORDER BY det.I_OblRowID, det.I_RowID ASC) as CTE_RowID, det.I_OblRowID, det.I_RowID, det.Concepto, 
-				   det.Monto, 0 as Pagado, det.Fch_venc, CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, 
+			SELECT @I_TablaID_Det, ROW_NUMBER() OVER (ORDER BY det.I_OblRowID, det.I_RowID ASC) as CTE_RowID, 
+				   det.I_OblRowID, det.I_RowID, obl.I_Inserted_RowID as I_CtasOblID, det.Concepto, det.Monto, 0 as Pagado, det.Fch_venc, 
+				   CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, 
 				   CAST(Documento as varchar(max)) AS T_DescDocumento, 1 AS Habilitado, Eliminado, @D_FecProceso, 0 as Mora
-			  FROM TR_Ec_Det det
-				   INNER JOIN #temp_obl_migrable_anio obl ON obl.I_RowID = det.I_OblRowID
-			 WHERE det.B_Migrable = 1
+			  FROM #temp_det_migrable_anio det
+				   INNER JOIN @Tbl_outputObl obl ON obl.I_RowID = det.I_OblRowID
 		)
 
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet AS TRG
@@ -1207,22 +1225,24 @@ BEGIN
 					   TRG.I_UsuarioMod = @I_UsuarioID, 
 					   TRG.D_FecMod = @D_FecProceso
 		WHEN NOT MATCHED THEN
-			INSERT (I_ObligacionAluDetID, I_ObligacionAluID, I_ConcPagID, I_Monto, B_Pagado, D_FecVencto, I_TipoDocumento, T_DescDocumento, 
+			INSERT (I_ObligacionAluID, I_ConcPagID, I_Monto, B_Pagado, D_FecVencto, I_TipoDocumento, T_DescDocumento, 
 					B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, B_Mora, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
-			VALUES (SRC.OblDetAluID, SRC.I_ObligacionAluID, SRC.Concepto, SRC.Monto, SRC.Pagado, SRC.Fch_venc, SRC.I_TipoDocumento, SRC.T_DescDocumento, 
+			VALUES (SRC.I_ObligacionAluID, SRC.Concepto, SRC.Monto, SRC.Pagado, SRC.Fch_venc, SRC.I_TipoDocumento, SRC.T_DescDocumento, 
 					SRC.Habilitado, SRC.Eliminado, @I_UsuarioID, SRC.D_FecCre, SRC.Mora, 1, I_MigracionTablaID, SRC.I_DetRowID)
 		OUTPUT $action, SRC.I_DetRowID, inserted.I_ObligacionAluDetID, deleted.I_ObligacionAluDetID INTO @Tbl_outputDet;
 
 		UPDATE DET
 		   SET B_Migrado = 1,
-			   B_Migrado = @D_FecProceso
+			   D_FecMigrado = @D_FecProceso,
+			   I_CtasDetTableRowID = o.I_Inserted_RowID
 		  FROM TR_Ec_Det DET
 			   INNER JOIN @Tbl_outputDet O ON O.I_RowID = DET.I_RowID
 		 WHERE O.T_Action = 'INSERT'
 
 		UPDATE DET
 		   SET B_Migrado = 1,
-			   D_FecMigrado = @D_FecProceso
+			   D_FecMigrado = @D_FecProceso, 
+			   I_CtasDetTableRowID = o.I_Inserted_RowID
 		  FROM TR_Ec_Det DET
 			   INNER JOIN @Tbl_outputDet O ON O.I_RowID = DET.I_RowID
 		 WHERE O.T_Action = 'UPDATE'
@@ -1230,6 +1250,8 @@ BEGIN
 
 		SET @I_Det_Insertados = (SELECT COUNT(*) FROM @Tbl_outputDet WHERE T_Action = 'INSERT')
 		SET @I_Det_Actualizados = (SELECT COUNT(*) FROM @Tbl_outputDet WHERE T_Action = 'UPDATE')
+
+		select * from  @Tbl_outputDet
 
 		COMMIT TRANSACTION
 					
