@@ -12,6 +12,21 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
 {
     public class ObligacionRepository
     {
+        public static IEnumerable<string> ObtenerAnios(int procedenciaID)
+        {
+            IEnumerable<string> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<string>("SELECT Ano_obl FROM (SELECT DISTINCT IIF(ISNUMERIC(Ano) = 1, Ano, 'NO NUMERICO') AS Ano_obl " +
+                                                                       "FROM TR_Ec_obl WHERE ec_obl.I_ProcedenciaID = @I_ProcedenciaID) TBL ORDER BY Ano_obl",
+                                                        new { I_ProcedenciaID = procedenciaID },
+                                                        commandType: CommandType.Text, commandTimeout: 1200);
+            }
+
+            return result;
+        }
+
         public static IEnumerable<Obligacion> Obtener(int procedenciaID)
         {
             IEnumerable<Obligacion> result;
@@ -28,6 +43,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
 
             return result;
         }
+
 
         public static Obligacion ObtenerPorID(int obligacionID)
         {

@@ -24,6 +24,19 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             return result;
         }
 
+        public static IEnumerable<string> ObtenerAnios(string schemaDb)
+        {
+            IEnumerable<string> result;
+
+            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+            {
+                result = connection.Query<string>($"SELECT Ano_obl FROM (SELECT DISTINCT IIF(ISNUMERIC(Ano) = 1, Ano, 'NO NUMERICO') AS Ano_obl " +
+                                                                       $"FROM {schemaDb}.ec_obl) TBL ORDER BY Ano_obl",
+                                                  commandType: CommandType.Text);
+            }
+
+            return result;
+        }
 
         public static IEnumerable<Obligacion> Obtener(string schemaDb, string anio)
         {

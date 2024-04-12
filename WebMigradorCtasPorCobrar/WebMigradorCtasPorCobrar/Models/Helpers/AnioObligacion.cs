@@ -7,9 +7,16 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
 {
     public class AnioObligacion
     {
+        public string AnioText { get; set; }
         public int Anio { get; set; }
-        public int IsValid { get; set; }
+        public bool IsValid { get; set; }
 
+        public AnioObligacion(string anio)
+        {
+            this.AnioText = anio;
+            this.IsValid = int.TryParse(anio, out int anioValid);
+            this.Anio = anioValid;
+        }
     }
 
     public enum PeriodosValidacion

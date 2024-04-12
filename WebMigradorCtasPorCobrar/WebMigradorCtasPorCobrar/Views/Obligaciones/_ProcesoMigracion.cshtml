@@ -1,5 +1,8 @@
 ﻿@{
     var procedencia = ViewBag.Procedencia;
+    var copiar = ViewBag.FaseMigracionCopiar;
+    var validar = ViewBag.FaseMigracionValidar;
+    var migrar = ViewBag.FaseMigracionMigrar;
 }
 
 <h2>Proceso de migración</h2>
@@ -11,7 +14,7 @@
 
 <div class="col-md-12 my-4">
     <div class="row jumbotron" style="min-height: 450px">
-        <div class="card text-center w-100" id="result-periodos py-4" style="display:none;">
+        <div class="card text-center w-100 py-4" id="result-periodos" style="display:none;">
             <div id="processing" class="container-fluid" style="display:none;">
                 <div class="d-flex justify-content-center">
                     <div class="spinner-border text-info" role="status" style="width: 5rem; height: 5rem;">
@@ -40,40 +43,8 @@
     $('#btn-proc').addClass('active');
 
     $('#btn-copy').on('click', function () {
-        @*Swal.fire({
-            title: 'Copiar Obligaciones desde el temporal de pagos',
-            text: "Al copiar datos desde el temporal de pagos se perderá cualquier validacion y cambio que no hayan sido migrados",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ff830f',
-            cancelButtonColor: '#3c3c3c',
-            confirmButtonText: 'Sí, copiar datos.'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '@Url.Action("CopiarRegistros", "Obligaciones")' + '?procedencia=' + '@procedencia',
-                    type: 'POST',
-                    cache: false,
-                    beforeSend: function () {
-                        $('#processing').show();
-                        $('#result-message').hide();
-                    },
-                    success: function (data) {
-                        $('#result-message').html(data);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        $('#alert-message p.alert').html(jqXHR.responseText)
-                        $('#result-message').show();
-                    },
-                    complete: function () {
-                        $('#processing').hide();
-                        $('#result-message').show();
-                    }
-                })
-            }
-        });*@
         $.ajax({
-            url: '@Url.Action("ObtenerPeriodos", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia',
+            url: '@Url.Action("ObtenerPeriodos", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia' + '&faseMigracion=' + '@copiar',
             type: 'GET',
             cache: false,
             beforeSend: function () {
@@ -98,7 +69,7 @@
 
     $('#btn-validate').on('click', function () {
         $.ajax({
-            url: '@Url.Action("ValidarRegistros", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia',
+            url: '@Url.Action("ObtenerPeriodos", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia' + '&faseMigracion=' + '@validar',
             type: 'GET',
             cache: false,
             beforeSend: function () {
@@ -120,37 +91,24 @@
     })
 
     $('#btn-migrate').on('click', function () {
-        Swal.fire({
-            title: 'Migrar Obligaciones y pagos desde el temporal de pagos',
-            text: 'Al aceptar los registros con correctamente validados serán copiados a la base de Recaudación de ingresos.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ff830f',
-            cancelButtonColor: '#3c3c3c',
-            cancelButtonText: 'Cancelar',
-            confirmButtonText: 'Sí, migrar datos.'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    url: '@Url.Action("MigrarDatosTemporalPagos", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia',
-                    type: 'POST',
-                    cache: false,
-                    beforeSend: function () {
-                        $('#processing').show();
-                        $('#result-message').hide();
-                    },
-                    success: function (data) {
-                        $('#result-message').html(data);
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        $('#alert-message p.alert').html(jqXHR.responseText)
-                        $('#result-message').show();
-                    },
-                    complete: function () {
-                        $('#processing').hide();
-                        $('#result-message').show();
-                    }
-                })
+        $.ajax({
+            url: '@Url.Action("ObtenerPeriodos", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia' + '&faseMigracion=' + '@migrar',
+            type: 'GET',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#result-message').hide();
+            },
+            success: function (data) {
+                $('#result-periodos').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').html(jqXHR.responseText)
+                $('#result-periodos').show();
+            },
+            complete: function () {
+                $('#processing').hide();
+                $('#result-periodos').show();
             }
         })
     })

@@ -10,6 +10,19 @@ namespace WebMigradorCtasPorCobrar.Models.Services.TemporalPagos
 {
     public class ObligacionService
     {
+        public IEnumerable<AnioObligacion> ObtenerAnios(Procedencia procedencia)
+        {
+            List<AnioObligacion> result = new List<AnioObligacion>();
+            string schemaDb = Schema.SetSchema(procedencia);
+
+            foreach (var item in ObligacionRepository.ObtenerAnios(schemaDb))
+            {
+                result.Add(new AnioObligacion(item));
+            }
+            return result;
+        }
+
+
         public IEnumerable<Obligacion> ObtenerObligaciones(Procedencia procedencia)
         {
             string schemaDb = Schema.SetSchema(procedencia);

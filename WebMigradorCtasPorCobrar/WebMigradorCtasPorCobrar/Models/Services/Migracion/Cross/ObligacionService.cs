@@ -5,6 +5,7 @@ using System.Linq;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using CrossRepo = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
+using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos.ObligacionRepository;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using RepoCtas = WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
@@ -15,6 +16,18 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 {
     public class ObligacionService
     {
+        public IEnumerable<AnioObligacion> ObtenerAnios(Procedencia procedencia)
+        {
+            List<AnioObligacion> result = new List<AnioObligacion>();
+
+            foreach (var item in CrossRepo.ObligacionRepository.ObtenerAnios((int)procedencia))
+            {
+                result.Add(new AnioObligacion(item));
+            }
+            return result;
+        }
+
+
         public IEnumerable<Obligacion> ObtenerObligaciones(Procedencia procedencia, int? tipo_obsID)
         {
             if (tipo_obsID.HasValue)
@@ -113,7 +126,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         }
 
 
-        public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia, int? anio)
+        public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia, string anio)
         {
             Response result = new Response();
             Response result_Cabecera = new Response();
@@ -122,14 +135,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             DetalleObligacionRepository detalleObligacionRepository = new DetalleObligacionRepository();
 
             string schemaDb = Schema.SetSchema(procedencia);
-            string s_anio = "";
 
-            if (anio.HasValue)
+            if (!string.IsNullOrEmpty(anio))
             {
-                s_anio = anio.Value.ToString();
-
-                result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, s_anio);
-                result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, s_anio);
+                result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, anio);
+                result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, anio);
                 
                 if (result_Cabecera.IsDone && result_Detalle.IsDone)
                 {
@@ -144,12 +154,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             }
             else
             {
-                for (int anio_migra = 2005; anio_migra < 2020; anio_migra++)
+                foreach (var itemAnio in Temporal.ObtenerAnios(schemaDb))
                 {
-                    s_anio = anio_migra.ToString();
-
-                    result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, s_anio);
-                    result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, s_anio);
+                    result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, itemAnio);
+                    result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, itemAnio);
 
 
                     if (result_Cabecera.IsDone && result_Detalle.IsDone)
@@ -222,6 +230,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             return result;
         }
 
+
         private Response ValidarProcedenciaObligacionCuotaPago(int procedencia, short anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
@@ -236,6 +245,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 
             return result_Procedencia;
         }
+
 
         private Response ValidarObligacionCuotaPagoMigrada (int procedencia, short anio)
         {

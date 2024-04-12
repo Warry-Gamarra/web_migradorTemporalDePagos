@@ -107,13 +107,16 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult ProcesoMigracion(Procedencia procedencia)
         {
             ViewBag.Procedencia = procedencia;
+            ViewBag.FaseMigracionCopiar = FaseMigracion.Copiar.ToString();
+            ViewBag.FaseMigracionValidar = FaseMigracion.Validar.ToString();
+            ViewBag.FaseMigracionMigrar = FaseMigracion.Migrar.ToString();
 
             return PartialView("_ProcesoMigracion");
         }
 
 
         [HttpPost]
-        public ActionResult CopiarRegistros(Procedencia procedencia)
+        public ActionResult CopiarRegistros(Procedencia procedencia, string periodo)
         {
             Response result = _obligacionServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia, null);
 
@@ -121,13 +124,23 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
         [HttpGet]
-        public ActionResult ObtenerPeriodos(Procedencia procedencia, )
+        public ActionResult ObtenerPeriodos(Procedencia procedencia, FaseMigracion faseMigracion)
         {
             ViewBag.Procedencia = procedencia.ToString();
-            ViewBag.Action =
-            ViewBag.Anios = 
+            ViewBag.FaseMigracion = faseMigracion.ToString();
+            ViewBag.BtnId = $"btn-{faseMigracion.ToString().ToLower()}-per";
 
-            return PartialView("_ValidarRegistrosObligacion");
+
+            if (FaseMigracion.Migrar == faseMigracion)
+            {
+                ViewBag.Anios = new SelectList(_obligacionServiceMigracion.ObtenerAnios(procedencia), "Anio", "AnioText");
+            }
+            else
+            {
+                ViewBag.Anios = new SelectList(_obligacionServiceTemporalPagos.ObtenerAnios(procedencia), "Anio", "AnioText"); ;
+            }
+
+            return PartialView("_SeleccionPeriodoFase");
         }
 
 

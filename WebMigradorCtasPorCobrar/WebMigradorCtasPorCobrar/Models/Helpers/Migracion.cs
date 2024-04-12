@@ -5,10 +5,10 @@ using System.Web;
 
 namespace WebMigradorCtasPorCobrar.Models.Helpers
 {
-    public enum FasesMigracion
+    public enum FaseMigracion
     {
-        Copia_datos = 1,
-        Valifacion = 2,
-        Migrar_data = 3
+        Copiar = 1,
+        Validar = 2,
+        Migrar = 3
     }
 }
