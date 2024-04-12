@@ -175,6 +175,7 @@
     <Compile Include="Models\Entities\UnfvRepositorio\AlumnoPersona.cs" />
     <Compile Include="Models\Entities\UnfvRepositorio\Persona.cs" />
     <Compile Include="Models\Helpers\ListEnums.cs" />
+    <Compile Include="Models\Helpers\Migracion.cs" />
     <Compile Include="Models\Helpers\Observaciones.cs" />
     <Compile Include="Models\Helpers\CtasPorCobrar.cs" />
     <Compile Include="Models\Helpers\Tablas.cs" />

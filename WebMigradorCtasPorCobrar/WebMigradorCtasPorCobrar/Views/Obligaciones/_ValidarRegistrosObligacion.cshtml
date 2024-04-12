@@ -9,13 +9,8 @@
     <form class="form-inline">
         <div class="form-group my-3 col-6 ">
             @Html.Hidden("hdn_procedencia", @Hdn_procedencia)
-            <label for="cbo-periodo" class=" col col-form-label">SELECCIONAR PERIODOS</label>
-            <select class="col-3 form-control" id="cbo-periodo">
-                <option value="">NINGUNO</option>
-                <option value="@Rango_hasta_2009">Anteriores al 2009</option>
-                <option value="@Rango_2010_2015">Del 2010 al 2015</option>
-                <option value="@Rango_2016_2020">Del 2016 al 2020 </option>
-            </select>
+            <label for="cbo-periodo" class=" col col-form-label">SELECCIONAR AñO</label>
+            @Html.DropDownList("cboPeriodo", ViewBag.Anios as SelectList, "TODOS", new { @class = "form-control" })
         </div>
         <div class="form-group my-3 col-6">
             <button type="button" id="btn-validate-per" class="btn btn-primary">Validar registros</button>

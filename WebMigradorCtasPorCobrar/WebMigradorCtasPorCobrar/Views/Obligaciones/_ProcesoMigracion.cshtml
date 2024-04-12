@@ -40,7 +40,7 @@
     $('#btn-proc').addClass('active');
 
     $('#btn-copy').on('click', function () {
-        Swal.fire({
+        @*Swal.fire({
             title: 'Copiar Obligaciones desde el temporal de pagos',
             text: "Al copiar datos desde el temporal de pagos se perderá cualquier validacion y cambio que no hayan sido migrados",
             icon: 'warning',
@@ -71,7 +71,28 @@
                     }
                 })
             }
-        });
+        });*@
+        $.ajax({
+            url: '@Url.Action("ObtenerPeriodos", "Obligaciones", new { area = "" })' + '?procedencia=' + '@procedencia',
+            type: 'GET',
+            cache: false,
+            beforeSend: function () {
+                $('#processing').show();
+                $('#result-message').hide();
+            },
+            success: function (data) {
+                $('#result-periodos').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').html(jqXHR.responseText)
+                $('#result-periodos').show();
+            },
+            complete: function () {
+                $('#processing').hide();
+                $('#result-periodos').show();
+            }
+        })
+
     });
 
 

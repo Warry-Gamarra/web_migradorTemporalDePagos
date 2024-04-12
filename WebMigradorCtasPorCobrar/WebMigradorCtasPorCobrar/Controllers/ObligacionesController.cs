@@ -121,12 +121,11 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
         [HttpGet]
-        public ActionResult ValidarRegistros(Procedencia procedencia)
+        public ActionResult ObtenerPeriodos(Procedencia procedencia, )
         {
             ViewBag.Procedencia = procedencia.ToString();
-            ViewBag.Rango_Hasta_2009 = PeriodosValidacion.Anterior_hasta_2009.ToString();
-            ViewBag.Rango_2010_2015 = PeriodosValidacion.Del_2010_al_2015.ToString();
-            ViewBag.Rango_2016_2020 = PeriodosValidacion.Del_2016_al_2020.ToString();
+            ViewBag.Action =
+            ViewBag.Anios = 
 
             return PartialView("_ValidarRegistrosObligacion");
         }
