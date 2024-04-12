@@ -191,6 +191,7 @@
     <Compile Include="Models\Repository\Migracion\Cross\CuotaPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Cross\ObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\ConceptoPagoRepository.cs" />
+    <Compile Include="Models\Repository\Migracion\Obligaciones\DetalleObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\ObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Tasas\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Configuracion.cs" />

@@ -3,7 +3,19 @@
   <Items>
     <LogicalFolder Name="Connections" Type="2" Sorted="true">
       <Items>
-        <ConnectionNode Name="C16-OCGTI-OD-02\SQL_2016E:UNFV\wgamarra">
+        <ConnectionNode Name="(local)\SQL_2016E:DESKTOP-LL7ITM0\gamar">
+          <Created>2024-04-11T09:46:57.3771023-05:00</Created>
+          <Type>SQL</Type>
+          <Server>(local)\SQL_2016E</Server>
+          <UserName />
+          <Authentication>Windows Authentication</Authentication>
+          <InitialDB />
+          <LoginTimeout>30</LoginTimeout>
+          <ExecutionTimeout>0</ExecutionTimeout>
+          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
+          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
+        </ConnectionNode>
+        <ConnectionNode Name="C16-OCGTI-OD-02\SQL_2016E:DESKTOP-LL7ITM0\gamar">
           <Created>2024-02-02T15:10:06.7729346-05:00</Created>
           <Type>SQL</Type>
           <Server>C16-OCGTI-OD-02\SQL_2016E</Server>
@@ -92,8 +104,8 @@
           <FullPath>8. BD_OCEF_MigracionTP_Procedures_ObligacionesPago.sql</FullPath>
         </FileNode>
         <FileNode Name="9. BD_OCEF_MigracionTP_Procedures_PagoObligaciones.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:C16-OCGTI-OD-02\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>C16-OCGTI-OD-02\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>9. BD_OCEF_MigracionTP_Procedures_PagoObligaciones.sql</FullPath>
         </FileNode>

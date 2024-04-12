@@ -4,7 +4,8 @@ using System.IO;
 using System.Linq;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
-using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
+using CrossRepo = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
+using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using RepoCtas = WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
 
@@ -18,10 +19,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         {
             if (tipo_obsID.HasValue)
             {
-                return ObtenerConRepo(ObligacionRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Ec_Obl), procedencia);
+                return ObtenerConRepo(CrossRepo.ObligacionRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Ec_Obl), procedencia);
             }
 
-            return ObtenerConRepo(ObligacionRepository.Obtener((int)procedencia), procedencia);
+            return ObtenerConRepo(CrossRepo.ObligacionRepository.Obtener((int)procedencia), procedencia);
         }
 
 
@@ -70,11 +71,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 
         public Obligacion ObtenerObligacion(int obligacionID, bool getDetalle)
         {
-            var obligacion = ObligacionRepository.ObtenerPorID(obligacionID);
+            var obligacion = CrossRepo.ObligacionRepository.ObtenerPorID(obligacionID);
 
             if (getDetalle)
             {
-                obligacion.DetalleObligaciones = DetalleObligacionRepository.Obtener(obligacionID).ToList();
+                obligacion.DetalleObligaciones = CrossRepo.DetalleObligacionRepository.Obtener(obligacionID).ToList();
             }
 
             return obligacion;
@@ -84,11 +85,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         {
             IEnumerable<Obligacion> obligaciones;
 
-            obligaciones = ObligacionRepository.ObtenerPorAlumno(codAlu, codRc);
+            obligaciones = CrossRepo.ObligacionRepository.ObtenerPorAlumno(codAlu, codRc);
 
             foreach (var item in obligaciones)
             {
-                item.DetalleObligaciones = DetalleObligacionRepository.ObtenerDetallePorAlumno(codAlu, codRc, item.I_RowID).ToList();
+                item.DetalleObligaciones = CrossRepo.DetalleObligacionRepository.ObtenerDetallePorAlumno(codAlu, codRc, item.I_RowID).ToList();
             }
 
             return obligaciones;
@@ -101,7 +102,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             MemoryStream result = new MemoryStream();
 
             tipo_obsID = tipo_obsID.HasValue ? tipo_obsID : 0;
-            var data = ObligacionRepository.ObtenerReporteObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Ec_Obl);
+            var data = CrossRepo.ObligacionRepository.ObtenerReporteObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Ec_Obl);
 
             var sheet = excel_book.Worksheets.Add(data, "Observaciones");
             sheet.ColumnsUsed().AdjustToContents();
@@ -112,7 +113,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         }
 
 
-        public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia, int? anioIni, int? anioFin)
+        public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia, int? anio)
         {
             Response result = new Response();
             Response result_Cabecera = new Response();
@@ -121,21 +122,47 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             DetalleObligacionRepository detalleObligacionRepository = new DetalleObligacionRepository();
 
             string schemaDb = Schema.SetSchema(procedencia);
-            string s_anioIni = anioIni.HasValue ? null : anioIni.ToString();
-            string s_anioFin = anioFin.HasValue ? null : anioIni.ToString();
+            string s_anio = "";
 
-            result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, s_anioIni, s_anioFin);
-            result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, s_anioIni, s_anioFin);
-
-            if (result_Cabecera.IsDone && result_Detalle.IsDone)
+            if (anio.HasValue)
             {
-                result.IsDone = true;
-                result.Success(false);
+                s_anio = anio.Value.ToString();
+
+                result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, s_anio);
+                result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, s_anio);
+                
+                if (result_Cabecera.IsDone && result_Detalle.IsDone)
+                {
+                    result.IsDone = true;
+                    result.Success(false);
+                }
+                else
+                {
+                    result.IsDone = false;
+                    result.Error(false);
+                }
             }
             else
             {
-                result.IsDone = false;
-                result.Error(false);
+                for (int anio_migra = 2005; anio_migra < 2020; anio_migra++)
+                {
+                    s_anio = anio_migra.ToString();
+
+                    result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, s_anio);
+                    result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, s_anio);
+
+
+                    if (result_Cabecera.IsDone && result_Detalle.IsDone)
+                    {
+                        result.IsDone = true;
+                        result.Success(false);
+                    }
+                    else
+                    {
+                        result.IsDone = false;
+                        result.Error(false);
+                    }
+                }
             }
 
             result.Message = $"    <dl class=\"row text-justify\">" +

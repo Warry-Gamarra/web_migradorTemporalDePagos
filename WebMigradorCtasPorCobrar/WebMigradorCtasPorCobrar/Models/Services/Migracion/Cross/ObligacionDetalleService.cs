@@ -5,6 +5,7 @@ using System.Web;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
+using Obligacion = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
@@ -25,7 +26,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         public Response EjecutarValidacionesDetalleObligacion(Procedencia procedencia, int obligacionID)
         {
             Response result = new Response();
-            DetalleObligacionRepository detalleObligacionRepository = new DetalleObligacionRepository();
+            Obligacion.DetalleObligacionRepository detalleObligacionRepository = new Obligacion.DetalleObligacionRepository();
 
             _ = Schema.SetSchema(procedencia);
             _ = detalleObligacionRepository.InicializarEstadoValidacionDetalleObligacionPago((int)procedencia, obligacionID);
@@ -58,7 +59,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         public Response Save(DetalleObligacion detalleObligacion, int tipoObserv)
         {
             Response result = new Response();
-            DetalleObligacionRepository detalleObligacionRepository = new DetalleObligacionRepository();
+            Obligacion.DetalleObligacionRepository detalleObligacionRepository = new Obligacion.DetalleObligacionRepository();
 
             detalleObligacionRepository.InicializarEstadoValidacionDetalleObligacionPago(detalleObligacion.I_RowID, detalleObligacion.I_ProcedenciaID);
 
