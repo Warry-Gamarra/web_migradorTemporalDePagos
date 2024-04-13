@@ -270,16 +270,41 @@ BEGIN
 		PRINT 'FINALIZANDO - USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorAnio'
 
 		SET @B_Resultado = 1
-		SET @T_Message =  'Insertados Persona: ' + CAST(@I_Insertados_persona AS varchar) + ' | Insertados Alumno: ' + CAST(@I_Insertados_alumno AS varchar)
-						+ ' | Actualizados Persona: ' + CAST(@I_Actualizados_persona AS varchar) + ' | Actualizados Alumno: ' + CAST(@I_Actualizados_alumno AS varchar)
-
+		SET @T_Message = '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Total:", '+ 
+							 'Value: ' + CAST(@Count_ToInsert_repositorio AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Insertados Persona:", ' + 
+							 'Value: ' + CAST(@I_Insertados_persona AS varchar) +
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Insertados Alumno:", ' + 
+							 'Value: ' + CAST(@I_Insertados_alumno AS varchar) +
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@I_Actualizados_persona AS varchar) +  
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Removidos", ' + 
+							 'Value: ' + CAST(@I_Actualizados_alumno AS varchar)+ 
+						  '}]'
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
 	END CATCH
-
 END
 GO
 
@@ -541,6 +566,11 @@ BEGIN
 
 		SET @B_Resultado = 1
 		SET @T_Message = 'Migrado: ' + @C_CodAlu
+		SET @T_Message = '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Migrado:", ' + 
+							 'Value: "' + @C_CodAlu + '."' +
+						  '}]'
 
 		PRINT 'FINALIZANDO - USP_Alumnos_MigracionTP_Repositorio_IU_MigrarDataPorCodigo'
 
@@ -549,7 +579,11 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
 	END CATCH
 END
 GO
@@ -2490,7 +2524,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END

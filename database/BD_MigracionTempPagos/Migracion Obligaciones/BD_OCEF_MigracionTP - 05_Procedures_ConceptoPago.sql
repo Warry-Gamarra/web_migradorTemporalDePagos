@@ -193,7 +193,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -243,7 +243,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -319,7 +319,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -435,7 +435,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -516,7 +516,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -598,7 +598,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -685,7 +685,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -758,7 +758,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -834,7 +834,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -906,7 +906,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -969,7 +969,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -1064,7 +1064,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -1249,7 +1249,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -1335,7 +1335,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END

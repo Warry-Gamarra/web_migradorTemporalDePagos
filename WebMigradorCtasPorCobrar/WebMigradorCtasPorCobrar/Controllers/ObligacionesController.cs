@@ -131,7 +131,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             ViewBag.BtnId = $"btn-{faseMigracion.ToString().ToLower()}-per";
 
 
-            if (FaseMigracion.Migrar == faseMigracion)
+            if (FaseMigracion.Copiar != faseMigracion)
             {
                 ViewBag.Anios = new SelectList(_obligacionServiceMigracion.ObtenerAnios(procedencia), "Anio", "AnioText");
             }

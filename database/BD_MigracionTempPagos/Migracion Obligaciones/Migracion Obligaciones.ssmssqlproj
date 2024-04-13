@@ -3,7 +3,7 @@
   <Items>
     <LogicalFolder Name="Connections" Type="2" Sorted="true">
       <Items>
-        <ConnectionNode Name="(local)\SQL_2016E:DESKTOP-LL7ITM0\gamar">
+        <ConnectionNode Name="(local)\SQL_2016E:UNFV\wgamarra">
           <Created>2024-04-04T12:13:29.2396965-05:00</Created>
           <Type>SQL</Type>
           <Server>(local)\SQL_2016E</Server>
@@ -15,7 +15,7 @@
           <ConnectionProtocol>NotSpecified</ConnectionProtocol>
           <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
         </ConnectionNode>
-        <ConnectionNode Name="C16-OCGTI-OD-02\SQL_2016E:DESKTOP-LL7ITM0\gamar">
+        <ConnectionNode Name="C16-OCGTI-OD-02\SQL_2016E:UNFV\wgamarra">
           <Created>2024-02-07T11:02:43.4976019-05:00</Created>
           <Type>SQL</Type>
           <Server>C16-OCGTI-OD-02\SQL_2016E</Server>
@@ -27,7 +27,7 @@
           <ConnectionProtocol>NotSpecified</ConnectionProtocol>
           <ApplicationName />
         </ConnectionNode>
-        <ConnectionNode Name="DESKTOP-LL7ITM0\SQL_2016E:DESKTOP-LL7ITM0\gamar">
+        <ConnectionNode Name="DESKTOP-LL7ITM0\SQL_2016E:UNFV\wgamarra">
           <Created>2024-03-15T13:14:36.6917786-05:00</Created>
           <Type>SQL</Type>
           <Server>DESKTOP-LL7ITM0\SQL_2016E</Server>
@@ -44,26 +44,26 @@
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
       <Items>
         <FileNode Name="BD_OCEF_CtasPorCobrar - 01_Tablas.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-LL7ITM0\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-LL7ITM0\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_CtasPorCobrar - 01_Tablas.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_CtasPorCobrar - 02_Data.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-LL7ITM0\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-LL7ITM0\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_CtasPorCobrar - 02_Data.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_MigracionTP - 01_Tablas.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-LL7ITM0\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-LL7ITM0\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 01_Tablas.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_MigracionTP - 02_Data.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-LL7ITM0\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-LL7ITM0\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 02_Data.sql</FullPath>
         </FileNode>
@@ -92,14 +92,14 @@
           <FullPath>BD_OCEF_MigracionTP - 06_Procedures_ObligacionesPago.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_MigracionTP - 07_Procedures_PagoObligaciones.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-LL7ITM0\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-LL7ITM0\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 07_Procedures_PagoObligaciones.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_UNFV_Repositorio - 01_Tablas.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-LL7ITM0\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-LL7ITM0\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_UNFV_Repositorio - 01_Tablas.sql</FullPath>
         </FileNode>

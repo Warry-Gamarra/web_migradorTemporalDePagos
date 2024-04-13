@@ -19,7 +19,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
                 result = connection.Query<string>("SELECT Ano_obl FROM (SELECT DISTINCT IIF(ISNUMERIC(Ano) = 1, Ano, 'NO NUMERICO') AS Ano_obl " +
-                                                                       "FROM TR_Ec_obl WHERE ec_obl.I_ProcedenciaID = @I_ProcedenciaID) TBL ORDER BY Ano_obl",
+                                                                       "FROM TR_Ec_obl WHERE I_ProcedenciaID = @I_ProcedenciaID) TBL ORDER BY Ano_obl",
                                                         new { I_ProcedenciaID = procedenciaID },
                                                         commandType: CommandType.Text, commandTimeout: 1200);
             }

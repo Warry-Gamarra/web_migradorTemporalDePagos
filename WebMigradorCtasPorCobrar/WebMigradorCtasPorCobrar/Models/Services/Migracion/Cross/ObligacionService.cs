@@ -170,35 +170,44 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 
         public IEnumerable<Response> EjecutarValidaciones(Procedencia procedencia, string anioValidacion)
         {
-            int procedencia_id = (int)procedencia;
-
             List<Response> result = new List<Response>();
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
+            int procedencia_id = (int)procedencia;
 
             if (!string.IsNullOrEmpty(anioValidacion))
             {
-
-            }
-            result.Add(ValidarAnioEnCabeceraObligacion(procedencia_id));
-
-            foreach (var itemAnio in CrossRepo.ObligacionRepository.ObtenerAnios(procedencia_id))
+                result = this.EjecutarValidacionesPorAnio(procedencia_id, anioValidacion);
+                result.Add(ValidarAnioEnCabeceraObligacion(procedencia_id));
+                }
+            else
             {
-                short anio = short.Parse(itemAnio);
-
-                _ = obligacionRepository.InicializarEstadoValidacionObligacionPago((int)procedencia, anio);
-
-                result.Add(ValidarAlumnoCabeceraObligacion(procedencia_id, anio));
-                result.Add(ValidarPeriodoEnCabeceraObligacion(procedencia_id, anio));
-                result.Add(ValidarFechaVencimientoCuotaObligacion(procedencia_id, anio));
-                result.Add(ValidarObligacionCuotaPagoMigrada(procedencia_id, anio));
-                result.Add(ValidarProcedenciaObligacionCuotaPago(procedencia_id, anio));
+                foreach (var itemAnio in CrossRepo.ObligacionRepository.ObtenerAnios(procedencia_id))
+                {
+                    result.AddRange(this.EjecutarValidacionesPorAnio(procedencia_id, itemAnio));
+                }
             }
 
             return result;
         }
 
+        private List<Response> EjecutarValidacionesPorAnio(int procedencia_id, string anio)
+        {
+            List<Response> result = new List<Response>();
+            ObligacionRepository obligacionRepository = new ObligacionRepository();
 
-        private Response ValidarProcedenciaObligacionCuotaPago(int procedencia, short anio)
+            _ = obligacionRepository.InicializarEstadoValidacionObligacionPago(procedencia_id, anio);
+
+            result.Add(ValidarAlumnoCabeceraObligacion(procedencia_id, anio));
+            result.Add(ValidarPeriodoEnCabeceraObligacion(procedencia_id, anio));
+            //result.Add(ValidarFechaVencimientoCuotaObligacion(procedencia_id, anio));
+            //result.Add(ValidarObligacionCuotaPagoMigrada(procedencia_id, anio));
+            //result.Add(ValidarProcedenciaObligacionCuotaPago(procedencia_id, anio));
+
+            return result;
+
+        }
+
+
+        private Response ValidarProcedenciaObligacionCuotaPago(int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             Response result_Procedencia = obligacionRepository.ValidarProcedenciaObligacionCuotaPago(procedencia, anio);
@@ -214,7 +223,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         }
 
 
-        private Response ValidarObligacionCuotaPagoMigrada (int procedencia, short anio)
+        private Response ValidarObligacionCuotaPagoMigrada (int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             Response result_CuotaPagoMigrada = obligacionRepository.ValidarObligacionCuotaPagoMigrada(procedencia, anio);
@@ -229,7 +238,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             return result_CuotaPagoMigrada;
         }
 
-        private Response ValidarFechaVencimientoCuotaObligacion(int procedencia, short anio)
+        private Response ValidarFechaVencimientoCuotaObligacion(int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             Response result_FecVencimiento = obligacionRepository.ValidarFechaVencimientoCuotaObligacion(procedencia, anio);
@@ -244,7 +253,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             return result_FecVencimiento;
         }
 
-        private Response ValidarAlumnoCabeceraObligacion (int procedencia, short anio)
+        private Response ValidarAlumnoCabeceraObligacion (int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             Response result_Alumnos = obligacionRepository.ValidarAlumnoCabeceraObligacion(procedencia, anio);
@@ -274,7 +283,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             return result_Anio;
         }
 
-        private Response ValidarPeriodoEnCabeceraObligacion(int procedencia, short anio)
+        private Response ValidarPeriodoEnCabeceraObligacion(int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             Response result_Periodo = obligacionRepository.ValidarPeriodoEnCabeceraObligacion(procedencia, anio);
@@ -401,8 +410,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 Response responseObl;
                 Response responsePago;
 
-                responseObl = obligacionRepository.MigrarDataObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
-                responsePago = obligacionRepository.MigrarDataPagoObligacionesCtasPorCobrar((int)procedencia, null, anio, anio);
+                responseObl = obligacionRepository.MigrarDataObligacionesCtasPorCobrar((int)procedencia, anio);
+                responsePago = obligacionRepository.MigrarDataPagoObligacionesCtasPorCobrar((int)procedencia);
 
                 resultObligaciones.Add(responseObl);
                 resultPagos.Add(responsePago);
