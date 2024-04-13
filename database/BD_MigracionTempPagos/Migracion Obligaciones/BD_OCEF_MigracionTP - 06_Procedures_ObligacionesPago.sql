@@ -23,12 +23,12 @@ CREATE PROCEDURE USP_Obligaciones_ObligacionCab_TemporalPagos_MigracionTP_IU_Cop
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_ProcedenciaID	tinyint = 3,
-			@T_SchemaDB   varchar(20) = 'euded',
+	declare @I_ProcedenciaID	tinyint = 1,
+			@T_SchemaDB   varchar(20) = 'pregrado',
 			@T_Anio		  varchar(4) = '2010',
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
-	exec USP_Obligaciones_ObligacionCab_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
+	exec USP_Obligaciones_ObligacionCab_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Anio, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -43,7 +43,7 @@ BEGIN
 	BEGIN TRY 
 
 		SET @T_SQL = 'DELETE TR_Ec_Det ' +
-					  'WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + 
+					  'WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' ' +
 							'AND EXISTS (SELECT * FROM TR_Ec_Obl ' + 
 										 'WHERE TR_Ec_Obl.I_RowID = I_OblRowID ' + 
 												'AND TR_Ec_Obl.Ano = ''' + @T_Anio + ''' ' + 
@@ -74,7 +74,7 @@ BEGIN
 										  AND Ano = @T_Anio);
 
 
-		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE()' +
+		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE(); ' +
 			
 					  'INSERT TR_Ec_Obl (Ano, P, I_Periodo, Cod_alu, Cod_rc, Cuota_pago, Tipo_oblig, Fch_venc, Monto, Pagado, ' + 
 										'D_FecCarga, B_Migrable, B_Migrado, I_ProcedenciaID, B_Obligacion) ' +
@@ -95,7 +95,7 @@ BEGIN
 		SET @I_Insertados = @@ROWCOUNT
 
 		
-		SET @T_SQL = '(SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl WHERE Ano = ''' + @T_Anio + ''' '
+		SET @T_SQL = 'SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl WHERE Ano = ''' + @T_Anio + ''' '
 
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
@@ -122,22 +122,22 @@ BEGIN
 		SET @B_Resultado = 1					
 		SET @T_Message =  '[{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Total", '+ 
+							 'Title: "Total ' + @T_Anio + ':", '+ 
 							 'Value: ' + CAST(@I_EcObl AS varchar) +
 						  '}, ' + 
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Insertados", ' + 
+							 'Title: "Insertados ' + @T_Anio + ':", ' + 
 							 'Value: ' + CAST(@I_Insertados AS varchar) +
 						  '}, ' +
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Actualizados", ' + 
+							 'Title: "Actualizados ' + @T_Anio + ':", ' + 
 							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
 						  '}, ' +
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Removidos", ' + 
+							 'Title: "Removidos ' + @T_Anio + ':", ' + 
 							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
 						  '}]'
 
@@ -148,7 +148,7 @@ BEGIN
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
-							 'Value: ' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').'  +
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
@@ -172,13 +172,12 @@ CREATE PROCEDURE USP_Obligaciones_ObligacionDet_TemporalPagos_MigracionTP_IU_Cop
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_ProcedenciaID	tinyint = 3,
-			@T_SchemaDB   varchar(20) = 'euded',
-			@T_AnioIni	  varchar(4) = null,
-			@T_AnioFin	  varchar(4) = null,
+	declare @I_ProcedenciaID	tinyint = 1,
+			@T_SchemaDB   varchar(20) = 'pregrado',
+			@T_Anio	  varchar(4) = '2010',
 	 		@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
-	exec USP_Obligaciones_ObligacionDet_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_AnioIni, @T_AnioFin, @B_Resultado output, @T_Message output
+	exec USP_Obligaciones_ObligacionDet_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Anio, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -209,7 +208,7 @@ BEGIN
 											'Eliminado, Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, D_FecCarga, B_Migrable, ' +
 											'B_Migrado, D_FecMigrado, I_ProcedenciaID, B_Obligacion) ' +
 									'SELECT  cod_alu, cod_rc, cuota_pago, ano, p, tipo_oblig, concepto, fch_venc, nro_recibo, fch_pago, ' + 
-										    'id_lug_pag, cantidad, monto, CAST(SRC.documento as nvarchar(max)), pagado, concepto_f, fch_elimin, nro_ec, fch_ec, ' + 
+										    'id_lug_pag, cantidad, monto, CAST(documento as nvarchar(max)), pagado, concepto_f, fch_elimin, nro_ec, fch_ec, ' + 
 										    'eliminado, pag_demas, cod_cajero, tipo_pago, no_banco, cod_dep, @D_FecProceso as D_FecCarga, 1 as B_Migrable, ' + 
 										    '0 as B_Migrado,  NULL as D_FecMigrado, ' + CAST(@I_ProcedenciaID as varchar(3)) + ' as I_ProcedenciaID, 1 as B_Obligacion ' +
 									  'FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det ' +
@@ -231,6 +230,11 @@ BEGIN
 		BEGIN
 			SET @I_Insertados = @I_EcDet - @I_Removidos
 			SET @I_Actualizados =   @I_EcDet - @I_Insertados
+		END
+		ELSE
+		BEGIN
+			SET @I_Insertados = @I_EcDet
+			SET @I_Actualizados =  @I_EcDet - @I_Insertados
 		END
 
 		SELECT @I_EcDet AS tot_obligaciones, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
@@ -261,7 +265,11 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
 	END CATCH
 END
 GO

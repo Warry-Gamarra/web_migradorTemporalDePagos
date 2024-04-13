@@ -118,7 +118,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult CopiarRegistros(Procedencia procedencia, string periodo)
         {
-            Response result = _obligacionServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia, null);
+            var result = _obligacionServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia, periodo);
 
             return PartialView("_ResultadoCopiarRegistros", result);
         }
@@ -145,7 +145,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
 
         [HttpPost]
-        public ActionResult ValidarRegistros(Procedencia procedencia, PeriodosValidacion periodo)
+        public ActionResult ValidarRegistros(Procedencia procedencia, string periodo)
         {
             IEnumerable<Response> result = _obligacionServiceMigracion.EjecutarValidaciones(procedencia, periodo);
 

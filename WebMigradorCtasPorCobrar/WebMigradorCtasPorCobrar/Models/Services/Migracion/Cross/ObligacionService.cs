@@ -94,6 +94,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             return obligacion;
         }
 
+
         public IEnumerable<Obligacion> ObtenerPorAlumno(string codAlu, string codRc)
         {
             IEnumerable<Obligacion> obligaciones;
@@ -126,98 +127,64 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         }
 
 
-        public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia, string anio)
+        public IEnumerable<Response> CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia, string anio)
         {
-            Response result = new Response();
-            Response result_Cabecera = new Response();
-            Response result_Detalle = new Response();
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            DetalleObligacionRepository detalleObligacionRepository = new DetalleObligacionRepository();
+            List<Response> result = new List<Response>();
 
             string schemaDb = Schema.SetSchema(procedencia);
 
             if (!string.IsNullOrEmpty(anio))
             {
-                result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, anio);
-                result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, anio);
-                
-                if (result_Cabecera.IsDone && result_Detalle.IsDone)
-                {
-                    result.IsDone = true;
-                    result.Success(false);
-                }
-                else
-                {
-                    result.IsDone = false;
-                    result.Error(false);
-                }
+                result = this.CopiarRegistrosPorAnio((int)procedencia, schemaDb, anio);
             }
             else
             {
                 foreach (var itemAnio in Temporal.ObtenerAnios(schemaDb))
                 {
-                    result_Cabecera = obligacionRepository.CopiarRegistrosCabecera((int)procedencia, schemaDb, itemAnio);
-                    result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle((int)procedencia, schemaDb, itemAnio);
-
-
-                    if (result_Cabecera.IsDone && result_Detalle.IsDone)
-                    {
-                        result.IsDone = true;
-                        result.Success(false);
-                    }
-                    else
-                    {
-                        result.IsDone = false;
-                        result.Error(false);
-                    }
+                    result.AddRange(this.CopiarRegistrosPorAnio((int)procedencia, schemaDb, itemAnio));
                 }
             }
+            
+            return result;
+        }
 
-            result.Message = $"    <dl class=\"row text-justify\">" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Cabecera de Obligaciones</dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_Cabecera.Message}</p>" +
-                             $"        </dd>" +
-                             $"        <dt class=\"col-md-4 col-sm-6\">Detalle de Obligaciones </dt>" +
-                             $"        <dd class=\"col-md-8 col-sm-6\">" +
-                             $"            <p>{result_Detalle.Message}</p>" +
-                             $"        </dd>" +
-                             $"    </dl>";
 
+        private List<Response> CopiarRegistrosPorAnio(int procedencia, string schema, string anio)
+        {
+            List<Response> result = new List<Response>();
+            ObligacionRepository obligacionRepository = new ObligacionRepository();
+            DetalleObligacionRepository detalleObligacionRepository = new DetalleObligacionRepository();
+
+            Response result_Cabecera = obligacionRepository.CopiarRegistrosCabecera(procedencia, schema, anio);
+            Response result_Detalle = detalleObligacionRepository.CopiarRegistrosDetalle(procedencia, schema, anio);
+
+            result_Cabecera = result_Cabecera.IsDone ? result_Cabecera.Success(false) : result_Cabecera.Error(false);
+            result_Detalle = result_Detalle.IsDone ? result_Detalle.Success(false) : result_Detalle.Error(false);
+
+            result.Add(result_Cabecera);
+            result.Add(result_Detalle);
 
             return result;
         }
 
 
-        public IEnumerable<Response> EjecutarValidaciones(Procedencia procedencia, PeriodosValidacion periodosValidacion)
+        public IEnumerable<Response> EjecutarValidaciones(Procedencia procedencia, string anioValidacion)
         {
-            short anioInicio = 0;
-            short anioFin = 0;
             int procedencia_id = (int)procedencia;
 
             List<Response> result = new List<Response>();
             ObligacionRepository obligacionRepository = new ObligacionRepository();
 
-            switch (periodosValidacion)
+            if (!string.IsNullOrEmpty(anioValidacion))
             {
-                case PeriodosValidacion.Anterior_hasta_2009:
-                    anioInicio = 2000;
-                    anioFin = 2009;
-                    break;
-                case PeriodosValidacion.Del_2010_al_2015:
-                    anioInicio = 2010;
-                    anioFin = 2015;
-                    break;
-                case PeriodosValidacion.Del_2016_al_2020:
-                    anioInicio = 2016;
-                    anioFin = 2020;
-                    break;
+
             }
+            result.Add(ValidarAnioEnCabeceraObligacion(procedencia_id));
 
-           result.Add(ValidarAnioEnCabeceraObligacion(procedencia_id));
-
-           for (short anio = anioInicio; anio <= anioFin; anio++)
+            foreach (var itemAnio in CrossRepo.ObligacionRepository.ObtenerAnios(procedencia_id))
             {
+                short anio = short.Parse(itemAnio);
+
                 _ = obligacionRepository.InicializarEstadoValidacionObligacionPago((int)procedencia, anio);
 
                 result.Add(ValidarAlumnoCabeceraObligacion(procedencia_id, anio));
@@ -254,8 +221,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 
             int obsCuotaPago = int.TryParse(result_CuotaPagoMigrada.Message, out int obs_cp) ? obs_cp : 0;
             result_CuotaPagoMigrada = result_CuotaPagoMigrada.IsDone ? (obsCuotaPago > 0 ? result_CuotaPagoMigrada.Warning($"{obs_cp} registros encontrados", false) 
-                                                                     : result_CuotaPagoMigrada.Success(false))
-                                                          : result_CuotaPagoMigrada.Error(false);
+                                                                                         : result_CuotaPagoMigrada.Success(false))
+                                                                     : result_CuotaPagoMigrada.Error(false);
 
             result_CuotaPagoMigrada.CurrentID = $"Año {anio} - Observado por cuota de pago sin migrar";
 

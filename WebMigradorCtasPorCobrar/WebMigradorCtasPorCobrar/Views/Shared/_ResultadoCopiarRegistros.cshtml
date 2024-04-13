@@ -1,47 +1,48 @@
-﻿@model WebMigradorCtasPorCobrar.Models.Helpers.Response
+﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Helpers.Response>
 
-@{
-    var result = Json.Decode(Model.Message);
+@foreach (var response in Model)
+{
+    var result = Json.Decode(response.Message);
+
+    <div class="row">
+
+        @foreach (var item in result)
+        {
+            if (item["Type"] == "summary")
+            {
+                <div class="col-sm-12">
+                    <div class="card text-white bg-info my-3">
+                        <div class="card-header"><strong>@item["Title"]</strong></div>
+                        <div class="card-body">
+                            <p class="card-text h5">@item["Value"]</p>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (item["Type"] == "detail")
+            {
+                <div class="col-sm-2 col-sm-4">
+                    <div class="card text-white bg-@response.Color my-3">
+                        <div class="card-header"><strong>@item["Title"]</strong></div>
+                        <div class="card-body">
+                            <p class="card-text h5">@item["Value"]</p>
+                        </div>
+                    </div>
+                </div>
+            }
+            else if (item["Type"] == "error")
+            {
+                <div class="col-sm-12">
+                    <div class="card text-white bg-@response.Color my-3">
+                        <div class="card-header"><strong>@item["Title"]</strong></div>
+                        <div class="card-body">
+                            <p class="card-text h5">@item["Value"]</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+
+    </div>
+
 }
-
-<div class="row">
-
-    @foreach (var item in result)
-    {
-        if (item["Type"] == "summary")
-        {
-            <div class="col-sm-12">
-                <div class="card text-white bg-info my-3">
-                    <div class="card-header"><strong>@item["Title"]</strong></div>
-                    <div class="card-body">
-                        <p class="card-text h5">@item["Value"]</p>
-                    </div>
-                </div>
-            </div>
-        }
-        else if (item["Type"] == "detail")
-        {
-            <div class="col-sm-2 col-sm-4">
-                <div class="card text-white bg-@Model.Color my-3">
-                    <div class="card-header"><strong>@item["Title"]</strong></div>
-                    <div class="card-body">
-                        <p class="card-text h5">@item["Value"]</p>
-                    </div>
-                </div>
-            </div>
-        }
-        else if (item["Type"] == "error")
-        {
-            <div class="col-sm-12">
-                <div class="card text-white bg-@Model.Color my-3">
-                    <div class="card-header"><strong>@item["Title"]</strong></div>
-                    <div class="card-body">
-                        <p class="card-text h5">@item["Value"]</p>
-                    </div>
-                </div>
-            </div>
-        }
-    }
-
-</div>
-

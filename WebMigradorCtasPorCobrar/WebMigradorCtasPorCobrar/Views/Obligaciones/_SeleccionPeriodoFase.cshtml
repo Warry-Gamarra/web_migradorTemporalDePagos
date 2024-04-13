@@ -26,12 +26,6 @@
             </div>
         </div>
     </div>
-    <div id="result-message" class="container-fluid">
-        <div class="card-body">
-            <h5 class="card-title">Seleccione una opción del proceso</h5>
-        </div>
-    </div>
-
 </div>
 
 <script>
@@ -77,8 +71,7 @@
                         $('#result-message').html(data);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        $('#alert-message p.alert').html(jqXHR.responseText)
-                        $('#result-message').show();
+                        $('#result-message').html(jqXHR.responseText)
                     },
                     complete: function () {
                         $('#processing').hide();
@@ -116,8 +109,7 @@
                         $('#result-message').html(data);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        $('#alert-message p.alert').html(jqXHR.responseText)
-                        $('#result-message').show();
+                        $('#result-message').html(jqXHR.responseText)
                     },
                     complete: function () {
                         $('#processing').hide();
@@ -153,8 +145,7 @@
                         $('#result-message').html(data);
                     },
                     error: function (jqXHR, textStatus, errorThrown) {
-                        $('#alert-message p.alert').html(jqXHR.responseText)
-                        $('#result-message').show();
+                        $('#result-message').html(jqXHR.responseText)
                     },
                     complete: function () {
                         $('#processing').hide();

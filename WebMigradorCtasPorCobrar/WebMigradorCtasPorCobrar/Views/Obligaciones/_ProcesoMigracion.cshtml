@@ -25,11 +25,11 @@
                     </div>
                 </div>
             </div>
-            <div class="card text-center" id="result-message">
-                <div class="container-fluid">
-                    <div class="card-body">
-                        <h5 class="card-title">Seleccione una opción del proceso</h5>
-                    </div>
+        </div>
+        <div class="card text-center w-100 py-4" id="result-message">
+            <div class="container-fluid">
+                <div class="card-body">
+                    <h5 class="card-title">Seleccione una opción del proceso</h5>
                 </div>
             </div>
         </div>
@@ -50,6 +50,7 @@
             beforeSend: function () {
                 $('#processing').show();
                 $('#result-message').hide();
+                $('#result-periodos').show();
             },
             success: function (data) {
                 $('#result-periodos').html(data);
@@ -61,6 +62,7 @@
             complete: function () {
                 $('#processing').hide();
                 $('#result-periodos').show();
+                $('#result-message').hide();
             }
         })
 
@@ -86,7 +88,8 @@
             complete: function () {
                 $('#processing').hide();
                 $('#result-periodos').show();
-            }
+                $('#result-message').hide();
+           }
         })
     })
 
@@ -109,7 +112,8 @@
             complete: function () {
                 $('#processing').hide();
                 $('#result-periodos').show();
-            }
+                $('#result-message').hide();
+           }
         })
     })
 
