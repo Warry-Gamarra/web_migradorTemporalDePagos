@@ -267,7 +267,7 @@ GO
 
 CREATE PROCEDURE USP_Obligaciones_Pagos_MigracionTP_U_InicializarEstadoValidacion	
 	@I_ProcedenciaID tinyint,
-	@I_Anio	      smallint,
+	@T_Anio	      varchar(4),
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
@@ -287,7 +287,7 @@ BEGIN
 			SELECT I_RowID, Cod_alu, Cod_rc, Cuota_pago, P, Fch_venc, Pagado, Monto
 			  FROM TR_Ec_Obl 
 			 WHERE I_ProcedenciaID = @I_ProcedenciaID
-				   AND Ano = CAST(@I_Anio as varchar)
+				   AND Ano = @T_Anio
 		)
 
 

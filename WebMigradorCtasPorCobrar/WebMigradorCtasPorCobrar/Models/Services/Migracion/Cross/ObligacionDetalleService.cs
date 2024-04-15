@@ -19,7 +19,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             Obligacion.ObligacionRepository detalleObligacionRepository = new Obligacion.ObligacionRepository();
 
             _ = Schema.SetSchema(procedencia);
-            _ = detalleObligacionRepository.InicializarEstadoValidacionDetalleObligacionPago((int)procedencia, obligacionID);
+            _ = detalleObligacionRepository.InicializarEstadoValidacionDetalleObligacionPagoPorOblID((int)procedencia, obligacionID);
 
             Response result_Detalle = detalleObligacionRepository.ValidarDetalleObligacion((int)procedencia);
             Response result_ConceptoPagoMigrado = detalleObligacionRepository.ValidarDetalleObligacionConceptoPagoMigrado((int)procedencia);
@@ -51,7 +51,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             Response result = new Response();
             Obligacion.ObligacionRepository detalleObligacionRepository = new Obligacion.ObligacionRepository();
 
-            detalleObligacionRepository.InicializarEstadoValidacionDetalleObligacionPago(detalleObligacion.I_RowID, detalleObligacion.I_ProcedenciaID);
+            detalleObligacionRepository.InicializarEstadoValidacionDetalleObligacionPagoPorOblID(detalleObligacion.I_RowID, detalleObligacion.I_ProcedenciaID);
 
             switch ((DetalleObligacionObs)tipoObserv)
             {

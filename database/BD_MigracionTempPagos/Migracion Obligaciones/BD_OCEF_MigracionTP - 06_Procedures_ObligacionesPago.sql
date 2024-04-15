@@ -435,16 +435,16 @@ GO
 
 CREATE PROCEDURE USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacion 
 	@I_ProcedenciaID tinyint,
-	@I_Anio	      smallint,
+	@T_Anio	      varchar(4),
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
 	declare	@B_Resultado  bit,
 				@I_ProcedenciaID	tinyint = 3,
-				@I_Anio  	  smallint,
+				@T_Anio  	  varchar(4),
 				@T_Message	  nvarchar(4000)
-	exec USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @I_Anio, @B_Resultado output, @T_Message output
+	exec USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -456,7 +456,7 @@ BEGIN
 				D_FecMigrado = NULL, 
 				B_Migrado = 0
 		 WHERE I_ProcedenciaID = @I_ProcedenciaID
-			   AND Ano = CAST(@I_Anio as varchar)
+			   AND Ano = @T_Anio
 			   AND B_Correcto = 0
 
 		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
@@ -533,16 +533,16 @@ GO
 
 CREATE PROCEDURE USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacion 
 	@I_ProcedenciaID tinyint,
-	@I_Anio	      smallint,
+	@T_Anio	      varchar(4),
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
 	declare	@B_Resultado  bit,
 			@I_ProcedenciaID	tinyint = 3,
-			@I_Anio	      smallint = 2010,
+			@T_Anio	      varchar(4) = 2010,
 			@T_Message	  nvarchar(4000)
-	exec USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @I_Anio, @B_Resultado output, @T_Message output
+	exec USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -553,7 +553,7 @@ BEGIN
 			SELECT I_RowID, Cod_alu, Cod_rc, Cuota_pago, P, Fch_venc, Pagado, Monto
 			  FROM TR_Ec_Obl 
 			 WHERE I_ProcedenciaID = @I_ProcedenciaID
-				   AND Ano = CAST(@I_Anio as varchar)
+				   AND Ano = @T_Anio
 		)
 
 
@@ -1052,8 +1052,8 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarData
 	@T_Message			nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_ProcedenciaID tinyint = 1,
-			@T_Anio		 varchar(4) = '2010', 
+	declare @I_ProcedenciaID tinyint = 3,
+			@T_Anio		 varchar(4) = '2005', 
 			@B_Resultado  bit, 
 			@T_Message nvarchar(4000)
 	exec USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output

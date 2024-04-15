@@ -64,10 +64,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             List<Response> result = new List<Response>();
             int procedencia_id = (int)procedencia;
 
+            result.Add(ValidarAnioEnCabeceraObligacion(procedencia_id));
+
             if (!string.IsNullOrEmpty(anioValidacion))
             {
                 result = this.EjecutarValidacionesPorAnio(procedencia_id, anioValidacion);
-                result.Add(ValidarAnioEnCabeceraObligacion(procedencia_id));
             }
             else
             {
@@ -84,6 +85,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         {
             List<Response> result = new List<Response>();
             ObligacionRepository obligacionRepository = new ObligacionRepository();
+            PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
 
             _ = obligacionRepository.InicializarEstadoValidacionObligacionPago(procedencia_id, anio);
 
@@ -92,6 +94,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             //result.Add(ValidarFechaVencimientoCuotaObligacion(procedencia_id, anio));
             //result.Add(ValidarObligacionCuotaPagoMigrada(procedencia_id, anio));
             //result.Add(ValidarProcedenciaObligacionCuotaPago(procedencia_id, anio));
+
+            _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacionPago(procedencia_id, anio);
+            _ = pagoObligacionRepository.InicializarEstadoValidacion(procedencia_id, anio);
 
             return result;
 
