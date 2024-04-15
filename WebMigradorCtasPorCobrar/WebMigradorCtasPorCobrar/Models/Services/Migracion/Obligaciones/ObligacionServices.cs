@@ -40,10 +40,14 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         {
             List<Response> result = new List<Response>();
             ObligacionRepository obligacionRepository = new ObligacionRepository();
+            PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
 
             Response result_Cabecera = obligacionRepository.CopiarRegistrosCabecera(procedencia, schema, anio);
             Response result_Detalle = obligacionRepository.CopiarRegistrosDetalle(procedencia, schema, anio);
             Response _ = obligacionRepository.VincularCabeceraDetalle(procedencia, anio);
+
+            Response result_Pago = pagoObligacionRepository.CopiarRegistrosPago(procedencia, schema, anio);
+            Response _p = pagoObligacionRepository.VincularCabeceraDetalle(procedencia, anio);
 
             result_Cabecera = result_Cabecera.IsDone ? result_Cabecera.Success(false) : result_Cabecera.Error(false);
             result_Detalle = result_Detalle.IsDone ? result_Detalle.Success(false) : result_Detalle.Error(false);

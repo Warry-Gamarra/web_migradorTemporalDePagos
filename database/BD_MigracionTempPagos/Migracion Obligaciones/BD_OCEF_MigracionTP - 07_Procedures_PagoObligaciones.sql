@@ -20,9 +20,9 @@ CREATE PROCEDURE USP_Obligaciones_Pagos_TemporalPagos_MigracionTP_IU_CopiarTabla
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_ProcedenciaID	tinyint = 1,
-			@T_SchemaDB   varchar(20) = 'pregrado',
-			@T_Anio		  varchar(4) = '2010',
+	declare @I_ProcedenciaID	tinyint = 3,
+			@T_SchemaDB   varchar(20) = 'euded',
+			@T_Anio		  varchar(4) = '2005',
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
 	exec USP_Obligaciones_Pagos_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Anio, 
@@ -190,8 +190,8 @@ CREATE PROCEDURE USP_Obligaciones_Pagos_MigracionTP_U_AsignarObligacionID
 AS
 /*
   declare	@B_Resultado  bit,
-			@I_ProcedenciaID	tinyint = 1,
-	    	@T_Anio		  varchar(4) = '2010',
+			@I_ProcedenciaID	tinyint = 3,
+	    	@T_Anio		  varchar(4) = '2005',
 			@T_Message	  nvarchar(4000)
   exec USP_Obligaciones_Pagos_MigracionTP_U_AsignarObligacionID @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
   select @B_Resultado as resultado, @T_Message as mensaj
@@ -1046,7 +1046,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_Migr
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_OblRowID	  int = 234744,
+	declare @I_OblRowID	  int = 626180,
 			@B_Resultado  bit, 
 			@T_Message nvarchar(4000)
 	exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID @I_OblRowID, @B_Resultado output, @T_Message output
