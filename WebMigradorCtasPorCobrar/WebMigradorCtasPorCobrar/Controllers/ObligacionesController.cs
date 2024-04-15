@@ -18,6 +18,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
     {
         private readonly TemporalPagos.ObligacionService _obligacionServiceTemporalPagos;
         private readonly ObligacionService _obligacionCrossServiceMigracion;
+        private readonly Oblig.PagoObligacionService _pagoObligacionCrossServiceMigracion;
         private readonly Oblig.ObligacionService _obligacionServiceMigracion;
         private readonly ObligacionDetalleService _obligacionDetalleServiceMigracion;
         private readonly EquivalenciasServices _equivalenciasServices;
@@ -159,14 +160,14 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia, string periodo)
         {
-            IEnumerable<Response> result = _obligacionServiceMigracion.MigrarDatosTemporalPagos(procedencia, periodo);
+            IEnumerable<ResponseObligacion> result = _pagoObligacionCrossServiceMigracion.MigrarDatosPagoTemporalPagos(procedencia, periodo);
 
             return PartialView("_ResultadoMigrarRegistros", result);
         }
 
         public ActionResult MigrarObligacion(int id)
         {
-            IEnumerable<Response> result = _obligacionServiceMigracion.MigrarDatosTemporalPagosObligacionID(id);
+            IEnumerable<Response> result = _pagoObligacionCrossServiceMigracion.MigrarDatosTemporalPagosObligacionID(id);
 
             return PartialView("_ResultadoListMigrarRegistrosModal", result);
         }

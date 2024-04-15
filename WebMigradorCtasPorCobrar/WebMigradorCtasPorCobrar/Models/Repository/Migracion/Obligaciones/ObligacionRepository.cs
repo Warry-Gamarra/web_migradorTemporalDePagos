@@ -12,6 +12,20 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
 {
     public class ObligacionRepository
     {
+        public IEnumerable<Obligacion> ObtenerMigrablesPorAnio(int procedenciaID, string anio)
+        {
+            IEnumerable<Obligacion> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<Obligacion>("SELECT * FROM TR_Ec_obl WHERE I_ProcedenciaID = @I_ProcedenciaID AND Ano = @Anio",
+                                                        new { I_ProcedenciaID = procedenciaID, Anio = anio },
+                                                        commandType: CommandType.Text);
+            }
+
+            return result;
+        }
+
         public Response CopiarRegistrosCabecera(int procedenciaID, string schemaDB, string anio)
         {
             Response result = new Response();

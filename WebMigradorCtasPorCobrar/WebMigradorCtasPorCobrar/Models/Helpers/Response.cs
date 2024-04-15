@@ -15,4 +15,5 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
         public string Color { get; set; }
         public string CurrentID { get; set; }
     }
+
 }

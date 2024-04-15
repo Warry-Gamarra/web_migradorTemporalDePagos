@@ -49,8 +49,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    parameters.Add(name: "I_RowID", dbType: DbType.Int32, value: obligacionId);
-                    parameters.Add(name: "I_OblAluID", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, value: obligacionId);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
