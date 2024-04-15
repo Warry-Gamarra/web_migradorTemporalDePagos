@@ -29,6 +29,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             _obligacionServiceTemporalPagos = new TemporalPagos.ObligacionService();
             _obligacionCrossServiceMigracion = new ObligacionService();
             _obligacionServiceMigracion = new Oblig.ObligacionService();
+            _pagoObligacionCrossServiceMigracion = new Oblig.PagoObligacionService();
             _observacionService = new ObservacionService();
             _equivalenciasServices = new EquivalenciasServices();
             _obligacionDetalleServiceMigracion = new ObligacionDetalleService();

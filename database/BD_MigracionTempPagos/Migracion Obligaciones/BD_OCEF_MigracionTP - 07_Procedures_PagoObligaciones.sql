@@ -1180,6 +1180,19 @@ BEGIN
 				SET @I_Pagos_Actualizados = @I_Pagos_Actualizados + 1
 			END
 
+			UPDATE TR_Ec_Det_Pagos 
+			   SET I_CtasPagoBncTableRowID = @I_CtasPagoBnc_RowID,
+				   B_Migrado = 1,
+				   D_FecMigrado = @D_FecProceso
+			 WHERE I_RowID = @I_RowPagoID
+
+			 UPDATE TR_Ec_Det_Pagos 
+			   SET I_CtasPagoBncTableRowID = @I_CtasPagoBnc_RowID,
+				   B_Migrado = 1,
+				   D_FecMigrado = @D_FecProceso
+			 WHERE I_OblRowID = @I_OblRowID
+				   AND Concepto <> 0
+				   AND B_Migrable = 1
 
 			DECLARE Det_Cursor CURSOR 
 			FOR SELECT I_RowID, Nro_recibo, Fch_pago, Id_lug_pag, Pagado, Pag_demas, Cod_cajero, Monto, 
@@ -1235,19 +1248,6 @@ BEGIN
 			CLOSE Det_Cursor
 			DEALLOCATE Det_Cursor
 
-			UPDATE TR_Ec_Det_Pagos 
-			   SET I_CtasPagoBncTableRowID = @I_CtasPagoBnc_RowID,
-				   B_Migrado = 1,
-				   D_FecMigrado = @D_FecProceso
-			 WHERE I_RowID = @I_RowPagoID
-
-			 UPDATE TR_Ec_Det_Pagos 
-			   SET I_CtasPagoBncTableRowID = @I_CtasPagoBnc_RowID,
-				   B_Migrado = 1,
-				   D_FecMigrado = @D_FecProceso
-			 WHERE I_OblRowID = @I_OblRowID
-				   AND Concepto <> 0
-				   AND B_Migrable = 1
 
 			FETCH NEXT FROM pago_Cursor INTO @I_RowPagoID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero, @Monto, 
 											 @Cantidad, @NombreDep, @Cod_alu, @Eliminado, @Fch_ec, @I_CtaDepID, @I_CtasBncID;

@@ -77,6 +77,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             foreach (var obligacion in obligacionRepository.ObtenerMigrablesPorAnio(procedencia_Id, anio))
             {
+                resultPagos.DetalleObligacion.Add(pagoObligacionRepository.MigrarDataPagoObligacionesCtasPorCobrarPorObligacionID(obligacion.I_RowID));
             }
 
 
