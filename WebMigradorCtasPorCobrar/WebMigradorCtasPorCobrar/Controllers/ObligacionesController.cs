@@ -5,10 +5,11 @@ using System.Web;
 using System.Web.Mvc;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
-using WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
+using Oblig = WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
+using WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -16,7 +17,8 @@ namespace WebMigradorCtasPorCobrar.Controllers
     public class ObligacionesController : Controller
     {
         private readonly TemporalPagos.ObligacionService _obligacionServiceTemporalPagos;
-        private readonly ObligacionService _obligacionServiceMigracion;
+        private readonly ObligacionService _obligacionCrossServiceMigracion;
+        private readonly Oblig.ObligacionService _obligacionServiceMigracion;
         private readonly ObligacionDetalleService _obligacionDetalleServiceMigracion;
         private readonly EquivalenciasServices _equivalenciasServices;
         private readonly ObservacionService _observacionService;
@@ -24,7 +26,8 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ObligacionesController()
         {
             _obligacionServiceTemporalPagos = new TemporalPagos.ObligacionService();
-            _obligacionServiceMigracion = new ObligacionService();
+            _obligacionCrossServiceMigracion = new ObligacionService();
+            _obligacionServiceMigracion = new Oblig.ObligacionService();
             _observacionService = new ObservacionService();
             _equivalenciasServices = new EquivalenciasServices();
             _obligacionDetalleServiceMigracion = new ObligacionDetalleService();
@@ -92,7 +95,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult DatosMigracion(Procedencia procedencia, int? tipo_obs)
         {
-            var model = _obligacionServiceMigracion.ObtenerObligaciones(procedencia, tipo_obs);
+            var model = _obligacionCrossServiceMigracion.ObtenerObligaciones(procedencia, tipo_obs);
 
             ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Ec_Obl, procedencia),
                                                 "I_ObservID", "T_ObservDesc", tipo_obs);
@@ -133,7 +136,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             if (FaseMigracion.Copiar != faseMigracion)
             {
-                ViewBag.Anios = new SelectList(_obligacionServiceMigracion.ObtenerAnios(procedencia), "Anio", "AnioText");
+                ViewBag.Anios = new SelectList(_obligacionCrossServiceMigracion.ObtenerAnios(procedencia), "Anio", "AnioText");
             }
             else
             {
@@ -154,9 +157,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
 
         [HttpPost]
-        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
+        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia, string periodo)
         {
-            IEnumerable<Response> result = _obligacionServiceMigracion.MigrarDatosTemporalPagos(procedencia);
+            IEnumerable<Response> result = _obligacionServiceMigracion.MigrarDatosTemporalPagos(procedencia, periodo);
 
             return PartialView("_ResultadoMigrarRegistros", result);
         }
@@ -175,7 +178,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             ViewBag.RowID = id;
 
-            var fila = _obligacionServiceMigracion.ObtenerObligacion(id, false);
+            var fila = _obligacionCrossServiceMigracion.ObtenerObligacion(id, false);
             ViewBag.ErrorTitle = $"Obligación de pago {fila.Ano}-{fila.P} {fila.Cod_alu}";
 
             return PartialView("_Observaciones", model);
@@ -183,7 +186,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult Editar(int id, int obsID)
         {
-            var model = _obligacionServiceMigracion.ObtenerObligacion(id, false);
+            var model = _obligacionCrossServiceMigracion.ObtenerObligacion(id, false);
             ViewBag.TipoObserv = obsID.ToString();
             ViewBag.Observacion = _observacionService.ObtenerCatalogo(obsID).T_ObservDesc;
             ViewBag.Periodos = new SelectList(_equivalenciasServices.ObtenerPeriodosAcademicos(),
@@ -230,7 +233,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult ExportarObservaciones(int? id, Procedencia procedencia)
         {
-            var model = _obligacionServiceMigracion.ObtenerDatosObservaciones(procedencia, id);
+            var model = _obligacionCrossServiceMigracion.ObtenerDatosObservaciones(procedencia, id);
 
             return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Observaciones-Obligaciones_{DateTime.Now.ToString("yyyyMMdd_hhmmss")}.xlsx");
         }

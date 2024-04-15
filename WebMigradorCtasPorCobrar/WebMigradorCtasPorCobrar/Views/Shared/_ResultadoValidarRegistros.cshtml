@@ -1,21 +1,21 @@
 ﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Helpers.Response>
 
 
-<div class="row">
+<div class="col-12">
+    <div class="row">
+        @foreach (var response in Model)
+        {
+            var result = Json.Decode(response.Message);
 
-    @foreach (var response in Model)
-    {
-        var result = Json.Decode(response.Message);
-
-        <div class="col-sm-2 col-md-4">
-            <div class="card text-white bg-@response.Color my-3">
-                <div class="card-header"><strong>@response.CurrentID</strong></div>
-                <div class="card-body">
-                    <h5 class="card-title">Resultado</h5>
-                    <p class="card-text h5">@Html.Raw(result["Value"])</p>
+            <div class="col-sm-2 col-md-4">
+                <div class="card text-white bg-@response.Color my-3">
+                    <div class="card-header"><strong>@response.CurrentID</strong></div>
+                    <div class="card-body">
+                        <h5 class="card-title">Resultado</h5>
+                        <p class="card-text h5">@Html.Raw(result["Value"])</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    }
-
+        }
+    </div>
 </div>

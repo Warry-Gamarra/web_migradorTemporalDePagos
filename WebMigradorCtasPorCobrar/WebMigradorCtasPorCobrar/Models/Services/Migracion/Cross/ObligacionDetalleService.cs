@@ -13,20 +13,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 {
     public class ObligacionDetalleService
     {
-        public DetalleObligacion ObtenerDatosDetalle(int detOblID)
-        {
-            return DetalleObligacionRepository.ObtenerDatosDetalle(detOblID);
-        }
-
-        public IEnumerable<DetalleObligacion> ObtenerDetalleObligacion(int obligID)
-        {
-            return DetalleObligacionRepository.Obtener(obligID);
-        }
-
         public Response EjecutarValidacionesDetalleObligacion(Procedencia procedencia, int obligacionID)
         {
             Response result = new Response();
-            Obligacion.DetalleObligacionRepository detalleObligacionRepository = new Obligacion.DetalleObligacionRepository();
+            Obligacion.ObligacionRepository detalleObligacionRepository = new Obligacion.ObligacionRepository();
 
             _ = Schema.SetSchema(procedencia);
             _ = detalleObligacionRepository.InicializarEstadoValidacionDetalleObligacionPago((int)procedencia, obligacionID);
@@ -59,7 +49,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         public Response Save(DetalleObligacion detalleObligacion, int tipoObserv)
         {
             Response result = new Response();
-            Obligacion.DetalleObligacionRepository detalleObligacionRepository = new Obligacion.DetalleObligacionRepository();
+            Obligacion.ObligacionRepository detalleObligacionRepository = new Obligacion.ObligacionRepository();
 
             detalleObligacionRepository.InicializarEstadoValidacionDetalleObligacionPago(detalleObligacion.I_RowID, detalleObligacion.I_ProcedenciaID);
 
