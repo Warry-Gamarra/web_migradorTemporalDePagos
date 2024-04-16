@@ -1053,7 +1053,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarData
 AS
 /*
 	declare @I_ProcedenciaID tinyint = 3,
-			@T_Anio		 varchar(4) = '2005', 
+			@T_Anio		 varchar(4) = '2006', 
 			@B_Resultado  bit, 
 			@T_Message nvarchar(4000)
 	exec USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output

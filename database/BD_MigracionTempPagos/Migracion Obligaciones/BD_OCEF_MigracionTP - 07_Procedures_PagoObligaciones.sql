@@ -274,9 +274,9 @@ AS
 /*
   declare	@B_Resultado  bit,
 			@I_ProcedenciaID	tinyint = 3,
-	    	@I_Anio  	  smallint = 2010,
+	    	@T_Anio  	  varchar(4) = '2005',
 			@T_Message	  nvarchar(4000)
-  exec USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @I_Anio, @B_Resultado output, @T_Message output
+  exec USP_Obligaciones_Pagos_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
   select @B_Resultado as resultado, @T_Message as mensaj
 */
 BEGIN
