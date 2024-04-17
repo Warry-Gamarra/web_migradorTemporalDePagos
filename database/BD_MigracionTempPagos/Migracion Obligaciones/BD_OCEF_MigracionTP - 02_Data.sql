@@ -54,6 +54,7 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (52, 'No se pudo asociar una obligaciòn con el pago registrado', 'SIN OBLIGACION', NULL, 7)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (55, 'Se encontró un pago para la misma obligación con una entidad diferente en la BD destino.', 'OTRO BANCO', NULL, 7)
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (54, 'Se encontró un pago para una obligación con estado Pagado = NO', 'ERROR ESTADO', NULL, 5)
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (56, 'El pago tiene observaciones de conceptos en el detalle.', 'OBSERVACIÓN DETALLE', NULL, 7)
 
 
 

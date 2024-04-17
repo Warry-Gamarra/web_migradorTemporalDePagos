@@ -228,7 +228,6 @@
     <Compile Include="Models\Services\Migracion\Cross\AlumnoService.cs" />
     <Compile Include="Models\Services\Migracion\Cross\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\Migracion\Cross\CuotaPagoService.cs" />
-    <Compile Include="Models\Services\Migracion\Cross\ObligacionDetalleService.cs" />
     <Compile Include="Models\Services\Migracion\DetalleObservacionService.cs" />
     <Compile Include="Models\Services\Migracion\Obligaciones\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\Migracion\Obligaciones\CuotaPagoService.cs" />
