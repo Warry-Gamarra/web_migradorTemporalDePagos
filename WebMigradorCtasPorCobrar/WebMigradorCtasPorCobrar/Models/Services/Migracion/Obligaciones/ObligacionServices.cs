@@ -97,10 +97,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacionPago(procedencia_id, anio);
 
+            result.Add(obligacionRepository.ValidarDetalleObligacionConceptoPago(procedencia_id, anio));
+
+
             result.Add(obligacionRepository.ValidarDetallesEnCabeceraObligacion(procedencia_id, anio));
 
-
             _ = pagoObligacionRepository.InicializarEstadoValidacion(procedencia_id, anio);
+
 
             result.Add(pagoObligacionRepository.ValidarDetallesEnPagoObligacion(procedencia_id, anio));
 

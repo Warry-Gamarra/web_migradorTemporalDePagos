@@ -12,13 +12,11 @@ namespace WebMigradorCtasPorCobrar.Controllers
     {
         private readonly ObservacionService _observacionServiceMigracion;
         private readonly ObligacionService _obligacionServiceMigracion;
-        private readonly ObligacionDetalleService _detObligacionServiceMigracion;
 
         public DetalleObligacionController()
         {
             _observacionServiceMigracion = new ObservacionService();
             _obligacionServiceMigracion = new ObligacionService();
-            _detObligacionServiceMigracion = new ObligacionDetalleService();
         }
 
         public ActionResult Observaciones(int OblID)

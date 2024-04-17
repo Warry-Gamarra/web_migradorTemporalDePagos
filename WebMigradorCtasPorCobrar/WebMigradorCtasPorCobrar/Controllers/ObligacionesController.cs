@@ -20,7 +20,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         private readonly ObligacionService _obligacionCrossServiceMigracion;
         private readonly Oblig.PagoObligacionService _pagoObligacionCrossServiceMigracion;
         private readonly Oblig.ObligacionService _obligacionServiceMigracion;
-        private readonly ObligacionDetalleService _obligacionDetalleServiceMigracion;
         private readonly EquivalenciasServices _equivalenciasServices;
         private readonly ObservacionService _observacionService;
 
@@ -32,7 +31,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
             _pagoObligacionCrossServiceMigracion = new Oblig.PagoObligacionService();
             _observacionService = new ObservacionService();
             _equivalenciasServices = new EquivalenciasServices();
-            _obligacionDetalleServiceMigracion = new ObligacionDetalleService();
         }
 
 
