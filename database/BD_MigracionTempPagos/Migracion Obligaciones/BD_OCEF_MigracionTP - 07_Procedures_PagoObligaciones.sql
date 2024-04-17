@@ -1098,6 +1098,7 @@ BEGIN
 		 WHERE I_OblRowID = @I_OblRowID
 			   AND Concepto = 0
 			   AND det.B_Migrable = 1
+			   AND cdp.B_Eliminado = 0
 
 		SELECT * FROM #temp_det_pago
 	
@@ -1125,6 +1126,7 @@ BEGIN
 				@Monto			decimal(15, 2),
 				@Eliminado		bit,
 				@Fch_ec			date, 
+				@Nro_ec			bigint, 
 				@I_CtaDepID		int,
 				@I_CtasBncID	int,
 				@I_CtasDetID	int,
@@ -1133,12 +1135,12 @@ BEGIN
 
 		DECLARE pago_Cursor CURSOR 
 		FOR SELECT I_RowID, Nro_recibo, Fch_pago, Id_lug_pag, Pagado, Pag_demas, Cod_cajero, Monto, Cantidad, T_NomDepositante, 
-				   Cod_alu, Eliminado, Fch_ec, I_CtaDepositoID, I_CtasPagoBncTableRowID 
+				   Cod_alu, Eliminado, Nro_ec, Fch_ec, I_CtaDepositoID, I_CtasPagoBncTableRowID 
 			  FROM #temp_det_pago
 
 		OPEN pago_Cursor
 		FETCH NEXT FROM pago_Cursor INTO @I_RowPagoID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero, @Monto, 
-										 @Cantidad, @NombreDep, @Cod_alu, @Eliminado, @Fch_ec, @I_CtaDepID, @I_CtasBncID;
+										 @Cantidad, @NombreDep, @Cod_alu, @Eliminado, @Nro_ec, @Fch_ec, @I_CtaDepID, @I_CtasBncID;
 
 
 		WHILE @@FETCH_STATUS = 0
@@ -1159,6 +1161,7 @@ BEGIN
 																	@D_FecProceso, NULL as observacion, NULL as adicional, 131 as condpago, 133 as tipoPago, 
 																	@I_CtaDepID, ISNULL(@mora, 0) as mora, 1 AS migrado, NULL as motivo, @Nro_recibo, 
 																	@I_TablaID_Det_Pago, @I_RowPagoID, @I_CtasMora_RowID
+
 
 				SET @I_CtasPagoBnc_RowID = SCOPE_IDENTITY()
 				SET @I_Pagos_Insertados = @I_Pagos_Insertados + 1
@@ -1198,6 +1201,8 @@ BEGIN
 			FOR SELECT I_RowID, Nro_recibo, Fch_pago, Id_lug_pag, Pagado, Pag_demas, Cod_cajero, Monto, 
 					   Eliminado, Fch_ec, I_CtasDetTableRowID, I_CtasPagoProcTableRowID 
 				  FROM #temp_det_obl
+				 WHERE Nro_ec = @Nro_ec
+					   AND Eliminado = @Eliminado
 
 			OPEN Det_Cursor
 			FETCH NEXT FROM Det_Cursor INTO @I_RowDetID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero, @Monto, 
@@ -1250,7 +1255,7 @@ BEGIN
 
 
 			FETCH NEXT FROM pago_Cursor INTO @I_RowPagoID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero, @Monto, 
-											 @Cantidad, @NombreDep, @Cod_alu, @Eliminado, @Fch_ec, @I_CtaDepID, @I_CtasBncID;
+											 @Cantidad, @NombreDep, @Cod_alu, @Eliminado, @Nro_ec, @Fch_ec, @I_CtaDepID, @I_CtasBncID;
 
 		END
 

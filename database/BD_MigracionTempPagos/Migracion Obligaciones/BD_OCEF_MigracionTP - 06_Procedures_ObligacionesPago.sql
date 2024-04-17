@@ -49,7 +49,17 @@ BEGIN
 												'AND TR_Ec_Obl.Ano = ''' + @T_Anio + ''' ' + 
 												'AND TR_Ec_Obl.B_Migrado = 0 ' + 
 												'AND TR_Ec_Obl.I_ProcedenciaID = I_ProcedenciaID);'
+
 						
+		SET @T_SQL = 'DELETE TR_Ec_Det ' +
+					  'WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' ' +
+							'AND I_OblRowID IS NULL ' +
+							'AND Ano = ''' + @T_Anio + ''' '
+						
+
+		PRINT @T_SQL
+		EXEC sp_executesql @T_SQL
+		SET @I_Removidos = @@ROWCOUNT
 
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
