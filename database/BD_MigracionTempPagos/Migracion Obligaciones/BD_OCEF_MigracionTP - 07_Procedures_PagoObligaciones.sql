@@ -1038,6 +1038,14 @@ GO
 
 
 
+/*	
+	===============================================================================================
+		Migrar datos de tabla TR_Ec_Det_Pagos
+	===============================================================================================
+*/ 
+
+
+
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarPagoObligacionesCtasPorCobrar')
 	DROP PROCEDURE [dbo].[USP_IU_MigrarPagoObligacionesCtasPorCobrar]
@@ -1122,14 +1130,16 @@ GO
 
 CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID]	
 	@I_OblRowID		int,
+	@I_OblAluID		int output,
 	@B_Resultado	bit output,
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
 	declare @I_OblRowID	  int = 626180,
-			@B_Resultado  bit, 
+			@I_OblAluID		int,
+			@B_Resultado  bit,
 			@T_Message nvarchar(4000)
-	exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID @I_OblRowID, @B_Resultado output, @T_Message output
+	exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID @I_OblRowID, @I_OblAluID output, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -1188,6 +1198,7 @@ BEGIN
 		 WHERE I_OblRowID = @I_OblRowID
 			   AND Concepto <> 0
 			   AND B_Migrable = 1
+			   AND Eliminado = 0
 
 		SELECT * FROM #temp_det_pago_mora
 
@@ -1276,12 +1287,16 @@ BEGIN
 			 WHERE I_OblRowID = @I_OblRowID
 				   AND Concepto <> 0
 				   AND B_Migrable = 1
+				   AND Eliminado = 0
+
 
 			DECLARE Det_Cursor CURSOR 
 			FOR SELECT I_RowID, Nro_recibo, Fch_pago, Id_lug_pag, Pagado, Pag_demas, Cod_cajero, Monto, 
 					   Eliminado, Fch_ec, I_CtasDetTableRowID, I_CtasPagoProcTableRowID 
 				  FROM #temp_det_obl
-				 WHERE Nro_ec = @Nro_ec
+				 WHERE Nro_recibo = @Nro_recibo
+					   AND Pagado = @Pagado
+					   AND Fch_pago = @Fch_pago
 					   AND Eliminado = @Eliminado
 
 			OPEN Det_Cursor
@@ -1309,7 +1324,7 @@ BEGIN
 					   SET I_CtaDepositoID = @I_CtaDepID,
 						   B_Anulado = @Eliminado,
 						   D_FecMod = @D_FecProceso,
-						   I_MontoPagado = @Monto,
+						   I_MontoPagado = @Monto,						   
 						   B_Migrado = 1,
 						   I_MigracionTablaID = @I_TablaID_Det,
 						   I_MigracionRowID = @I_RowDetID
@@ -1344,6 +1359,7 @@ BEGIN
 
 		COMMIT TRANSACTION
 					
+		SET @I_OblAluID = @I_CtasPagoBnc_RowID
 		SET @B_Resultado = 1
 		SET @T_Message = '[{ ' +
 							 'Type: "summary", ' + 
