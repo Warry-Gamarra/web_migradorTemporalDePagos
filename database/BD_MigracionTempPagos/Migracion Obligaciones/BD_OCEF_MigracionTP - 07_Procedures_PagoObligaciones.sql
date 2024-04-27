@@ -1209,6 +1209,7 @@ BEGIN
 				@Fch_pago		date, 
 				@Id_lug_pag		varchar(10), 
 				@Pagado			bit, 
+				@Pagado_det		bit, 
 				@Pag_demas		bit, 
 				@Cod_cajero		varchar(20),
 				@Cod_alu		varchar(20),
@@ -1300,7 +1301,7 @@ BEGIN
 					   AND Eliminado = @Eliminado
 
 			OPEN Det_Cursor
-			FETCH NEXT FROM Det_Cursor INTO @I_RowDetID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero, @Monto, 
+			FETCH NEXT FROM Det_Cursor INTO @I_RowDetID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado_det, @Pag_demas, @Cod_cajero, @Monto, 
 											@Eliminado, @Fch_ec, @I_CtasDetID, @I_CtasProcID;
 
 			WHILE @@FETCH_STATUS = 0
@@ -1334,19 +1335,30 @@ BEGIN
 					 SET @I_Det_Actualizados = @I_Det_Actualizados + 1
 				END
 
+				UPDATE BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet
+					SET B_Pagado = @Pagado_det
+				 WHERE I_ObligacionAluDetID = @I_CtasDetID
+
 				UPDATE TR_Ec_Det 
-				   SET Pagado = @Pagado,
-					   D_FecMigradoPago = @D_FecProceso,
+				   SET D_FecMigradoPago = @D_FecProceso,
 					   B_MigradoPago = 1,
 					   I_CtasPagoProcTableRowID = @I_CtasPagoProc_RowID
 				 WHERE I_RowID = @I_RowDetID
 
-				FETCH NEXT FROM Det_Cursor INTO @I_RowDetID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero, @Monto, 
+
+
+				FETCH NEXT FROM Det_Cursor INTO @I_RowDetID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado_det, @Pag_demas, @Cod_cajero, @Monto, 
 												@Eliminado, @Fch_ec, @I_CtasDetID, @I_CtasProcID;
 			END
 
 			CLOSE Det_Cursor
 			DEALLOCATE Det_Cursor
+
+
+			UPDATE BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab
+			   SET B_Pagado = @Pagado
+			 WHERE I_MigracionRowID = @I_OblRowID
+				   AND I_MigracionTablaID = @I_TablaID_Obl
 
 
 			FETCH NEXT FROM pago_Cursor INTO @I_RowPagoID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado, @Pag_demas, @Cod_cajero, @Monto, 

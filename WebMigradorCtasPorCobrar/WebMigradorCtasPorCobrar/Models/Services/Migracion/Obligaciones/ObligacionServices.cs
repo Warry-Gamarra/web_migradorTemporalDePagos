@@ -91,21 +91,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             result.Add(ValidarAlumnoCabeceraObligacion(procedencia_id, anio));
             result.Add(ValidarPeriodoEnCabeceraObligacion(procedencia_id, anio));
+            result.Add(ValidarCabeceraObligacionSinDetalle(procedencia_id, anio));
             //result.Add(ValidarFechaVencimientoCuotaObligacion(procedencia_id, anio));
             //result.Add(ValidarObligacionCuotaPagoMigrada(procedencia_id, anio));
             //result.Add(ValidarProcedenciaObligacionCuotaPago(procedencia_id, anio));
 
             _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacionPago(procedencia_id, anio);
-
-            result.Add(obligacionRepository.ValidarDetalleObligacionConceptoPago(procedencia_id, anio));
-
-
-            result.Add(obligacionRepository.ValidarDetallesEnCabeceraObligacion(procedencia_id, anio));
-
             _ = pagoObligacionRepository.InicializarEstadoValidacion(procedencia_id, anio);
-
-
-            result.Add(pagoObligacionRepository.ValidarDetallesEnPagoObligacion(procedencia_id, anio));
 
             return result;
 
@@ -203,17 +195,17 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result_Periodo;
         }
 
-        private Response ValidarDetallesEnCabeceraObligacion(int procedencia, string anio)
+        private Response ValidarCabeceraObligacionSinDetalle(int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Periodo = obligacionRepository.ValidarDetallesEnCabeceraObligacion(procedencia, anio);
+            Response result_Periodo = obligacionRepository.ValidarCabeceraObligacionSinDetalle(procedencia, anio);
             int obsPeriodo = int.TryParse(result_Periodo.Message, out int obs_per) ? obs_per : 0;
 
             result_Periodo = result_Periodo.IsDone ? (obsPeriodo > 0 ? result_Periodo.Warning($"{obsPeriodo} registros encontrados", false)
                                                                      : result_Periodo.Success(false))
                                                    : result_Periodo.Error(false);
 
-            result_Periodo.CurrentID = $"Año {anio} - Observados por errores en detalles de la obligación";
+            result_Periodo.CurrentID = $"Año {anio} - Observados por no tener detalle para la obligación";
 
             return result_Periodo;
         }
