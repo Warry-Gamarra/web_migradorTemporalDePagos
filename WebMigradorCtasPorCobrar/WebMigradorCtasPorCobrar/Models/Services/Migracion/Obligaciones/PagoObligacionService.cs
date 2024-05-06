@@ -84,5 +84,73 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return resultPagos;
         }
 
+
+        public IEnumerable<Response> EjecutarValidaciones(Procedencia procedencia, string anioValidacion)
+        {
+            List<Response> result = new List<Response>();
+            int procedencia_id = (int)procedencia;
+
+            if (!string.IsNullOrEmpty(anioValidacion))
+            {
+                result = this.EjecutarValidacionesPorAnio(procedencia_id, anioValidacion);
+            }
+            else
+            {
+                foreach (var itemAnio in CrossRepo.ObligacionRepository.ObtenerAnios(procedencia_id))
+                {
+                    result.AddRange(this.EjecutarValidacionesPorAnio(procedencia_id, itemAnio));
+                }
+            }
+
+            return result;
+        }
+
+        private List<Response> EjecutarValidacionesPorAnio(int procedencia_id, string anio)
+        {
+            List<Response> result = new List<Response>();
+            PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
+
+            _ = pagoObligacionRepository.InicializarEstadoValidacion(procedencia_id, anio);
+
+            result.Add(ValidarObligacionIdEnPagoObligacion(procedencia_id, anio));
+            result.Add(ValidarDetallesEnPagoObligacion(procedencia_id, anio));
+
+
+            return result;
+
+        }
+
+        private Response ValidarObligacionIdEnPagoObligacion(int procedencia, string anio)
+        {
+            PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
+            Response result = pagoObligacionRepository.ValidarObligacionIdEnPagoObligacion(procedencia, anio);
+
+            int observacion = int.TryParse(result.Message, out int obs_proc) ? obs_proc : 0;
+            result = result.IsDone ? (observacion > 0 ? result.Warning($"{observacion} registros encontrados", false)
+                                                         : result.Success(false))
+                                   : result.Error(false);
+
+            result.CurrentID = $"Año {anio} - Observado por procedencia de la cuota de pago";
+
+            return result;
+        }
+
+
+        private Response ValidarDetallesEnPagoObligacion(int procedencia, string anio)
+        {
+            PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
+            Response result = pagoObligacionRepository.ValidarDetallesEnPagoObligacion(procedencia, anio);
+
+            int observacion = int.TryParse(result.Message, out int obs_cp) ? obs_cp : 0;
+            result = result.IsDone ? (observacion > 0 ? result.Warning($"{obs_cp} registros encontrados", false)
+                                                      : result.Success(false))
+                                  : result.Error(false);
+
+            result.CurrentID = $"Año {anio} - Observado por cuota de pago sin migrar";
+
+            return result;
+        }
+
+
     }
 }

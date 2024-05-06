@@ -42,15 +42,16 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
 
+            Response result_Pago = pagoObligacionRepository.CopiarRegistrosPago(procedencia, schema, anio);
             Response result_Cabecera = obligacionRepository.CopiarRegistrosCabecera(procedencia, schema, anio);
             Response result_Detalle = obligacionRepository.CopiarRegistrosDetalle(procedencia, schema, anio);
+            
             Response _ = obligacionRepository.VincularCabeceraDetalle(procedencia, anio);
-
-            Response result_Pago = pagoObligacionRepository.CopiarRegistrosPago(procedencia, schema, anio);
             Response _p = pagoObligacionRepository.VincularCabeceraDetalle(procedencia, anio);
 
             result_Cabecera = result_Cabecera.IsDone ? result_Cabecera.Success(false) : result_Cabecera.Error(false);
             result_Detalle = result_Detalle.IsDone ? result_Detalle.Success(false) : result_Detalle.Error(false);
+            result_Pago = result_Pago.IsDone ? result_Pago.Success(false) : result_Pago.Error(false);
 
             result.Add(result_Cabecera);
             result.Add(result_Detalle);
@@ -63,7 +64,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         {
             List<Response> result = new List<Response>();
             int procedencia_id = (int)procedencia;
-
+            var pagosSetvice = new PagoObligacionService();
+            
             result.Add(ValidarAnioEnCabeceraObligacion(procedencia_id));
 
             if (!string.IsNullOrEmpty(anioValidacion))
@@ -77,6 +79,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                     result.AddRange(this.EjecutarValidacionesPorAnio(procedencia_id, itemAnio));
                 }
             }
+
+            result.AddRange(pagosSetvice.EjecutarValidaciones(procedencia, anioValidacion);
 
             return result;
         }
@@ -92,6 +96,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             result.Add(ValidarAlumnoCabeceraObligacion(procedencia_id, anio));
             result.Add(ValidarPeriodoEnCabeceraObligacion(procedencia_id, anio));
             result.Add(ValidarCabeceraObligacionSinDetalle(procedencia_id, anio));
+            result.Add(ValidarDetalleObligacionSinCabeceraID(procedencia_id, anio));
             //result.Add(ValidarFechaVencimientoCuotaObligacion(procedencia_id, anio));
             //result.Add(ValidarObligacionCuotaPagoMigrada(procedencia_id, anio));
             //result.Add(ValidarProcedenciaObligacionCuotaPago(procedencia_id, anio));
@@ -199,6 +204,21 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             Response result_Periodo = obligacionRepository.ValidarCabeceraObligacionSinDetalle(procedencia, anio);
+            int obsPeriodo = int.TryParse(result_Periodo.Message, out int obs_per) ? obs_per : 0;
+
+            result_Periodo = result_Periodo.IsDone ? (obsPeriodo > 0 ? result_Periodo.Warning($"{obsPeriodo} registros encontrados", false)
+                                                                     : result_Periodo.Success(false))
+                                                   : result_Periodo.Error(false);
+
+            result_Periodo.CurrentID = $"Año {anio} - Observados por no tener detalle para la obligación";
+
+            return result_Periodo;
+        }
+
+        private Response ValidarDetalleObligacionSinCabeceraID(int procedencia, string anio)
+        {
+            ObligacionRepository obligacionRepository = new ObligacionRepository();
+            Response result_Periodo = obligacionRepository.ValidarDetalleObligacionSinCabeceraID(procedencia, anio);
             int obsPeriodo = int.TryParse(result_Periodo.Message, out int obs_per) ? obs_per : 0;
 
             result_Periodo = result_Periodo.IsDone ? (obsPeriodo > 0 ? result_Periodo.Warning($"{obsPeriodo} registros encontrados", false)
