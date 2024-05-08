@@ -1079,6 +1079,7 @@ BEGIN
 				LEFT JOIN (SELECT Id_cp, I_ProcedenciaID FROM TR_Cp_Pri) Pri ON Det.Concepto = Pri.Id_cp and Det.I_ProcedenciaID = Pri.I_ProcedenciaID
 		WHERE	Pri.Id_cp is null
 				AND Det.I_ProcedenciaID = @I_ProcedenciaID
+				AND Det.Ano = @T_Anio
 
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
@@ -1087,6 +1088,7 @@ BEGIN
 						LEFT JOIN (SELECT Id_cp, I_ProcedenciaID FROM TR_Cp_Pri) Pri ON Det.Concepto = Pri.Id_cp AND Det.I_ProcedenciaID = Pri.I_ProcedenciaID
 				 WHERE	Pri.Id_cp is null
 						AND Det.I_ProcedenciaID = @I_ProcedenciaID
+						AND Det.Ano = @T_Anio
 				 ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
@@ -1433,7 +1435,7 @@ BEGIN
 		  FROM TR_Ec_Obl
 		 WHERE B_Migrable = 1 
 			   AND I_ProcedenciaID = @I_ProcedenciaID
-		 	   AND Ano =  @T_Anio
+		 	   AND Ano = @T_Anio
 		
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno AS TRG
 		USING (SELECT Cod_alu, Cod_rc, Ano, P, I_Periodo, I_RowID
