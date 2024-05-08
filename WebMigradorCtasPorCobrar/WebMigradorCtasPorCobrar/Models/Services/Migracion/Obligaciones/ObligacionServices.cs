@@ -96,12 +96,14 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             result.Add(ValidarAlumnoCabeceraObligacion(procedencia_id, anio));
             result.Add(ValidarPeriodoEnCabeceraObligacion(procedencia_id, anio));
             result.Add(ValidarCabeceraObligacionSinDetalle(procedencia_id, anio));
-            result.Add(ValidarDetalleObligacionSinCabeceraID(procedencia_id, anio));
             //result.Add(ValidarFechaVencimientoCuotaObligacion(procedencia_id, anio));
             //result.Add(ValidarObligacionCuotaPagoMigrada(procedencia_id, anio));
             //result.Add(ValidarProcedenciaObligacionCuotaPago(procedencia_id, anio));
 
             _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacionPago(procedencia_id, anio);
+            result.Add(ValidarDetalleObligacionSinCabeceraID(procedencia_id, anio));
+            result.Add(ValidarDetalleObligacionConceptoPago(procedencia_id, anio));
+
             _ = pagoObligacionRepository.InicializarEstadoValidacion(procedencia_id, anio);
 
             return result;
@@ -123,7 +125,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             return result_Procedencia;
         }
-
 
         private Response ValidarObligacionCuotaPagoMigrada(int procedencia, string anio)
         {
@@ -218,17 +219,35 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private Response ValidarDetalleObligacionSinCabeceraID(int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Periodo = obligacionRepository.ValidarDetalleObligacionSinCabeceraID(procedencia, anio);
-            int obsPeriodo = int.TryParse(result_Periodo.Message, out int obs_per) ? obs_per : 0;
+            Response result_Detalle = obligacionRepository.ValidarDetalleObligacionSinCabeceraID(procedencia, anio);
+            int obsPeriodo = int.TryParse(result_Detalle.Message, out int obs_per) ? obs_per : 0;
 
-            result_Periodo = result_Periodo.IsDone ? (obsPeriodo > 0 ? result_Periodo.Warning($"{obsPeriodo} registros encontrados", false)
-                                                                     : result_Periodo.Success(false))
-                                                   : result_Periodo.Error(false);
+            result_Detalle = result_Detalle.IsDone ? (obsPeriodo > 0 ? result_Detalle.Warning($"{obsPeriodo} registros encontrados", false)
+                                                                     : result_Detalle.Success(false))
+                                                   : result_Detalle.Error(false);
 
-            result_Periodo.CurrentID = $"Año {anio} - Observados por no tener detalle para la obligación";
+            result_Detalle.CurrentID = $"Año {anio} - Observados por no tener detalle para la obligación";
 
-            return result_Periodo;
+            return result_Detalle;
         }
+
+
+        private Response ValidarDetalleObligacionConceptoPago(int procedencia, string anio)
+        {
+            ObligacionRepository obligacionRepository = new ObligacionRepository();
+            Response result_Detalle = obligacionRepository.ValidarDetalleObligacionConceptoPago(procedencia, anio);
+            int obsPeriodo = int.TryParse(result_Detalle.Message, out int obs_per) ? obs_per : 0;
+
+            result_Detalle = result_Detalle.IsDone ? (obsPeriodo > 0 ? result_Detalle.Warning($"{obsPeriodo} registros encontrados", false)
+                                                                     : result_Detalle.Success(false))
+                                                   : result_Detalle.Error(false);
+
+            result_Detalle.CurrentID = $"Año {anio} - Observados por no existir en cp_pri";
+
+            return result_Detalle;
+        }
+
+
 
         public Response Save(Obligacion obligacion, int tipoObserv)
         {

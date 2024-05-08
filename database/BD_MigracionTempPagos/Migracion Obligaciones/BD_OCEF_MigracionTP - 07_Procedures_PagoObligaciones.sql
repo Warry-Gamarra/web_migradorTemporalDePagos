@@ -310,8 +310,12 @@ BEGIN
 		  FROM  TR_Ec_Det_Pagos det 
 				INNER JOIN cte_obl_anio obl ON det.I_OblRowID = obl.I_OblRowID
 
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
 		SET @B_Resultado = 1
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
 
 		COMMIT TRANSACTION;
 	END TRY
@@ -341,14 +345,14 @@ GO
 
 CREATE PROCEDURE USP_Obligaciones_Pagos_MigracionTP_U_Validar_52_SinObligacionID	
 	@I_ProcedenciaID tinyint,
-	@I_Anio	      smallint,
+	@T_Anio	      varchar(4),
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
   declare	@B_Resultado  bit,
-			@I_ProcedenciaID	tinyint = 3,
-	    	@I_Anio  	  smallint = 2012,
+			@I_ProcedenciaID	tinyint = 2,
+	    	@T_Anio	      varchar(4) = '2016',
 			@T_Message	  nvarchar(4000)
   exec USP_Obligaciones_Pagos_MigracionTP_U_Validar_52_SinObligacionID @I_ProcedenciaID, @I_Anio, @B_Resultado output, @T_Message output
   select @B_Resultado as resultado, @T_Message as mensaje
@@ -366,17 +370,14 @@ BEGIN
 			   D_FecMigrado = @D_FecProceso
 		 WHERE I_OblRowID IS NULL
 			   AND I_ProcedenciaID = @I_ProcedenciaID
-			   AND Ano = CAST(@I_Anio as varchar(4))
-
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
-
-		 
+			   AND Ano = @T_Anio
+	 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinOblId AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Det_Pagos 
 				WHERE I_OblRowID IS NULL
 					  AND I_ProcedenciaID = @I_ProcedenciaID
-					  AND Ano = CAST(@I_Anio as varchar(4))
+					  AND Ano = @T_Anio
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED AND TRG.I_FilaTablaID = SRC.I_FilaTablaID THEN
@@ -392,7 +393,7 @@ BEGIN
 			   B_Resuelto = 1
 		  FROM TI_ObservacionRegistroTabla OBS
 			   INNER JOIN (SELECT * FROM TR_Ec_Det_Pagos WHERE I_OblRowID IS NOT NULL 
-															   AND Ano = CAST(@I_Anio as varchar(4))) DPG 
+															   AND Ano = @T_Anio) DPG 
 						  ON OBS.I_FilaTablaID = DPG.I_RowID
 							 AND OBS.I_ProcedenciaID = DPG.I_ProcedenciaID
 		 WHERE OBS.I_ObservID = @I_ObservID_sinOblId 
@@ -400,6 +401,11 @@ BEGIN
 			   AND OBS.I_FilaTablaID = DPG.I_RowID
 
 		SET @B_Resultado = 1
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
 
 		COMMIT TRANSACTION;
 	END TRY
@@ -451,10 +457,7 @@ BEGIN
 		 WHERE I_OblRowID IS NULL
 			   AND I_RowID = @I_RowID
 			   
-
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
-
-		 
+ 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinOblId AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Det_Pagos 
@@ -483,6 +486,11 @@ BEGIN
 
 
 		SET @B_Resultado = 1
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
 
 		COMMIT TRANSACTION;
 	END TRY
@@ -542,7 +550,11 @@ BEGIN
 			   INNER JOIN #temp_pagos_detalle ED ON EDP.I_OblRowID = ED.I_OblRowID
 		 WHERE EDP.Monto <> ED.Sum_Monto 
 
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinOblId AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
@@ -634,7 +646,11 @@ BEGIN
 		 WHERE EDP.Monto <> ED.Sum_Monto
 			   AND EDP.I_RowID = @I_RowID
 
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
@@ -717,7 +733,11 @@ BEGIN
 			   INNER JOIN TR_Ec_Obl EO ON EDP.I_OblRowID = EO.I_RowID
 		 WHERE ISNULL(EO.Pagado, 0) <> ISNULL(EDP.Pagado, 0)
 
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinOblId AS I_ObservID, @I_TablaID AS I_TablaID, EDP.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
@@ -799,8 +819,11 @@ BEGIN
 		 WHERE EDP.Pagado <> EO.Pagado 
 			   AND EDP.I_RowID = @I_RowID
 
-
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID_sinOblId AS I_ObservID, @I_TablaID AS I_TablaID, EDP.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 

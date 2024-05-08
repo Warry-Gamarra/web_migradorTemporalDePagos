@@ -1354,7 +1354,12 @@ BEGIN
 
 		SELECT @I_Observados as cant_obs_det, @D_FecProceso as fec_proceso
 
-		SET @T_Message = CAST(@I_Observados AS varchar) + ' detalles sin obligación.'
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados sin OblId", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
 
 		COMMIT TRANSACTION;
 	END TRY
