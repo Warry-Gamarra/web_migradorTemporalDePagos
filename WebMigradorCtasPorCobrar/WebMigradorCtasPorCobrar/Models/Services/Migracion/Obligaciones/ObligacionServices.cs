@@ -80,7 +80,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                 }
             }
 
-            result.AddRange(pagosSetvice.EjecutarValidaciones(procedencia, anioValidacion);
+            result.AddRange(pagosSetvice.EjecutarValidaciones(procedencia, anioValidacion));
 
             return result;
         }
