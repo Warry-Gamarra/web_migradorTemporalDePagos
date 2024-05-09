@@ -176,7 +176,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             return result;
         }
 
-        public Response InicializarEstadoValidacionDetalleObligacionPago(int procedenciaID, string anio)
+        public Response InicializarEstadoValidacionDetalleObligacion(int procedenciaID, string anio)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();

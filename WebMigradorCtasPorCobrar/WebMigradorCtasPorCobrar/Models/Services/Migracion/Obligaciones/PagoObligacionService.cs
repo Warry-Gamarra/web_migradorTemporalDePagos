@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using CrossRepo = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
@@ -75,11 +72,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             resultPagos.Obligacion = obligacionRepository.MigrarDataObligacionesCtasPorCobrar(procedencia_Id, anio);
 
+            if (!resultPagos.Obligacion.IsDone) return resultPagos;
+
             foreach (var obligacion in obligacionRepository.ObtenerMigrablesPorAnio(procedencia_Id, anio))
             {
                 resultPagos.DetalleObligacion.Add(pagoObligacionRepository.MigrarDataPagoObligacionesCtasPorCobrarPorObligacionID(obligacion.I_RowID));
             }
-
 
             return resultPagos;
         }

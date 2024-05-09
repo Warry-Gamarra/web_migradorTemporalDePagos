@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using CrossRepo = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
@@ -100,7 +97,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             //result.Add(ValidarObligacionCuotaPagoMigrada(procedencia_id, anio));
             //result.Add(ValidarProcedenciaObligacionCuotaPago(procedencia_id, anio));
 
-            _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacionPago(procedencia_id, anio);
+            _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacion(procedencia_id, anio);
             result.Add(ValidarDetalleObligacionSinCabeceraID(procedencia_id, anio));
             result.Add(ValidarDetalleObligacionConceptoPago(procedencia_id, anio));
 
