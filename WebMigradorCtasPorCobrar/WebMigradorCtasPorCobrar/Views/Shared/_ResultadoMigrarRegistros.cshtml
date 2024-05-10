@@ -1,90 +1,63 @@
-﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.ViewModels.ResponseObligacion>
+﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Helpers.Response>
 
 @foreach (var response in Model)
 {
-    var resultObl = Json.Decode(response.Obligacion.Message);
-
-<div class="row">
-
-    @foreach (var itemObl in resultObl)
+    try
     {
-        if (itemObl["Type"] == "summary")
-        {
-            <div class="col-sm-12">
-                <div class="card text-white bg-info my-3">
-                    <div class="card-header"><strong>@itemObl["Title"]</strong></div>
-                    <div class="card-body">
-                        <p class="card-text h5">@itemObl["Value"]</p>
+        var result = Json.Decode(response.Message);
+        <div class="row">
+
+            @foreach (var itemObl in result)
+            {
+                if (itemObl["Type"] == "summary")
+                {
+                    <div class="col-sm-12">
+                        <div class="card text-white bg-info my-3">
+                            <div class="card-header"><strong>@itemObl["Title"]</strong></div>
+                            <div class="card-body">
+                                <p class="card-text h5">@itemObl["Value"]</p>
+                            </div>
+                        </div>
                     </div>
+                }
+                else if (itemObl["Type"] == "detail")
+                {
+                    <div class="col-sm-2 col-sm-4">
+                        <div class="card text-white bg-@response.Color my-3">
+                            <div class="card-header"><strong>@itemObl["Title"]</strong></div>
+                            <div class="card-body">
+                                <p class="card-text h5">@itemObl["Value"]</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else if (itemObl["Type"] == "error")
+                {
+                    <div class="col-sm-12">
+                        <div class="card text-white bg-@response.Color my-3">
+                            <div class="card-header"><strong>@itemObl["Title"]</strong></div>
+                            <div class="card-body">
+                                <p class="card-text h5">@itemObl["Value"]</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+    }
+    catch (Exception)
+    {
+        <div class="col-sm-12">
+            <div class="card text-white bg-@response.Color my-3">
+                <div class="card-header"><strong></strong></div>
+                <div class="card-body">
+                    <p class="card-text h5">@response.Message</p>
                 </div>
             </div>
-        }
-        else if (itemObl["Type"] == "detail")
-        {
-            <div class="col-sm-2 col-sm-4">
-                <div class="card text-white bg-@response.Obligacion.Color my-3">
-                    <div class="card-header"><strong>@itemObl["Title"]</strong></div>
-                    <div class="card-body">
-                        <p class="card-text h5">@itemObl["Value"]</p>
-                    </div>
-                </div>
-            </div>
-        }
-        else if (itemObl["Type"] == "error")
-        {
-            <div class="col-sm-12">
-                <div class="card text-white bg-@response.Obligacion.Color my-3">
-                    <div class="card-header"><strong>@itemObl["Title"]</strong></div>
-                    <div class="card-body">
-                        <p class="card-text h5">@itemObl["Value"]</p>
-                    </div>
-                </div>
-            </div>
-        }
+        </div>
     }
 
-    @foreach (var item in response.DetalleObligacion)
-    {
-        var resultDet = Json.Decode(item.Message);
 
-        foreach (var itemDet in resultDet)
-        {
-            if (itemDet["Type"] == "summary")
-            {
-                <div class="col-sm-12">
-                    <div class="card text-white bg-info my-3">
-                        <div class="card-header"><strong>@itemDet["Title"]</strong></div>
-                        <div class="card-body">
-                            <p class="card-text h5">@itemDet["Value"]</p>
-                        </div>
-                    </div>
-                </div>
-            }
-            else if (itemDet["Type"] == "detail")
-            {
-                <div class="col-sm-2 col-sm-4">
-                    <div class="card text-white bg-@item.Color my-3">
-                        <div class="card-header"><strong>@itemDet["Title"]</strong></div>
-                        <div class="card-body">
-                            <p class="card-text h5">@itemDet["Value"]</p>
-                        </div>
-                    </div>
-                </div>
-            }
-            else if (itemDet["Type"] == "error")
-            {
-                <div class="col-sm-12">
-                    <div class="card text-white bg-@item.Color my-3">
-                        <div class="card-header"><strong>@itemDet["Title"]</strong></div>
-                        <div class="card-body">
-                            <p class="card-text h5">@itemDet["Value"]</p>
-                        </div>
-                    </div>
-                </div>
-            }
-        }
-    }
-
-    </div>
 }
 

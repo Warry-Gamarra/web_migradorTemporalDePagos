@@ -583,6 +583,7 @@
     <Content Include="Views\Tasas\Index.cshtml" />
     <Content Include="Views\CuotaPago\_DatosMigracionTasas.cshtml" />
     <Content Include="Views\Reportes\Tasas.cshtml" />
+    <Content Include="Views\Shared\_ResultadoMigrarRegistrosObligacion.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

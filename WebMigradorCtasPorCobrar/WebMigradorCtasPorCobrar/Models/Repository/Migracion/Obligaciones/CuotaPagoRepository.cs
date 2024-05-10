@@ -389,7 +389,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_IU_MigrarDataCuotaDePagoCtasPorCobrar", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_CuotaPago_MigracionTP_CtasPorCobrar_IU_MigrarData", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -548,8 +548,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET B_Correcto = 1 WHERE I_RowID = @I_RowID;",
-                                                  new { I_RowID = cuotaPago.I_RowID },
+                    rowCount = connection.Execute("UPDATE dbo.TR_Cp_Des SET B_Correcto = @B_Correcto, I_Anio = @I_Anio " +
+                                                   "WHERE I_RowID = @I_RowID;",
+                                                  new { I_RowID = cuotaPago.I_RowID, I_Anio = cuotaPago.I_Anio, B_Correcto = cuotaPago.B_Correcto },
                                                   commandType: CommandType.Text);
 
                     if (rowCount > 0)

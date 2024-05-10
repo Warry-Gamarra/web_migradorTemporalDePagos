@@ -52,6 +52,9 @@
         columns.Add().SetWidth(120).Css("text-right").Encoded(false).Sanitized(false)
                 .RenderValueAs(model => model.B_ExisteCtas ? Html.Raw($"<a href=\"{ Url.Action("VerDatos", "CuotaPago", new { id = model.I_RowID, procedencia = str_procedencia, area = "" })}\" class=\"modal-link-lg\"><i class=\"fa fa-copy\"aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Comparar</span></a>")
                                                            : Html.Raw($"<a href=\"{ Url.Action("VerDatos", "CuotaPago", new { id = model.I_RowID, procedencia = str_procedencia, area = "" })}\" class=\"modal-link-lg\"><i class=\"fa fa-copy\"aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver todo</span></a>"));
+        columns.Add().SetWidth(90).Css("text-right").Encoded(false).Sanitized(false)
+               .RenderValueAs(model => !model.B_Migrable ? @Html.Raw("")
+                                                         : @Html.Raw($"<a href=\"{ Url.Action("Editar", "CuotaPago", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\"><i class=\"fa fa-pencil-square-o\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Editar</span></a>"));
         columns.Add().SetWidth(120).Css("text-right").Encoded(false).Sanitized(false)
                 .RenderValueAs(model => model.B_Migrable ? @Html.Raw("")
                                                          : @Html.Raw($"<a href=\"{ Url.Action("Observaciones", "CuotaPago", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\">" +
