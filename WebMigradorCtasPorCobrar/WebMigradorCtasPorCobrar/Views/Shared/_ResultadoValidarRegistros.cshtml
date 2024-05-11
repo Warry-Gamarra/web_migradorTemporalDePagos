@@ -5,17 +5,50 @@
     <div class="row">
         @foreach (var response in Model)
         {
-            var result = Json.Decode(response.Message);
-
-            <div class="col-sm-2 col-md-4">
+            <div class="col-sm-2 col-md-4" id="result_validation_@response.Redirect">
                 <div class="card text-white bg-@response.Color my-3">
-                    <div class="card-header"><strong>@response.CurrentID</strong></div>
-                    <div class="card-body">
-                        <h5 class="card-title">Resultado</h5>
-                        <p class="card-text h5">@Html.Raw(result["Value"])</p>
+                    <div class="card-header">
+                        <strong>@response.CurrentID</strong>
+                        <a class="pull-right btn btn-sm btn-secondary-outline validate" data-obs="@response.Redirect" href="@Url.Action(response.Action, response.Controller, new { id = response.Redirect })">
+                            <i class="fa fa-refresh"></i>
+                        </a>
+                    </div>
+                    <div class="card-body" id="result_body_@response.Redirect">
+                        <h5 class="card-title">@response.ObjMessage.Title</h5>
+                        <p class="card-text h5">@Html.Raw(response.ObjMessage.Value)</p>
                     </div>
                 </div>
             </div>
         }
     </div>
 </div>
+
+
+<script>
+
+    $('.validate').on('click', function () {
+        debugger
+        let urlValidate = $(this).attr('href');
+        let obs = $(this).data('obs');
+        $.ajax({
+            url: urlValidate,
+            type: 'POST',
+            cache: false,
+            beforeSend: function () {
+                $('#result_body_' + obs).show();
+                $('#result-message').hide();
+            },
+            success: function (data) {
+                $('#result-message').html(data);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $('#alert-message p.alert').html(jqXHR.responseText)
+                $('#result-message').show();
+            },
+            complete: function () {
+                $('#processing').hide();
+                $('#result-message').show();
+            }
+        });
+    })
+</script>

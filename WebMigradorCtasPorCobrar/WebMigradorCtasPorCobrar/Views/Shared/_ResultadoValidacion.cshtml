@@ -1,0 +1,15 @@
+﻿@model WebMigradorCtasPorCobrar.Models.Helpers.Response
+
+    <div class="card text-white bg-@Model.Color my-3">
+        <div class="card-header">
+            <strong>@Model.CurrentID</strong>
+            <a class="pull-right" href="@Url.Action(Model.Action, Model.Controller, new { id = Model.Redirect })">
+                <i class="fa fa-refresh"></i>
+            </a>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">@Model.ObjMessage.Title</h5>
+            <p class="card-text h5">@Html.Raw(Model.ObjMessage.Value)</p>
+        </div>
+    </div>
+

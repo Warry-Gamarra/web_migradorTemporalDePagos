@@ -554,7 +554,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona", parameters, commandTimeout: 120 , commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");

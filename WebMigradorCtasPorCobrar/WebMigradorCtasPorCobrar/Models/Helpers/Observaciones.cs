@@ -11,13 +11,15 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
         {
             Caracteres = 1,
             Repetido = 2,
-            SinAnioIngres0 = 22,
+            SinAnioIngreso = 22,
             SinCarrera = 21,
             SinModIng = 23,
             DniRepetido = 30,
             SexoErrado = 31,
             DniExiste = 41,
-            Removido = 45
+            Removido = 45,
+            SexoDifente = 47,
+            DniDiferente = 48
         }
 
         public enum CuotaPagoObs

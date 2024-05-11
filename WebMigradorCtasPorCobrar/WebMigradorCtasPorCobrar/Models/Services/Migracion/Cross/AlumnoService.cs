@@ -10,6 +10,7 @@ using WebMigradorCtasPorCobrar.Models.ViewModels;
 using System.IO;
 using ClosedXML.Excel;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 {
@@ -110,6 +111,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         }
 
 
+
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {
             Response result;
@@ -145,7 +147,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             return result;
         }
 
-
         private Response ValidarCaracteresEspeciales(int procedencia, int? aluRowId)
         {
             Response response;
@@ -160,13 +161,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 response = alumnoRepository.ValidarCaracteresEspeciales(procedencia);
             }
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por caracteres especiales";
-            response.Message += " registros encontrados";
-
-            return response;
+            return response.ReturnViewValidationsMessage("Observados por caracteres especiales", (int)AlumnoObs.Caracteres, "Estudiante", "EjecutarValidacion");
         }
 
         private Response ValidarCodigoCarreraAlumno(int procedencia, int? aluRowId)
@@ -183,13 +178,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 response = alumnoRepository.ValidarCodigoCarreraAlumno(procedencia);
             }
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por códigos de carrera";
-            response.Message += " registros encontrados";
-
-            return response;
+            return response.ReturnViewValidationsMessage("Observados por códigos de carrera", (int)AlumnoObs.SinCarrera, "Estudiante", "EjecutarValidacion");
         }
 
         private Response ValidarCodigosAlumnoRepetidos(int procedencia, int? aluRowId)
@@ -206,13 +195,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 response = alumnoRepository.ValidarCodigosAlumnoRepetidos(procedencia);
             }
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por códigos de alumno repetidos";
-            response.Message += " registros encontrados";
-
-            return response;
+            return response.ReturnViewValidationsMessage("Observados por códigos de alumno repetidos", (int)AlumnoObs.Repetido, "Estudiante", "EjecutarValidacion");
         }
 
         private Response ValidarAnioIngresoAlumno(int procedencia, int? aluRowId)
@@ -229,13 +212,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 response = alumnoRepository.ValidarAnioIngresoAlumno(procedencia);
             }
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por Años de ingreso";
-            response.Message += " registros encontrados";
-
-            return response;
+            return response.ReturnViewValidationsMessage("Observados por Años de ingreso", (int)AlumnoObs.SinAnioIngreso, "Estudiante", "EjecutarValidacion");
         }
 
         private Response ValidarCorrespondenciaNumDocumentoPersona(int procedencia, int? aluRowId)
@@ -252,13 +229,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 response = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersona(procedencia);
             }
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por Número de documento";
-            response.Message += " registros encontrados";
-
-            return response;
+            return response.ReturnViewValidationsMessage("Observados por Número de documento", (int)AlumnoObs.DniRepetido, "Estudiante", "EjecutarValidacion");
         }
 
         private Response ValidarSexoDiferenteMismoDocumentoPersona(int procedencia, int? aluRowId)
@@ -275,13 +246,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 response = alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersona(procedencia);
             }
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por presentar diferente cod_sexo para el mismo num_doc";
-            response.Message += " registros encontrados";
-
-            return response;
+            return response.ReturnViewValidationsMessage("Observados por presentar diferente cod_sexo para el mismo num_doc", (int)AlumnoObs.SexoErrado, "Estudiante", "EjecutarValidacion");
         }
 
         private Response ValidarCodigosAlumnoRemovidos(int procedencia, int? aluRowId)
@@ -298,13 +263,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 response = alumnoRepository.ValidarCodigosAlumnoRemovidos(procedencia);
             }
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por estar con estado eliminado";
-            response.Message += " registros encontrados";
-
-            return response;
+            return response.ReturnViewValidationsMessage("Observados por estar con estado eliminado", (int)AlumnoObs.Removido, "Estudiante", "EjecutarValidacion");
         }
 
         private Response ValidarCorrespondenciaNumDocumentoPersonaRepo(int procedencia, int? aluRowId)
@@ -321,13 +280,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 response = alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaRepo(procedencia);
             }
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por Número de documento en Repositorio";
-            response.Message += " registros encontrados";
-
-            return response;
+            return response.ReturnViewValidationsMessage("Observados por Número de documento en Repositorio", (int)AlumnoObs.DniExiste, "Estudiante", "EjecutarValidacion");
         }
 
         private Response ValidarSexoDiferenteMismoAlumnoRepo(int procedencia, int? aluRowId)
@@ -344,13 +297,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 response = alumnoRepository.ValidarSexoDiferenteMismoAlumnoRepo(procedencia);
             }
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por sexo diferente para el mismo codigo de alumno en repositorio";
-            response.Message += " registros encontrados";
-
-            return response;
+            return response.ReturnViewValidationsMessage("Observados por sexo diferente para el mismo codigo de alumno en repositorio", (int)AlumnoObs.SexoDifente, "Estudiante", "EjecutarValidacion");
         }
 
         private Response ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo(int procedencia, int? aluRowId)
@@ -367,13 +314,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 response = alumnoRepository.ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo(procedencia);
             }
 
-            response = response.IsDone? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por diferente num_doc para el mismo alumno en repositorio";
-            response.Message += " registros encontrados";
-
-            return response;
+            return response.ReturnViewValidationsMessage("Observados por diferente num_doc para el mismo alumno en repositorio", (int)AlumnoObs.DniDiferente, "Estudiante", "EjecutarValidacion");
         }
 
 
@@ -397,7 +338,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             foreach (var anioIngreso in aniosIngreso)
             {
                 Response response = MigrarDatosTemporalPagosAnio((int)procedencia, anioIngreso.Value);
-                response.CurrentID = anioIngreso.ToString();
 
                 result.Add(response);
 
@@ -412,9 +352,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
             Response result = alumnoRepository.MigrarDataAlumnosUnfvRepositorioCodAlu(procedencia, codAlu);
-            result = result.IsDone ? result.Success(false) : result.Error(false);
 
-            return result;
+            return result.ReturnViewMigrationMessage(codAlu + ":"); ;
         }
 
         public Response MigrarDatosTemporalPagosAnio(int procedencia, int anioIngreso)
@@ -422,10 +361,53 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
             Response result = alumnoRepository.MigrarDataAlumnosUnfvRepositorioAnio(procedencia, anioIngreso);
-            result = result.IsDone ? result.Success(false) : result.Error(false);
+
+            return result.ReturnViewMigrationMessage(anioIngreso.ToString() + ":");
+        }
+
+
+        public Response EjecutarValidacionPorId(int procedencia, int ObservacionId)
+        {
+            Response result;
+
+            switch ((AlumnoObs)ObservacionId)
+            {
+                case AlumnoObs.Caracteres:
+                    result = ValidarCaracteresEspeciales(procedencia, null);
+                    break;
+                case AlumnoObs.Repetido:
+                    result = ValidarCodigosAlumnoRepetidos(procedencia, null);
+                    break;
+                case AlumnoObs.SinAnioIngreso:
+                    result = ValidarAnioIngresoAlumno(procedencia, null);
+                    break;
+                case AlumnoObs.SinCarrera:
+                    result = ValidarCodigoCarreraAlumno(procedencia, null);
+                    break;
+                case AlumnoObs.DniRepetido:
+                    result = ValidarCorrespondenciaNumDocumentoPersona(procedencia, null);
+                    break;
+                case AlumnoObs.SexoErrado:
+                    result = ValidarSexoDiferenteMismoDocumentoPersona(procedencia, null);
+                    break;
+                case AlumnoObs.DniExiste:
+                    result = ValidarCorrespondenciaNumDocumentoPersonaRepo(procedencia, null);
+                    break;
+                case AlumnoObs.Removido:
+                    result = ValidarCodigosAlumnoRemovidos(procedencia, null);
+                    break;
+                case AlumnoObs.SexoDifente:
+                    result = ValidarSexoDiferenteMismoAlumnoRepo(procedencia, null);
+                    break;
+                case AlumnoObs.DniDiferente:
+                    result = ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo(procedencia, null);
+                    break;
+                default:
+                    result = new Response();
+                    break;
+            }
 
             return result;
         }
-
     }
 }

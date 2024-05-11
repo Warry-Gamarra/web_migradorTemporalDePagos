@@ -139,6 +139,13 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_Editar", model);
         }
 
+        public ActionResult EjecutarValidacion(Procedencia procedencia, int ObservacionId)
+        {
+            var model = _alumnoServiceMigracion.EjecutarValidacionPorId((int)procedencia, ObservacionId);
+
+            return PartialView("_Editar", model);
+        }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
