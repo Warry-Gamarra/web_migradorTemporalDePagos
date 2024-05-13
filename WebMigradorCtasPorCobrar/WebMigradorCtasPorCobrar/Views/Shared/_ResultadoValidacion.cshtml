@@ -1,15 +1,19 @@
 ﻿@model WebMigradorCtasPorCobrar.Models.Helpers.Response
+@{
+    string proc = ViewBag.Procedencia;
+}
 
-    <div class="card text-white bg-@Model.Color my-3">
-        <div class="card-header">
-            <strong>@Model.CurrentID</strong>
-            <a class="pull-right" href="@Url.Action(Model.Action, Model.Controller, new { id = Model.Redirect })">
-                <i class="fa fa-refresh"></i>
-            </a>
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">@Model.ObjMessage.Title</h5>
-            <p class="card-text h5">@Html.Raw(Model.ObjMessage.Value)</p>
-        </div>
+<div class="card text-white bg-@Model.Color my-3">
+    <div class="card-header">
+        <strong>@Model.CurrentID</strong>
+        <a class="pull-right btn btn-sm btn-outline-secondary validate" data-obs="@Model.Redirect"
+           href="@Url.Action(Model.Action, Model.Controller, new { procedencia = proc, observacionId = Model.Redirect })">
+            <i class="fa fa-refresh"></i>
+        </a>
     </div>
+    <div class="card-body" id="result_body_@Model.Redirect">
+        <h5 class="card-title">@Model.ObjMessage.Title</h5>
+        <p class="card-text h5">@Html.Raw(Model.ObjMessage.Value)</p>
+    </div>
+</div>
 

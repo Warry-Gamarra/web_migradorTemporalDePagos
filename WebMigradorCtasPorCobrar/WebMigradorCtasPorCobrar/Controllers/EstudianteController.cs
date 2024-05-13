@@ -88,6 +88,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
             IEnumerable<Response> result = _alumnoServiceMigracion.EjecutarValidaciones(procedencia, null);
+            ViewBag.Procedencia = procedencia.ToString();
 
             return PartialView("_ResultadoValidarRegistros", result);
         }
@@ -142,8 +143,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult EjecutarValidacion(Procedencia procedencia, int ObservacionId)
         {
             var model = _alumnoServiceMigracion.EjecutarValidacionPorId((int)procedencia, ObservacionId);
+            ViewBag.Procedencia = procedencia.ToString();
 
-            return PartialView("_Editar", model);
+            return PartialView("_ResultadoValidacion", model);
         }
 
 
