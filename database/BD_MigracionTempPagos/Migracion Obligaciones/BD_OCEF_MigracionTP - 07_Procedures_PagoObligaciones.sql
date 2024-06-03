@@ -1205,9 +1205,59 @@ BEGIN
 	BEGIN TRANSACTION;
 	BEGIN TRY 
 
+		SELECT I_RowID, Cuota_pago, Ano, P, I_Periodo, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Monto, Pagado
+		  INTO #temp_obl_migrable
+		  FROM TR_Ec_Obl 
+		 WHERE B_Migrable = 1
+		 	   AND B_Migrado = 0
+		 	   AND Ano = @T_Anio
+		 	   AND I_ProcedenciaID = @I_ProcedenciaID
 
+		SELECT I_RowID, Cuota_pago, Ano, P, I_Periodo, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Monto, Pagado, 
+			   I_CtasMatTableRowID, I_CtasCabTableRowID
+		  INTO #temp_obl_migrado
+		  FROM TR_Ec_Obl 
+		 WHERE B_Migrable = 1
+		 	   AND B_Migrado = 1
+		 	   AND Ano = @T_Anio
+		 	   AND I_ProcedenciaID = @I_ProcedenciaID
+		 	   
+		DECLARE @mora decimal(10,2)
+		DECLARE @I_RowID		int, 
+				@Cuota_pago		int, 
+				@I_Periodo		int, 
+				@Cod_alu		varchar(20),
+				@Cod_rc			varchar(3), 
+				@Ano			varchar(4), 
+				@P				varchar(3), 
+				@Fch_venc		date, 
+				@Tipo_oblig		bit, 
+				@Pagado			bit, 
+				@Monto			decimal(15, 2)
+
+
+		DECLARE Cur_obl_migrable CURSOR
+		FOR SELECT I_RowID, Cuota_pago, Ano, P, I_Periodo, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Monto, Pagado
+			  FROM #temp_obl_migrable
+
+		OPEN Cur_obl_migrable
+		FETCH NEXT FROM Cur_obl_migrable INTO @_RowID, @Cuota_pago, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, 
+											  @Tipo_oblig, @Fch_venc, @Monto, @Pagado
 		
-	
+		WHILE @@FETCH_STATUS = 0
+		BEGIN
+
+			
+
+
+			FETCH NEXT FROM Cur_obl_migrable INTO @_RowID, @Cuota_pago, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, 
+												  @Tipo_oblig, @Fch_venc, @Monto, @Pagado
+		END
+
+		CLOSE Cur_obl_migrable
+		DEALLOCATE Cur_obl_migrable
+
+
 		COMMIT TRANSACTION
 					
 		SET @B_Resultado = 1
