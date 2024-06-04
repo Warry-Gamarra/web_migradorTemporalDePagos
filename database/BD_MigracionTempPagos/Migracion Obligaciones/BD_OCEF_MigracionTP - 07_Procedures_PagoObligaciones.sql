@@ -1241,8 +1241,7 @@ BEGIN
 			  FROM #temp_obl_migrable
 
 		OPEN Cur_obl_migrable
-		FETCH NEXT FROM Cur_obl_migrable INTO @_RowID, @Cuota_pago, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, 
-											  @Tipo_oblig, @Fch_venc, @Monto, @Pagado
+		FETCH NEXT FROM Cur_obl_migrable INTO @_RowID
 		
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
@@ -1250,8 +1249,8 @@ BEGIN
 			
 
 
-			FETCH NEXT FROM Cur_obl_migrable INTO @_RowID, @Cuota_pago, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, 
-												  @Tipo_oblig, @Fch_venc, @Monto, @Pagado
+			FETCH NEXT FROM Cur_obl_migrable INTO @_RowID/*, @Cuota_pago, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, 
+												  @Tipo_oblig, @Fch_venc, @Monto, @Pagado*/
 		END
 
 		CLOSE Cur_obl_migrable
