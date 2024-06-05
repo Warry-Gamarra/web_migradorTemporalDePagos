@@ -43,7 +43,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             return result;
         }
 
-        public Response VincularCabeceraDetalle(int procedenciaID, string anio)
+        public Response VincularCabeceraPago(int procedenciaID, string anio)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();

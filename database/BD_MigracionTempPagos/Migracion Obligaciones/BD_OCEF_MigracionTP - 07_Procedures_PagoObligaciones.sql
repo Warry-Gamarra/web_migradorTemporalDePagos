@@ -1223,7 +1223,7 @@ BEGIN
 		 	   AND I_ProcedenciaID = @I_ProcedenciaID
 		 	   
 		DECLARE @mora decimal(10,2)
-		DECLARE @I_RowID		int, 
+		DECLARE @I_RowID		int/*, 
 				@Cuota_pago		int, 
 				@I_Periodo		int, 
 				@Cod_alu		varchar(20),
@@ -1233,23 +1233,27 @@ BEGIN
 				@Fch_venc		date, 
 				@Tipo_oblig		bit, 
 				@Pagado			bit, 
-				@Monto			decimal(15, 2)
+				@Monto			decimal(15, 2)*/
 
 
 		DECLARE Cur_obl_migrable CURSOR
-		FOR SELECT I_RowID, Cuota_pago, Ano, P, I_Periodo, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Monto, Pagado
+		FOR SELECT I_RowID--, Cuota_pago, Ano, P, I_Periodo, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Monto, Pagado
 			  FROM #temp_obl_migrable
 
 		OPEN Cur_obl_migrable
-		FETCH NEXT FROM Cur_obl_migrable INTO @_RowID
+		FETCH NEXT FROM Cur_obl_migrable INTO @I_RowID
 		
 		WHILE @@FETCH_STATUS = 0
 		BEGIN
 
-			
+			DECLARE @I_OblRowID		int = @I_RowID,
+					@I_OblAluID		int,
+					@B_OblResultado bit,
+					@T_OblMessage	nvarchar(4000)
+			exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID @I_OblRowID, @I_OblAluID output, @B_Resultado output, @T_Message output
+			select @B_Resultado as resultado, @I_OblAluID as CtasOblID, @T_Message as mensaje
 
-
-			FETCH NEXT FROM Cur_obl_migrable INTO @_RowID/*, @Cuota_pago, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, 
+			FETCH NEXT FROM Cur_obl_migrable INTO @I_RowID/*, @Cuota_pago, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, 
 												  @Tipo_oblig, @Fch_venc, @Monto, @Pagado*/
 		END
 

@@ -44,7 +44,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             Response result_Detalle = obligacionRepository.CopiarRegistrosDetalle(procedencia, schema, anio);
             
             Response _ = obligacionRepository.VincularCabeceraDetalle(procedencia, anio);
-            Response _p = pagoObligacionRepository.VincularCabeceraDetalle(procedencia, anio);
+            Response _p = pagoObligacionRepository.VincularCabeceraPago(procedencia, anio);
 
             result_Cabecera = result_Cabecera.IsDone ? result_Cabecera.Success(false) : result_Cabecera.Error(false);
             result_Detalle = result_Detalle.IsDone ? result_Detalle.Success(false) : result_Detalle.Error(false);
@@ -52,6 +52,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             result.Add(result_Cabecera);
             result.Add(result_Detalle);
+            result.Add(result_Pago);
 
             return result;
         }
