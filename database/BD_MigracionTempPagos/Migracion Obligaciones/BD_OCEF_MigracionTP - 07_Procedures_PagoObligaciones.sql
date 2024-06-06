@@ -1178,7 +1178,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_Migr
 AS
 /*
 	declare @I_ProcedenciaID tinyint = 3,
-			@T_Anio		 varchar(4) = '2010', 
+			@T_Anio		 varchar(4) = '2016', 
 			@B_Resultado  bit, 
 			@T_Message nvarchar(4000)
 	exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
@@ -1250,7 +1250,9 @@ BEGIN
 					@I_OblAluID		int,
 					@B_OblResultado bit,
 					@T_OblMessage	nvarchar(4000)
+
 			exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID @I_OblRowID, @I_OblAluID output, @B_Resultado output, @T_Message output
+
 			select @B_Resultado as resultado, @I_OblAluID as CtasOblID, @T_Message as mensaje
 
 			FETCH NEXT FROM Cur_obl_migrable INTO @I_RowID/*, @Cuota_pago, @Ano, @P, @I_Periodo, @Cod_alu, @Cod_rc, 

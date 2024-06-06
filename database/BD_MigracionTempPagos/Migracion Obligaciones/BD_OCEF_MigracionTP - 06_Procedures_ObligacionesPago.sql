@@ -319,6 +319,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 		
+		--Para obtener ID de obligación que no se encuentren repetidos
 		SELECT OBL2.*
 		  INTO #temp_obl_sin_repetir_anio_procedencia 
 		  FROM (SELECT Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
@@ -352,6 +353,43 @@ BEGIN
 																		AND det.Fch_venc = obl.Fch_venc
 		 WHERE det.Ano = @T_Anio
 			   AND det.I_ProcedenciaID = @I_ProcedenciaID
+
+		
+		--Para obtener ID de obligación que se encuentran repetidos 
+		SELECT OBL2.*
+		  INTO #temp_obl_repetido_anio_procedencia
+		  FROM (SELECT Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
+		    	  FROM TR_Ec_Obl
+				 WHERE Ano = @T_Anio
+					   AND I_ProcedenciaID = @I_ProcedenciaID
+				GROUP BY Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
+				HAVING COUNT(*) > 1) OBL1
+			   INNER JOIN TR_Ec_Obl OBL2 ON OBL1.I_ProcedenciaID = OBL2.I_ProcedenciaID
+											AND OBL1.Cuota_pago = OBL2.Cuota_pago
+											AND OBL1.Ano = OBL2.Ano
+											AND OBL1.P = OBL2.P
+											AND OBL1.Cod_alu = OBL2.Cod_alu
+											AND OBL1.Cod_rc = OBL2.Cod_rc
+											AND OBL1.Tipo_oblig = OBL2.Tipo_oblig
+											AND OBL1.Fch_venc = OBL2.Fch_venc
+											AND OBL1.Pagado = OBL2.Pagado
+											AND OBL1.Monto = OBL2.Monto
+
+		--Se actualiza los detalles con ID de obligación que no se encuentre repetido
+
+		UPDATE det
+		   SET I_OblRowID = obl.I_RowID
+		  FROM TR_Ec_Det det
+			   INNER JOIN #temp_obl_sin_repetir_anio_procedencia obl ON det.I_ProcedenciaID = obl.I_ProcedenciaID
+																		AND det.Cuota_pago = obl.Cuota_pago
+																		AND det.Ano = obl.Ano
+																		AND det.P = obl.P
+																		AND det.Cod_alu = obl.Cod_alu
+																		AND det.Cod_rc = obl.Cod_rc
+																		AND det.Fch_venc = obl.Fch_venc
+		 WHERE det.Ano = @T_Anio
+			   AND det.I_ProcedenciaID = @I_ProcedenciaID
+
 
 
 
