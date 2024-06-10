@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Antlr.Runtime.Misc;
+using System;
 using System.Web.Helpers;
+using System.Web.Mvc;
+using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
@@ -134,6 +137,43 @@ namespace WebMigradorCtasPorCobrar.Models.ViewModels
 
             return response;
         }
+
+        public static Response FormatResponse(this Response response, string validationTitle, string header, int observacionID, string controller = "", string action = "")
+        {
+            if (response.IsDone)
+            {
+                response = response.Success(false);
+                int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
+                response = observados == 0 ? response : response.Warning(false);
+                response.CurrentID = header;
+                response.ObjMessage = new ObjResult()
+                {
+                    Title = validationTitle,
+                    Type = observados == 0 ? "success" : "warning",
+                    Value = $"{observados} registros encontrados"
+                };
+            }
+            else
+            {
+                response = response.Error(false);
+
+                var jsonMessage = Json.Decode(response.Message);
+                response.ObjMessage = new ObjResult()
+                {
+                    Title = jsonMessage["Title"].ToString(),
+                    Type = jsonMessage["Type"].ToString(),
+                    Value = $"{jsonMessage["Value"]} registros encontrados",
+                };
+            }
+
+            response.Controller = controller;
+            response.Action = action;
+            response.Redirect = observacionID.ToString();
+
+
+            return response;
+        }
+
 
     }
 }

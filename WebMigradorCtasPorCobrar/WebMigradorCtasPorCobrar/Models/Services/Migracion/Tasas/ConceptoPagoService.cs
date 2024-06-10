@@ -275,6 +275,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Tasas
 
             return result;
         }
+
+        internal Response EjecutarValidacionPorObsId(int procedencia, int observacionId)
+        {
+            throw new NotImplementedException();
+        }
     }
 
 

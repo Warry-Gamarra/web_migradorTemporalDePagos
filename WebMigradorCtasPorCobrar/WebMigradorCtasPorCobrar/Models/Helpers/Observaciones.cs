@@ -32,7 +32,8 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             SinPeriodo = 8,
             MásDeUnaCategoría = 9,
             SinCategoria = 10,
-            Removido = 45
+            Removido = 45,
+            RepetidoDifProc = 50
         }
 
         public enum ConceptoPagoObs
@@ -46,7 +47,7 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             SinCuotaMigrada = 19,
             Externo = 20,
             NoObligacion = 46,
-            Removido = 45
+            Removido = 45,
         }
 
         public enum ObligacionesPagoObs

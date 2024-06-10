@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
@@ -12,6 +9,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
     public class CuotaPagoService
     {
+        private readonly string _controller;
+        private readonly string _action;
+
+        public CuotaPagoService()
+        {
+            _controller = "CuotaPago";
+            _action = "EjecutarValidacion";
+        }
+
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {
             string schemaDb = Schema.SetSchema(procedencia);
@@ -64,17 +70,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private Response ValidarDuplicadosCuotaPagoActivos(int procedenciaId)
         {
             Response response;
-
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
 
             response = cuotaPagoRepository.ValidarDuplicadosCuotaPagoActivos(procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por código de cuota duplicado activos";
-            response.Message += " registros encontrados";
-
+            response.FormatResponse("Observados por código de cuota duplicado activos", "Duplicados activos",
+                                    (int)CuotaPagoObs.Repetido, _controller, _action);
 
             return response;
         }
@@ -87,12 +88,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = cuotaPagoRepository.ValidarDuplicadosCuotaPagoEliminados(procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por código de cuota duplicado eliminados";
-            response.Message += " registros encontrados";
-
+            response.FormatResponse("Observados por código de cuota duplicado eliminados", "Duplicados eliminados",
+                                    (int)CuotaPagoObs.Eliminado, _controller, _action);
 
             return response;
         }
@@ -104,12 +101,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = cuotaPagoRepository.MarcarDuplicadosDiferenteProcedenciaCuotaPago(procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por código de cuota duplicado con diferentes procedencias";
-            response.Message += " registros encontrados";
-
+            response.FormatResponse("Observados por código de cuota duplicado con diferentes procedencias", "Duplicados dif. procedencia",
+                                    (int)CuotaPagoObs.RepetidoDifProc, _controller, _action);
 
             return response;
         }
@@ -121,12 +114,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = cuotaPagoRepository.MarcarEliminadosCuotaPago(cuotaPagoID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por estado eliminado";
-            response.Message += " registros encontrados";
-
+            response.FormatResponse("Observados por estado eliminado", "Estado eliminado",
+                                    (int)CuotaPagoObs.Removido, _controller, _action);
 
             return response;
         }
@@ -138,11 +127,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = cuotaPagoRepository.ValidarCuotaPagoSinCategoria(cuotaPagoID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por no tener categoría equivalente en cuentas por cobrar";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observados por no tener categoría equivalente en cuentas por cobrar", "Sin categoría Ctas x Cobrar",
+                                    (int)CuotaPagoObs.SinCategoria, _controller, _action);
 
             return response;
         }
@@ -154,11 +140,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = cuotaPagoRepository.ValidarCuotaPagoVariasCategorias(cuotaPagoID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados tener más de una posible categoría equivalente en cuentas por cobrar";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observados por tener más de una posible categoría equivalente en cuentas por cobrar",
+                                    "Varias posibles categorías Ctas",
+                                    (int)CuotaPagoObs.MásDeUnaCategoría, _controller, _action);
 
             return response;
         }
@@ -170,11 +154,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = cuotaPagoRepository.ValidarSinAnioCuotaPago(cuotaPagoID, procedenciaId, schema);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por no poder relacionarse año a la cuota";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observados por no poder relacionarse año a la cuota", "Sin Año",
+                                    (int)CuotaPagoObs.SinAnio, _controller, _action);
 
             return response;
         }
@@ -186,11 +167,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = cuotaPagoRepository.ValidarVariosAniosMismaCuotaPago(cuotaPagoID, procedenciaId, schema);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por cuota relacionada a varios años";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observados por cuota relacionada a varios años", "Varios años misma cuota",
+                                    (int)CuotaPagoObs.SinAnio, _controller, _action);
 
             return response;
         }
@@ -202,11 +180,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = cuotaPagoRepository.ValidarSinPeriodoCuotaPago(cuotaPagoID, procedenciaId, schema);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por no tener asignado periodo";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observados por no tener asignado periodo", "Sin periodo",
+                                    (int)CuotaPagoObs.SinPeriodo, _controller, _action);
 
             return response;
         }
@@ -218,11 +193,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = cuotaPagoRepository.ValidarVariosPeriodoMismaCuotaPago(cuotaPagoID, procedenciaId, schema);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por cuota relacionada a varios periodos";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observados por cuota relacionada a varios periodos", "Varios periodos misma cuota",
+                                    (int)CuotaPagoObs.MasDeUnPeriodo, _controller, _action);
 
             return response;
         }
@@ -287,6 +259,51 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             cuotaPagoRepository.ValidarVariosAniosMismaCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
             cuotaPagoRepository.ValidarSinPeriodoCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
             cuotaPagoRepository.ValidarVariosPeriodoMismaCuotaPago(cuotaPago.I_RowID, cuotaPago.I_ProcedenciaID, schemaDb);
+
+            return result;
+        }
+
+        public Response EjecutarValidacionPorObsId(int procedencia, int observacionId)
+        {
+            Response result;
+            string schemaDb = Schema.SetSchema((Procedencia)procedencia);
+
+            switch ((CuotaPagoObs)observacionId)
+            {
+                case CuotaPagoObs.Repetido:
+                    result = ValidarDuplicadosCuotaPagoActivos(procedencia);
+                    break;
+                case CuotaPagoObs.Eliminado:
+                    result = ValidarDuplicadosCuotaPagoEliminados(procedencia);
+                    break;
+                case CuotaPagoObs.MasDeUnAnio:
+                    result = ValidarMismaCuotaPagoVariosAnios(null, procedencia, schemaDb);
+                    break;
+                case CuotaPagoObs.SinAnio:
+                    result = ValidarCuotaPagoSinAnio(null, procedencia, schemaDb);
+                    break;
+                case CuotaPagoObs.MasDeUnPeriodo:
+                    result = ValidarMismaCuotaPagoVariosPeriodos(null, procedencia, schemaDb);
+                    break;
+                case CuotaPagoObs.SinPeriodo:
+                    result = ValidarCuotaPagoSinPeriodo(null, procedencia, schemaDb);
+                    break;
+                case CuotaPagoObs.MásDeUnaCategoría:
+                    result = ValidarCuotaPagoConVariasCategorías(null, procedencia);
+                    break;
+                case CuotaPagoObs.SinCategoria:
+                    result = ValidarCuotaPagoSinCategoria(null, procedencia);
+                    break;
+                case CuotaPagoObs.Removido:
+                    result = MarcarEliminadosCuotaPago(null, procedencia);
+                    break;
+                case CuotaPagoObs.RepetidoDifProc:
+                    result = MarcarDuplicadosConDiferenteProcedenciaCuotaPago(procedencia);
+                    break;
+                default:
+                    result = new Response();
+                    break;
+            }
 
             return result;
         }

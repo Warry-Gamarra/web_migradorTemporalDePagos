@@ -131,10 +131,21 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
-
+            ViewBag.Procedencia = procedencia.ToString();
             IEnumerable<Response> result = _conceptoPagoServiceMigracion.EjecutarValidaciones(procedencia, null);
 
             return PartialView("_ResultadoValidarRegistros", result);
+        }
+
+
+        [HttpPost]
+        public ActionResult EjecutarValidacion(Procedencia procedencia, int ObservacionId)
+        {
+
+            Response result = _conceptoPagoServiceMigracion.EjecutarValidacionPorObsId((int)procedencia, ObservacionId);
+            ViewBag.Procedencia = procedencia.ToString();
+
+            return PartialView("_ResultadoValidacion", result);
         }
 
 

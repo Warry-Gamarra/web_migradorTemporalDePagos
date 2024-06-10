@@ -191,7 +191,8 @@ BEGIN
 
 		COMMIT TRANSACTION;
 	END TRY
-	BEGIN CATCH
+	BEGIN CATCH  
+
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
@@ -264,11 +265,11 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
+						 '}' 
 	END CATCH
 END
 GO
@@ -352,11 +353,11 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
+						 '}' 
 	END CATCH
 END
 GO
@@ -425,11 +426,11 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
+						 '}' 
 	END CATCH
 END
 GO
@@ -553,11 +554,11 @@ BEGIN
 		END
 
 		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
+						 '}' 
 	END CATCH
 END
 GO
@@ -667,11 +668,11 @@ BEGIN
 		END
 
 		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
+						 '}' 
 	END CATCH
 END
 GO
@@ -779,11 +780,11 @@ BEGIN
 
 
 		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
+						 '}' 
 	END CATCH
 END
 GO
@@ -879,11 +880,11 @@ BEGIN
 		END
 
 		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
+						 '}' 
 	END CATCH
 END
 GO
@@ -958,11 +959,11 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
  		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
+						 '}' 
 	END CATCH
 END
 GO
@@ -1031,11 +1032,11 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
  		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
+						  '}' 
 	END CATCH
 END
 GO
@@ -1107,11 +1108,11 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
+						  '}' 
 	END CATCH
 END
 GO

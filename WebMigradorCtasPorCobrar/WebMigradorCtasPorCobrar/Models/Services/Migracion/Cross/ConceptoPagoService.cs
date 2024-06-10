@@ -118,6 +118,21 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             return result.ToList();
         }
 
+        public Response EjecutarValidacionPorObsId(int procedencia, int observacionId)
+        {
+            Response result;
+
+            if (procedencia == (int)Procedencia.Tasas)
+            {
+                result = _conceptoPagoTasasService.EjecutarValidacionPorObsId(procedencia, observacionId);
+            }
+            else
+            {
+                result = _conceptoPagoObligacionesService.EjecutarValidacionPorObsId(procedencia, observacionId);
+            }
+
+            return result;
+        }
 
         public ConceptoPago ObtenerConRelaciones(int conceptoPagoID)
         {

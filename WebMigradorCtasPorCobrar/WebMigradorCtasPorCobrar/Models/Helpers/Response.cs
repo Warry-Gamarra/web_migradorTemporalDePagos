@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebMigradorCtasPorCobrar.Models.ViewModels;
 
 namespace WebMigradorCtasPorCobrar.Models.Helpers
 {
@@ -17,6 +18,7 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
         public string CurrentID { get; set; }
         public ObjResult ObjMessage { get; set; } = new ObjResult();
         public IList<ObjResult> ListObjMessage { get; set; } = new List<ObjResult>();
+
     }
 
     public class ObjResult
@@ -25,4 +27,6 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
         public string Title { get; set; }
         public string Value { get; set; }
     }
+
+
 }

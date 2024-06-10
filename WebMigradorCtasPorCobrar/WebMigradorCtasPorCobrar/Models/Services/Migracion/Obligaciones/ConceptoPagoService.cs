@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
-using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
+﻿using System.Collections.Generic;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
-using WebMigradorCtasPorCobrar.Models.ViewModels;
+using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.ViewModels;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
@@ -15,10 +11,14 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
     public class ConceptoPagoService
     {
         private readonly EquivalenciasServices _equivalenciaServices;
+        private readonly string _controller;
+        private readonly string _action;
 
         public ConceptoPagoService()
         {
             _equivalenciaServices = new EquivalenciasServices();
+            _controller = "ConceptoPago";
+            _action = "EjecutarValidacion";
         }
 
         public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
@@ -60,7 +60,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             _ = conceptoPagoRepository.InicializarEstadoValidacionCuotaPago(cuotaPagoRowID, procedenciaId);
 
             result.Add(ValidarDuplicadoConceptosPago(cuotaPagoRowID, procedenciaId));
-            result.Add(ValidarEliminadoConceptosPago(cuotaPagoRowID,procedenciaId));
+            result.Add(ValidarEliminadoConceptosPago(cuotaPagoRowID, procedenciaId));
             result.Add(ValidarConceptosPagoNoObligacion(cuotaPagoRowID, procedenciaId));
             result.Add(ValidarConceptosPagoObligSinAnioAsignado(cuotaPagoRowID, procedenciaId));
             result.Add(ValidarConceptosPagoConAnioDiferenteCuotaPago(cuotaPagoRowID, procedenciaId));
@@ -81,11 +81,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = conceptoPagoRepository.GrabarTablaCatalogoConceptos(procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Grabar en tabla de conceptos";
-            response.Message += " filas registradas";
+            response.FormatResponse("Grabar en tabla de conceptos", "Grabar en tabla de conceptos", 0, _controller, _action);
 
             return response;
         }
@@ -98,11 +94,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = conceptoPagoRepository.AsignarIdEquivalenciasConceptoPago(cuotaPagoRowID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por no tener id de equivalencia en catalogo de conceptos de pago";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observados por no tener id de equivalencia en catalogo de conceptos de pago", "Sin Id catálogo concepto", 0, _controller, _action);
 
             return response;
         }
@@ -114,11 +106,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = conceptoPagoRepository.ValidarConceptosPagoObligSinCuotaPago(cuotaPagoRowID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por no tener cuota de pago asociada";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observados por no tener cuota de pago asociada", "Sin cuota de pago", (int)ConceptoPagoObs.SinCuotaPago, _controller, _action);
 
             return response;
         }
@@ -130,11 +118,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = conceptoPagoRepository.ValidarConceptosPagoConPeriodoDiferenteCuotaPago(cuotaPagoRowID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observado por tener periodo de concepto de pago diferente al periodo de la cuota de pago asociada";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observado por tener periodo de concepto de pago diferente al periodo de la cuota de pago asociada",
+                                    "Periodo cuota de pago",
+                                    (int)ConceptoPagoObs.ErrorConPeriodoCuota,
+                                    _controller,
+                                    _action);
 
             return response;
         }
@@ -146,11 +134,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = conceptoPagoRepository.ValidarConceptosPagoObligSinPeriodoAsignado(cuotaPagoRowID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observado por no tener periodo asignado a la cuota de pago";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observado por no tener periodo asignado a la cuota de pago", "Sin periodo",
+                                    (int)ConceptoPagoObs.SinPeriodo, _controller, _action);
 
             return response;
         }
@@ -162,11 +147,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = conceptoPagoRepository.ValidarConceptosPagoConAnioDiferenteCuotaPago(cuotaPagoRowID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observado por tener año de concepto de pago diferente al año de la cuota de pago asociada";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observado por tener año de concepto de pago diferente al año de la cuota de pago asociada",
+                                    "Año cuota de pago", (int)ConceptoPagoObs.ErrorConAnioCuota, _controller, _action);
+
 
             return response;
         }
@@ -178,11 +161,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = conceptoPagoRepository.ValidarConceptosPagoObligSinAnioAsignado(cuotaPagoRowID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por no tener un año asignado en el concepto de pago";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observados por no tener un año asignado en el concepto de pago", "Sin año asignado",
+                                    (int)ConceptoPagoObs.SinAnio, _controller, _action);
 
             return response;
         }
@@ -194,11 +174,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = conceptoPagoRepository.ValidarConceptosPagoNoObligacion(cuotaPagoRowID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observado por no tener obligaciones asociadas";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observado por no tener obligaciones asociadas", "Tipo obligacion no",
+                                    (int)ConceptoPagoObs.NoObligacion, _controller, _action);
 
             return response;
         }
@@ -210,11 +187,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = conceptoPagoRepository.ValidarEliminadoConceptosPago(cuotaPagoRowID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observador por tener estado eliminado en el concepto de pago";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observador por tener estado eliminado en el concepto de pago", "Estado eliminado",
+                                    (int)ConceptoPagoObs.Removido, _controller, _action);
 
             return response;
         }
@@ -226,11 +200,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response = conceptoPagoRepository.ValidarDuplicadoConceptosPago(cuotaPagoRowID, procedenciaId);
 
-            response = response.IsDone ? response.Success(false) : response.Error(false);
-            int observados = int.TryParse(response.Message, out int obs) ? obs : 0;
-            response = observados == 0 ? response : response.Warning(false);
-            response.CurrentID = "Observados por tener código de concepto duplicado";
-            response.Message += " registros encontrados";
+            response.FormatResponse("Observados por tener código de concepto duplicado", "Concepto pago duplicado",
+                                    (int)ConceptoPagoObs.Repetido, _controller, _action);
 
             return response;
         }
@@ -298,6 +269,53 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             return result;
         }
+
+
+        public Response EjecutarValidacionPorObsId(int procedencia, int observacionId)
+        {
+            Response result;
+            string schemaDb = Schema.SetSchema((Procedencia)procedencia);
+
+            switch ((ConceptoPagoObs)observacionId)
+            {
+                case ConceptoPagoObs.Repetido:
+                    result = ValidarDuplicadoConceptosPago(null, procedencia);
+                    break;
+                case ConceptoPagoObs.SinAnio:
+                    result = ValidarConceptosPagoObligSinAnioAsignado(null, procedencia);
+                    break;
+                case ConceptoPagoObs.ErrorConAnioCuota:
+                    result = ValidarConceptosPagoConAnioDiferenteCuotaPago(null, procedencia);
+                    break;
+                case ConceptoPagoObs.SinPeriodo:
+                    result = ValidarConceptosPagoObligSinPeriodoAsignado(null, procedencia);
+                    break;
+                case ConceptoPagoObs.ErrorConPeriodoCuota:
+                    result = ValidarConceptosPagoConPeriodoDiferenteCuotaPago(null, procedencia);
+                    break;
+                case ConceptoPagoObs.SinCuotaPago:
+                    result = ValidarConceptosPagoObligSinCuotaPago(null, procedencia);
+                    break;
+                case ConceptoPagoObs.SinCuotaMigrada:
+                    result = new Response();
+                    break;
+                case ConceptoPagoObs.Externo:
+                    result = new Response();
+                    break;
+                case ConceptoPagoObs.NoObligacion:
+                    result = ValidarConceptosPagoNoObligacion(null, procedencia);
+                    break;
+                case ConceptoPagoObs.Removido:
+                    result = ValidarEliminadoConceptosPago(null, procedencia);
+                    break;
+                default:
+                    result = new Response();
+                    break;
+            }
+
+            return result;
+        }
+
     }
 
 

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using WebMigradorCtasPorCobrar.Models.Helpers;
-using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
-using WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
-using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
+using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using Cross = WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
+using WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
+using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -17,16 +15,18 @@ namespace WebMigradorCtasPorCobrar.Controllers
     {
         private readonly TemporalPagos.CuotaPagoService _cuotaPagoServiceTemporalPagos;
         private readonly CuotaPagoService _cuotaPagoServiceMigracion;
+        private readonly Cross.CuotaPagoService _cuotaPagoServiceMigracionCross;
         private readonly ProcesoServices _cuotaPagoServiceCtasPorCobrar;
         private readonly EquivalenciasServices _equivalenciasServices;
-        private readonly ObservacionService _observacionService;
+        private readonly Cross.ObservacionService _observacionService;
 
         public CuotaPagoController()
         {
             _cuotaPagoServiceTemporalPagos = new TemporalPagos.CuotaPagoService();
+            _cuotaPagoServiceMigracionCross = new Cross.CuotaPagoService();
             _cuotaPagoServiceMigracion = new CuotaPagoService();
             _cuotaPagoServiceCtasPorCobrar = new ProcesoServices();
-            _observacionService = new ObservacionService();
+            _observacionService = new Cross.ObservacionService();
             _equivalenciasServices = new EquivalenciasServices();
         }
 
@@ -86,7 +86,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult DatosMigracion(Procedencia procedencia, int? tipo_obs)
         {
-            var model = _cuotaPagoServiceMigracion.Obtener(procedencia, tipo_obs);
+            var model = _cuotaPagoServiceMigracionCross.Obtener(procedencia, tipo_obs);
             ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Cp_Des, procedencia),
                                                     "I_ObservID", "T_ObservDesc", tipo_obs);
 
@@ -123,9 +123,19 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
             IEnumerable<Response> result = _cuotaPagoServiceMigracion.EjecutarValidaciones(procedencia, null);
+            ViewBag.Procedencia = procedencia.ToString();
 
             return PartialView("_ResultadoValidarRegistros", result);
         }
+
+        public ActionResult EjecutarValidacion(Procedencia procedencia, int ObservacionId)
+        {
+            var model = _cuotaPagoServiceMigracion.EjecutarValidacionPorObsId((int)procedencia, ObservacionId);
+            ViewBag.Procedencia = procedencia.ToString();
+
+            return PartialView("_ResultadoValidacion", model);
+        }
+
 
         [HttpPost]
         public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
@@ -141,7 +151,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
             var model = _observacionService.Obtener_ObservacionesCuotaPago(id);
             ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
-            var fila = _cuotaPagoServiceMigracion.Obtener(id);
+            var fila = _cuotaPagoServiceMigracionCross.Obtener(id);
 
             ViewBag.ErrorTitle = $"Cuota de pago {fila.Cuota_pago} - {fila.Descripcio}";
 
@@ -150,7 +160,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult VerDatos(int id, Procedencia procedencia)
         {
-            var model = _cuotaPagoServiceMigracion.ObtenerVistaDatos(id, procedencia);
+            var model = _cuotaPagoServiceMigracionCross.ObtenerVistaDatos(id, procedencia);
 
             if (model.CuotaCtasCobrar == null)
             {
@@ -162,7 +172,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult Editar(int id, int obsID = 0)
         {
-            var model = _cuotaPagoServiceMigracion.ObtenerConRelaciones(id);
+            var model = _cuotaPagoServiceMigracionCross.ObtenerConRelaciones(id);
             ViewBag.TipoObserv = obsID.ToString();
             ViewBag.Observacion = _observacionService.ObtenerCatalogo(obsID).T_ObservDesc;
             ViewBag.CategoriasBnc = new SelectList(_equivalenciasServices.ObtenerCategoriasPago(model.Codigo_bnc),
@@ -190,7 +200,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult ExportarObservaciones(int? id, Procedencia procedencia)
         {
-            var model = _cuotaPagoServiceMigracion.ObtenerDatosObservaciones(procedencia, id);
+            var model = _cuotaPagoServiceMigracionCross.ObtenerDatosObservaciones(procedencia, id);
 
             return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Observaciones-CuotaPago.xlsx");
         }

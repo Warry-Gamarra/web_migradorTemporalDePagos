@@ -1,10 +1,7 @@
 ﻿using Dapper;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 
@@ -419,8 +416,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                                                       "I_CatPagoID = @I_CatPagoID, " +
                                                       "B_Actualizado = 1, " +
                                                       "D_FecActualiza = GETDATE() " +
-                                                  "WHERE I_RowID = @I_RowID;", 
-                                                  new { Codigo_bnc = cuotaPago.Codigo_bnc, I_CatPagoID = cuotaPago.I_CatPagoID, I_RowID = cuotaPago.I_RowID}, 
+                                                  "WHERE I_RowID = @I_RowID;",
+                                                  new { Codigo_bnc = cuotaPago.Codigo_bnc, I_CatPagoID = cuotaPago.I_CatPagoID, I_RowID = cuotaPago.I_RowID },
                                                   commandType: CommandType.Text);
 
                     if (rowCount > 0)
