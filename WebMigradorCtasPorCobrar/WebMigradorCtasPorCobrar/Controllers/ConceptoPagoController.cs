@@ -175,7 +175,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             ViewBag.LstObservaciones = new SelectList(_observacionService.ObtenerCatalogo(), "I_ObservID", "T_ObservDesc");
 
-
             return PartialView("_ObservacionRegistro");
         }
 
