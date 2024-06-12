@@ -79,5 +79,12 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             Removido = 45
         }
 
+        public enum PagoObligacionObs
+        {
+            SinObligacionId = 52,
+            ErrorDetalleOblig = 56,
+            ErrorEnCabObligacion = 57
+        }
+
     }
 }

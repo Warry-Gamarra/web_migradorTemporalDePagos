@@ -101,6 +101,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacion(procedencia_id, anio);
             result.Add(ValidarDetalleObligacionSinCabeceraID(procedencia_id, anio));
             result.Add(ValidarDetalleObligacionConceptoPago(procedencia_id, anio));
+            result.Add(ValidarDetalleObligacionConceptoPagoMigrado(procedencia_id, anio));
 
             _ = pagoObligacionRepository.InicializarEstadoValidacion(procedencia_id, anio);
 
@@ -214,13 +215,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             Response result_Detalle = obligacionRepository.ValidarDetalleObligacionConceptoPago(procedencia, anio);
-            int obsPeriodo = int.TryParse(result_Detalle.Message, out int obs_per) ? obs_per : 0;
 
-            result_Detalle = result_Detalle.IsDone ? (obsPeriodo > 0 ? result_Detalle.Warning($"{obsPeriodo} registros encontrados", false)
-                                                                     : result_Detalle.Success(false))
-                                                   : result_Detalle.Error(false);
-
-            result_Detalle.CurrentID = $"Año {anio} - Observados por no existir en cp_pri";
+            result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Observados por no existir en cp_pri.",
+                                                         (int)DetalleObligacionObs.ConceptoNoExiste,
+                                                         "Obligaciones", "EjecutarValidacion");
 
             return result_Detalle;
         }
@@ -229,13 +227,10 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             Response result_Detalle = obligacionRepository.ValidarDetalleObligacionConceptoPagoMigrado(procedencia, anio);
-            int obsPeriodo = int.TryParse(result_Detalle.Message, out int obs_per) ? obs_per : 0;
 
-            result_Detalle = result_Detalle.IsDone ? (obsPeriodo > 0 ? result_Detalle.Warning($"{obsPeriodo} registros encontrados", false)
-                                                                     : result_Detalle.Success(false))
-                                                   : result_Detalle.Error(false);
-
-            result_Detalle.CurrentID = $"Año {anio} - Observados por no existir en cp_pri";
+            result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Observados por no tener el concepto migrado.",
+                                                         (int)DetalleObligacionObs.SinConceptoMigrado,
+                                                         "Obligaciones", "EjecutarValidacion");
 
             return result_Detalle;
         }

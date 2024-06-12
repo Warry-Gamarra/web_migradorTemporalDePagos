@@ -3,6 +3,7 @@ using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using CrossRepo = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
@@ -124,12 +125,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
             Response result = pagoObligacionRepository.ValidarObligacionIdEnPagoObligacion(procedencia, anio);
 
-            int observacion = int.TryParse(result.Message, out int obs_proc) ? obs_proc : 0;
-            result = result.IsDone ? (observacion > 0 ? result.Warning($"{observacion} registros encontrados", false)
-                                                         : result.Success(false))
-                                   : result.Error(false);
-
-            result.CurrentID = $"Año {anio} - Observado por procedencia de la cuota de pago";
+            result.ReturnViewValidationsMessage($"Año {anio} - Observado por id de obligacion en pago",
+                                                (int)PagoObligacionObs.SinObligacionId,
+                                                "Obligaciones", "EjecutarValidacion");
 
             return result;
         }
@@ -140,12 +138,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
             Response result = pagoObligacionRepository.ValidarDetallesEnPagoObligacion(procedencia, anio);
 
-            int observacion = int.TryParse(result.Message, out int obs_cp) ? obs_cp : 0;
-            result = result.IsDone ? (observacion > 0 ? result.Warning($"{obs_cp} registros encontrados", false)
-                                                      : result.Success(false))
-                                  : result.Error(false);
-
-            result.CurrentID = $"Año {anio} - Observado por cuota de pago sin migrar";
+            result.ReturnViewValidationsMessage($"Año {anio} - Observado por error en detalle",
+                                                (int)PagoObligacionObs.ErrorDetalleOblig,
+                                                "Obligaciones", "EjecutarValidacion");
 
             return result;
         }
@@ -155,12 +150,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
             Response result = pagoObligacionRepository.ValidarCabObligacionObservada(procedencia, anio);
 
-            int observacion = int.TryParse(result.Message, out int obs_cp) ? obs_cp : 0;
-            result = result.IsDone ? (observacion > 0 ? result.Warning($"{obs_cp} registros encontrados", false)
-                                                      : result.Success(false))
-                                  : result.Error(false);
-
-            result.CurrentID = $"Año {anio} - Observado por cuota de pago sin migrar";
+            result.ReturnViewValidationsMessage($"Año {anio} - Observado por error en cabecera de obligación",
+                                                (int)PagoObligacionObs.ErrorEnCabObligacion,
+                                                "Obligaciones", "EjecutarValidacion");
 
             return result;
         }
