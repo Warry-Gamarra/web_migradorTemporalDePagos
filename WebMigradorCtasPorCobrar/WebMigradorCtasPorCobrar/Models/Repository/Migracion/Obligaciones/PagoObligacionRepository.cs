@@ -233,7 +233,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.CurrentID = parameters.Get<int>("I_OblAluID").ToString();
                     result.IsDone = parameters.Get<bool>("B_Resultado");

@@ -1262,7 +1262,7 @@ BEGIN
 					@B_OblResultado bit,
 					@T_OblMessage	nvarchar(4000)
 
-			exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID @I_OblRowID, @I_OblAluID output, @B_Resultado output, @T_Message output
+			exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2 @I_OblRowID, @I_OblAluID output, @B_Resultado output, @T_Message output
 
 			select @B_Resultado as resultado, @I_OblAluID as CtasOblID, @T_Message as mensaje
 
@@ -1722,72 +1722,7 @@ BEGIN
 			insert new pago procesado in ctas x cobrar
 		*/
 
-
-
-			DECLARE Det_Cursor CURSOR 
-			FOR SELECT I_RowID, Nro_recibo, Fch_pago, Id_lug_pag, Pagado, Pag_demas, Cod_cajero, Monto, 
-					   Eliminado, Fch_ec, I_CtasDetTableRowID, I_CtasPagoProcTableRowID 
-				  FROM #temp_det_obl
-				 WHERE Nro_recibo = @Nro_recibo
-					   AND Pagado = @Pagado
-					   AND Fch_pago = @Fch_pago
-					   AND Eliminado = @Eliminado
-
-			OPEN Det_Cursor
-			FETCH NEXT FROM Det_Cursor INTO @I_RowDetID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado_det, @Pag_demas, @Cod_cajero, @Monto, 
-											@Eliminado, @Fch_ec, @I_CtasDetID, @I_CtasProcID;
-
-			WHILE @@FETCH_STATUS = 0
-			BEGIN
-
-				IF (@I_CtasProcID IS NULL)
-				BEGIN 
-					INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv(I_PagoBancoID, I_CtaDepositoID, I_TasaUnfvID, I_MontoPagado, I_SaldoAPagar, 
-																				I_PagoDemas, B_PagoDemas, N_NroSIAF, B_Anulado,  D_FecCre, I_UsuarioCre, D_FecMod, 
-																				I_UsuarioMod, I_ObligacionAluDetID, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
-																		VALUES (@I_CtasPagoBnc_RowID, @I_CtaDePID, NULL, @Monto, 0,
-																				0, @Pag_demas, NULL, @Eliminado, @D_FecProceso, @I_UsuarioID, NULL, 
-																				NULL, @I_CtasDetID, 1, @I_TablaID_Det, @I_RowDetID)
-
-					SET @I_CtasPagoProc_RowID = SCOPE_IDENTITY()
-					 SET @I_Det_Insertados = @I_Det_Insertados + 1
-				END
-				ELSE 
-				BEGIN
-					UPDATE BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv
-					   SET I_CtaDepositoID = @I_CtaDepID,
-						   B_Anulado = @Eliminado,
-						   D_FecMod = @D_FecProceso,
-						   I_MontoPagado = @Monto,						   
-						   B_Migrado = 1,
-						   I_MigracionTablaID = @I_TablaID_Det,
-						   I_MigracionRowID = @I_RowDetID
-					 WHERE I_PagoProcesID = @I_CtasProcID
-
-					 SET @I_CtasPagoProc_RowID = @I_CtasProcID
-					 SET @I_Det_Actualizados = @I_Det_Actualizados + 1
-				END
-
-				UPDATE BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet
-					SET B_Pagado = @Pagado_det
-				 WHERE I_ObligacionAluDetID = @I_CtasDetID
-
-				UPDATE TR_Ec_Det 
-				   SET D_FecMigradoPago = @D_FecProceso,
-					   B_MigradoPago = 1,
-					   I_CtasPagoProcTableRowID = @I_CtasPagoProc_RowID
-				 WHERE I_RowID = @I_RowDetID
-
-
-
-				FETCH NEXT FROM Det_Cursor INTO @I_RowDetID, @Nro_recibo, @Fch_pago, @Id_lug_pag, @Pagado_det, @Pag_demas, @Cod_cajero, @Monto, 
-												@Eliminado, @Fch_ec, @I_CtasDetID, @I_CtasProcID;
-			END
-
-			CLOSE Det_Cursor
-			DEALLOCATE Det_Cursor
-
-
+				
 			UPDATE BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab
 			   SET B_Pagado = (SELECT B_Pagado FROM TR_Ec_Obl O WHERE O.I_RowID = @I_OblRowID)
 			 WHERE I_MigracionRowID = @I_OblRowID
