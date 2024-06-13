@@ -355,25 +355,25 @@ BEGIN
 			   AND det.I_ProcedenciaID = @I_ProcedenciaID
 
 		
-		--Para obtener ID de obligación que se encuentran repetidos 
-		SELECT OBL2.*
-		  INTO #temp_obl_repetido_anio_procedencia
-		  FROM (SELECT Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
-		    	  FROM TR_Ec_Obl
-				 WHERE Ano = @T_Anio
-					   AND I_ProcedenciaID = @I_ProcedenciaID
-				GROUP BY Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
-				HAVING COUNT(*) > 1) OBL1
-			   INNER JOIN TR_Ec_Obl OBL2 ON OBL1.I_ProcedenciaID = OBL2.I_ProcedenciaID
-											AND OBL1.Cuota_pago = OBL2.Cuota_pago
-											AND OBL1.Ano = OBL2.Ano
-											AND OBL1.P = OBL2.P
-											AND OBL1.Cod_alu = OBL2.Cod_alu
-											AND OBL1.Cod_rc = OBL2.Cod_rc
-											AND OBL1.Tipo_oblig = OBL2.Tipo_oblig
-											AND OBL1.Fch_venc = OBL2.Fch_venc
-											AND OBL1.Pagado = OBL2.Pagado
-											AND OBL1.Monto = OBL2.Monto
+		----Para obtener ID de obligación que se encuentran repetidos 
+		--SELECT OBL2.*
+		--  INTO #temp_obl_repetido_anio_procedencia
+		--  FROM (SELECT Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
+		--    	  FROM TR_Ec_Obl
+		--		 WHERE Ano = @T_Anio
+		--			   AND I_ProcedenciaID = @I_ProcedenciaID
+		--		GROUP BY Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
+		--		HAVING COUNT(*) > 1) OBL1
+		--	   INNER JOIN TR_Ec_Obl OBL2 ON OBL1.I_ProcedenciaID = OBL2.I_ProcedenciaID
+		--									AND OBL1.Cuota_pago = OBL2.Cuota_pago
+		--									AND OBL1.Ano = OBL2.Ano
+		--									AND OBL1.P = OBL2.P
+		--									AND OBL1.Cod_alu = OBL2.Cod_alu
+		--									AND OBL1.Cod_rc = OBL2.Cod_rc
+		--									AND OBL1.Tipo_oblig = OBL2.Tipo_oblig
+		--									AND OBL1.Fch_venc = OBL2.Fch_venc
+		--									AND OBL1.Pagado = OBL2.Pagado
+		--									AND OBL1.Monto = OBL2.Monto
 
 		--Se actualiza los detalles con ID de obligación que no se encuentre repetido
 
@@ -489,8 +489,8 @@ CREATE PROCEDURE USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoV
 AS
 /*
 	declare	@B_Resultado  bit,
-				@I_ProcedenciaID	tinyint = 3,
-				@T_Anio  	  varchar(4),
+				@I_ProcedenciaID	tinyint = 2,
+				@T_Anio  	  varchar(4) = '2016',
 				@T_Message	  nvarchar(4000)
 	exec USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
@@ -505,7 +505,7 @@ BEGIN
 				B_Migrado = 0
 		 WHERE I_ProcedenciaID = @I_ProcedenciaID
 			   AND Ano = @T_Anio
-			   AND B_Correcto = 0
+			   AND ISNULL(B_Correcto, 0) = 0
 
 		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
 		SET @B_Resultado = 1
@@ -1343,7 +1343,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_34_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	Declare	@I_ProcedenciaID	tinyint = 3, 
+	Declare	@I_ProcedenciaID	tinyint = 2, 
 			@T_Anio				varchar(4) = 2016,
 			@B_Resultado		bit,
 			@T_Message			nvarchar(4000)
@@ -1358,20 +1358,31 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY
+		
+		SELECT Ano, P, Cod_alu, Cod_rc, obl.Cuota_pago, obl.Fch_venc, Tipo_oblig, Monto, obl.I_RowID
+		INTO  #temp_obl_procedencia_dif_cuota_anio
+		FROM  TR_Ec_Obl obl
+			  LEFT JOIN TR_Cp_Des cp ON obl.Cuota_pago = cp.Cuota_pago 
+										AND obl.I_ProcedenciaID = cp.I_ProcedenciaID
+										AND cp.Eliminado = 0
+		WHERE obl.I_ProcedenciaID = @I_ProcedenciaID
+			  AND Ano = @T_Anio 
+			  AND cp.I_RowID is null
 
-		UPDATE	TR_Ec_Obl
+		UPDATE	OBL
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	Cuota_pago NOT IN (SELECT Cuota_pago FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID)
-				AND I_ProcedenciaID = @I_ProcedenciaID
-				AND Ano = @T_Anio 
+		FROM	TR_Ec_Obl OBL 
+				INNER JOIN #temp_obl_procedencia_dif_cuota_anio TMP ON OBL.I_RowID = TMP.I_RowID
+		WHERE	I_ProcedenciaID = @I_ProcedenciaID
+				AND OBL.Ano = @T_Anio 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-			     FROM TR_Ec_Obl
-			    WHERE Cuota_pago NOT IN (SELECT Cuota_pago FROM TR_Cp_Des WHERE I_ProcedenciaID = @I_ProcedenciaID)
-			  		  AND I_ProcedenciaID = @I_ProcedenciaID
-			  		  AND Ano = @T_Anio
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, OBL.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+			     FROM TR_Ec_Obl OBL 
+					  INNER JOIN #temp_obl_procedencia_dif_cuota_anio TMP ON OBL.I_RowID = TMP.I_RowID
+				WHERE I_ProcedenciaID = @I_ProcedenciaID
+					  AND OBL.Ano = @T_Anio 
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1429,7 +1440,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_32_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	declare	@I_ProcedenciaID	tinyint = 3, 
+	declare	@I_ProcedenciaID	tinyint = 2, 
 			@T_Anio				varchar(4) = 2016,
 			@B_Resultado		bit,
 			@T_Message			nvarchar(4000)
@@ -1445,19 +1456,30 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		UPDATE	TR_Ec_Obl
+		SELECT Ano, P, Cod_alu, Cod_rc, obl.Cuota_pago, obl.Fch_venc, Tipo_oblig, Monto, obl.I_RowID
+		INTO  #temp_obl_cuota_no_migrada
+		FROM  TR_Ec_Obl obl
+			  LEFT JOIN TR_Cp_Des cp ON obl.Cuota_pago = cp.Cuota_pago 
+										AND obl.I_ProcedenciaID = cp.I_ProcedenciaID
+										AND cp.B_Migrado = 1
+		WHERE obl.I_ProcedenciaID = @I_ProcedenciaID
+			  AND Ano = @T_Anio
+			  AND cp.I_RowID is null
+
+		UPDATE	OBL
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		WHERE	Cuota_pago NOT IN (SELECT Cuota_pago FROM TR_Cp_Des WHERE B_Migrado = 1 AND Eliminado = 0 AND I_ProcedenciaID = @I_ProcedenciaID)
-				AND I_ProcedenciaID = @I_ProcedenciaID
-				AND Ano = @T_Anio
+		 FROM	TR_Ec_Obl OBL
+				INNER JOIN #temp_obl_cuota_no_migrada TMP ON OBL.I_RowID = TMP.I_RowID
+		WHERE	I_ProcedenciaID = @I_ProcedenciaID
+				AND OBL.Ano = @T_Anio
 								  
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
-				   FROM TR_Ec_Obl
-				  WHERE	Cuota_pago NOT IN (SELECT Cuota_pago FROM TR_Cp_Des WHERE B_Migrado = 1 AND Eliminado = 0 AND I_ProcedenciaID = @I_ProcedenciaID)
-						AND I_ProcedenciaID = @I_ProcedenciaID
-						AND Ano = @T_Anio
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, OBL.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				   FROM	TR_Ec_Obl OBL
+						INNER JOIN #temp_obl_cuota_no_migrada TMP ON OBL.I_RowID = TMP.I_RowID
+				  WHERE	I_ProcedenciaID = @I_ProcedenciaID
+						AND OBL.Ano = @T_Anio
 				 ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED THEN
@@ -1514,7 +1536,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	declare	@I_ProcedenciaID	tinyint = 3, 
+	declare	@I_ProcedenciaID	tinyint = 2, 
 			@T_Anio				varchar(4) = 2016,
 			@B_Resultado		bit,
 			@T_Message			nvarchar(4000)
@@ -1529,35 +1551,33 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY
+
+		SELECT Ano, P, Cod_alu, Cod_rc, obl.Cuota_pago, obl.Fch_venc, Tipo_oblig, Monto, obl.I_RowID
+		INTO  #temp_obl_fecVenc_dif_cuota_anio
+		FROM  TR_Ec_Obl obl
+			  LEFT JOIN TR_Cp_Des cp ON obl.Cuota_pago = cp.Cuota_pago 
+										AND obl.I_ProcedenciaID = cp.I_ProcedenciaID
+										AND cp.Eliminado = 0
+		WHERE obl.I_ProcedenciaID = @I_ProcedenciaID
+			  AND Ano = @T_Anio
+			  AND obl.Fch_venc <> cp.Fch_venc
+
+
 		UPDATE	TRG_1
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		FROM	TR_Ec_Obl TRG_1
-				INNER JOIN (SELECT ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
-							FROM  TR_Ec_Obl
-							WHERE I_ProcedenciaID = @I_ProcedenciaID
-								  AND Ano = @T_Anio
-							GROUP BY ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
-							HAVING COUNT(*) > 1) SRC_1 
-				ON TRG_1.ANO = SRC_1.ANO AND TRG_1.P = SRC_1.P AND TRG_1.COD_ALU = SRC_1.COD_ALU AND TRG_1.COD_RC = SRC_1.COD_RC 
-					AND TRG_1.CUOTA_PAGO = SRC_1.CUOTA_PAGO AND TRG_1.FCH_VENC = SRC_1.FCH_VENC 
-					AND TRG_1.TIPO_OBLIG = SRC_1.TIPO_OBLIG AND TRG_1.MONTO = SRC_1.MONTO
+				INNER JOIN #temp_obl_fecVenc_dif_cuota_anio SRC_1 
+				ON TRG_1.I_RowID = SRC_1.I_RowID
 		WHERE	TRG_1.Ano = @T_Anio
 				AND TRG_1.B_Correcto = 0
 
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Obl TRG_1
-					  INNER JOIN (SELECT ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
-					  			    FROM TR_Ec_Obl
-					  			   WHERE I_ProcedenciaID = @I_ProcedenciaID
-					  			    	 AND Ano = @T_Anio
-					  			GROUP BY ANO, P, COD_ALU, COD_RC, CUOTA_PAGO, FCH_VENC, TIPO_OBLIG, MONTO
-					  			HAVING COUNT(*) > 1) SRC_1 
-					  	ON TRG_1.ANO = SRC_1.ANO AND TRG_1.P = SRC_1.P AND TRG_1.COD_ALU = SRC_1.COD_ALU AND TRG_1.COD_RC = SRC_1.COD_RC 
-					  		AND TRG_1.CUOTA_PAGO = SRC_1.CUOTA_PAGO AND TRG_1.FCH_VENC = SRC_1.FCH_VENC 
-					  		   AND TRG_1.TIPO_OBLIG = SRC_1.TIPO_OBLIG AND TRG_1.MONTO = SRC_1.MONTO
+					  INNER JOIN #temp_obl_fecVenc_dif_cuota_anio SRC_1 
+								ON TRG_1.I_RowID = SRC_1.I_RowID
 				 WHERE	TRG_1.Ano = @T_Anio
 						AND TRG_1.B_Correcto = 0
 				 ) AS SRC
