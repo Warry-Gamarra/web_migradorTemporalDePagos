@@ -1585,6 +1585,11 @@ END
 GO
 
 
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2]
+GO
+
 CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2]	
 	@I_OblRowID		int,
 	@I_OblAluID		int output,
@@ -1722,8 +1727,17 @@ BEGIN
 			insert new pago procesado in ctas x cobrar
 		*/
 
+			INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv(I_PagoBancoID, I_CtaDepositoID, I_TasaUnfvID, I_MontoPagado, I_SaldoAPagar, 
+																		I_PagoDemas, B_PagoDemas, N_NroSIAF, B_Anulado,  D_FecCre, I_UsuarioCre, D_FecMod, 
+																		I_UsuarioMod, I_ObligacionAluDetID, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
+																SELECT (@I_CtasPagoBnc_RowID, @I_CtaDePID, NULL, Monto, 0,
+																		0, Pag_demas, NULL, Eliminado, @D_FecProceso, @I_UsuarioID, NULL, 
+																		NULL, @I_CtasDetID, 1, @I_TablaID_Det, @I_RowDetID)
+																  FROM  #temp_det_obl tmp_det 
+																		--INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco cta_pago_banco ON tmp_det.I_
+
 				
-			UPDATE BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab
+			UPDATE TR_ObligacionAluCab
 			   SET B_Pagado = (SELECT B_Pagado FROM TR_Ec_Obl O WHERE O.I_RowID = @I_OblRowID)
 			 WHERE I_MigracionRowID = @I_OblRowID
 				   AND I_MigracionTablaID = @I_TablaID_Obl
