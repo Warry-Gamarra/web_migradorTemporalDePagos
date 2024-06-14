@@ -1199,8 +1199,8 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_Migr
 	@T_Message			nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_ProcedenciaID tinyint = 3,
-			@T_Anio		 varchar(4) = '2016', 
+	declare @I_ProcedenciaID tinyint = 2,
+			@T_Anio		 varchar(4) = '2008', 
 			@B_Resultado  bit, 
 			@T_Message nvarchar(4000)
 	exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
@@ -1686,8 +1686,8 @@ BEGIN
 															D_FecCre, T_Observacion, T_InformacionAdicional, I_CondicionPagoID, I_TipoPagoID, 
 															I_CtaDepositoID, I_InteresMora, B_Migrado, T_MotivoCoreccion, C_CodigoInterno, 
 															I_MigracionTablaID, I_MigracionRowID, I_MigracionMoraRowID)
-													SELECT  IIF(Cod_cajero = 'BCP', 2, 1) AS I_EntidadFinanID, Nro_recibo, Cod_alu, NombreDep,  
-															Nro_recibo, Fch_pago, Cantidad, T_Moneda, Monto, Id_lug_pag, Eliminado, @I_UsuarioID, 
+													SELECT  IIF(Cod_cajero = 'BCP', 2, 1) AS I_EntidadFinanID, Nro_recibo, Cod_alu, T_NomDepositante,  
+															Nro_recibo, Fch_pago, Cantidad, @T_Moneda, Monto, Id_lug_pag, Eliminado, @I_UsuarioID, 
 															@D_FecProceso, NULL as observacion, NULL as adicional, 131 as condpago, 133 as tipoPago, 
 															I_CtaDepositoID, ISNULL(@mora, 0) as mora, 1 AS migrado, NULL as motivo, Nro_recibo, 
 															@I_TablaID_Det_Pago, I_RowID, @I_CtasMora_RowID
