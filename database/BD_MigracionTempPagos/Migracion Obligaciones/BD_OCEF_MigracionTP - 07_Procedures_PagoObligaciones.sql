@@ -1262,7 +1262,21 @@ BEGIN
 					@B_OblResultado bit,
 					@T_OblMessage	nvarchar(4000)
 
-			exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2 @I_OblRowID, @I_OblAluID output, @B_Resultado output, @T_Message output
+			EXEC USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2	@I_OblRowID, 
+																						@I_OblAluID output,
+																						@B_Resultado output, 
+																						@T_Message output
+			
+
+			/*		Actualizar pagado de CtasPorCobrar TR_ObligacionAluCab con los registros que tienen id de pago banco	*/
+
+			UPDATE alu_cab
+			   SET B_Pagado = OBL.Pagado 
+			  FROM BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab alu_cab
+				   INNER JOIN TR_Ec_Obl OBL ON OBL.I_RowID = alu_cab.I_MigracionRowID
+				   INNER JOIN (SELECT I_OblRowID FROM TR_Ec_Det_Pagos WHERE B_Migrado = 1 AND Concepto = 0) DET_PAGOS ON OBL.I_RowID = DET_PAGOS.I_OblRowID
+			 WHERE OBL.I_RowID = @I_OblRowID
+
 
 			select @B_Resultado as resultado, @I_OblAluID as CtasOblID, @T_Message as mensaje
 
@@ -1350,7 +1364,7 @@ BEGIN
 		  INTO #temp_det_obl
 		  FROM TR_Ec_Det det
 		 WHERE I_OblRowID = @I_OblRowID
-			   AND det.B_Migrable = 1
+			   AND det.B_Migrado = 1
 
 		SELECT * FROM #temp_det_obl
 
@@ -1514,7 +1528,7 @@ BEGIN
 				END
 
 				UPDATE BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet
-					SET B_Pagado = @Pagado_det
+				   SET B_Pagado = @Pagado_det
 				 WHERE I_ObligacionAluDetID = @I_CtasDetID
 
 				UPDATE TR_Ec_Det 
@@ -1634,7 +1648,7 @@ BEGIN
 		  INTO #temp_det_obl
 		  FROM TR_Ec_Det det
 		 WHERE I_OblRowID = @I_OblRowID
-			   AND det.B_Migrable = 1
+			   AND det.B_Migrado = 1
 
 		SELECT det.I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
 			   Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, 
@@ -1680,26 +1694,26 @@ BEGIN
 													  FROM	#temp_det_pago
 													  WHERE I_CtasPagoBncTableRowID IS NULL
 
-
 		/*
 			uptdat if exists pago banco in ctas x cobrar
 		*/
 
-		UPDATE BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco
-			SET T_NomDepositante = SRC_pago.T_NomDepositante,
-				C_Referencia = SRC_pago.Nro_recibo,
-				D_FecPago = SRC_pago.Fch_pago,
-				C_Moneda = @T_Moneda,
-				I_MontoPago = SRC_pago.Monto,
-				T_LugarPago = SRC_pago.Id_lug_pag,
-				B_Migrado = 1,
-				D_FecMod = @D_FecProceso
-		   FROM BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco cta_pago_banco
-				INNER JOIN #temp_det_pago SRC_pago ON cta_pago_banco.I_PagoBancoID = SRC_pago.I_CtasPagoBncTableRowID
-													  AND SRC_pago.I_RowID = cta_pago_banco.I_MigracionTablaID
-		  WHERE I_CtasPagoBncTableRowID IS NOT NULL
+		UPDATE cta_pago_banco
+		   SET T_NomDepositante = SRC_pago.T_NomDepositante,
+			   C_Referencia = SRC_pago.Nro_recibo,
+			   D_FecPago = SRC_pago.Fch_pago,
+			   C_Moneda = @T_Moneda,
+			   I_MontoPago = SRC_pago.Monto,
+			   T_LugarPago = SRC_pago.Id_lug_pag,
+			   B_Migrado = 1,
+			   D_FecMod = @D_FecProceso
+		  FROM BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco cta_pago_banco
+			   INNER JOIN #temp_det_pago SRC_pago ON cta_pago_banco.I_PagoBancoID = SRC_pago.I_CtasPagoBncTableRowID
+													 AND SRC_pago.I_RowID = cta_pago_banco.I_MigracionTablaID
+		 WHERE I_CtasPagoBncTableRowID IS NOT NULL
 
-		/*UPDATE REGISTROS PAGO*/
+
+		/*	UPDATE REGISTROS PAGO	*/
 		UPDATE det_pagos
 		   SET I_CtasPagoBncTableRowID = cta_pago_banco.I_PagoBancoID,
 			   B_Migrado = 1,
@@ -1708,9 +1722,13 @@ BEGIN
 			   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco cta_pago_banco ON det_pagos.I_RowID = cta_pago_banco.I_MigracionRowID
 		 WHERE I_OblRowID = @I_OblRowID
 
+		UPDATE temp_det_pagos
+		   SET I_CtasPagoBncTableRowID = det_pagos.I_CtasPagoBncTableRowID
+		  FROM #temp_det_pago temp_det_pagos
+			   INNER JOIN TR_Ec_Det_Pagos det_pagos ON det_pagos.I_RowID = temp_det_pagos.I_RowID
 
-		/*UPDATE REGISTROS MORA*/
 
+		/*	UPDATE REGISTROS MORA	*/
 		UPDATE det_pagos_mora 
 		SET I_CtasPagoBncTableRowID = cta_pago_banco.I_PagoBancoID,
 			B_Migrado = 1,
@@ -1722,25 +1740,56 @@ BEGIN
 			AND B_Migrable = 1
 			AND Eliminado = 0
 
-
 		/*
-			insert new pago procesado in ctas x cobrar
+			upsert pago procesado in ctas x cobrar
 		*/
 
-			INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv(I_PagoBancoID, I_CtaDepositoID, I_TasaUnfvID, I_MontoPagado, I_SaldoAPagar, 
-																		I_PagoDemas, B_PagoDemas, N_NroSIAF, B_Anulado,  D_FecCre, I_UsuarioCre, D_FecMod, 
-																		I_UsuarioMod, I_ObligacionAluDetID, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
-																SELECT (@I_CtasPagoBnc_RowID, @I_CtaDePID, NULL, Monto, 0,
-																		0, Pag_demas, NULL, Eliminado, @D_FecProceso, @I_UsuarioID, NULL, 
-																		NULL, @I_CtasDetID, 1, @I_TablaID_Det, @I_RowDetID)
-																  FROM  #temp_det_obl tmp_det 
-																		--INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco cta_pago_banco ON tmp_det.I_
+		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv(I_PagoBancoID, I_CtaDepositoID, I_TasaUnfvID, I_MontoPagado, I_SaldoAPagar, 
+																	I_PagoDemas, B_PagoDemas, N_NroSIAF, B_Anulado,  D_FecCre, I_UsuarioCre, D_FecMod, 
+																	I_UsuarioMod, I_ObligacionAluDetID, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
+															SELECT  temp_det_pagos.I_CtasPagoBncTableRowID, temp_det_pagos.I_CtaDepositoID, NULL, tmp_det.Monto, 0,
+																	0, tmp_det.Pag_demas, NULL, tmp_det.Eliminado, @D_FecProceso, @I_UsuarioID, NULL, 
+																	NULL, tmp_det.I_CtasDetTableRowID, 1, @I_TablaID_Det, tmp_det.I_RowID
+																FROM  #temp_det_obl tmp_det 
+																	INNER JOIN #temp_det_pago temp_det_pagos ON tmp_det.I_OblRowID = temp_det_pagos.I_OblRowID
+																WHERE  temp_det_pagos.I_CtasPagoBncTableRowID IS NOT NULL
+																	AND tmp_det.I_CtasPagoProcTableRowID IS NULL
 
-				
-			UPDATE TR_ObligacionAluCab
-			   SET B_Pagado = (SELECT B_Pagado FROM TR_Ec_Obl O WHERE O.I_RowID = @I_OblRowID)
-			 WHERE I_MigracionRowID = @I_OblRowID
-				   AND I_MigracionTablaID = @I_TablaID_Obl
+			
+		UPDATE pago_proc
+		   SET I_CtaDepositoID = temp_det_pagos.I_CtaDepositoID,
+			   B_Anulado = tmp_det.Eliminado,
+			   D_FecMod = @D_FecProceso,
+			   I_MontoPagado = tmp_det.Monto,						   
+			   B_Migrado = 1,
+			   I_MigracionTablaID = @I_TablaID_Det
+		  FROM BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv pago_proc
+			   INNER JOIN #temp_det_obl tmp_det ON pago_proc.I_MigracionRowID = tmp_det.I_RowID
+			   INNER JOIN #temp_det_pago temp_det_pagos ON tmp_det.I_OblRowID = temp_det_pagos.I_OblRowID
+		 WHERE tmp_det.I_CtasPagoProcTableRowID IS NOT NULL
+
+		 /*		Actualizar tmp_det con el id de pago procesado creado	*/
+		UPDATE tmp_det
+		   SET I_CtasPagoProcTableRowID = pago_proc.I_PagoProcesID
+		  FROM #temp_det_obl tmp_det
+			   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv pago_proc ON tmp_det.I_RowID = pago_proc.I_MigracionRowID
+			
+
+		 /*		Actualizar pagado de TR_Ec_Det con los registros que tienen id de pago proc	*/
+		UPDATE ec_det
+		   SET I_CtasPagoProcTableRowID = tmp_det.I_CtasPagoProcTableRowID,
+			   Pagado = tmp_det.Pagado
+		  FROM TR_Ec_Det ec_det
+			   INNER JOIN #temp_det_obl tmp_det ON tmp_det.I_RowID = ec_det.I_RowID
+
+
+		/*		Actualizar pagado de CtasPorCobrar TR_ObligacionAluDet con los registros que tienen id de pago proc		*/
+		UPDATE alu_det
+		   SET B_Pagado = 1
+		  FROM BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet alu_det
+			   INNER JOIN #temp_det_obl tmp_det ON alu_det.I_MigracionRowID = tmp_det.I_RowID
+												   AND alu_det.I_ObligacionAluDetID = tmp_det.I_CtasDetTableRowID
+		WHERE tmp_det.I_CtasPagoProcTableRowID IS NOT NULL
 
 
 		COMMIT TRANSACTION
