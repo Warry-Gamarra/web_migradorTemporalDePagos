@@ -1606,16 +1606,18 @@ GO
 
 CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2]	
 	@I_OblRowID		int,
+	@I_UsuarioID	int,
 	@I_OblAluID		int output,
 	@B_Resultado	bit output,
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
 	declare @I_OblRowID	  int = 626180,
+			@I_UsuarioID	int = 15,
 			@I_OblAluID		int,
 			@B_Resultado  bit,
 			@T_Message nvarchar(4000)
-	exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2 @I_OblRowID, @I_OblAluID output, @B_Resultado output, @T_Message output
+	exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2 @I_OblRowID, @I_UsuarioID, @I_OblAluID output, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -1623,9 +1625,6 @@ BEGIN
 	DECLARE @I_TablaID_Obl int = 5
 	DECLARE @I_TablaID_Det int = 4
 	DECLARE @I_TablaID_Det_Pago int = 7
-	DECLARE @I_UsuarioID int = (SELECT dbo.Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID())
-	DECLARE @I_CtasPagoBnc_RowID  int
-	DECLARE @I_CtasPagoProc_RowID  int
 	DECLARE @I_CtasMora_RowID  int
 	DECLARE @T_Moneda varchar(3) = 'PEN'
 
@@ -1794,7 +1793,7 @@ BEGIN
 
 		COMMIT TRANSACTION
 					
-		SET @I_OblAluID = @I_CtasPagoBnc_RowID
+		SET @I_OblAluID = 
 		SET @B_Resultado = 1
 		SET @T_Message = '[{ ' +
 							 'Type: "summary", ' + 

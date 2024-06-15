@@ -94,14 +94,14 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             result.Add(ValidarAlumnoCabeceraObligacion(procedencia_id, anio));
             result.Add(ValidarPeriodoEnCabeceraObligacion(procedencia_id, anio));
             result.Add(ValidarCabeceraObligacionSinDetalle(procedencia_id, anio));
-            //result.Add(ValidarFechaVencimientoCuotaObligacion(procedencia_id, anio));
+
             result.Add(ValidarObligacionCuotaPagoMigrada(procedencia_id, anio));
             result.Add(ValidarProcedenciaObligacionCuotaPago(procedencia_id, anio));
 
             _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacion(procedencia_id, anio);
             result.Add(ValidarDetalleObligacionSinCabeceraID(procedencia_id, anio));
             result.Add(ValidarDetalleObligacionConceptoPago(procedencia_id, anio));
-            //result.Add(ValidarDetalleObligacionConceptoPagoMigrado(procedencia_id, anio));
+            result.Add(ValidarDetalleObligacionConceptoPagoMigrado(procedencia_id, anio));
 
             _ = pagoObligacionRepository.InicializarEstadoValidacion(procedencia_id, anio);
 

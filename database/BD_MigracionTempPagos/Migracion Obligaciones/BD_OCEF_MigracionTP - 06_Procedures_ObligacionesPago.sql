@@ -1726,7 +1726,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_
 AS
 /*
 	declare @I_ProcedenciaID	tinyint = 3, 
-	    	@T_Anio				varchar(4) = '2016',
+	    	@T_Anio				varchar(4) = '2008',
 			@B_Resultado		bit,
 			@T_Message			nvarchar(4000)
 	exec USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_ConceptoPagoMigrado @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
@@ -1849,8 +1849,8 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarData
 	@T_Message			nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_ProcedenciaID tinyint = 3,
-			@T_Anio		 varchar(4) = '2006', 
+	declare @I_ProcedenciaID tinyint = 2,
+			@T_Anio		 varchar(4) = '2008', 
 			@B_Resultado  bit, 
 			@T_Message nvarchar(4000)
 	exec USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
@@ -1912,8 +1912,6 @@ BEGIN
 
 		SET @I_Mat_Insertados = (SELECT COUNT(*) FROM @Tbl_outputMat WHERE T_Action = 'INSERT')
 		SET @I_Mat_Actualizados = (SELECT COUNT(*) FROM @Tbl_outputMat WHERE T_Action = 'UPDATE')
-
-		select * from  @Tbl_outputMat
 
 		UPDATE Obl
 		   SET I_CtasMatTableRowID = OM.I_Inserted_RowID
@@ -1998,7 +1996,6 @@ BEGIN
 		 	   AND Ano = @T_Anio
 
 
-
 		;WITH CTE_DET_MIGRABLE (I_MigracionTablaID, CTE_RowID, I_OblRowID, I_DetRowID, I_CtasOblID, Concepto, Monto, Pagado,
 								Fch_venc, I_TipoDocumento, T_DescDocumento, Habilitado, Eliminado, D_FecCre, Mora)
 		AS
@@ -2056,7 +2053,6 @@ BEGIN
 		SET @I_Det_Insertados = (SELECT COUNT(*) FROM @Tbl_outputDet WHERE T_Action = 'INSERT')
 		SET @I_Det_Actualizados = (SELECT COUNT(*) FROM @Tbl_outputDet WHERE T_Action = 'UPDATE')
 
-		select * from  @Tbl_outputDet
 
 		COMMIT TRANSACTION
 					
