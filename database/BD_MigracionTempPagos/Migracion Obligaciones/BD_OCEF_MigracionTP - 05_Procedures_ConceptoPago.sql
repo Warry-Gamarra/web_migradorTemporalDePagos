@@ -18,13 +18,15 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_TemporalPagos_MigracionTP_
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID	tinyint = 3,
---		@T_SchemaDB			varchar(20) = 'euded',
---		@T_Codigo_bnc		varchar(250) = '''0658'', ''0685'', ''0687'', ''0688''',
---		@T_Message	  nvarchar(4000)
---exec USP_Obligaciones_ConceptoPago_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID	tinyint = 3,
+			@T_SchemaDB			varchar(20) = 'euded',
+			@T_Codigo_bnc		varchar(250) = '''0658'', ''0685'', ''0687'', ''0688''',
+			@T_Message	  nvarchar(4000)
+	exec USP_Obligaciones_ConceptoPago_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @T_SQL nvarchar(max)
 
@@ -990,12 +992,14 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_MigracionTP_U_AsignarIdEqu
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_RowID	  int = NULL,
---		@I_ProcedenciaID tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Obligaciones_ConceptoPago_MigracionTP_U_AsignarIdEquivalencias @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_RowID	  int = NULL,
+			@I_ProcedenciaID tinyint = 3,
+			@T_Message	  nvarchar(4000)
+	exec USP_Obligaciones_ConceptoPago_MigracionTP_U_AsignarIdEquivalencias @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	
@@ -1054,7 +1058,21 @@ BEGIN
 		WHERE   I_ProcedenciaID = @I_ProcedenciaID
 				AND (I_RowID = IIF(@I_RowID IS NULL, I_RowID, @I_RowID))
 
-		SELECT * FROM TR_Cp_Pri
+
+
+		UPDATE	tb_pri  
+		   SET	I_EquivDestinoID = IIF(equiv.I_ConcPagID IS NULL, tb_pri.Id_cp, equiv.I_ConcPagID)
+		  FROM	TR_Cp_Pri tb_pri
+				LEFT JOIN (SELECT ctas_cp.I_ConcPagID, pri.Id_cp, pri.Cuota_pago 
+							 FROM BD_OCEF_MigracionTP..TR_Cp_Pri pri
+							 	  INNER JOIN BD_OCEF_CtasPorCobrar..TI_ConceptoPago ctas_cp ON pri.Descripcio = ctas_cp.T_ConceptoPagoDesc
+							 																   AND pri.Cuota_pago = ctas_cp.I_ProcesoID 
+																							   AND ctas_cp.T_Clasificador = pri.Clasificad
+							WHERE IIF(ctas_cp.I_ConcPagID = pri.Id_cp, 1, 0) = 0
+								  AND I_ConceptoID > 0
+						  ) equiv ON tb_pri.Id_cp = equiv.Id_cp
+		WHERE   I_ProcedenciaID = @I_ProcedenciaID
+
 
 		SET @B_Resultado = 1
 		SET @T_Message = 'Ok'
@@ -1148,14 +1166,14 @@ BEGIN
 					  AND (ANO BETWEEN @I_AnioIni AND @I_AnioFin)
 					  AND I_ProcedenciaID = @I_ProcedenciaID
 			  ) AS SRC
-		ON TRG.I_ConcPagID = SRC.ID_CP
+		ON TRG.I_ConcPagID = SRC.I_EquivDestinoID
 		WHEN NOT MATCHED BY TARGET THEN 
 			INSERT (I_ConcPagID, I_ProcesoID, I_ConceptoID, T_ConceptoPagoDesc, B_Fraccionable, B_ConceptoGeneral, B_AgrupaConcepto, I_AlumnosDestino, 
 					I_GradoDestino, I_TipoObligacion, T_Clasificador, C_CodTasa, B_Calculado, I_Calculado, B_AnioPeriodo, I_Anio, I_Periodo, B_Especialidad, 
 					C_CodRc, B_Dependencia, C_DepCod, B_GrupoCodRc, I_GrupoCodRc, B_ModalidadIngreso, I_ModalidadIngresoID, B_ConceptoAgrupa, I_ConceptoAgrupaID, 
 					B_ConceptoAfecta, I_ConceptoAfectaID, N_NroPagos, B_Porcentaje, C_Moneda, M_Monto, M_MontoMinimo, T_DescripcionLarga, T_Documento, B_Mora, 
 					B_Migrado, B_Habilitado, B_Eliminado, I_TipoDescuentoID, B_EsPagoMatricula, B_EsPagoExtmp, I_MigracionTablaID, I_MigracionRowID)
-			VALUES (SRC.ID_CP, SRC.CUOTA_PAGO, 0, SRC.DESCRIPCIO, SRC.FRACCIONAB, SRC.CONCEPTO_G, SRC.AGRUPA, SRC.I_TipAluID, SRC.I_TipGradoID, SRC.I_TipOblID, 
+			VALUES (SRC.I_EquivDestinoID, SRC.CUOTA_PAGO, 0, SRC.DESCRIPCIO, SRC.FRACCIONAB, SRC.CONCEPTO_G, SRC.AGRUPA, SRC.I_TipAluID, SRC.I_TipGradoID, SRC.I_TipOblID, 
 					SRC.CLASIFICAD, SRC.CLASIFIC_5, CASE WHEN SRC.I_TipCalcID IS NULL THEN 0 ELSE 1 END, SRC.I_TipCalcID, CASE CAST(SRC.ANO AS int) WHEN 0 THEN 0 ELSE 1 END, SRC.ANO, SRC.I_TipPerID, 
 					CASE LEN(LTRIM(RTRIM(SRC.COD_RC))) WHEN 0 THEN 0 ELSE 1 END, CASE LEN(LTRIM(RTRIM(SRC.COD_RC))) WHEN 0 THEN NULL ELSE SRC.COD_RC END, 
 					CASE LEN(LTRIM(RTRIM(SRC.COD_DEP_PL))) WHEN 0 THEN 0 ELSE 1 END, SRC.I_DepID, CASE WHEN SRC.I_TipGrpRc IS NULL THEN 0 ELSE 1 END, SRC.I_TipGrpRc, 
@@ -1262,83 +1280,6 @@ GO
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaDestino')
 	DROP PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaDestino]
-GO
-
-CREATE PROCEDURE USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaDestino
-	@I_ProcedenciaID tinyint,
-	@B_Resultado  bit output,
-	@T_Message	  nvarchar(4000) OUTPUT	
-AS
---declare	@B_Resultado  bit, 
---			@I_ProcedenciaID int = 3,
---			@T_Message nvarchar(4000)
---exec USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaDestino @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
-BEGIN
-
-	DECLARE @I_ConceptoPago_Inserted int = 0
-	DECLARE @I_ConceptoPago_Updated int = 0
-
-	BEGIN TRANSACTION;
-	BEGIN TRY 
-
-		;WITH ConceptoPagoEquivCtasxCobrar AS
-		(
-			SELECT cp_pri.Id_cp, I_ConcPagID, cp_pri.Ano, ctas_cp2.I_Anio, ctas_cp2.per, cp_pri.P, ctas_cp2.C_grado, cp_pri.Grado, ctas_cp2.I_ProcesoID, cp_pri.Cuota_pago, 
-				   ctas_cp2.I_AlumnosDestino, cp_pri.Tip_alumno, cp_pri.Descripcio, ctas_cp2.T_ConceptoPagoDesc, ctas_cp2.M_Monto, cp_pri.Monto, 
-				   IIF(cp_pri.Id_cp = ctas_cp2.I_ConcPagID, 1, 0) AS Iguales
-			FROM TR_Cp_Pri cp_pri 
-			LEFT JOIN (SELECT ctas_cp.*, co.T_OpcionCod AS Per, co2.T_OpcionCod as C_grado 
-					   FROM BD_OCEF_CtasPorCobrar..TI_ConceptoPago ctas_cp 
-						LEFT JOIN BD_OCEF_CtasPorCobrar..TC_CatalogoOpcion co ON co.I_ParametroID = 5 AND ctas_cp.I_Periodo = co.I_OpcionID
-						LEFT JOIN BD_OCEF_CtasPorCobrar..TC_CatalogoOpcion co2 ON co2.I_ParametroID = 2 AND IIF(ctas_cp.I_GradoDestino = 9, 4, ctas_cp.I_GradoDestino) = co2.I_OpcionID
-					   ) ctas_cp2
-				ON LTRIM(RTRIM(REPLACE(ctas_cp2.T_ConceptoPagoDesc,' ', ' '))) = LTRIM(RTRIM(REPLACE(cp_pri.Descripcio,' ', ' '))) 
-				AND ISNULL(ctas_cp2.I_Anio, '   ') = cp_pri.Ano
-				AND ISNULL(ctas_cp2.Per, ' ') = cp_pri.P
-				AND ctas_cp2.M_Monto = cp_pri.Monto
-				AND ctas_cp2.I_AlumnosDestino = cp_pri.Tip_alumno
-				AND ctas_cp2.C_grado = cp_pri.Grado
-				AND ctas_cp2.I_ProcesoID = cp_pri.Cuota_pago
-			WHERE Eliminado = 0
-		)
-				
-		UPDATE tb_cp_pri
-			   SET I_EquivDestinoID = ConceptoPagoEquivCtasxCobrar_SinRep.I_ConcPagID
-		  FROM TR_Cp_Pri tb_cp_pri
-			   LEFT JOIN (
-							SELECT * FROM ConceptoPagoEquivCtasxCobrar
-							WHERE id_cp NOT IN (SELECT Id_cp
-												FROM ConceptoPagoEquivCtasxCobrar
-												GROUP BY Id_cp
-												HAVING COUNT(Id_cp) > 1)
-							UNION
-							SELECT * FROM ConceptoPagoEquivCtasxCobrar
-							WHERE id_cp IN (SELECT Id_cp FROM ConceptoPagoEquivCtasxCobrar
-											GROUP BY Id_cp
-											HAVING COUNT(Id_cp) > 1)
-								  AND Iguales = 1
-						) ConceptoPagoEquivCtasxCobrar_SinRep ON tb_cp_pri.id_cp = ConceptoPagoEquivCtasxCobrar_SinRep.id_cp
-		 WHERE I_ProcedenciaID = @I_ProcedenciaID
-
-
-		SET @I_ConceptoPago_Updated = @@rowcount	
-
-		COMMIT TRANSACTION;
-
-		SET @B_Resultado = 1
-		SET @T_Message = CAST(@I_ConceptoPago_Updated AS varchar) + ' filas actualizadas'
-	END TRY
-	BEGIN CATCH
-		ROLLBACK TRANSACTION;
-		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
-							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
-							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
-	END CATCH
-END
 GO
 
 

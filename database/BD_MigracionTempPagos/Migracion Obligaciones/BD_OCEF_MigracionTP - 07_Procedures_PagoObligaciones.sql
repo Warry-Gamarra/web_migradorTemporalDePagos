@@ -1793,7 +1793,7 @@ BEGIN
 
 		COMMIT TRANSACTION
 					
-		SET @I_OblAluID = 
+		SET @I_OblAluID = (SELECT I_CtasPagoBncTableRowID FROM #temp_det_pago WHERE I_OblRowID = @I_OblRowID)
 		SET @B_Resultado = 1
 		SET @T_Message = '[{ ' +
 							 'Type: "summary", ' + 

@@ -114,7 +114,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult CopiarRegistros(Procedencia procedencia)
         {
-            Response result = _cuotaPagoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
+            Response result = _cuotaPagoServiceMigracionCross.CopiarRegistrosDesdeTemporalPagos(procedencia);
 
             return PartialView("_ResultadoCopiarRegistros", result);
         }
@@ -122,7 +122,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult ValidarRegistros(Procedencia procedencia)
         {
-            IEnumerable<Response> result = _cuotaPagoServiceMigracion.EjecutarValidaciones(procedencia, null);
+            IEnumerable<Response> result = _cuotaPagoServiceMigracionCross.EjecutarValidaciones(procedencia, null);
             ViewBag.Procedencia = procedencia.ToString();
 
             return PartialView("_ResultadoValidarRegistros", result);
@@ -130,7 +130,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult EjecutarValidacion(Procedencia procedencia, int ObservacionId)
         {
-            var model = _cuotaPagoServiceMigracion.EjecutarValidacionPorObsId((int)procedencia, ObservacionId);
+            var model = _cuotaPagoServiceMigracionCross.EjecutarValidacionPorObsId(procedencia, ObservacionId);
             ViewBag.Procedencia = procedencia.ToString();
 
             return PartialView("_ResultadoValidacion", model);

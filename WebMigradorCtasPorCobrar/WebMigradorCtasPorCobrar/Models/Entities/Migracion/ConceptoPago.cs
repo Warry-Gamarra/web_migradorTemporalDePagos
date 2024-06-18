@@ -52,6 +52,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public int I_TipPerID { get; set; }
         public int I_TipAluID { get; set; }
         public int I_TipGradoID { get; set; }
+        public int? I_EquivDestinoID { get; set; }
         public int I_ProcedenciaID { get; set; }
         public IList<CuotaPago> CuotasPago { get; set; }
         public IList<DetalleObligacion> DetalleObligaciones { get; set; }

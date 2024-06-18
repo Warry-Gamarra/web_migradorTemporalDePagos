@@ -186,7 +186,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
                 ConceptoPagoMigracion = _conceptoPagoServiceMigracion.Obtener(id),
             };
 
-            var conceptoPagoCtasCobrar = _conceptoPagoServiceCtasPorCobrar.Obtener(model.ConceptoPagoMigracion.Id_cp);
+            var conceptoPagoCtasCobrar = _conceptoPagoServiceCtasPorCobrar.Obtener(model.ConceptoPagoMigracion.I_EquivDestinoID ?? 0);
 
             model.ConceptoPagoCtasCobrar = conceptoPagoCtasCobrar ?? new Models.Entities.CtasPorCobrar.TI_ConceptoPago();
 

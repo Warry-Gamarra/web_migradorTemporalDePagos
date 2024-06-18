@@ -25,7 +25,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.CtasPorCobrar
         public int? I_Anio { get; set; }
         public int? I_Periodo { get; set; }
         public bool? B_Especialidad { get; set; }
-        public char? C_CodRc { get; set; }
+        public string C_CodRc { get; set; }
         public bool? B_Dependencia { get; set; }
         public int? C_DepCod { get; set; }
         public bool? B_GrupoCodRc { get; set; }

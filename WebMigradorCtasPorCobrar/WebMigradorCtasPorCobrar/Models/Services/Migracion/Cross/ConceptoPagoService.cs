@@ -63,9 +63,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             return newCuotasPago;
         }
 
-        public ConceptoPago Obtener(int cuotaID)
+        public ConceptoPago Obtener(int rowId)
         {
-            return ConceptoPagoRepository.ObtenerPorId(cuotaID);
+            return ConceptoPagoRepository.ObtenerPorId(rowId);
         }
 
 

@@ -117,8 +117,6 @@ BEGIN
 		SELECT @I_CpDes AS tot_cuotaPago, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 		
 		SET @B_Resultado = 1
-		--SET @T_Message =  'Total: ' + CAST(@I_CpDes AS varchar) + '|Insertados: ' + CAST(@I_Insertados AS varchar) 
-		--				+ '|Actualizados: ' + CAST(@I_Actualizados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
 
 		SET @T_Message =  '[{ ' +
 							 'Type: "summary", ' + 
@@ -144,7 +142,6 @@ BEGIN
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0
-		--SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 

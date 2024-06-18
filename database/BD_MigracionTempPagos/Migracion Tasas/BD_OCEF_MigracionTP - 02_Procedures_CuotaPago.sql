@@ -1,13 +1,13 @@
 USE BD_OCEF_MigracionTP
 GO
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Tasas_CuotaPago_MigracionTP_IU_CopiarTablaTemporalPagos')
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Tasas_CuotaPago_TemporalTasas_MigracionTP_IU_CopiarTabla')
 BEGIN
-	DROP PROCEDURE dbo.USP_Tasas_CuotaPago_MigracionTP_IU_CopiarTablaTemporalPagos
+	DROP PROCEDURE dbo.USP_Tasas_CuotaPago_TemporalTasas_MigracionTP_IU_CopiarTabla
 END
 GO
 
-CREATE PROCEDURE dbo.USP_Tasas_CuotaPago_MigracionTP_IU_CopiarTablaTemporalPagos
+CREATE PROCEDURE dbo.USP_Tasas_CuotaPago_TemporalTasas_MigracionTP_IU_CopiarTabla
 (
 	@I_ProcedenciaID tinyint,
 	@T_Codigo_bnc	 varchar(250),
@@ -15,12 +15,14 @@ CREATE PROCEDURE dbo.USP_Tasas_CuotaPago_MigracionTP_IU_CopiarTablaTemporalPagos
 	@T_Message		 nvarchar(4000) OUTPUT
 )
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID	tinyint = 4,
---		@T_Codigo_bnc		nvarchar(250) = N'',
---		@T_Message			nvarchar(4000)
---exec USP_Tasas_CuotaPago_MigracionTP_IU_CopiarTablaTemporalPagos @I_ProcedenciaID, @T_Codigo_bnc, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID	tinyint = 4,
+			@T_Codigo_bnc		nvarchar(250) = N'',
+			@T_Message			nvarchar(4000)
+	exec USP_Tasas_CuotaPago_TemporalTasas_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_Codigo_bnc, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE()
 	DECLARE @I_CpDes int = 0
@@ -104,16 +106,38 @@ BEGIN
 		SELECT @I_CpDes AS tot_cuotaPago, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 		
 		SET @B_Resultado = 1
-		SET @T_Message =  'Total: ' + CAST(@I_CpDes AS varchar) + '|Insertados: ' + CAST(@I_Insertados AS varchar) 
-						+ '|Actualizados: ' + CAST(@I_Actualizados AS varchar) + '|Removidos: ' + CAST(@I_Removidos AS varchar)
 
+		SET @T_Message =  '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Total:", '+ 
+							 'Value: ' + CAST(@I_CpDes AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Insertados", ' + 
+							 'Value: ' + CAST(@I_Insertados AS varchar) +
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Removidos", ' + 
+							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
+						  '}]'
 
 		COMMIT TRANSACTION
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
 	END CATCH
 	
 END
@@ -154,7 +178,11 @@ BEGIN
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
-		SET @T_Message = ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ').' 
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
 	END CATCH
 END
 GO
