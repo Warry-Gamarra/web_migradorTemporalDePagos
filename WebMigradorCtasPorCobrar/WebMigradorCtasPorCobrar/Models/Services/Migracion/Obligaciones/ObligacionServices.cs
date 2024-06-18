@@ -102,6 +102,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             result.Add(ValidarDetalleObligacionSinCabeceraID(procedencia_id, anio));
             result.Add(ValidarDetalleObligacionConceptoPago(procedencia_id, anio));
             result.Add(ValidarDetalleObligacionConceptoPagoMigrado(procedencia_id, anio));
+            result.Add(ValidarCabeceraObligacionConceptoPagoMigrado(procedencia_id, anio));
 
             _ = pagoObligacionRepository.InicializarEstadoValidacion(procedencia_id, anio);
 
@@ -223,12 +224,25 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result_Detalle;
         }
 
+        private Response ValidarCabeceraObligacionConceptoPagoMigrado(int procedencia, string anio)
+        {
+            ObligacionRepository obligacionRepository = new ObligacionRepository();
+            Response result_Detalle = obligacionRepository.ValidarCabObligacionConceptoPagoMigrado(procedencia, anio);
+
+            result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Cabecera observados por no tener el concepto migrado.",
+                                                         (int)DetalleObligacionObs.SinConceptoMigrado,
+                                                         "Obligaciones", "EjecutarValidacion");
+
+            return result_Detalle;
+        }
+
+
         private Response ValidarDetalleObligacionConceptoPagoMigrado(int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             Response result_Detalle = obligacionRepository.ValidarDetalleObligacionConceptoPagoMigrado(procedencia, anio);
 
-            result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Observados por no tener el concepto migrado.",
+            result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Detalle Observados por no tener el concepto migrado.",
                                                          (int)DetalleObligacionObs.SinConceptoMigrado,
                                                          "Obligaciones", "EjecutarValidacion");
 
