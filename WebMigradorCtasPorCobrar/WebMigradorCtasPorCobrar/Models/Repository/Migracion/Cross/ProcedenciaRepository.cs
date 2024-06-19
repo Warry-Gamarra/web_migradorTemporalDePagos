@@ -11,13 +11,13 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
 {
     public class ProcedenciaRepository
     {
-        public static IEnumerable<Procedencia> Obtener()
+        public static IEnumerable<ProcedenciaData> Obtener()
         {
-            IEnumerable<Procedencia> result;
+            IEnumerable<ProcedenciaData> result;
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.Query<Procedencia>($"SELECT * FROM dbo.TC_ProcedenciaData", commandType: CommandType.Text);
+                result = connection.Query<ProcedenciaData>($"SELECT * FROM dbo.TC_ProcedenciaData", commandType: CommandType.Text);
             }
 
             return result;

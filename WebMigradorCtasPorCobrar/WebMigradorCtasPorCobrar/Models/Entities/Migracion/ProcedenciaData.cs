@@ -5,7 +5,7 @@ using System.Web;
 
 namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
 {
-    public class Procedencia
+    public class ProcedenciaData
     {
         public byte I_ProcedenciaID { get; set; }
         public string T_ProcedenciaDesc { get; set; }

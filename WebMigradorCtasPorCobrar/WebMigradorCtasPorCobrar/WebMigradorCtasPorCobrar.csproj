@@ -168,7 +168,7 @@
     <Compile Include="Models\Entities\Migracion\DetalleObligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Obligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Observacion.cs" />
-    <Compile Include="Models\Entities\Migracion\Procedencia.cs" />
+    <Compile Include="Models\Entities\Migracion\ProcedenciaData.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tabla.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tasa_EcObl.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tasa_EcDet.cs" />
