@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
-using WebMigradorCtasPorCobrar.Models.Helpers;
-using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
-using CtasPorCobrar = WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
-using WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
-using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
+using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
+using CtasPorCobrar = WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
