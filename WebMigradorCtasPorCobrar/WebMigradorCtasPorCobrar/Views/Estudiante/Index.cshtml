@@ -5,15 +5,17 @@
     var posgrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Posgrado;
     var cuded = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Cuded;
 
+
     string action = ViewBag.Action;
     string controller = ViewBag.Controller;
     var procedencia_value = ViewBag.Procedencia;
-
+    var tipoAlu_value = ViewBag.ParamUrl;
+    var tipoAlu_title = ViewBag.TipoAlumno;
 }
 
 
 <div class="col-12 pb-3">
-    <h1>@ViewBag.Title</h1>
+    <h1>@ViewBag.Title <small>@tipoAlu_title</small></h1>
 </div>
 
 <div class="col-12">
@@ -46,10 +48,9 @@
             <div class="col-md-2">
                 <fieldset>
                     <legend class="pb-3">OPCIONES</legend>
-                    <a class="btn btn-outline-dark btn-block my-3" id="btn-tp" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "TemporalPagos" })">Temporal de pagos</a>
-                    @*<a class="btn btn-outline-dark btn-block my-3" id="btn-rep" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "RepositorioBD" })">BD Repositorio</a>*@
-                    <a class="btn btn-outline-dark btn-block my-3" id="btn-proc" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "ProcesoMigracion" })">Proceso de migración</a>
-                    <a class="btn btn-outline-dark btn-block my-3" id="btn-mg" href="@Url.Action("Index", "Estudiante", new { procedencia = procedencia_value, partial = "DatosMigracion" })">Registros para migración</a>
+                    <a class="btn btn-outline-dark btn-block my-3" id="btn-tp" href="@Url.Action("Index", "Estudiante", new {tipo = tipoAlu_value, procedencia = procedencia_value, partial = "TemporalPagos" })">Temporal de pagos</a>
+                    <a class="btn btn-outline-dark btn-block my-3" id="btn-proc" href="@Url.Action("Index", "Estudiante", new {tipo = tipoAlu_value, procedencia = procedencia_value, partial = "ProcesoMigracion" })">Proceso de migración</a>
+                    <a class="btn btn-outline-dark btn-block my-3" id="btn-mg" href="@Url.Action("Index", "Estudiante", new {tipo = tipoAlu_value, procedencia = procedencia_value, partial = "DatosMigracion" })">Registros para migración</a>
                 </fieldset>
             </div>
             <div class="col-md-10">
@@ -87,7 +88,7 @@
     }
 
     $('#cbo-procedencia').on('change', function () {
-        location.href = '@Url.Action("Index", "Estudiante", new { area = "" })' + '?procedencia=' + this.value;
+        location.href = '@Url.Action("Index", "Estudiante", new { area = "", tipo = tipoAlu_value })' + '&procedencia=' + this.value;
     })
 
 </script>

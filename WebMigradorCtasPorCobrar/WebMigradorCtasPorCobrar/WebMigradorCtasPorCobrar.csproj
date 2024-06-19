@@ -168,6 +168,7 @@
     <Compile Include="Models\Entities\Migracion\DetalleObligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Obligacion.cs" />
     <Compile Include="Models\Entities\Migracion\Observacion.cs" />
+    <Compile Include="Models\Entities\Migracion\Procedencia.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tabla.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tasa_EcObl.cs" />
     <Compile Include="Models\Entities\TemporalPagos\Tasa_EcDet.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="Models\Helpers\Observaciones.cs" />
     <Compile Include="Models\Helpers\CtasPorCobrar.cs" />
     <Compile Include="Models\Helpers\Tablas.cs" />
+    <Compile Include="Models\Helpers\TipoAlumno.cs" />
     <Compile Include="Models\Repository\Config\UserServices.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\ObligacionesRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\CatalogoOpcionRepository.cs" />
@@ -192,6 +194,7 @@
     <Compile Include="Models\Repository\Migracion\Cross\CuotaPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Cross\ObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Cross\PagoObligacionRepository.cs" />
+    <Compile Include="Models\Repository\Migracion\Cross\ProcedenciaRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\PagoObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\ObligacionRepository.cs" />

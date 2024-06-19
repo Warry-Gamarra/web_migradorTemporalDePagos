@@ -57,13 +57,37 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (56, 'El pago tiene observaciones de conceptos en el detalle.', 'OBSERVACIÓN DETALLE', NULL, 7)
 
 
---2024-05-25
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (57, 'El pago tiene observaciones en la cabecera de la obligacion.', 'OBSERVACIÓN OBLIG.', NULL, 7)
-
---INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad) VALUES (49, 'Año del concepto en el detalle no coincide con año del concepto en cp_pri', 'AÑO CONCEPTO', NULL)
-
 GO
 
+--ACTUALIZACION 2024-05-25
+
+/*
+	Observaciones para tabla de pagos detalle
+*/
+
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (57, 'El pago tiene observaciones en la cabecera de la obligacion.', 'OBSERVACIÓN OBLIG.', NULL, 7)
+
+
+/*
+	Nueva procedemcia para datos de alumnos sin obligaciones
+*/
+
+INSERT INTO TC_ProcedenciaData (I_ProcedenciaID, T_ProcedenciaDesc, I_EquivRepoGradoAcadID) VALUES (5, 'INDEFINIDO', null)
+
+
+/*
+	Agregar datos a nueva tabla de carreras
+*/
+
+INSERT INTO TC_CarreraProcedencia (C_RcCod, T_CarreraNom, I_ProcedenciaID)
+							SELECT C_RcCod, T_CarProfDesc,
+								   CASE N_Grado
+								   WHEN 1 THEN IIF(C_CodFac = 'ET', 3, 1)
+								   WHEN 2 THEN IIF(C_CodFac = 'EP', 2, NULL)
+								   WHEN 3 THEN IIF(C_CodFac = 'EP', 2, NULL)
+								   ELSE 5 END
+							  FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional
+     
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION' AND ROUTINE_NAME = 'Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID')
@@ -84,6 +108,11 @@ SELECT * INTO ##TEMP_ECDET FROM TR_Ec_Det WHERE B_Actualizado = 1
 
 TRUNCATE TABLE TR_Ec_Det_Pagos
 TRUNCATE TABLE TR_Ec_Det
+
+DELETE dbo.TI_ObservacionRegistroTabla where I_TablaID in (4,5,7)
+DECLARE @I_ObsTablaID INT = (SELECT MAX(I_ObsTablaID) FROM TI_ObservacionRegistroTabla)
+DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_ObsTablaID)
+
 
 DELETE TR_Ec_Obl
 DBCC CHECKIDENT('TR_Ec_Obl', 'Reseed', 0)

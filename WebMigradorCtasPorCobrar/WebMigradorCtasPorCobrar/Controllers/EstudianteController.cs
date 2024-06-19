@@ -21,7 +21,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         private readonly UnfvRepositorio.AlumnoService _alumnoServiceUnfvRepositorio;
         private readonly Migracion.ObservacionService _observacionService;
         private readonly EquivalenciasServices _equivalenciaService;
-        
+
         public EstudianteController()
         {
             _alumnoServiceTemporalPagos = new TemporalPagos.AlumnoService();
@@ -33,8 +33,21 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
 
         // GET: Estudiante
-        public ActionResult Index(Procedencia? procedencia, string partial)
+        public ActionResult Index(TipoAlumno tipo, Procedencia? procedencia, string partial)
         {
+            switch (tipo)
+            {
+                case TipoAlumno.SinObligaciones:
+                    ViewBag.TipoAlumno = "Sin Obligaciones de pago";
+                    break;
+                case TipoAlumno.ConObligaciones:
+                    ViewBag.TipoAlumno = "Con Obligaciones de pago";
+                    break;
+                default:
+                    break;
+            }
+
+            ViewBag.ParamUrl = tipo;
             ViewBag.Procedencia = procedencia;
 
             if (!string.IsNullOrEmpty(partial))

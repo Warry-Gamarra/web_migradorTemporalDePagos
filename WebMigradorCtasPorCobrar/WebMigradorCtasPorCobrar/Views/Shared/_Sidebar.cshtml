@@ -1,5 +1,7 @@
-﻿
-
+﻿@{ 
+    var con_oblig = WebMigradorCtasPorCobrar.Models.Helpers.TipoAlumno.ConObligaciones;
+    var sin_oblig = WebMigradorCtasPorCobrar.Models.Helpers.TipoAlumno.SinObligaciones;
+}
 <div class="main-sidebar">
     <ul class="nav side-nav">
         <li class="nav-item"><a href="@Url.Action("Index", "Home")" class="nav-link"><i class="fa fa-fw fa-home"></i> Dashboard</a></li>
@@ -9,7 +11,8 @@
                 <i class="fa fa-fw fa-database"></i> Repositorio<span class="pull-right"><i class="fa fa-fw fa-caret-down"></i></span>
             </a>
             <ul id="repositorio" class="collapse">
-                <li><a href="@Url.Action("Index", "Estudiante", new { area = "" })"><i class="fa bi-person-lines-fill"></i>&nbsp; Estudiantes</a></li>
+                <li><a href="@Url.Action("Index", "Estudiante", new { area = "", tipo=con_oblig })"><i class="fa bi-person-check"></i>&nbsp; Estudiantes con obligaciones</a></li>
+                <li><a href="@Url.Action("Index", "Estudiante", new { area = "", tipo=sin_oblig })"><i class="fa bi-person-x"></i>&nbsp; Estudiantes sin obligaciones</a></li>
             </ul>
         </li>
 

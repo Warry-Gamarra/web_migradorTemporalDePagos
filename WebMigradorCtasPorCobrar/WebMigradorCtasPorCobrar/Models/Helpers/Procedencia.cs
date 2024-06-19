@@ -10,7 +10,8 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
         Pregrado = 1,
         Posgrado = 2,
         Cuded = 3,
-        Tasas = 4
+        Tasas = 4,
+        Indefinido = 5
     }
 
     public class Schema

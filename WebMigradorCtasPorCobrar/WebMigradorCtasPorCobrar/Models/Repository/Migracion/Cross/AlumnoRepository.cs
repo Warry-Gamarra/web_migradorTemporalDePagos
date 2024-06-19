@@ -1,11 +1,9 @@
-﻿using System;
+﻿using Dapper;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System.Data;
 using System.Data.SqlClient;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
-using System.Data;
-using Dapper;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 
 namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
@@ -19,7 +17,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
                 result = connection.Query<Alumno>($"SELECT * FROM dbo.TR_Alumnos WHERE I_ProcedenciaID = @I_ProcedenciaID"
-                                                   , new { I_ProcedenciaID = procedenciaID } , commandType: CommandType.Text);
+                                                   , new { I_ProcedenciaID = procedenciaID }, commandType: CommandType.Text);
             }
 
             return result;
@@ -554,7 +552,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona", parameters, commandTimeout: 120 , commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona", parameters, commandTimeout: 120, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -835,7 +833,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response MigrarDataAlumnosUnfvRepositorioAnio(int procedenciaID,  int anioIng)
+        public Response MigrarDataAlumnosUnfvRepositorioAnio(int procedenciaID, int anioIng)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -875,7 +873,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
-                    parameters.Add(name: "C_CodAlu", dbType: DbType.String, size: 20 , value: codAlu);
+                    parameters.Add(name: "C_CodAlu", dbType: DbType.String, size: 20, value: codAlu);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);

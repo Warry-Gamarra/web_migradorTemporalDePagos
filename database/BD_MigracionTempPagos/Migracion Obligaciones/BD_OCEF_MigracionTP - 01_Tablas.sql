@@ -206,3 +206,23 @@ BEGIN
 END
 GO
 
+
+
+/*Cambios posteriores a la actualizacion del 2024-05-25 */
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TC_CarreraProfesionalProcedencia')
+	DROP TABLE TC_CarreraProfesionalProcedencia
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TC_CarreraProcedencia')
+	DROP TABLE TC_CarreraProcedencia
+GO
+
+CREATE TABLE TC_CarreraProcedencia
+(
+	C_RcCod			varchar(5),
+	T_CarreraNom	varchar(250),
+	I_ProcedenciaID	tinyint
+)
+GO
