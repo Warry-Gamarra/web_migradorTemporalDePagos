@@ -9,6 +9,7 @@
 
     string action = ViewBag.Action;
     string controller = ViewBag.Controller;
+    int obs_value = Convert.ToInt32(ViewBag.Obs);
     var procedencia_value = ViewBag.Procedencia;
     var tipoAlu_value = ViewBag.ParamUrl;
     var tipoAlu_title = ViewBag.TipoAlumno;
@@ -71,7 +72,14 @@
                 }
                 else
                 {
-                    @Html.Action(action, controller, new {tipo = tipoAlu_value, procedencia = procedencia_value })
+                    if (obs_value == 0)
+                    {
+                        @Html.Action(action, controller, new { tipo = tipoAlu_value, procedencia = procedencia_value })
+                    }
+                    else
+                    {
+                        @Html.Action(action, controller, new { tipo = tipoAlu_value, procedencia = procedencia_value, tipo_obs = obs_value })
+                    }
                 }
             </div>
         </div>

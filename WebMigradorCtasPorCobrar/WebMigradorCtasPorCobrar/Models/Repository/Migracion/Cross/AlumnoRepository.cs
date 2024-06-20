@@ -168,7 +168,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response InicializarEstadoValidacionAlumno(int procedenciaID)
+        public Response InicializarEstadoValidacionAlumno(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -178,6 +178,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -226,7 +227,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
             return result;
         }
 
-        public Response ValidarCaracteresEspeciales(int procedenciaID)
+        public Response ValidarCaracteresEspeciales(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -236,6 +237,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -285,7 +287,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response ValidarCodigosAlumnoRepetidos(int procedenciaID)
+        public Response ValidarCodigosAlumnoRepetidos(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -295,6 +297,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Int32, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -344,7 +347,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response ValidarCodigosAlumnoRemovidos(int procedenciaID)
+        public Response ValidarCodigosAlumnoRemovidos(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -354,6 +357,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -403,7 +407,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response ValidarCodigoCarreraAlumno(int procedenciaID)
+        public Response ValidarCodigoCarreraAlumno(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -413,6 +417,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -462,7 +467,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response ValidarAnioIngresoAlumno(int procedenciaID)
+        public Response ValidarAnioIngresoAlumno(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -472,6 +477,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -521,7 +527,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response ValidarModalidadIngresoAlumno(int procedenciaID)
+        public Response ValidarModalidadIngresoAlumno(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -531,6 +537,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -580,7 +587,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response ValidarCorrespondenciaNumDocumentoPersona(int procedenciaID)
+        public Response ValidarCorrespondenciaNumDocumentoPersona(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -590,6 +597,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -639,7 +647,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response ValidarCorrespondenciaNumDocumentoPersonaRepo(int procedenciaID)
+        public Response ValidarCorrespondenciaNumDocumentoPersonaRepo(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -649,6 +657,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Int32, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -698,7 +707,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response ValidarSexoDiferenteMismoDocumentoPersona(int procedenciaID)
+        public Response ValidarSexoDiferenteMismoDocumentoPersona(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -708,6 +717,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -757,7 +767,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo(int procedenciaID)
+        public Response ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -767,6 +777,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -816,7 +827,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response ValidarSexoDiferenteMismoAlumnoRepo(int procedenciaID)
+        public Response ValidarSexoDiferenteMismoAlumnoRepo(int procedenciaID, bool dataOblig)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -826,6 +837,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "B_ObligProc", dbType: DbType.Boolean, value: dataOblig);
 
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);

@@ -657,14 +657,16 @@ GO
 
 CREATE PROCEDURE [dbo].[USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion]	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
 	declare @B_Resultado		bit,
 			@I_ProcedenciaID	tinyint = 3,
+			@B_ObligProc		bit = 0,
 			@T_Message			nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	exec USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -678,6 +680,7 @@ BEGIN
 		 WHERE I_ProcedenciaID = @I_ProcedenciaID
 		       AND B_Migrable = 0
 			   AND B_Migrado = 0
+			   AND B_ObligProc = @B_ObligProc
 				
 		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
 		SET @B_Resultado = 1
@@ -743,14 +746,16 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
 	declare @B_Resultado		bit,
 			@I_ProcedenciaID	tinyint = 3,
+			@B_ObligProc		bit = 0,
 			@T_Message			nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	exec USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -769,25 +774,31 @@ BEGIN
 				OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApePaterno, '-', ' ')) <> 0 
 				OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApeMaterno, '-', ' ')) <> 0)
 				AND I_ProcedenciaID = @I_ProcedenciaID
+			    AND B_ObligProc = @B_ObligProc
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				   FROM TR_Alumnos
 				  WHERE	(PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_Nombre, '-', ' ')) <> 0 
 						OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApePaterno, '-', ' ')) <> 0 
 						OR PATINDEX('%[^a-zA-Z0-9.'' ]%', REPLACE(T_ApeMaterno, '-', ' ')) <> 0)
 						AND I_ProcedenciaID = @I_ProcedenciaID
+						AND B_ObligProc = @B_ObligProc
 				) AS SRC
-		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID  
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID 
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 				
@@ -895,14 +906,16 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @B_Resultado  bit,
-			@I_ProcedenciaID tinyint = 3,
-			@T_Message	  nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	declare @B_Resultado		bit,
+			@I_ProcedenciaID	tinyint = 3,
+			@B_ObligProc		bit = 0,
+			@T_Message			nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -918,23 +931,30 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	(C_AnioIngreso IS NULL OR C_AnioIngreso = 0)
 				AND I_ProcedenciaID = @I_ProcedenciaID
+			    AND B_ObligProc = @B_ObligProc
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				   FROM TR_Alumnos
 				  WHERE	(C_AnioIngreso IS NULL OR C_AnioIngreso = 0)
 						AND I_ProcedenciaID = @I_ProcedenciaID
+						AND B_ObligProc = @B_ObligProc
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID 
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
+
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
@@ -1036,14 +1056,16 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
 	declare @B_Resultado  bit,
 			@I_ProcedenciaID tinyint = 3,
+			@B_ObligProc		bit = 0,
 			@T_Message	  nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	exec USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -1060,24 +1082,30 @@ BEGIN
 		WHERE	I_ProcedenciaID = @I_ProcedenciaID 
 				AND NOT EXISTS (SELECT C_RcCod FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional c
 								WHERE C.C_RcCod = TR_Alumnos.C_RcCod)
+			    AND B_ObligProc = @B_ObligProc
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				   FROM TR_Alumnos
 				  WHERE	I_ProcedenciaID = @I_ProcedenciaID 
 						AND NOT EXISTS (SELECT C_RcCod FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional c
 										WHERE C.C_RcCod = TR_Alumnos.C_RcCod)
+						AND B_ObligProc = @B_ObligProc
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID 
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 				
@@ -1178,14 +1206,16 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
 	declare @B_Resultado  bit,
 			@I_ProcedenciaID tinyint = 3,
+			@B_ObligProc		bit = 0,
 			@T_Message	  nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	exec USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -1202,23 +1232,29 @@ BEGIN
 		WHERE	I_ProcedenciaID = @I_ProcedenciaID 
 				AND NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
 								WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)
+			    AND B_ObligProc = @B_ObligProc
 		
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	I_ProcedenciaID = @I_ProcedenciaID 
 						AND NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
-										WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)) AS SRC
+										WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)
+						AND B_ObligProc = @B_ObligProc
+				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID 
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 				
@@ -1320,6 +1356,7 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
@@ -1327,7 +1364,7 @@ AS
 	declare @B_Resultado  bit,
 			@I_ProcedenciaID tinyint = 1,
 			@T_Message	  nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	exec USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -1380,24 +1417,29 @@ BEGIN
 		WHERE	EXISTS (SELECT * FROM ##Alumno_Repetidos_sexo_diferente ARSD WHERE ARSD.I_RowID = TR_Alumnos.I_RowID)
 				AND I_ProcedenciaID = @I_ProcedenciaID
 				AND ISNULL(B_Correcto, 0) <> 1
+			    AND B_ObligProc = @B_ObligProc
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	EXISTS (SELECT * FROM ##Alumno_Repetidos_sexo_diferente ARSD WHERE ARSD.I_RowID = TR_Alumnos.I_RowID)
 						AND I_ProcedenciaID = @I_ProcedenciaID
 						AND ISNULL(B_Correcto, 0) <> 1
+						AND B_ObligProc = @B_ObligProc
 				) AS SRC
 		ON  TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 				
@@ -1520,14 +1562,16 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
 	declare @B_Resultado  bit,
 			@I_ProcedenciaID tinyint = 3,
+			@B_ObligProc		bit = 0,
 			@T_Message	  nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	exec USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -1558,22 +1602,28 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_sexo_diferente WHERE I_RowID = TR_Alumnos.I_RowID)
 				AND I_ProcedenciaID = @I_ProcedenciaID
+			    AND B_ObligProc = @B_ObligProc
 		
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_sexo_diferente WHERE I_RowID = TR_Alumnos.I_RowID)
-						AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
+						AND I_ProcedenciaID = @I_ProcedenciaID 
+					    AND B_ObligProc = @B_ObligProc
+				) AS SRC
 		ON  TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 				
@@ -1694,14 +1744,16 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
 	declare @B_Resultado  bit,
-			@I_ProcedenciaID tinyint = 3,
-			@T_Message	  nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
+			@I_ProcedenciaID	tinyint = 3,
+			@B_ObligProc		bit = 0,
+			@T_Message			nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -1750,24 +1802,29 @@ BEGIN
 		WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres WHERE C_NumDNI = LTRIM(RTRIM(REPLACE(TR_Alumnos.C_NumDNI,' ', ' '))))
 				AND I_ProcedenciaID = @I_ProcedenciaID
 				AND ISNULL(B_Correcto, 0) <> 1
+			    AND B_ObligProc = @B_ObligProc
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres WHERE C_NumDNI = TR_Alumnos.C_NumDNI)
 						AND I_ProcedenciaID = @I_ProcedenciaID 
 						AND ISNULL(B_Correcto, 0) <> 1
+						AND B_ObligProc = @B_ObligProc
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 				
@@ -1888,14 +1945,16 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
 	declare @B_Resultado  bit,
-			@I_ProcedenciaID tinyint = 3,
-			@T_Message	  nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona @I_ProcedenciaID, @B_Resultado output, @T_Message output
+			@I_ProcedenciaID	tinyint = 3,
+			@B_ObligProc		bit = 0,
+			@T_Message			nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersona @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -1928,22 +1987,28 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres_diferentes WHERE C_NumDNI = TR_Alumnos.C_NumDNI)
 				AND I_ProcedenciaID = @I_ProcedenciaID
+			    AND B_ObligProc = @B_ObligProc
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	EXISTS (SELECT * FROM #NumDoc_Repetidos_nombres_diferentes WHERE I_RowID = TR_Alumnos.I_RowID)
-						AND I_ProcedenciaID = @I_ProcedenciaID) AS SRC
+						AND I_ProcedenciaID = @I_ProcedenciaID
+						AND B_ObligProc = @B_ObligProc
+				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 				
@@ -2062,14 +2127,16 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc	 bit,
 	@B_Resultado	 bit output,
 	@T_Message		 nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @B_Resultado  bit,
-			@I_ProcedenciaID tinyint = 3,
-			@T_Message	  nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	declare @B_Resultado		bit,
+			@I_ProcedenciaID	tinyint = 3,
+			@B_ObligProc		bit = 0,
+			@T_Message			nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -2085,23 +2152,28 @@ BEGIN
 				D_FecEvalua = @D_FecProceso
 		WHERE	I_ProcedenciaID = @I_ProcedenciaID
 				AND B_Removido = 1
+			    AND B_ObligProc = @B_ObligProc
 				
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
 				  WHERE	I_ProcedenciaID = @I_ProcedenciaID
 						AND B_Removido = 1
+						AND B_ObligProc = @B_ObligProc
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 				
@@ -2203,14 +2275,16 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @B_Resultado  bit,
-			@I_ProcedenciaID tinyint = 3,
-			@T_Message	  nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	declare @B_Resultado		bit,
+			@I_ProcedenciaID	tinyint = 3,
+			@B_ObligProc		bit = 0,
+			@T_Message			nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -2228,6 +2302,7 @@ BEGIN
 				AND EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
 							WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod AND B_Removido <> 1
 							GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)
+			    AND B_ObligProc = @B_ObligProc
 				
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Alumnos
@@ -2235,18 +2310,22 @@ BEGIN
 						AND EXISTS (SELECT C_CodAlu, C_RcCod, COUNT(*) FROM TR_Alumnos A 
 									WHERE A.C_CodAlu = TR_Alumnos.C_CodAlu AND A.C_RcCod = TR_Alumnos.C_RcCod AND B_Removido <> 1
 									GROUP BY C_CodAlu, C_RcCod HAVING COUNT(*) > 1)
+						AND B_ObligProc = @B_ObligProc
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 				
@@ -2361,14 +2440,16 @@ GO
 
 CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno	
 	@I_ProcedenciaID tinyint,
+	@B_ObligProc  bit,
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*	
-	declare @B_Resultado  bit,
-			@I_ProcedenciaID tinyint = 3,
-			@T_Message	  nvarchar(4000)
-	exec USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	declare @B_Resultado		bit,
+			@I_ProcedenciaID	tinyint = 3,
+			@B_ObligProc		bit = 0,
+			@T_Message			nvarchar(4000)
+	exec USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -2403,6 +2484,7 @@ BEGIN
 								 AND A.I_RowID = TR_Alumnos.I_RowID)
 				AND I_ProcedenciaID = @I_ProcedenciaID 
 				AND ISNULL(B_Correcto, 0) <> 1
+			    AND B_ObligProc = @B_ObligProc
 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
@@ -2416,18 +2498,22 @@ BEGIN
 										AND A.I_RowID = TR_Alumnos.I_RowID)
 						AND I_ProcedenciaID = @I_ProcedenciaID 
 						AND ISNULL(B_Correcto, 0) <> 1
+						AND B_ObligProc = @B_ObligProc
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
 			AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
-		WHEN MATCHED THEN
+		WHEN MATCHED AND TRG.B_ObligProc = @B_ObligProc THEN
 			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
 		WHEN NOT MATCHED BY TARGET THEN
-			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro)
-			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro)
-		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, @I_ProcedenciaID, SRC.D_FecRegistro, @B_ObligProc)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.B_ObligProc = @B_ObligProc THEN
 			DELETE;
 
-		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID AND B_ObligProc = @B_ObligProc)
 
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 				

@@ -1,13 +1,14 @@
 ﻿@model WebMigradorCtasPorCobrar.Models.Helpers.Response
 @{
     string proc = ViewBag.Procedencia;
+    string tipData = ViewBag.TipoData;
 }
 
 <div class="card text-white bg-@Model.Color my-3">
     <div class="card-header">
         <strong>@Model.CurrentID</strong>
         <button class="pull-right btn btn-sm btn-outline-secondary validate" data-obs="@Model.Redirect"
-           data-url="@Url.Action(Model.Action, Model.Controller, new { procedencia = proc, observacionId = Model.Redirect })">
+           data-url="@Url.Action(Model.Action, Model.Controller, new {tipoData = tipData, procedencia = proc, observacionId = Model.Redirect })">
             <i class="fa fa-refresh"></i>
         </button>
     </div>

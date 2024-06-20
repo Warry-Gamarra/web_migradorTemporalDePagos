@@ -32,7 +32,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
 
         // GET: Estudiante
-        public ActionResult Index(TipoData tipo, Procedencia? procedencia, string partial)
+        public ActionResult Index(TipoData tipo, Procedencia? procedencia, string partial, int tipo_obs = 0)
         {
             switch (tipo)
             {
@@ -48,6 +48,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             ViewBag.ParamUrl = tipo;
             ViewBag.Procedencia = procedencia;
+            ViewBag.Obs = tipo_obs;
 
             if (!string.IsNullOrEmpty(partial))
             {
@@ -68,7 +69,6 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult DatosMigracion(TipoData tipo, Procedencia procedencia, int? tipo_obs)
         {
-
             IEnumerable<Alumno> model = _alumnoServiceMigracion.Obtener(tipo, procedencia, tipo_obs);
 
             ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(tipo, Tablas.TR_Alumnos, procedencia),
@@ -76,6 +76,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
             ViewBag.IdObservacion = tipo_obs;
             ViewBag.Procedencia = procedencia;
+            ViewBag.TipoData = tipo.ToString();
 
             return PartialView("_DatosMigracion", model);
         }
@@ -104,6 +105,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             IEnumerable<Response> result = _alumnoServiceMigracion.EjecutarValidaciones(procedencia, tipoData, null);
             ViewBag.Procedencia = procedencia.ToString();
+            ViewBag.TipoData = tipoData.ToString();
 
             return PartialView("_ResultadoValidarRegistros", result);
         }
@@ -155,10 +157,11 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return PartialView("_Editar", model);
         }
 
-        public ActionResult EjecutarValidacion(Procedencia procedencia, int ObservacionId)
+        public ActionResult EjecutarValidacion(TipoData tipoData, Procedencia procedencia, int ObservacionId)
         {
-            var model = _alumnoServiceMigracion.EjecutarValidacionPorId((int)procedencia, ObservacionId);
+            var model = _alumnoServiceMigracion.EjecutarValidacionPorId((int)procedencia, ObservacionId, tipoData);
             ViewBag.Procedencia = procedencia.ToString();
+            ViewBag.TipoData = tipoData.ToString();
 
             return PartialView("_ResultadoValidacion", model);
         }

@@ -1,6 +1,7 @@
 ﻿@model IEnumerable<WebMigradorCtasPorCobrar.Models.Helpers.Response>
 @{ 
     string proc = ViewBag.Procedencia;
+    string tipData = ViewBag.TipoData;
 }
 
 <div class="col-12">
@@ -12,7 +13,7 @@
                     <div class="card-header">
                         <strong>@response.CurrentID</strong>
                         <button class="pull-right btn btn-sm btn-outline-secondary validate" data-obs="@response.Redirect" 
-                           data-url="@Url.Action(response.Action, response.Controller, new { procedencia = proc, observacionId = response.Redirect })">
+                           data-url="@Url.Action(response.Action, response.Controller, new {tipoData = tipData,  procedencia = proc, observacionId = response.Redirect })">
                             <i class="fa fa-refresh"></i>
                         </button>
                     </div>

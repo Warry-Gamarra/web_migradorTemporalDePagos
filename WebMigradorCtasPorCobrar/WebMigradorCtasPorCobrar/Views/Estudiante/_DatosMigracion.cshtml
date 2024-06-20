@@ -1,5 +1,8 @@
 ﻿
 @model IEnumerable<WebMigradorCtasPorCobrar.Models.Entities.Migracion.Alumno>
+@{ 
+    string tipData = ViewBag.TipoData;
+}
 @using GridMvc.Html
 
 <div class="row mb-5 mt-3 form-inline">
@@ -59,7 +62,7 @@
         let id_procedencia = $('#cbo-procedencia').val();
 
         $('#link-exportar').hide();
-        location.href = '@Url.Action("Index", "Estudiante", new { area = "", partial = "DatosMigracion" })' + '&procedencia=' + id_procedencia + '&tipo_obs=' + this.value;
+        location.href = '@Url.Action("Index", "Estudiante", new { area = "", tipo = tipData })' + '&procedencia=' + id_procedencia + '&partial=DatosMigracion&tipo_obs=' + this.value;
     })
 
 </script>
