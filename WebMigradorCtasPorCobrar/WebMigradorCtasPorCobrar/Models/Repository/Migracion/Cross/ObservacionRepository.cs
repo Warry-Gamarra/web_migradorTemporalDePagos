@@ -42,7 +42,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             return result;
         }
 
-        public static IEnumerable<Observacion> Obtener(int tablaID)
+        public static IEnumerable<Observacion> Obtener(int tablaID, bool procObligacion)
         {
             IEnumerable<Observacion> result;
 
@@ -50,8 +50,10 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             {
                 result = connection.Query<Observacion>("SELECT DISTINCT I_ObservID, I_TablaID, T_TablaNom, T_ObservDesc, T_ObservCod, I_ProcedenciaID " +
                                                        "FROM dbo.VW_ObservacionesTabla " +
-                                                       "WHERE I_TablaID = @I_TablaID AND B_Resuelto = 0;"
-                                                       , new { I_TablaID = tablaID }
+                                                       "WHERE I_TablaID = @I_TablaID " +
+                                                             "AND B_ObligProc = @B_ObligProc " +
+                                                             "AND B_Resuelto = 0;"
+                                                       , new { I_TablaID = tablaID, B_ObligProc = procObligacion }
                                                        , commandType: CommandType.Text);
             }
 

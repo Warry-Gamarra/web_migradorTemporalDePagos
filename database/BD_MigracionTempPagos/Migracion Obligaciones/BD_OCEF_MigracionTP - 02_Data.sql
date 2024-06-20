@@ -72,8 +72,8 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 	Nueva procedemcia para datos de alumnos sin obligaciones
 */
 
-INSERT INTO TC_ProcedenciaData (I_ProcedenciaID, T_ProcedenciaDesc, I_EquivRepoGradoAcadID) VALUES (5, 'INDEFINIDO', null)
-
+INSERT INTO TC_ProcedenciaData (I_ProcedenciaID, T_ProcedenciaDesc) VALUES (5, 'INDEFINIDO')
+GO
 
 /*
 	Agregar datos a nueva tabla de carreras
@@ -87,20 +87,22 @@ INSERT INTO TC_CarreraProcedencia (C_RcCod, T_CarreraNom, I_ProcedenciaID)
 								   WHEN 3 THEN IIF(C_CodFac = 'EP', 2, NULL)
 								   ELSE 5 END
 							  FROM BD_UNFV_Repositorio.dbo.TI_CarreraProfesional
-     
+GO
+ 
+/*
+	Actualizar estado de alumno con o sin obligacion
+*/
 
-
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'FUNCTION' AND ROUTINE_NAME = 'Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID')
-	DROP FUNCTION [dbo].[Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID]
+UPDATE TR_Alumnos SET B_ObligProc = 1
 GO
 
-CREATE FUNCTION dbo.Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID ()
-RETURNS INT
-AS
-BEGIN
-	RETURN (SELECT UserId FROM BD_OCEF_CtasPorCobrar.dbo.TC_Usuario WHERE UserName = 'User_Migracion')
-END
+/*
+	Actualizar estado de procedencia con obligacion o sin obligacion para la observacion
+*/
+
+UPDATE TR_Alumnos SET B_ObligProc = 1
 GO
+
 
 
 SELECT * INTO ##TEMP_ECOBL FROM TR_Ec_Obl WHERE B_Actualizado = 1

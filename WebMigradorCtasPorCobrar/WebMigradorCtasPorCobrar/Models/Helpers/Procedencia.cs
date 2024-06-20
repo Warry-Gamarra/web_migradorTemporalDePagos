@@ -31,6 +31,9 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
                 case Procedencia.Cuded:
                     schemaName = "euded";
                     break;
+                case Procedencia.Indefinido:
+                    schemaName = "";
+                    break;
                 default:
                     schemaName = "dbo";
                     break;

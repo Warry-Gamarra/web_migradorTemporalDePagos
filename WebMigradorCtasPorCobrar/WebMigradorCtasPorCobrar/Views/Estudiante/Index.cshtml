@@ -4,7 +4,8 @@
     var pregrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Pregrado;
     var posgrado = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Posgrado;
     var cuded = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Cuded;
-
+    var indefinido = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Indefinido;
+    var tipoAluSinObligaciones = WebMigradorCtasPorCobrar.Models.Helpers.TipoData.SinObligaciones;
 
     string action = ViewBag.Action;
     string controller = ViewBag.Controller;
@@ -27,6 +28,10 @@
                 <option value="@pregrado">PREGRADO</option>
                 <option value="@posgrado">POSGRADO</option>
                 <option value="@cuded">CUDED</option>
+                @if (tipoAlu_value == tipoAluSinObligaciones)
+                {
+                    <option value="@indefinido">INDEFINIDO</option>
+                }
             </select>
         </div>
     </div>
@@ -66,7 +71,7 @@
                 }
                 else
                 {
-                    @Html.Action(action, controller, new { procedencia = procedencia_value })
+                    @Html.Action(action, controller, new {tipo = tipoAlu_value, procedencia = procedencia_value })
                 }
             </div>
         </div>
@@ -74,14 +79,17 @@
 </div>
 
 <script>
-    if ('@procedencia_value' === 'Pregrado') {
-        $('#cbo-procedencia option[value=Pregrado]').prop('selected', true)
+    if ('@procedencia_value' === '@pregrado') {
+        $('#cbo-procedencia option[value='+ '@pregrado' + ']').prop('selected', true)
     }
-    else if ('@procedencia_value' === 'Posgrado') {
-        $('#cbo-procedencia option[value=Posgrado]').prop('selected', true)
+    else if ('@procedencia_value' === '@posgrado') {
+        $('#cbo-procedencia option[value='+ '@posgrado' + ']').prop('selected', true)
     }
-    else if ('@procedencia_value' === 'Cuded') {
-        $('#cbo-procedencia option[value=Cuded]').prop('selected', true)
+    else if ('@procedencia_value' === '@cuded') {
+        $('#cbo-procedencia option[value='+ '@cuded' + ']').prop('selected', true)
+    }
+    else if ('@procedencia_value' === '@indefinido') {
+        $('#cbo-procedencia option[value='+ '@indefinido' + ']').prop('selected', true)
     }
     else {
         $('#cbo-procedencia option[value=""]').prop('selected', true)

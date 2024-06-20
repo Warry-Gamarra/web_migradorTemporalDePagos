@@ -10,14 +10,16 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
 {
     public class AlumnoRepository
     {
-        public static IEnumerable<Alumno> Obtener(int procedenciaID)
+        public static IEnumerable<Alumno> Obtener(int procedenciaID, bool conObligacion)
         {
             IEnumerable<Alumno> result;
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                result = connection.Query<Alumno>($"SELECT * FROM dbo.TR_Alumnos WHERE I_ProcedenciaID = @I_ProcedenciaID"
-                                                   , new { I_ProcedenciaID = procedenciaID }, commandType: CommandType.Text);
+                result = connection.Query<Alumno>($"SELECT * FROM dbo.TR_Alumnos WHERE I_ProcedenciaID = @I_ProcedenciaID " +
+                                                                                     $"AND B_ObligProc = @B_ObligProc"
+                                                   , new { I_ProcedenciaID = procedenciaID, B_ObligProc = conObligacion }
+                                                   , commandType: CommandType.Text);
             }
 
             return result;
@@ -36,17 +38,26 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public static IEnumerable<Alumno> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
+        public static IEnumerable<Alumno> ObtenerObservados(int procedenciaID, int observacionID, int tablaID, bool conObligaciones)
         {
             IEnumerable<Alumno> result;
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
                 result = connection.Query<Alumno>("SELECT * FROM dbo.TR_Alumnos alu " +
-                                                     "INNER JOIN TI_ObservacionRegistroTabla obs ON alu.I_RowID = obs.I_FilaTablaID AND obs.I_TablaID = @I_TablaID " +
-                                                     "WHERE obs.I_ProcedenciaID = @I_ProcedenciaID AND obs.I_ObservID = @I_ObservID"
-                                                        , new { I_ProcedenciaID = procedenciaID, I_TablaID = tablaID, I_ObservID = observacionID }
-                                                        , commandType: CommandType.Text);
+                                                     "INNER JOIN TI_ObservacionRegistroTabla obs ON alu.I_RowID = obs.I_FilaTablaID " +
+                                                                                                   "AND obs.I_TablaID = @I_TablaID " +
+                                                     "WHERE obs.I_ProcedenciaID = @I_ProcedenciaID " +
+                                                           "AND obs.B_ObligProc = @B_ObligProc " +
+                                                           "AND obs.I_ObservID = @I_ObservID"
+                                                  , new
+                                                  {
+                                                      I_ProcedenciaID = procedenciaID,
+                                                      I_TablaID = tablaID,
+                                                      B_ObligProc = conObligaciones,
+                                                      I_ObservID = observacionID
+                                                  }
+                                                  , commandType: CommandType.Text);
             }
 
             return result;
@@ -58,8 +69,9 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
 
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
-                string query = "SELECT C_RcCod AS 'COD RC', C_CodAlu AS 'COD ALU', T_ApePaterno AS 'AP. PATERNO', T_ApeMaterno AS 'AP MATERNO', T_Nombre AS 'NOMBRE', " +
-                                      "C_NumDNI AS 'NUM DOC', C_Sexo AS 'SEXO', C_CodModIng AS 'MOD INGR', C_AnioIngreso AS 'AÑO INGR', T_ObservCod AS 'OBSERVACION'  " +
+                string query = "SELECT C_RcCod AS 'COD RC', C_CodAlu AS 'COD ALU', T_ApePaterno AS 'AP. PATERNO', T_ApeMaterno AS 'AP MATERNO', " +
+                                      "T_Nombre AS 'NOMBRE', C_NumDNI AS 'NUM DOC', C_Sexo AS 'SEXO', C_CodModIng AS 'MOD INGR', " +
+                                      "C_AnioIngreso AS 'AÑO INGR', T_ObservCod AS 'OBSERVACION'  " +
                                "FROM dbo.TR_Alumnos alu " +
                                    "INNER JOIN TI_ObservacionRegistroTabla obs ON alu.I_RowID = obs.I_FilaTablaID AND obs.I_TablaID = @I_TablaID " +
                                    "INNER JOIN TC_CatalogoObservacion co ON obs.I_ObservID = co.I_ObservID " +
@@ -95,7 +107,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
-        public Response CopiarRegistros(int procedenciaID, string schemaDB)
+        public Response CopiarRegistrosConObligacion(int procedenciaID, string schemaDB)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -110,7 +122,37 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_IU_CopiarTabla", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_TemporalPagos_MigracionTP_IU_CopiarTablaConObligacion", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response CopiarRegistrosSinObligacion(int procedenciaID, string schemaDB)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "T_SchemaDB", dbType: DbType.String, size: 20, value: schemaDB);
+
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Alumnos_TemporalPagos_MigracionTP_IU_CopiarTablaSinObligacion", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");

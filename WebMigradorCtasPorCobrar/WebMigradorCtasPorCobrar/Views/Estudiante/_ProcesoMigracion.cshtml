@@ -1,5 +1,6 @@
 ﻿@{
     var procedencia = ViewBag.Procedencia;
+    var tipoData = ViewBag.TipoData;
 }
 
 <h2>Proceso de migración</h2>
@@ -50,7 +51,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '@Url.Action("CopiarRegistros", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
+                    url: '@Url.Action("CopiarRegistros", "Estudiante", new { area = "", tipoData = tipoData })' + '&procedencia=' + '@procedencia',
                     type: 'POST',
                     cache: false,
                     beforeSend: function () {
@@ -88,7 +89,7 @@
         }).then((result) => {
             if (result.isConfirmed) {
                 $.ajax({
-                    url: '@Url.Action("ValidarRegistros", "Estudiante", new { area = "" })' + '?procedencia=' + '@procedencia',
+                    url: '@Url.Action("ValidarRegistros", "Estudiante", new { area = "", tipoData = tipoData })' + '&procedencia=' + '@procedencia',
                     type: 'POST',
                     cache: false,
                     beforeSend: function () {
@@ -124,10 +125,12 @@
         }).then((result) => {
             if (result.isConfirmed) {
                    $.ajax({
-                    url: '@Url.Action("MigrarDatosTemporalPagos", "Estudiante", new { area = "" })',
+                    url: '@Url.Action("MigrarDatosTemporalPagos", "Estudiante", new { area = ""})',
                     type: 'POST',
                     cache: false,
-                    data: { procedencia:'@procedencia' },
+                       data: {
+                           procedencia: '@procedencia',
+                           tipo: '@tipoData' },
                     beforeSend: function () {
                         $('#processing').show();
                         $('#result-message').hide();

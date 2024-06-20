@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using WebMigradorCtasPorCobrar.Models.Helpers;
-using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
-using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
-using UnfvRepositorio = WebMigradorCtasPorCobrar.Models.Services.UnfvRepositorio;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
-using WebMigradorCtasPorCobrar.Models.ViewModels;
+using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.ViewModels;
+using Migracion = WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
+using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
+using UnfvRepositorio = WebMigradorCtasPorCobrar.Models.Services.UnfvRepositorio;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -33,14 +32,14 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
 
         // GET: Estudiante
-        public ActionResult Index(TipoAlumno tipo, Procedencia? procedencia, string partial)
+        public ActionResult Index(TipoData tipo, Procedencia? procedencia, string partial)
         {
             switch (tipo)
             {
-                case TipoAlumno.SinObligaciones:
+                case TipoData.SinObligaciones:
                     ViewBag.TipoAlumno = "Sin Obligaciones de pago";
                     break;
-                case TipoAlumno.ConObligaciones:
+                case TipoData.ConObligaciones:
                     ViewBag.TipoAlumno = "Con Obligaciones de pago";
                     break;
                 default:
@@ -59,18 +58,20 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return View();
         }
 
-        public ActionResult TemporalPagos(Procedencia procedencia)
+        public ActionResult TemporalPagos(TipoData tipo, Procedencia procedencia)
         {
-            var model = _alumnoServiceTemporalPagos.Obtener(procedencia).OrderBy(x => x.T_NomCompleto);
+            var model = _alumnoServiceTemporalPagos.Obtener(tipo, procedencia).OrderBy(x => x.T_NomCompleto);
+
             return PartialView("_TemporalPagos", model);
         }
 
 
-        public ActionResult DatosMigracion(Procedencia procedencia, int? tipo_obs)
+        public ActionResult DatosMigracion(TipoData tipo, Procedencia procedencia, int? tipo_obs)
         {
-            var model = _alumnoServiceMigracion.Obtener(procedencia, tipo_obs);
 
-            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Alumnos, procedencia),
+            IEnumerable<Alumno> model = _alumnoServiceMigracion.Obtener(tipo, procedencia, tipo_obs);
+
+            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(tipo, Tablas.TR_Alumnos, procedencia),
                                                     "I_ObservID", "T_ObservDesc", tipo_obs);
 
             ViewBag.IdObservacion = tipo_obs;
@@ -80,27 +81,28 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
-        public ActionResult ProcesoMigracion(Procedencia procedencia)
+        public ActionResult ProcesoMigracion(Procedencia procedencia, TipoData tipo)
         {
             ViewBag.Procedencia = procedencia;
+            ViewBag.TipoData = tipo;
 
             return PartialView("_ProcesoMigracion");
         }
 
 
         [HttpPost]
-        public ActionResult CopiarRegistros(Procedencia procedencia)
+        public ActionResult CopiarRegistros(Procedencia procedencia, TipoData tipoData)
         {
-            Response result = _alumnoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia);
+            IEnumerable<Response> result = _alumnoServiceMigracion.CopiarRegistrosDesdeTemporalPagos(procedencia, tipoData);
 
             return PartialView("_ResultadoCopiarRegistros", result);
         }
 
 
         [HttpPost]
-        public ActionResult ValidarRegistros(Procedencia procedencia)
+        public ActionResult ValidarRegistros(Procedencia procedencia, TipoData tipoData)
         {
-            IEnumerable<Response> result = _alumnoServiceMigracion.EjecutarValidaciones(procedencia, null);
+            IEnumerable<Response> result = _alumnoServiceMigracion.EjecutarValidaciones(procedencia, tipoData, null);
             ViewBag.Procedencia = procedencia.ToString();
 
             return PartialView("_ResultadoValidarRegistros", result);
@@ -115,9 +117,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
         [HttpPost]
-        public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia, int? anioIngreso)
+        public ActionResult MigrarDatosTemporalPagos(TipoData tipo, Procedencia procedencia, int? anioIngreso)
         {
-            IEnumerable<Response> result = _alumnoServiceMigracion.MigrarDatosTemporalPagos(procedencia, anioIngreso);
+            IEnumerable<Response> result = _alumnoServiceMigracion.MigrarDatosTemporalPagos(tipo, procedencia, anioIngreso);
 
             return PartialView("_ResultadoMigrarRegistros", result);
         }

@@ -12,6 +12,7 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
         TR_Cp_Pri = 3,
         TR_Ec_Det = 4,
         TR_Ec_Obl = 5,
-        TR_Ec_Pri = 6
+        TR_Ec_Pri = 6,
+        TR_Ec_Det_Pagos = 7
     }
 }

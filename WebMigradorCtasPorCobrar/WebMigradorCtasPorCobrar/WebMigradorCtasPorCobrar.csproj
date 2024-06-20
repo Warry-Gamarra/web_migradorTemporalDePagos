@@ -180,7 +180,7 @@
     <Compile Include="Models\Helpers\Observaciones.cs" />
     <Compile Include="Models\Helpers\CtasPorCobrar.cs" />
     <Compile Include="Models\Helpers\Tablas.cs" />
-    <Compile Include="Models\Helpers\TipoAlumno.cs" />
+    <Compile Include="Models\Helpers\TipoData.cs" />
     <Compile Include="Models\Repository\Config\UserServices.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\ObligacionesRepository.cs" />
     <Compile Include="Models\Repository\CtasPorCobrar\CatalogoOpcionRepository.cs" />

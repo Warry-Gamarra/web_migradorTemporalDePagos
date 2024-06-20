@@ -97,7 +97,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             var model = _obligacionCrossServiceMigracion.ObtenerObligaciones(procedencia, tipo_obs);
 
-            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Ec_Obl, procedencia),
+            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(TipoData.ConObligaciones, Tablas.TR_Ec_Obl, procedencia),
                                                 "I_ObservID", "T_ObservDesc", tipo_obs);
 
             ViewBag.IdObservacion = tipo_obs;

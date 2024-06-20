@@ -91,11 +91,11 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
 
 
-        public ActionResult DatosMigracion(Procedencia procedencia, int? tipo_obs)
+        public ActionResult DatosMigracion(TipoData tipo, Procedencia procedencia, int? tipo_obs)
         {
             var model = _conceptoPagoServiceMigracion.Obtener(procedencia, tipo_obs);
 
-            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(Tablas.TR_Cp_Pri, procedencia),
+            ViewBag.Observaciones = new SelectList(_observacionService.Obtener_TipoObservacionesTabla(tipo, Tablas.TR_Cp_Pri, procedencia),
                                                 "I_ObservID", "T_ObservDesc", tipo_obs);
 
             ViewBag.IdObservacion = tipo_obs;

@@ -10,9 +10,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 {
     public class ObservacionService
     {
-        public IEnumerable<Observacion> Obtener_TipoObservacionesTabla(Tablas tabla, Procedencia procedenciaID)
+        public IEnumerable<Observacion> Obtener_TipoObservacionesTabla(TipoData tipo, Tablas tabla, Procedencia procedenciaID)
         {
-            return ObservacionRepository.Obtener((int)tabla).Where(x => x.I_ProcedenciaID == (int)procedenciaID);
+            return ObservacionRepository.Obtener((int)tabla, Convert.ToBoolean(tipo)).Where(x => x.I_ProcedenciaID == (int)procedenciaID);
         }
 
         public IEnumerable<Observacion> Obtener_ObservacionesAlumno(int filaId)

@@ -1,16 +1,15 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Web;
-using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
-using RepoAlu = WebMigradorCtasPorCobrar.Models.Repository.UnfvRepositorio;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
-using WebMigradorCtasPorCobrar.Models.ViewModels;
-using System.IO;
-using ClosedXML.Excel;
+using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.ViewModels;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
+using RepoAlu = WebMigradorCtasPorCobrar.Models.Repository.UnfvRepositorio;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 {
@@ -49,15 +48,23 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             return newAlumnos;
         }
 
-        public IEnumerable<Alumno> Obtener(Procedencia procedencia, int? tipo_obsID)
+        public IEnumerable<Alumno> Obtener(TipoData tipo, Procedencia procedencia, int? tipo_obsID)
         {
+            bool alumnoOblig = Convert.ToBoolean(tipo);
+
             if (tipo_obsID.HasValue)
             {
-                return ObtenerAlumnos(AlumnoRepository.ObtenerObservados((int)procedencia, tipo_obsID.Value, (int)Tablas.TR_Alumnos), procedencia);
+                return ObtenerAlumnos(AlumnoRepository.ObtenerObservados((int)procedencia,
+                                                                         tipo_obsID.Value,
+                                                                         (int)Tablas.TR_Alumnos,
+                                                                         alumnoOblig),
+                                      procedencia);
             }
 
-            return ObtenerAlumnos(AlumnoRepository.Obtener((int)procedencia), procedencia);
+            return ObtenerAlumnos(AlumnoRepository.Obtener((int)procedencia, alumnoOblig),
+                                  procedencia);
         }
+
 
         public Alumno Obtener(int alumnoId)
         {
@@ -112,20 +119,32 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 
 
 
-        public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
+        public IEnumerable<Response> CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia, TipoData tipoData)
         {
-            Response result;
+            List<Response> result = new List<Response>();
+            
+            Response resultItem;
+
             string schemaDb = Schema.SetSchema(procedencia);
 
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
-            result = alumnoRepository.CopiarRegistros((int)procedencia, schemaDb);
+            if (tipoData == TipoData.ConObligaciones)
+            {
+                resultItem = alumnoRepository.CopiarRegistrosConObligacion((int)procedencia, schemaDb);
+            }
+            else
+            {
+                resultItem = alumnoRepository.CopiarRegistrosSinObligacion((int)procedencia, schemaDb);
+            }
 
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            result.Add(resultItem.IsDone ? resultItem.Success(false) : resultItem.Error(false));
+
+            return result;
         }
 
 
-        public IEnumerable<Response> EjecutarValidaciones(Procedencia procedencia, int? aluRowId)
+        public IEnumerable<Response> EjecutarValidaciones(Procedencia procedencia, TipoData tipoData, int? aluRowId)
         {
             List<Response> result = new List<Response>();
             int procedenciaId = (int)procedencia;
@@ -318,7 +337,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         }
 
 
-        public IEnumerable<Response> MigrarDatosTemporalPagos(Procedencia procedencia, int? anio)
+        public IEnumerable<Response> MigrarDatosTemporalPagos(TipoData tipo, Procedencia procedencia, int? anio)
         {
             List<Response> result = new List<Response>();
             int int_procedencia = (int)procedencia;
@@ -333,7 +352,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
-            var aniosIngreso = AlumnoRepository.Obtener(int_procedencia).Select(x => x.C_AnioIngreso).Distinct().OrderBy(x => x);
+            var aniosIngreso = AlumnoRepository.Obtener(int_procedencia, Convert.ToBoolean(tipo)).Select(x => x.C_AnioIngreso).Distinct().OrderBy(x => x);
 
             foreach (var anioIngreso in aniosIngreso)
             {
@@ -357,7 +376,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         }
 
         public Response MigrarDatosTemporalPagosAnio(int procedencia, int anioIngreso)
-        {            
+        {
             AlumnoRepository alumnoRepository = new AlumnoRepository();
 
             Response result = alumnoRepository.MigrarDataAlumnosUnfvRepositorioAnio(procedencia, anioIngreso);
