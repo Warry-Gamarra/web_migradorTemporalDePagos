@@ -106,6 +106,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             alumnoRepository.ValidarCodigoCarreraPorAlumno(alumno.I_RowID);
             alumnoRepository.ValidarCodigosAlumnoRepetidosPorAlumno(alumno.I_RowID);
             alumnoRepository.ValidarAnioIngresoPorAlumno(alumno.I_RowID);
+            alumnoRepository.ValidarModalidadIngresoPorAlumno(alumno.I_RowID);
 
             alumnoRepository.ValidarCorrespondenciaNumDocumentoPersonaPorAlumno(alumno.I_RowID);
             alumnoRepository.ValidarSexoDiferenteMismoDocumentoPersonaPorAlumno(alumno.I_RowID);
@@ -157,6 +158,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             result.Add(ValidarCodigoCarreraAlumno(procedenciaId, aluRowId, dataObligacion));
             result.Add(ValidarCodigosAlumnoRepetidos(procedenciaId, aluRowId, dataObligacion));
             result.Add(ValidarAnioIngresoAlumno(procedenciaId, aluRowId, dataObligacion));
+            result.Add(ValidarModalidadIngresoAlumno(procedenciaId, aluRowId, dataObligacion));
             result.Add(ValidarCorrespondenciaNumDocumentoPersona(procedenciaId, aluRowId, dataObligacion));
             result.Add(ValidarSexoDiferenteMismoDocumentoPersona(procedenciaId, aluRowId, dataObligacion));
             result.Add(ValidarNumDocumentoDiferenteMismoCodigoAlumnoRepo(procedenciaId, aluRowId, dataObligacion));
@@ -233,6 +235,23 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             }
 
             return response.ReturnViewValidationsMessage("Observados por Años de ingreso", (int)AlumnoObs.SinAnioIngreso, "Estudiante", "EjecutarValidacion");
+        }
+
+        private Response ValidarModalidadIngresoAlumno(int procedencia, int? aluRowId, bool dataObligacion)
+        {
+            Response response;
+            AlumnoRepository alumnoRepository = new AlumnoRepository();
+
+            if (aluRowId.HasValue)
+            {
+                response = alumnoRepository.ValidarModalidadIngresoPorAlumno(aluRowId.Value);
+            }
+            else
+            {
+                response = alumnoRepository.ValidarModalidadIngresoAlumno(procedencia, dataObligacion);
+            }
+
+            return response.ReturnViewValidationsMessage("Observados por modalidad de ingreso", (int)AlumnoObs.SinModIng, "Estudiante", "EjecutarValidacion");
         }
 
         private Response ValidarCorrespondenciaNumDocumentoPersona(int procedencia, int? aluRowId, bool dataObligacion)
@@ -401,6 +420,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                     break;
                 case AlumnoObs.SinAnioIngreso:
                     result = ValidarAnioIngresoAlumno(procedencia, null, dataObligacion);
+                    break;
+                case AlumnoObs.SinModIng:
+                    result = ValidarModalidadIngresoAlumno(procedencia, null, dataObligacion);
                     break;
                 case AlumnoObs.SinCarrera:
                     result = ValidarCodigoCarreraAlumno(procedencia, null, dataObligacion);

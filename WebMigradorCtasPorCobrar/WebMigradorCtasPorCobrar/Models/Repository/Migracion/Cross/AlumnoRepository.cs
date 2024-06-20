@@ -183,7 +183,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_InicializarEstadoValidacion", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -212,7 +212,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_InicializarEstadoValidacionPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_InicializarEstadoValidacionPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -242,7 +242,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspeciales", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -271,7 +271,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspecialesPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_01_CaracteresEspecialesPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -302,7 +302,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidos", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -331,7 +331,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidosPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_02_CodigosRepetidosPorAlumnoID", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -362,7 +362,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidos", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -391,7 +391,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidosPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_45_CodigosRemovidosPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -422,7 +422,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -451,7 +451,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarreraPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarreraPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -482,7 +482,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_22_AnioIngreso", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -511,7 +511,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_22_AnioIngresoPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_22_AnioIngresoPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -542,7 +542,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -571,7 +571,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngresoPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngresoPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -631,7 +631,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersonaPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_30_CorrespondenciaNumDocumentoPersonaPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -662,7 +662,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersona", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -691,7 +691,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersonaPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_41_CorrespondenciaNumDocRepositorioPersonaPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -722,7 +722,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumento", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -751,7 +751,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumentoPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_31_SexoDiferenteMismoDocumentoPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -782,7 +782,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumno", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -811,7 +811,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumnoPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_48_DocumentoDiferenteMismoAlumnoPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -842,7 +842,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumno", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -871,7 +871,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumnoPorAlumnoID", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_Validar_47_SexoDiferenteMismoAlumnoPorAlumnoID", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -976,7 +976,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Alumnos_MigracionTP_U_ActualizarRegistro", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Alumnos_MigracionTP_U_ActualizarRegistro", parameters, commandTimeout: 600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");

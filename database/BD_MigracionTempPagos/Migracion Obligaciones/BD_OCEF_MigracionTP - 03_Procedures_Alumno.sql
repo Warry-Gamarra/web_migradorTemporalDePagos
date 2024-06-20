@@ -48,7 +48,7 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		SELECT * INTO #Temp_AlumnosAnio FROM TR_Alumnos WHERE C_AnioIngreso = @C_AnioIng AND I_ProcedenciaID = @I_ProcedenciaID
+		SELECT * INTO #Temp_AlumnosAnio FROM TR_Alumnos WHERE B_Migrable = 1 AND C_AnioIngreso = @C_AnioIng AND I_ProcedenciaID = @I_ProcedenciaID
 
 		SELECT TAA.*, VA.I_PersonaID INTO #Temp_AlumnoPersonaRepo FROM #Temp_AlumnosAnio TAA INNER JOIN BD_UNFV_Repositorio.dbo.VW_Alumnos VA ON TAA.C_CodAlu = VA.C_CodAlu AND TAA.C_RcCod =  VA.C_RcCod
 		
@@ -272,7 +272,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '[{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Total:", '+ 
+							 'Title: "Total '+ CAST(@C_AnioIng AS varchar) + ':", ' +
 							 'Value: ' + CAST(@Count_ToInsert_repositorio AS varchar) +
 						  '}, ' + 
 						  '{ ' +
@@ -1232,6 +1232,7 @@ BEGIN
 		WHERE	I_ProcedenciaID = @I_ProcedenciaID 
 				AND NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
 								WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)
+				AND C_CodModIng IS NOT NULL
 			    AND B_ObligProc = @B_ObligProc
 		
 		MERGE TI_ObservacionRegistroTabla AS TRG
@@ -1239,6 +1240,7 @@ BEGIN
 				  WHERE	I_ProcedenciaID = @I_ProcedenciaID 
 						AND NOT EXISTS (SELECT C_CodModIng FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso MI
 										WHERE MI.C_CodModIng = TR_Alumnos.C_CodModIng)
+						AND C_CodModIng IS NOT NULL
 						AND B_ObligProc = @B_ObligProc
 				) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
@@ -1305,9 +1307,9 @@ BEGIN
 	BEGIN TRY 
 		
 		DECLARE @B_Correcto		bit
-		DECLARE @C_AnioIngreso	smallint
+		DECLARE @C_ModIng		varchar(5)
 
-		SELECT @C_AnioIngreso = C_AnioIngreso, @B_Correcto = B_Correcto FROM TR_Alumnos WHERE I_RowID = @I_RowID 
+		SELECT @C_ModIng = C_CodModIng, @B_Correcto = B_Correcto FROM TR_Alumnos WHERE I_RowID = @I_RowID 
 
 		IF (@B_Correcto = 1)
 		BEGIN
@@ -1315,7 +1317,7 @@ BEGIN
 		END
 		ELSE
 		BEGIN
-			IF (ISNULL(@C_AnioIngreso, 0) > 0)
+			IF EXISTS(SELECT * FROM BD_UNFV_Repositorio.dbo.TC_ModalidadIngreso WHERE C_CodModIng = @C_ModIng)
 			BEGIN
 				EXECUTE USP_Alumnos_MigracionTP_U_RemoverObservacionPorAlumno @I_RowID, @I_TablaID, @I_ObservID, @D_FecProceso
 			END
