@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Tasas;
@@ -12,13 +9,18 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Tasas
 {
     public class CuotaPagoService
     {
-        public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
+        public IEnumerable<Response> CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {
+            var result = new List<Response>();
             CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
             string codigos_bnc = "";
 
-            return cuotaPagoRepository.CopiarRegistros((int)procedencia, codigos_bnc);
+            var response = cuotaPagoRepository.CopiarRegistros((int)procedencia, codigos_bnc);
+            response = response.IsDone ? response.Success(false) : response.Error(false);
 
+            result.Add(response);
+
+            return result;
         }
 
 
