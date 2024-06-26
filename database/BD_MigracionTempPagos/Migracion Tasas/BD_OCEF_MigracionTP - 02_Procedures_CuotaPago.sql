@@ -144,6 +144,7 @@ END
 GO
 
 
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Tasas_CuotaPago_MigracionTP_U_InicializarEstadosValidacion')
 	DROP PROCEDURE [dbo].[USP_Tasas_CuotaPago_MigracionTP_U_InicializarEstadosValidacion]
 GO
@@ -154,12 +155,14 @@ CREATE PROCEDURE USP_Tasas_CuotaPago_MigracionTP_U_InicializarEstadosValidacion
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare @B_Resultado  bit,
---		@I_RowID	  int = NULL,
---		@I_ProcedenciaID	tinyint = 3,
---		@T_Message	  nvarchar(4000)
---exec USP_Tasas_CuotaPago_MigracionTP_U_InicializarEstadosValidacion @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado		bit,
+			@I_RowID			int = NULL,
+			@I_ProcedenciaID	tinyint = 4,
+			@T_Message	  nvarchar(4000)
+	exec USP_Tasas_CuotaPago_MigracionTP_U_InicializarEstadosValidacion @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY 
@@ -186,7 +189,6 @@ BEGIN
 	END CATCH
 END
 GO
-
 
 
 
@@ -227,6 +229,49 @@ BEGIN
 		ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
 		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+	END CATCH
+	
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Tasas_CuotaPago_MigracionTP_CtasPorCobrar_IU_MigrarData')
+BEGIN
+	DROP PROCEDURE dbo.USP_Tasas_CuotaPago_MigracionTP_IU_AsignarServicioCtasPorCobrar
+END
+GO
+
+CREATE PROCEDURE dbo.USP_Tasas_CuotaPago_MigracionTP_IU_AsignarServicioCtasPorCobrar
+(
+	@I_ProcedenciaID tinyint,
+	@B_Resultado	 bit output,
+	@T_Message		 nvarchar(4000) OUTPUT
+)
+AS
+--declare @B_Resultado  bit,
+--		@I_ProcedenciaID	tinyint = 4,
+--		@T_Message			nvarchar(4000)
+--exec USP_Tasas_CuotaPago_MigracionTP_IU_AsignarServicioCtasPorCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
+--select @B_Resultado as resultado, @T_Message as mensaje
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE()
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+		
+		SET @B_Resultado = 1
+
+
+		COMMIT TRANSACTION
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
 	END CATCH
 	
 END

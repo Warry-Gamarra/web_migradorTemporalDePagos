@@ -23,7 +23,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Tasas
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Tasas_CuotaPago_MigracionTP_IU_CopiarTablaTemporalPagos", parameters, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Tasas_CuotaPago_TemporalTasas_MigracionTP_IU_CopiarTabla", parameters, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");

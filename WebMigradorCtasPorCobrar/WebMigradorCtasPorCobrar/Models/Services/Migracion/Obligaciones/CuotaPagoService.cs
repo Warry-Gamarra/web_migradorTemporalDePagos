@@ -18,8 +18,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             _action = "EjecutarValidacion";
         }
 
-        public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
+        public IEnumerable<Response> CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {
+            var result = new List<Response>();
             string schemaDb = Schema.SetSchema(procedencia);
             string codigos_bnc = "''";
 
@@ -40,7 +41,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                     break;
             }
 
-            return cuotaPagoRepository.CopiarRegistros((int)procedencia, schemaDb, codigos_bnc);
+            var response = cuotaPagoRepository.CopiarRegistros((int)procedencia, schemaDb, codigos_bnc);
+            response = response.IsDone ? response.Success(false) : response.Error(false);
+
+            result.Add(response);
+
+            return result;
         }
 
 

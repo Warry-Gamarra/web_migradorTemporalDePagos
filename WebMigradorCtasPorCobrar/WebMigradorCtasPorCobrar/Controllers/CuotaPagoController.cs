@@ -114,7 +114,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult CopiarRegistros(Procedencia procedencia)
         {
-            Response result = _cuotaPagoServiceMigracionCross.CopiarRegistrosDesdeTemporalPagos(procedencia);
+            IEnumerable<Response> result = _cuotaPagoServiceMigracionCross.CopiarRegistrosDesdeTemporalPagos(procedencia);
 
             return PartialView("_ResultadoCopiarRegistros", result);
         }

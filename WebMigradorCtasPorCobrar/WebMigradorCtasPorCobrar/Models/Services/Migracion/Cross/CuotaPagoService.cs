@@ -1,18 +1,16 @@
-﻿using System;
+﻿using ClosedXML.Excel;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Web;
-using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
-using RepoCtas = WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
-using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
-using WebMigradorCtasPorCobrar.Models.ViewModels;
-using ClosedXML.Excel;
-using System.IO;
-using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 using WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
 using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.ViewModels;
+using RepoCtas = WebMigradorCtasPorCobrar.Models.Repository.CtasPorCobrar;
+using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 {
@@ -42,7 +40,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
             var cuotasPagoCtas = RepoCtas.ProcesoRepositoty.Obtener((int)procedencia);
 
             var newCuotasPago = from c in cuotasPago
-                                join cr in cuotasPagoCtas on c.Cuota_pago equals cr.I_ProcesoID 
+                                join cr in cuotasPagoCtas on c.Cuota_pago equals cr.I_ProcesoID
                                 into cuotasPagoProcesoGroup
                                 from cppg in cuotasPagoProcesoGroup.DefaultIfEmpty()
                                 select new CuotaPago()
@@ -161,9 +159,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
         }
 
 
-        public Response CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
+        public IEnumerable<Response> CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia)
         {
-            Response result;
+            IEnumerable<Response> result;
 
             if (procedencia == Procedencia.Tasas)
             {
@@ -174,7 +172,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                 result = _cuotaPagoObligacionServices.CopiarRegistrosDesdeTemporalPagos(procedencia);
             }
 
-            return result.IsDone ? result.Success(false) : result.Error(false);
+            return result;
         }
 
 
