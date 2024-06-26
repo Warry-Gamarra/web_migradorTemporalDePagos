@@ -100,7 +100,7 @@ GO
 	Actualizar estado de procedencia con obligacion o sin obligacion para la observacion
 */
 
-UPDATE TR_Alumnos SET B_ObligProc = 1
+UPDATE TI_ObservacionRegistroTabla SET B_ObligProc = 1
 GO
 
 

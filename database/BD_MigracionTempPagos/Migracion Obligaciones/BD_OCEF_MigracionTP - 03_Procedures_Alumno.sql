@@ -1062,7 +1062,7 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera
 AS
 /*
 	declare @B_Resultado  bit,
-			@I_ProcedenciaID tinyint = 3,
+			@I_ProcedenciaID tinyint = 2,
 			@B_ObligProc		bit = 0,
 			@T_Message	  nvarchar(4000)
 	exec USP_Alumnos_MigracionTP_U_Validar_21_CodigoCarrera @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
@@ -1212,7 +1212,7 @@ CREATE PROCEDURE USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso
 AS
 /*
 	declare @B_Resultado  bit,
-			@I_ProcedenciaID tinyint = 3,
+			@I_ProcedenciaID tinyint = 2,
 			@B_ObligProc		bit = 0,
 			@T_Message	  nvarchar(4000)
 	exec USP_Alumnos_MigracionTP_U_Validar_23_ModalidadIngreso @I_ProcedenciaID, @B_ObligProc, @B_Resultado output, @T_Message output
