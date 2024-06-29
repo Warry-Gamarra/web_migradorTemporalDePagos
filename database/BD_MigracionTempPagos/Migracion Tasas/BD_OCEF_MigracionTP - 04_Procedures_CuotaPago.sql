@@ -208,12 +208,14 @@ CREATE PROCEDURE dbo.USP_Tasas_CuotaPago_MigracionTP_IU_AsignarServicioCtasPorCo
 	@T_Message		 nvarchar(4000) OUTPUT
 )
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID	tinyint = 4,
---		@T_Codigo_bnc		nvarchar(250) = N'',
---		@T_Message			nvarchar(4000)
---exec USP_Tasas_CuotaPago_MigracionTP_IU_AsignarServicioCtasPorCobrar @I_ProcedenciaID, @T_Codigo_bnc, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  bit,
+			@I_ProcedenciaID	tinyint = 4,
+			@T_Codigo_bnc		nvarchar(250) = N'',
+			@T_Message			nvarchar(4000)
+	exec USP_Tasas_CuotaPago_MigracionTP_IU_AsignarServicioCtasPorCobrar @I_ProcedenciaID, @T_Codigo_bnc, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE()
 
@@ -248,11 +250,13 @@ CREATE PROCEDURE dbo.USP_Tasas_CuotaPago_MigracionTP_IU_AsignarServicioCtasPorCo
 	@T_Message		 nvarchar(4000) OUTPUT
 )
 AS
---declare @B_Resultado  bit,
---		@I_ProcedenciaID	tinyint = 4,
---		@T_Message			nvarchar(4000)
---exec USP_Tasas_CuotaPago_MigracionTP_IU_AsignarServicioCtasPorCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @B_Resultado  		bit,
+			@I_ProcedenciaID	tinyint = 4,
+			@T_Message			nvarchar(4000)
+	exec USP_Tasas_CuotaPago_MigracionTP_IU_AsignarServicioCtasPorCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE()
 
