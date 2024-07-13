@@ -59,13 +59,6 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 
 GO
 
---ACTUALIZACION 2024-05-25
-
-/*
-	Observaciones para tabla de pagos detalle
-*/
-
-INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (57, 'El pago tiene observaciones en la cabecera de la obligacion.', 'OBSERVACIÓN OBLIG.', NULL, 7)
 
 
 /*
@@ -74,6 +67,7 @@ INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Sev
 
 INSERT INTO TC_ProcedenciaData (I_ProcedenciaID, T_ProcedenciaDesc) VALUES (5, 'INDEFINIDO')
 GO
+
 
 /*
 	Agregar datos a nueva tabla de carreras
@@ -118,4 +112,15 @@ DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_ObsTablaID)
 
 DELETE TR_Ec_Obl
 DBCC CHECKIDENT('TR_Ec_Obl', 'Reseed', 0)
+
+
+
+
+--ACTUALIZACION 2024-05-25
+
+/*
+	Observaciones para tabla de pagos detalle
+*/
+
+INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) VALUES (57, 'El pago tiene observaciones en la cabecera de la obligacion.', 'OBSERVACIÓN OBLIG.', NULL, 7)
 

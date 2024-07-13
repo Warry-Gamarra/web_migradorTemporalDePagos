@@ -20,7 +20,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             {
                 result = connection.Query<Obligacion>("SELECT * FROM TR_Ec_obl WHERE I_ProcedenciaID = @I_ProcedenciaID AND Ano = @Anio",
                                                         new { I_ProcedenciaID = procedenciaID, Anio = anio },
-                                                        commandType: CommandType.Text);
+                                                        commandTimeout: 3600, commandType: CommandType.Text);
             }
 
             return result;

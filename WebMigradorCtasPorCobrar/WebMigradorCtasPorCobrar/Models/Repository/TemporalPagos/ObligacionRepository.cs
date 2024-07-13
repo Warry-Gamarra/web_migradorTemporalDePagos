@@ -18,7 +18,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
             {
                 result = connection.Query<Obligacion>($"SELECT * FROM {schemaDb}.ec_obl ORDER BY Ano, P, Cuota_pago",
-                                                        commandType: CommandType.Text);
+                                                        commandTimeout: 3600, commandType: CommandType.Text);
             }
 
             return result;
@@ -32,7 +32,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
             {
                 result = connection.Query<string>($"SELECT Ano_obl FROM (SELECT DISTINCT IIF(ISNUMERIC(Ano) = 1, Ano, 'NO NUMERICO') AS Ano_obl " +
                                                                        $"FROM {schemaDb}.ec_obl) TBL ORDER BY Ano_obl",
-                                                  commandType: CommandType.Text);
+                                                  commandTimeout: 3600, commandType: CommandType.Text);
             }
 
             return result;
@@ -47,7 +47,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos
                 result = connection.Query<Obligacion>($"SELECT * FROM {schemaDb}.ec_obl " +
                                                        "WHERE Ano = @T_Anio ORDER BY P, Cuota_pago",
                                                        new { T_Anio = anio },
-                                                       commandType: CommandType.Text);
+                                                       commandTimeout: 3600, commandType: CommandType.Text);
             }
 
             return result;
