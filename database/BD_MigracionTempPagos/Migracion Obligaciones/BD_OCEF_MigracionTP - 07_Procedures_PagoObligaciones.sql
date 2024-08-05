@@ -126,16 +126,27 @@ BEGIN
 											'FROM  BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det ' +
 											'WHERE ' +
 												  'Pagado = 1 ' +
-												  'AND Concepto_f = 1' +
+						 						  'AND Ano = ''' + @T_Anio + ''' ' +
+												  'AND Concepto_f = 1 ' +
 												  'AND concepto IN (' + @T_filtros_conceptos +')' 
 
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
-		SET @I_EcDet = @@ROWCOUNT
+		SET @I_Insertados = @@ROWCOUNT
 
+		SET @T_SQL =  @T_variables_conceptos + 
+					 'SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det ' +								
+					 'WHERE Pagado = 1 ' +
+							'AND Ano = ''' + @T_Anio + ''' ' +
+							'AND Concepto_f = 1 ' +
+							'AND concepto IN (' + @T_filtros_conceptos +')' 
+
+		PRINT @T_SQL
+		EXEC sp_executesql @T_SQL
+		SET @I_EcDet = @@ROWCOUNT
+		
 		IF(@I_Removidos > 0)
 		BEGIN
-			SET @I_Insertados = @I_EcDet - @I_Removidos
 			SET @I_Actualizados =   @I_EcDet - @I_Insertados
 		END
 		ELSE
@@ -147,22 +158,22 @@ BEGIN
 		SET @B_Resultado = 1					
 		SET @T_Message =  '[{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Total", '+ 
+							 'Title: "EC_DET (Pagos) Total ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_EcDet AS varchar) +
 						  '}, ' + 
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Insertados", ' + 
+							 'Title: "Insertados ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_Insertados AS varchar) +
 						  '}, ' +
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Actualizados", ' + 
+							 'Title: "Actualizados ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
 						  '}, ' +
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Removidos", ' + 
+							 'Title: "Removidos ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
 						  '}]'
 	END TRY
@@ -1105,8 +1116,8 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_57_CabOblig
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_ProcedenciaID	tinyint = 2, 
-			@T_Anio		  varchar(4) = '2016',
+	declare @I_ProcedenciaID	tinyint = 3, 
+			@T_Anio		  varchar(4) = '2005',
 			@B_Resultado  bit,
 			@T_Message    nvarchar(4000)
 	exec USP_Obligaciones_Pagos_MigracionTP_U_Validar_57_CabObligacionObservada @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
@@ -1567,24 +1578,24 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '[{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Pagos Banco Insertados", ' + 
+							 'Title: "Pagos Banco Insertados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
 							 'Value: ' + CAST(@I_Pagos_Insertados AS varchar) +
 						  '}, ' + 
 						  '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Pagos Procesados Insertados", ' + 
+							 'Title: "Pagos Procesados Insertados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
 							 'Value: ' + CAST(@I_Det_Insertados AS varchar) +
 						  '}, ' + 
 						  '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Pagos Banco Actualizados", ' + 
+							 'Title: "Pagos Banco Actualizados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
 							 'Value: ' + CAST(@I_Pagos_Actualizados AS varchar) +
 						  '}, ' + 
 						  '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Pagos Procesados Actualizados", ' + 
+							 'Title: "Pagos Procesados Actualizados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
 							 'Value: ' + CAST(@I_Det_Actualizados AS varchar) +
-						  '}]' 
+						  '}]'  
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -1612,7 +1623,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_Migr
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_OblRowID	  int = 626180,
+	declare @I_OblRowID	  int = 2409,
 			@I_UsuarioID	int = 15,
 			@I_OblAluID		int,
 			@B_Resultado  bit,
@@ -1693,6 +1704,7 @@ BEGIN
 													  FROM	#temp_det_pago
 													  WHERE I_CtasPagoBncTableRowID IS NULL
 
+		SET @I_Pagos_Insertados = @@ROWCOUNT
 		/*
 			uptdat if exists pago banco in ctas x cobrar
 		*/
@@ -1710,6 +1722,8 @@ BEGIN
 			   INNER JOIN #temp_det_pago SRC_pago ON cta_pago_banco.I_PagoBancoID = SRC_pago.I_CtasPagoBncTableRowID
 													 AND SRC_pago.I_RowID = cta_pago_banco.I_MigracionTablaID
 		 WHERE I_CtasPagoBncTableRowID IS NOT NULL
+		 
+		 SET @I_Pagos_Actualizados = @@ROWCOUNT
 
 
 		/*	UPDATE REGISTROS PAGO	*/
@@ -1754,7 +1768,8 @@ BEGIN
 																WHERE  temp_det_pagos.I_CtasPagoBncTableRowID IS NOT NULL
 																	AND tmp_det.I_CtasPagoProcTableRowID IS NULL
 
-			
+		SET @I_Det_Insertados = @@ROWCOUNT
+		
 		UPDATE pago_proc
 		   SET I_CtaDepositoID = temp_det_pagos.I_CtaDepositoID,
 			   B_Anulado = tmp_det.Eliminado,
@@ -1766,6 +1781,9 @@ BEGIN
 			   INNER JOIN #temp_det_obl tmp_det ON pago_proc.I_MigracionRowID = tmp_det.I_RowID
 			   INNER JOIN #temp_det_pago temp_det_pagos ON tmp_det.I_OblRowID = temp_det_pagos.I_OblRowID
 		 WHERE tmp_det.I_CtasPagoProcTableRowID IS NOT NULL
+
+		 SET @I_Det_Actualizados = @@ROWCOUNT
+
 
 		 /*		Actualizar tmp_det con el id de pago procesado creado	*/
 		UPDATE tmp_det
@@ -1797,22 +1815,22 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '[{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Pagos Banco Insertados", ' + 
+							 'Title: "Pagos Banco Insertados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
 							 'Value: ' + CAST(@I_Pagos_Insertados AS varchar) +
 						  '}, ' + 
 						  '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Pagos Procesados Insertados", ' + 
+							 'Title: "Pagos Procesados Insertados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
 							 'Value: ' + CAST(@I_Det_Insertados AS varchar) +
 						  '}, ' + 
 						  '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Pagos Banco Actualizados", ' + 
+							 'Title: "Pagos Banco Actualizados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
 							 'Value: ' + CAST(@I_Pagos_Actualizados AS varchar) +
 						  '}, ' + 
 						  '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Pagos Procesados Actualizados", ' + 
+							 'Title: "Pagos Procesados Actualizados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
 							 'Value: ' + CAST(@I_Det_Actualizados AS varchar) +
 						  '}]' 
 	END TRY

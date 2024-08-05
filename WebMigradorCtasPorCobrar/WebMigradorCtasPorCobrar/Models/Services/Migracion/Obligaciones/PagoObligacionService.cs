@@ -4,6 +4,7 @@ using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using CrossRepo = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
+using static WebMigradorCtasPorCobrar.Models.Helpers.CtasPorCobrar;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
@@ -21,7 +22,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             Response responsePago;
             if (responseObl.IsDone)
             {
-                responsePago = pagoObligacionRepository.MigrarDataPagoObligacionesCtasPorCobrarPorObligacionID(obl_rowId);
+                responsePago = pagoObligacionRepository.MigrarDataPagoObligacionesCtasPorCobrarPorObligacionID(obl_rowId, USUARIO_MIGRACION);
             }
             else
             {
@@ -77,7 +78,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             foreach (var obligacion in obligacionRepository.ObtenerMigrablesPorAnio(procedencia_Id, anio))
             {
-                resultPagos.DetalleObligacion.Add(pagoObligacionRepository.MigrarDataPagoObligacionesCtasPorCobrarPorObligacionID(obligacion.I_RowID));
+                var response = pagoObligacionRepository.MigrarDataPagoObligacionesCtasPorCobrarPorObligacionID(obligacion.I_RowID, USUARIO_MIGRACION);
+                resultPagos.DetalleObligacion.Add(response.IsDone ? response.Success() : response.Error());
             }
 
             return resultPagos;

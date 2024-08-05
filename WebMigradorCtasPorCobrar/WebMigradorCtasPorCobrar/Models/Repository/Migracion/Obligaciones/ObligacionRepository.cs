@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 
@@ -692,8 +693,10 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             }
             catch (Exception ex)
             {
+                var response = new ObjResult() { Title = "Throw Exception", Type = "error", Value = ex.Message };
+
                 result.IsDone = false;
-                result.Message = ex.Message;
+                result.Message = $"[{Json.Encode(response)}]";
             }
 
             return result;

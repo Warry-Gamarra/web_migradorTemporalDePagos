@@ -173,8 +173,9 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             IEnumerable<ResponseObligacion> result = _pagoObligacionCrossServiceMigracion.MigrarDatosPagoTemporalPagos(procedencia, periodo);
 
-            return PartialView("_ResultadoMigrarRegistros", result);
+            return PartialView("_ResultadoMigrarRegistrosObligacion", result);
         }
+
 
         public ActionResult MigrarObligacion(int id)
         {

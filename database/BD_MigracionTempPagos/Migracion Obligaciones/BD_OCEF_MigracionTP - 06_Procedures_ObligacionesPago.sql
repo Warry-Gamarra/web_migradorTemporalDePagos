@@ -52,7 +52,6 @@ BEGIN
 
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
-		SET @I_Removidos = @@ROWCOUNT
 
 						
 		SET @T_SQL = 'DELETE TR_Ec_Det ' +
@@ -62,8 +61,6 @@ BEGIN
 						
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
-		SET @I_Removidos = @I_Removidos + @@ROWCOUNT
-
 
 		
 		SET @T_SQL = 'DELETE TR_Ec_Obl ' +
@@ -132,7 +129,7 @@ BEGIN
 		SET @B_Resultado = 1					
 		SET @T_Message =  '[{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Total ' + @T_Anio + ':", '+ 
+							 'Title: "EC_OBL Total ' + @T_Anio + ':", '+ 
 							 'Value: ' + CAST(@I_EcObl AS varchar) +
 						  '}, ' + 
 						  '{ ' +
@@ -253,22 +250,22 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message =  '[{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Total", '+ 
+							 'Title: "EC_DET Total ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_EcDet AS varchar) +
 						  '}, ' + 
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Insertados", ' + 
+							 'Title: "Insertados ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_Insertados AS varchar) +
 						  '}, ' +
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Actualizados", ' + 
+							 'Title: "Actualizados ' + @T_Anio + ':", ' + 
 							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
 						  '}, ' +
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Removidos", ' + 
+							 'Title: "Removidos ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
 						  '}]'
 	END TRY
