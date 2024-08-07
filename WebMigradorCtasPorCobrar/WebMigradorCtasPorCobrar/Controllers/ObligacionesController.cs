@@ -248,7 +248,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             var model = _obligacionCrossServiceMigracion.ObtenerDatosObservaciones(procedencia, id);
 
-            return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Observaciones-Obligaciones_{DateTime.Now.ToString("yyyyMMdd_hhmmss")}.xlsx");
+            return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"Observaciones-Obligaciones_{DateTime.Now:yyyyMMdd_hhmmss}.xlsx");
         }
 
 

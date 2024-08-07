@@ -15,12 +15,13 @@ namespace WebMigradorCtasPorCobrar.Controllers
         }
         public ActionResult Index()
         {
-            var conexiones = new List<Response>();
-
-            conexiones.Add(_databaseServices.IsDatabaseConnected("BD_OCEF_TemporalPagos"));
-            conexiones.Add(_databaseServices.IsDatabaseConnected("BD_OCEF_TemporalTasas"));
-            conexiones.Add(_databaseServices.IsDatabaseConnected("BD_UNFV_Repositorio"));
-            conexiones.Add(_databaseServices.IsDatabaseConnected("BD_OCEF_CtasPorCobrar"));
+            var conexiones = new List<Response>
+            {
+                _databaseServices.IsDatabaseConnected("BD_OCEF_TemporalPagos"),
+                _databaseServices.IsDatabaseConnected("BD_OCEF_TemporalTasas"),
+                _databaseServices.IsDatabaseConnected("BD_UNFV_Repositorio"),
+                _databaseServices.IsDatabaseConnected("BD_OCEF_CtasPorCobrar")
+            };
 
             ViewBag.Conexiones = conexiones;
 
