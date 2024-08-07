@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 
@@ -48,5 +49,22 @@ namespace WebMigradorCtasPorCobrar.Models
         }
 
 
+        public bool IsDatabaseConnected(string connectionStringName)
+        {
+            try
+            {
+                string connectionString = ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+                    return true;
+                }
+            }
+            catch (SqlException)
+            {
+                return false;
+            }
+        }
     }
 }
