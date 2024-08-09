@@ -2048,7 +2048,7 @@ BEGIN
 			SELECT @I_TablaID_Det, ROW_NUMBER() OVER (ORDER BY det.I_OblRowID, det.I_RowID ASC) as CTE_RowID, 
 				   det.I_OblRowID, det.I_RowID, obl.I_Inserted_RowID as I_CtasOblID, det.Concepto, det.Monto, 0 as Pagado, det.Fch_venc, 
 				   CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, 
-				   CAST(Documento as varchar(max)) AS T_DescDocumento, 1 AS Habilitado, Eliminado, @D_FecProceso, 0 as Mora
+				   CAST(Documento as varchar(max)) AS T_DescDocumento, IIF(Eliminado = 1, 0, 1) AS Habilitado, Eliminado, @D_FecProceso, 0 as Mora
 			  FROM #temp_det_migrable_anio det
 				   INNER JOIN @Tbl_outputObl obl ON obl.I_RowID = det.I_OblRowID
 		)

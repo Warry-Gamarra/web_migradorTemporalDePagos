@@ -1623,7 +1623,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_Migr
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_OblRowID	  int = 2409,
+	declare @I_OblRowID	  int = 7699,
 			@I_UsuarioID	int = 15,
 			@I_OblAluID		int,
 			@B_Resultado  bit,
@@ -1765,6 +1765,8 @@ BEGIN
 																	NULL, tmp_det.I_CtasDetTableRowID, 1, @I_TablaID_Det, tmp_det.I_RowID
 																FROM  #temp_det_obl tmp_det 
 																	INNER JOIN #temp_det_pago temp_det_pagos ON tmp_det.I_OblRowID = temp_det_pagos.I_OblRowID
+																												AND tmp_det.Pagado = temp_det_pagos.Pagado
+																												AND tmp_det.Eliminado = temp_det_pagos.Eliminado
 																WHERE  temp_det_pagos.I_CtasPagoBncTableRowID IS NOT NULL
 																	AND tmp_det.I_CtasPagoProcTableRowID IS NULL
 
