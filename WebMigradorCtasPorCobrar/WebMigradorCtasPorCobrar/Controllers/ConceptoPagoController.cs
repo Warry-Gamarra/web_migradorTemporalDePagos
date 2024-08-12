@@ -33,6 +33,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             if (!string.IsNullOrEmpty(partial))
             {
+                ViewBag.Tipo = TipoData.ConObligaciones;
                 ViewBag.Action = partial;
                 ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
             }
@@ -45,6 +46,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             if (!string.IsNullOrEmpty(partial))
             {
+                ViewBag.Tipo = TipoData.ConObligaciones;
                 ViewBag.Action = partial;
                 ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
             }
@@ -57,6 +59,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             if (!string.IsNullOrEmpty(partial))
             {
+                ViewBag.Tipo = TipoData.ConObligaciones;
                 ViewBag.Action = partial;
                 ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
             }
@@ -69,6 +72,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         {
             if (!string.IsNullOrEmpty(partial))
             {
+                ViewBag.Tipo = TipoData.SinObligaciones;
                 ViewBag.Action = partial;
                 ViewBag.Controller = this.ControllerContext.RouteData.Values["controller"].ToString();
             }
