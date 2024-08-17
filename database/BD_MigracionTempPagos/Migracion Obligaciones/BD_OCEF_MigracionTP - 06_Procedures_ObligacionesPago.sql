@@ -52,7 +52,6 @@ BEGIN
 
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
-		SET @I_Removidos = @@ROWCOUNT
 
 						
 		SET @T_SQL = 'DELETE TR_Ec_Det ' +
@@ -62,8 +61,6 @@ BEGIN
 						
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
-		SET @I_Removidos = @I_Removidos + @@ROWCOUNT
-
 
 		
 		SET @T_SQL = 'DELETE TR_Ec_Obl ' +
@@ -132,7 +129,7 @@ BEGIN
 		SET @B_Resultado = 1					
 		SET @T_Message =  '[{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Total ' + @T_Anio + ':", '+ 
+							 'Title: "EC_OBL Total ' + @T_Anio + ':", '+ 
 							 'Value: ' + CAST(@I_EcObl AS varchar) +
 						  '}, ' + 
 						  '{ ' +
@@ -253,22 +250,22 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message =  '[{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Total", '+ 
+							 'Title: "EC_DET Total ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_EcDet AS varchar) +
 						  '}, ' + 
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Insertados", ' + 
+							 'Title: "Insertados ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_Insertados AS varchar) +
 						  '}, ' +
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Actualizados", ' + 
+							 'Title: "Actualizados ' + @T_Anio + ':", ' + 
 							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
 						  '}, ' +
 						  '{ ' +
 							 'Type: "detail", ' + 
-							 'Title: "Removidos", ' + 
+							 'Title: "Removidos ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
 						  '}]'
 	END TRY
@@ -2051,7 +2048,7 @@ BEGIN
 			SELECT @I_TablaID_Det, ROW_NUMBER() OVER (ORDER BY det.I_OblRowID, det.I_RowID ASC) as CTE_RowID, 
 				   det.I_OblRowID, det.I_RowID, obl.I_Inserted_RowID as I_CtasOblID, det.Concepto, det.Monto, 0 as Pagado, det.Fch_venc, 
 				   CASE WHEN CAST(Documento as varchar(max)) IS NULL THEN NULL ELSE 138 END AS I_TipoDocumento, 
-				   CAST(Documento as varchar(max)) AS T_DescDocumento, 1 AS Habilitado, Eliminado, @D_FecProceso, 0 as Mora
+				   CAST(Documento as varchar(max)) AS T_DescDocumento, IIF(Eliminado = 1, 0, 1) AS Habilitado, Eliminado, @D_FecProceso, 0 as Mora
 			  FROM #temp_det_migrable_anio det
 				   INNER JOIN @Tbl_outputObl obl ON obl.I_RowID = det.I_OblRowID
 		)

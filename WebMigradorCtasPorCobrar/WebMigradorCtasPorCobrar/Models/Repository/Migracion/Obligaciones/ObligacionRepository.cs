@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.Web.Helpers;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 
@@ -692,8 +693,10 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             }
             catch (Exception ex)
             {
+                var response = new ObjResult() { Title = "Throw Exception", Type = "error", Value = ex.Message };
+
                 result.IsDone = false;
-                result.Message = ex.Message;
+                result.Message = $"[{Json.Encode(response)}]";
             }
 
             return result;
@@ -741,7 +744,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
-                    parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, value: oblRowID);
+                    parameters.Add(name: "I_OblAluID", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
@@ -767,7 +771,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         public Response SaveCuotaPagoObligacion(Obligacion obligacion)
         {
             Response result = new Response();
-            int rowCount = 0;
 
             try
             {
@@ -776,7 +779,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     string sqlCommand = "UPDATE TR_Ec_Obl SET Cuota_pago = @Cuota_Pago, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
                                         "WHERE I_RowID = @I_RowID;";
 
-                    rowCount = connection.Execute(sqlCommand, new
+                    int rowCount = connection.Execute(sqlCommand, new
                     {
                         Cuota_pago = obligacion.Cuota_pago,
                         I_RowID = obligacion.I_RowID,
@@ -802,8 +805,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         public Response SavePeriodoObligacion(Obligacion obligacion)
         {
             Response result = new Response();
-            int rowCount = 0;
-
             try
             {
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
@@ -811,7 +812,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     string sqlCommand = "UPDATE TR_Ec_Obl SET P = @P, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
                                         "WHERE I_RowID = @I_RowID;";
 
-                    rowCount = connection.Execute(sqlCommand, new
+                    int rowCount = connection.Execute(sqlCommand, new
                     {
                         P = obligacion.P,
                         I_Periodo = obligacion.I_Periodo,
@@ -838,7 +839,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         public Response SaveAnioObligacion(Obligacion obligacion)
         {
             Response result = new Response();
-            int rowCount = 0;
 
             try
             {
@@ -847,7 +847,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     string sqlCommand = "UPDATE TR_Ec_Obl SET Ano = @Ano, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
                                         "WHERE I_RowID = @I_RowID;";
 
-                    rowCount = connection.Execute(sqlCommand, new
+                    int rowCount = connection.Execute(sqlCommand, new
                     {
                         Ano = obligacion.Ano,
                         I_RowID = obligacion.I_RowID,
@@ -873,7 +873,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         public Response SaveMontoObligacion(Obligacion obligacion)
         {
             Response result = new Response();
-            int rowCount = 0;
 
             try
             {
@@ -882,7 +881,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     string sqlCommand = "UPDATE TR_Ec_Obl SET Monto = @Monto, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
                                         "WHERE I_RowID = @I_RowID;";
 
-                    rowCount = connection.Execute(sqlCommand, new
+                    int rowCount = connection.Execute(sqlCommand, new
                     {
                         Monto = obligacion.Monto,
                         I_RowID = obligacion.I_RowID,
@@ -908,7 +907,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         public Response SaveEstadoObligacion(Obligacion obligacion)
         {
             Response result = new Response();
-            int rowCount = 0;
 
             try
             {
@@ -917,7 +915,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     string sqlCommand = "UPDATE TR_Ec_Obl SET Pagado = @Pagado, B_Actualizado = @B_Actualizado, D_FecActualiza = @D_FecActualiza " +
                                         "WHERE I_RowID = @I_RowID;";
 
-                    rowCount = connection.Execute(sqlCommand, new
+                    int rowCount = connection.Execute(sqlCommand, new
                     {
                         Pagado = obligacion.Pagado,
                         I_RowID = obligacion.I_RowID,

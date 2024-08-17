@@ -17,5 +17,7 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             CondicionPago = 9,
             TipoPago = 10
         }
+
+        public static readonly int USUARIO_MIGRACION = 15;
     }
 }

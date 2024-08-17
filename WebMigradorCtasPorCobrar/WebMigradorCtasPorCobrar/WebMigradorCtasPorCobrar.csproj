@@ -224,6 +224,7 @@
     <Compile Include="Models\Repository\Migracion\Tasas\CuotaPagoRepository.cs" />
     <Compile Include="Models\Repository\UnfvRepositorio\AlumnoRepository.cs" />
     <Compile Include="Models\Repository\UnfvRepositorio\PersonaRepository.cs" />
+    <Compile Include="Models\Services\Config\DatabaseServices.cs" />
     <Compile Include="Models\Services\CtasPorCobrar\ConceptoPagoServices.cs" />
     <Compile Include="Models\Services\CtasPorCobrar\ObligacionServices.cs" />
     <Compile Include="Models\Services\CtasPorCobrar\ProcesoServices.cs" />

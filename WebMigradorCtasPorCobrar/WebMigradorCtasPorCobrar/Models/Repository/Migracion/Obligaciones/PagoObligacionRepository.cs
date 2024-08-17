@@ -7,6 +7,7 @@ using System.Data;
 using System.Data.SqlClient;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
+using System.Web.Helpers;
 
 namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
 {
@@ -219,7 +220,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             return result;
         }
 
-        public Response MigrarDataPagoObligacionesCtasPorCobrarPorObligacionID(int obligacionId)
+        public Response MigrarDataPagoObligacionesCtasPorCobrarPorObligacionID(int obligacionId, int userId)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -229,6 +230,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                 using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
                 {
                     parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, value: obligacionId);
+                    parameters.Add(name: "I_UsuarioID", dbType: DbType.Int32, value: userId);
                     parameters.Add(name: "I_OblAluID", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
@@ -242,9 +244,11 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             }
             catch (Exception ex)
             {
-                result.CurrentID = "0";
+                var response = new ObjResult() { Title = $"Throw Exception (OBL_ID: {obligacionId})", Type = "error", Value = ex.Message };
+
                 result.IsDone = false;
-                result.Message = ex.Message;
+                result.Message = $"[{Json.Encode(response)}]";
+                result.CurrentID = "0";
             }
 
             return result;
