@@ -1338,7 +1338,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_Migr
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_OblRowID	  int = 626180,
+	declare @I_OblRowID	  int = 2865,
 			@I_OblAluID		int,
 			@B_Resultado  bit,
 			@T_Message nvarchar(4000)
@@ -1623,7 +1623,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_Migr
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_OblRowID	  int = 7699,
+	declare @I_OblRowID	  int = 2865,
 			@I_UsuarioID	int = 15,
 			@I_OblAluID		int,
 			@B_Resultado  bit,
@@ -1813,7 +1813,7 @@ BEGIN
 
 		COMMIT TRANSACTION
 					
-		SET @I_OblAluID = (SELECT I_CtasPagoBncTableRowID FROM #temp_det_pago WHERE I_OblRowID = @I_OblRowID)
+		SET @I_OblAluID = (SELECT TOP 1 ISNULL(I_CtasPagoBncTableRowID, 0) FROM #temp_det_pago WHERE I_OblRowID = @I_OblRowID AND Eliminado = 0)
 		SET @B_Resultado = 1
 		SET @T_Message = '[{ ' +
 							 'Type: "summary", ' + 
