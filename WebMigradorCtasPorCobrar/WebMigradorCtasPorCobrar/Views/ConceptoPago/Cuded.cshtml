@@ -1,6 +1,8 @@
-﻿@{
+﻿@using WebMigradorCtasPorCobrar.Models.Helpers;
+@{
     ViewBag.Title = "CONCEPTOS DE PAGO";
 
+    TipoData tipoData = ViewBag.Tipo;
     string action = ViewBag.Action;
     string controller = ViewBag.Controller;
     var procedencia_value = WebMigradorCtasPorCobrar.Models.Helpers.Procedencia.Cuded;
@@ -32,7 +34,7 @@
         }
         else
         {
-            @Html.Action(action, controller, new { procedencia = procedencia_value })
+            @Html.Action(action, controller, new { tipo = tipoData, procedencia = procedencia_value })
         }
     </div>
 </div>

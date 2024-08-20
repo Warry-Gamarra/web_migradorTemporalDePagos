@@ -26,43 +26,43 @@
 
 <div class="table-responsive" style="min-height: 300px; font-size: 13px;">
     @Html.Grid(Model).Columns(columns =>
-    {
-        columns.Add(c => c.Ano).Css("text-center").Titled("Año").Filterable(true);
-        columns.Add(c => c.P).Css("text-center").Titled("Periodo").Filterable(true);
-        columns.Add(c => c.Cuota_pago_desc).Titled("Cuota Pago").Filterable(true);
-        columns.Add(c => c.Cod_alu).Titled("Cod. Alumno").Filterable(true);
-        columns.Add(c => c.Fch_venc).RenderValueAs(model => model.Fch_venc.ToShortDateString()).Titled("Fec. Venc.").Filterable(true);
-        columns.Add(c => c.Monto).Css("text-right").Titled("Monto").Filterable(true);
-        columns.Add(c => c.Pagado).Css("text-center").Encoded(false).Sanitized(false).Titled("Pagado").Filterable(true)
-            .RenderValueAs(model => model.Pagado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
-                                                 : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
-        columns.Add().SetWidth(150).Css("text-center").Encoded(false).Sanitized(false).Titled("Detalle conceptos")
-                     .RenderValueAs(model => @Html.Raw($"<a href=\"{ Url.Action("CargarDetalle", "DetalleObligacion", new { id = model.I_RowID, procedencia = str_procedencia, area = "" })}\" class=\"btn btn-xs btn-warning modal-link-lg\">" +
-                                                           $"<i class=\"bi-list-check\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver detalle</span>" +
-                                                       $"</a>"));
-        columns.Add(c => c.B_ExisteCtas).Css("text-center").Encoded(false).Sanitized(false).Titled("Ctas. Cobrar").Filterable(true)
-            .RenderValueAs(model => model.B_ExisteCtas ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
-                                                       : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));
-        columns.Add(c => c.B_Migrable).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrable").Filterable(true)
-                .RenderValueAs(model => model.B_Migrable ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
-                                                         : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));
-        columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrado").Filterable(true)
-                .RenderValueAs(model => model.B_Migrado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
-                                                        : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));
-        columns.Add().SetWidth(150).Css("text-right").Encoded(false).Sanitized(false)
-                     .RenderValueAs(model => model.B_Migrable ? @Html.Raw("")
-                                                              : @Html.Raw($"<a href=\"{ Url.Action("Observaciones", "Obligaciones", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\">" +
-                                                                              $"<i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span>" +
-                                                                          $"</a>"));
-        columns.Add().SetWidth(150).Css("text-right").Encoded(false).Sanitized(false)
-                     .RenderValueAs(model => model.B_Migrable && !model.B_Migrado
-                                                              ? @Html.Raw($"<a href=\"{ Url.Action("MigrarObligacion", "Obligaciones", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\">" +
-                                                                              $"<i class=\"fa fa-exchange\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Migrar</span>" +
-                                                                          $"</a>")
-                                                              : !model.B_Migrable && model.B_ExisteCtas ? Html.Raw("") 
-                                                                                  : @Html.Raw($"<a href=\"{ Url.Action("MigrarObligacion", "Obligaciones", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\">" +
-                                                                                                  $"<i class=\"fa fa-refresh\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Reactualizar</span>" +
-                                                                                              $"</a>"));
+{
+    columns.Add(c => c.Ano).Css("text-center").Titled("Año").Filterable(true);
+    columns.Add(c => c.P).Css("text-center").Titled("Periodo").Filterable(true);
+    columns.Add(c => c.Cuota_pago_desc).Titled("Cuota Pago").Filterable(true);
+    columns.Add(c => c.Cod_alu).Titled("Cod. Alumno").Filterable(true);
+    columns.Add(c => c.Fch_venc).RenderValueAs(model => model.Fch_venc.ToShortDateString()).Titled("Fec. Venc.").Filterable(true);
+    columns.Add(c => c.Monto).Css("text-right").Titled("Monto").Filterable(true);
+    columns.Add(c => c.Pagado).Css("text-center").Encoded(false).Sanitized(false).Titled("Pagado").Filterable(true)
+        .RenderValueAs(model => model.Pagado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                             : Html.Raw("<span class=\"h5\"><i class=\"fa fa-minus-circle text-secondary\"></i></span>"));
+    columns.Add().SetWidth(150).Css("text-center").Encoded(false).Sanitized(false).Titled("Detalle conceptos")
+                 .RenderValueAs(model => @Html.Raw($"<a href=\"{ Url.Action("CargarDetalle", "DetalleObligacion", new { id = model.I_RowID, procedencia = str_procedencia, area = "" })}\" class=\"btn btn-xs btn-warning modal-link-lg\">" +
+                                                       $"<i class=\"bi-list-check\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Ver detalle</span>" +
+                                                   $"</a>"));
+    //columns.Add(c => c.B_ExisteCtas).Css("text-center").Encoded(false).Sanitized(false).Titled("Ctas. Cobrar").Filterable(true)
+    //    .RenderValueAs(model => model.B_ExisteCtas ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+    //                                               : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));
+    columns.Add(c => c.B_Migrable).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrable").Filterable(true)
+            .RenderValueAs(model => model.B_Migrable ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                                     : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));
+    columns.Add(c => c.B_Migrado).Css("text-center").Encoded(false).Sanitized(false).Titled("Migrado").Filterable(true)
+            .RenderValueAs(model => model.B_Migrado ? Html.Raw("<span class=\"h5\"><i class=\"fa fa-check-circle text-success\"></i></span>")
+                                                    : Html.Raw("<span class=\"h5\"><i class=\"fa fa-times-circle text-danger\"></i></span>"));
+    columns.Add().SetWidth(150).Css("text-right").Encoded(false).Sanitized(false)
+                 .RenderValueAs(model => model.B_Migrable ? @Html.Raw("")
+                                                          : @Html.Raw($"<a href=\"{ Url.Action("Observaciones", "Obligaciones", new { id = model.I_RowID, area = "" })}\" class=\"modal-link-lg\">" +
+                                                                          $"<i class=\"fa fa-search-plus\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Observaciones</span>" +
+                                                                      $"</a>"));
+    columns.Add().SetWidth(150).Css("text-right").Encoded(false).Sanitized(false)
+                 .RenderValueAs(model => model.B_Migrable && !model.B_Migrado
+                                                          ? @Html.Raw($"<a href=\"{ Url.Action("MigrarObligacion", "Obligaciones", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\">" +
+                                                                          $"<i class=\"fa fa-exchange\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Migrar</span>" +
+                                                                      $"</a>")
+                                                          : !model.B_Migrable && model.B_ExisteCtas ? Html.Raw("")
+                                                                              : @Html.Raw($"<a href=\"{ Url.Action("MigrarObligacion", "Obligaciones", new { id = model.I_RowID, area = "" })}\" class=\"modal-link\">" +
+                                                                                              $"<i class=\"fa fa-refresh\" aria-hidden=\"true\">&nbsp;</i><span class=\"d-none d-md-inline-block\">Reactualizar</span>" +
+                                                                                          $"</a>"));
 }).WithPaging(20).Sortable(true).WithGridItemsCount("Registros encontrados").EmptyText("No se encontraron registros")
 </div>
 

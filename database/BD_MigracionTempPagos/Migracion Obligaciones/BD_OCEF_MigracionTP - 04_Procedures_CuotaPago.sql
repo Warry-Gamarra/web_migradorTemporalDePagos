@@ -1136,14 +1136,16 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_CtasPorCobrar_IU_
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
---declare	@B_Resultado  bit, 
---			@I_ProcesoID int = NULL,
---			@I_AnioIni int = NULL, 
---			@I_AnioFin int = NULL,
---			@I_ProcedenciaID tinyint = 3,
---			@T_Message nvarchar(4000)
---exec USP_Obligaciones_CuotaPago_MigracionTP_CtasPorCobrar_IU_MigrarData @I_ProcesoID, @I_AnioIni, @I_AnioFin, @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare	@B_Resultado  bit, 
+				@I_ProcesoID int = NULL,
+				@I_AnioIni int = NULL, 
+				@I_AnioFin int = NULL,
+				@I_ProcedenciaID tinyint = 3,
+				@T_Message nvarchar(4000)
+	exec USP_Obligaciones_CuotaPago_MigracionTP_CtasPorCobrar_IU_MigrarData @I_ProcesoID, @I_AnioIni, @I_AnioFin, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @Tbl_outputProceso AS TABLE (T_Action varchar(20), I_RowID int)
@@ -1220,6 +1222,7 @@ BEGIN
 						D_FecMod = @D_FecProceso
 		OUTPUT $action, SRC.I_RowID INTO @Tbl_outputCtas;
 
+		select * from @Tbl_outputCtas
 
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TC_CuentaDeposito_CategoriaPago AS TRG
 		USING (SELECT DISTINCT CD.I_CtaDepositoID, TP_CD.I_CatPagoID FROM TR_Cp_Des TP_CD

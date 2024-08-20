@@ -140,7 +140,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia)
         {
-            IEnumerable<Response> result = _cuotaPagoServiceMigracion.MigrarDatosTemporalPagos(procedencia);
+            IEnumerable<Response> result = _cuotaPagoServiceMigracionCross.MigrarDatosTemporalPagos(procedencia);
 
             return PartialView("_ResultadoMigrarRegistros", result);
         }
