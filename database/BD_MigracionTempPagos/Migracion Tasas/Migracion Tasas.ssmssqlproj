@@ -31,35 +31,41 @@
     </LogicalFolder>
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
       <Items>
-        <FileNode Name="BD_OCEF_MigracionTP - 01_Data.sql">
+        <FileNode Name="BD_OCEF_MigracionTP - 01_Tablas.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>BD_OCEF_MigracionTP - 01_Data.sql</FullPath>
+          <FullPath>BD_OCEF_MigracionTP - 01_Tablas.sql</FullPath>
         </FileNode>
-        <FileNode Name="BD_OCEF_MigracionTP - 02_Procedures_CuotaPago.sql">
+        <FileNode Name="BD_OCEF_MigracionTP - 02_Data.sql">
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
+          <AssociatedConnUserName />
+          <FullPath>BD_OCEF_MigracionTP - 02_Data.sql</FullPath>
+        </FileNode>
+        <FileNode Name="BD_OCEF_MigracionTP - 03_Procedures_CuotaPago.sql">
           <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
           <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>BD_OCEF_MigracionTP - 02_Procedures_CuotaPago.sql</FullPath>
+          <FullPath>BD_OCEF_MigracionTP - 03_Procedures_CuotaPago.sql</FullPath>
         </FileNode>
-        <FileNode Name="BD_OCEF_MigracionTP - 03_Procedures_ConceptoPago.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:C16-OCGTI-OD-02\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>C16-OCGTI-OD-02\SQL_2016E</AssociatedConnSrvName>
+        <FileNode Name="BD_OCEF_MigracionTP - 04_Procedures_ConceptoPago.sql">
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
-          <FullPath>BD_OCEF_MigracionTP - 03_Procedures_ConceptoPago.sql</FullPath>
+          <FullPath>BD_OCEF_MigracionTP - 04_Procedures_ConceptoPago.sql</FullPath>
         </FileNode>
-        <FileNode Name="BD_OCEF_MigracionTP - 04_Procedures_Tasas.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:C16-OCGTI-OD-02\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>C16-OCGTI-OD-02\SQL_2016E</AssociatedConnSrvName>
+        <FileNode Name="BD_OCEF_MigracionTP - 05_Procedures_Tasas.sql">
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
-          <FullPath>BD_OCEF_MigracionTP - 04_Procedures_Tasas.sql</FullPath>
+          <FullPath>BD_OCEF_MigracionTP - 05_Procedures_Tasas.sql</FullPath>
         </FileNode>
-        <FileNode Name="BD_OCEF_MigracionTP - 05_Procedures_Pagos.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:C16-OCGTI-OD-02\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>C16-OCGTI-OD-02\SQL_2016E</AssociatedConnSrvName>
+        <FileNode Name="BD_OCEF_MigracionTP - 06_Procedures_Pagos.sql">
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
-          <FullPath>BD_OCEF_MigracionTP - 05_Procedures_Pagos.sql</FullPath>
+          <FullPath>BD_OCEF_MigracionTP - 06_Procedures_Pagos.sql</FullPath>
         </FileNode>
       </Items>
     </LogicalFolder>
