@@ -19,12 +19,14 @@ CREATE PROCEDURE dbo.USP_Tasas_PagoTasas_TemporalPagos_MigracionTP_IU_CopiarTabl
 	@T_Message	  nvarchar(4000) OUTPUT	
 ) 
 AS
---declare @I_ProcedenciaID	tinyint = 4,
---		@I_RowID	  int = NULL
---		@B_Resultado  bit,
---		@T_Message	  nvarchar(4000)
---exec USP_Tasas_PagoTasas_TemporalPagos_MigracionTP_IU_CopiarTabla @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
---select @B_Resultado as resultado, @T_Message as mensaje
+/*
+	declare @I_ProcedenciaID	tinyint = 4,
+			@I_RowID	  int = NULL
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	exec USP_Tasas_PagoTasas_TemporalPagos_MigracionTP_IU_CopiarTabla @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	
@@ -43,14 +45,14 @@ BEGIN
 							   INNER JOIN #Tmp_cp_des_tasas CP ON CP.Cuota_pago = OBL.cuota_pago
 							   LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CatalogoOpcion CO ON OBL.p = CO.T_OpcionCod 
 
-		INSERT INTO TR_Ec_Det (I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, 
-							   Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, Pag_demas, 
-							   Cod_cajero, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, B_Obligacion, D_FecCarga, B_Migrable, B_Migrado)
-						SELECT *
-						  FROM BD_OCEF_TemporalTasas.dbo.ec_det det
-							   LEFT JOIN TR_Ec_Obl obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
-														  AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
-														  AND det.fch_venc = obl.fch_venc
+		INSERT INTO TR_Ec_Det_Tasas (I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, 
+								     Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, Pag_demas, 
+								     Cod_cajero, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, B_Obligacion, D_FecCarga, B_Migrable, B_Migrado)
+							SELECT *
+								FROM BD_OCEF_TemporalTasas.dbo.ec_det det
+									LEFT JOIN TR_Ec_Obl obl ON det.cod_rc = obl.cod_rc AND det.cod_alu = obl.cod_alu 
+																AND det.ano = obl.ano AND det.p = obl.p AND det.cuota_pago = obl.cuota_pago 
+																AND det.fch_venc = obl.fch_venc
 	END TRY
 	BEGIN CATCH
 		SET @B_Resultado = 0

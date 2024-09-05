@@ -242,3 +242,27 @@ BEGIN
 END
 GO
 
+
+
+/*Cambios posteriores a la actualizacion del 2024-07-30 */
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_ControlObligaciones')
+	DROP TABLE TR_ControlObligaciones
+GO
+
+CREATE TABLE dbo.TR_ControlObligaciones (
+	I_Anio			 int  NOT NULL,
+	I_TablaID		 int  NOT NULL,
+	I_EtapaProcesoID int  NOT NULL,
+	I_TotalOrigen	 int  NULL,
+	I_CountCopiados	 int  NULL,
+	I_CountSnCopiar	 int  NULL,
+	D_LastCopia		 int  NULL,
+	I_CountValidados int  NULL,
+	D_LastValidacion int  NULL,
+	I_CountSnValidar int  NULL,
+	I_CountMigrados  int  NULL,
+	I_CountSnMigrar  int  NULL,
+	D_LastMigracion int  NULL,
+)
+GO
