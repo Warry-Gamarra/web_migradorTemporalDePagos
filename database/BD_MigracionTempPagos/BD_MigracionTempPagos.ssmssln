@@ -11,16 +11,19 @@ Project("{4F2E2C19-372F-40D8-9FA7-9D2138C6997A}") = "Migracion Tasas", "Migracio
 EndProject
 Project("{4F2E2C19-372F-40D8-9FA7-9D2138C6997A}") = "Migracion Obligaciones", "Migracion Obligaciones\Migracion Obligaciones.ssmssqlproj", "{09ECE197-0DA3-43E6-B054-E3C6891BE61C}"
 EndProject
+Project("{4F2E2C19-372F-40D8-9FA7-9D2138C6997A}") = "Migracion Final", "Migracion Final\Migracion Final.ssmssqlproj", "{1BD77863-628B-4F9D-9C0D-257E2748E82D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Default|Default = Default|Default
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5A4C22BA-056C-42E5-93BE-64489F0FA1CC}.Default|Default.ActiveCfg = Default
 		{42B3937E-E693-47F7-B58B-A5112F6089EA}.Default|Default.ActiveCfg = Default
 		{268D78F0-5F08-4D34-ACAF-1BC10BD2BFF5}.Default|Default.ActiveCfg = Default
 		{8A24865C-7AD1-4D99-8242-A92FBF663270}.Default|Default.ActiveCfg = Default
 		{09ECE197-0DA3-43E6-B054-E3C6891BE61C}.Default|Default.ActiveCfg = Default
+		{1BD77863-628B-4F9D-9C0D-257E2748E82D}.Default|Default.ActiveCfg = Default
+		{DC42395F-CC95-4C94-964A-33243226B66C}.Default|Default.ActiveCfg = Default
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

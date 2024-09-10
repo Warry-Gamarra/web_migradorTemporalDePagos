@@ -13,15 +13,15 @@ CREATE TABLE dbo.TC_EtapaProceso (
 GO
 
 
-
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_ControlTasas')
-	DROP TABLE TR_ControlTasas
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_ControlTablas')
+	DROP TABLE TR_ControlTablas
 GO
 
-CREATE TABLE dbo.TR_ControlTasas (
-	I_Anio			 int  NOT NULL,
-	I_TablaID		 int  NOT NULL,
-	I_EtapaProcesoID int  NOT NULL,
+CREATE TABLE dbo.TR_ControlTablas (
+	I_TablaID		 tinyint  NOT NULL,
+	I_ProcedenciaID	 tinyint  NOT NULL,
+	I_EtapaProcesoID tinyint  NOT NULL,
+	I_Anio			 int  NULL,
 	I_TotalOrigen	 int  NULL,
 	I_CountCopiados	 int  NULL,
 	I_CountSnCopiar	 int  NULL,
@@ -34,7 +34,6 @@ CREATE TABLE dbo.TR_ControlTasas (
 	D_LastMigracion  int  NULL,
 )
 GO
-
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_Tasas_Ec_Obl')
@@ -66,8 +65,6 @@ CREATE TABLE dbo.TR_Ec_Obl_Tasas (
 	D_FecRemovido	datetime  NULL,
 ) 
 GO
-
-
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_Tasas_Ec_Det')
@@ -113,10 +110,10 @@ CREATE TABLE dbo.TR_Tasas_Ec_Det (
 	B_Removido		bit  NOT NULL DEFAULT 0,
 	D_FecRemovido	datetime  NULL,
 	B_Correcto		bit  NULL,
-	I_CtasPagoBncTableRowID	int,
-	B_EsTasa		bit  NULL
+	I_CtasPagoBncTableRowID	int
 ) 
 GO
+
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_Tasas_Ec_Det_Pagos')
@@ -162,8 +159,7 @@ CREATE TABLE dbo.TR_Tasas_Ec_Det_Pagos (
 	B_Removido		bit  NOT NULL DEFAULT 0,
 	D_FecRemovido	datetime  NULL,
 	B_Correcto		bit  NULL,
-	I_CtasPagoBncTableRowID	int,
-	B_EsTasa		bit  NULL
+	I_CtasPagoBncTableRowID	int
 ) 
 GO
 

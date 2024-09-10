@@ -1623,13 +1623,13 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_Migr
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_OblRowID	  int = 2865,
+	declare @I_OblRowID	  int = 117895,
 			@I_UsuarioID	int = 15,
 			@I_OblAluID		int,
 			@B_Resultado  bit,
 			@T_Message nvarchar(4000)
 	exec USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2 @I_OblRowID, @I_UsuarioID, @I_OblAluID output, @B_Resultado output, @T_Message output
-	select @B_Resultado as resultado, @T_Message as mensaje
+	select @I_OblAluID as I_OblAluID, @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -1644,6 +1644,33 @@ BEGIN
 
 	DECLARE @I_Det_Actualizados int = 0
 	DECLARE @I_Det_Insertados int = 0
+
+	IF NOT EXISTS (SELECT I_RowID FROM TR_Ec_Det_Pagos WHERE I_OblRowID = @I_OblRowID)
+	BEGIN
+		SET @I_OblAluID = 0
+		SET @B_Resultado = 1
+		SET @T_Message = '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Pagos Banco Insertados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
+							 'Value: ' + CAST(@I_Pagos_Insertados AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Pagos Procesados Insertados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
+							 'Value: ' + CAST(@I_Det_Insertados AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Pagos Banco Actualizados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
+							 'Value: ' + CAST(@I_Pagos_Actualizados AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Pagos Procesados Actualizados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
+							 'Value: ' + CAST(@I_Det_Actualizados AS varchar) +
+						  '}]'
+		RETURN 0;
+	END
 
 	DECLARE @Tbl_outputObl AS TABLE (T_Action varchar(20), I_RowID int, I_Inserted_RowID int, I_Deleted_RowID int)
 	DECLARE @Tbl_outputDet AS TABLE (T_Action varchar(20), I_RowID int, I_Inserted_RowID int, I_Deleted_RowID int)

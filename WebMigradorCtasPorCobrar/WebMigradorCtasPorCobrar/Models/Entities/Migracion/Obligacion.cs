@@ -32,6 +32,8 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public DateTime D_FecRemovido { get; set; }
         public IList<DetalleObligacion> DetalleObligaciones { get; set; }
         public int I_ProcedenciaID { get; set; }
+        public int? I_CtasMatTableRowID { get; set; }
+        public int? I_CtasCabTableRowID { get; set; }
         public bool B_ExisteCtas { get; set; }
 
 

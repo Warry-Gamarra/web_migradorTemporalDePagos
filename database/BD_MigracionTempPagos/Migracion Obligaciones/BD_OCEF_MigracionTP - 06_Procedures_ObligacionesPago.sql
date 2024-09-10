@@ -41,6 +41,14 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
+		SET @T_SQL = 'DELETE TR_Ec_Det_Pagos ' +
+					'WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' ' +
+						'AND EXISTS (SELECT * FROM TR_Ec_Obl ' + 
+										'WHERE TR_Ec_Obl.I_RowID = I_OblRowID ' + 
+											'AND TR_Ec_Obl.Ano = ''' + @T_Anio + ''' ' + 
+											'AND TR_Ec_Obl.B_Migrado = 0 ' + 
+											'AND TR_Ec_Obl.I_ProcedenciaID = I_ProcedenciaID);'
+
 
 		SET @T_SQL = 'DELETE TR_Ec_Det ' +
 					  'WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' ' +
