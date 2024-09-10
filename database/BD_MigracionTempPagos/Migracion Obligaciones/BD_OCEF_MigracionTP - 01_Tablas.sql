@@ -244,6 +244,28 @@ GO
 
 
 
+
+/*
+	Cambios tablas migracion setiembre
+*/
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_Cp_Des' AND COLUMN_NAME = 'B_ExisteCtas')
+BEGIN
+	ALTER TABLE [dbo].[TR_Cp_Des]
+		ADD B_ExisteCtas	bit  NULL
+END
+GO
+
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_Cp_Pri' AND COLUMN_NAME = 'B_ExisteCtas')
+BEGIN
+	ALTER TABLE [dbo].[TR_Cp_Pri]
+		ADD B_ExisteCtas	bit  NULL
+END
+GO
+
+
+
 /*Cambios posteriores a la actualizacion del 2024-07-30 */
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_NAME = 'TR_ControlObligaciones')

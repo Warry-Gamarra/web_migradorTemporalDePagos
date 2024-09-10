@@ -471,7 +471,7 @@ BEGIN
 	 
 		CREATE TABLE ##cuota_anio (cuota_pago int, anio_cuota varchar(4))
 
-		--CUOTAS DE PAGO CON AÑO EN CP_PRI
+		--CUOTAS DE PAGO CON Aï¿½O EN CP_PRI
 		INSERT INTO ##cuota_anio(cuota_pago, anio_cuota)
 			SELECT DISTINCT D.CUOTA_PAGO, ISNULL(P.ANO, SUBSTRING(RTRIM(LTRIM(D.DESCRIPCIO)), 1,4)) AS ANO 
 			  FROM TR_Cp_Des D LEFT JOIN TR_cp_pri P ON D.CUOTA_PAGO = P.CUOTA_PAGO
@@ -480,7 +480,7 @@ BEGIN
 				   AND (D.I_RowID = IIF(@I_RowID IS NULL, D.I_RowID, @I_RowID));
 
 
-		--CUOTAS DE PAGO SIN AÑO EN CP_PRI PERO CON AÑO EN EC_OBL
+		--CUOTAS DE PAGO SIN Aï¿½O EN CP_PRI PERO CON Aï¿½O EN EC_OBL
 
 		SET @T_SQL = 'INSERT INTO ##cuota_anio(cuota_pago, anio_cuota)
 					  SELECT DISTINCT o.CUOTA_PAGO, o.ANO FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl o 
@@ -596,7 +596,7 @@ BEGIN
 	 
 		CREATE TABLE ##cuota_anio (cuota_pago int, anio_cuota varchar(4))
 
-		--CUOTAS DE PAGO CON AÑO EN CP_PRI
+		--CUOTAS DE PAGO CON Aï¿½O EN CP_PRI
 		INSERT INTO ##cuota_anio(cuota_pago, anio_cuota)
 			SELECT DISTINCT D.CUOTA_PAGO, ISNULL(P.ANO, SUBSTRING(RTRIM(LTRIM(D.DESCRIPCIO)), 1,4)) AS ANO 
 			  FROM TR_Cp_Des D LEFT JOIN TR_cp_pri P ON D.CUOTA_PAGO = P.CUOTA_PAGO
@@ -605,7 +605,7 @@ BEGIN
 				   AND (D.I_RowID = IIF(@I_RowID IS NULL, D.I_RowID, @I_RowID));
 
 
-		--CUOTAS DE PAGO SIN AÑO EN CP_PRI PERO CON AÑO EN EC_OBL
+		--CUOTAS DE PAGO SIN Aï¿½O EN CP_PRI PERO CON Aï¿½O EN EC_OBL
 
 		SET @T_SQL = 'INSERT INTO ##cuota_anio(cuota_pago, anio_cuota)
 					  SELECT DISTINCT o.CUOTA_PAGO, o.ANO FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl o 
@@ -1284,12 +1284,70 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = CAST(@I_Proc_Inserted AS varchar) + ' procesos insertados | ' + CAST(@I_Proc_Updated AS varchar) + ' procesos actualizados ' 
 						 + ' | ' + CAST(@I_Ctas_Inserted AS varchar) + ' cuentas insertadas | ' + CAST(@I_Ctas_Updated AS varchar) + ' cuentas actualizados ' 
-						 + ' | ' + CAST(@I_CtaCat_Inserted AS varchar) + ' cuenta-categoría insertados | ' + CAST(@I_CtaCat_Updated AS varchar) + '  cuenta-categoría actualizados'
+						 + ' | ' + CAST(@I_CtaCat_Inserted AS varchar) + ' cuenta-categorï¿½a insertados | ' + CAST(@I_CtaCat_Updated AS varchar) + '  cuenta-categorï¿½a actualizados'
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION;
 		SET @B_Resultado = 0
 		SET @T_Message = ERROR_MESSAGE() + ' LINE: ' + CAST(ERROR_LINE() AS varchar(10)) 
+	END CATCH
+END
+GO
+
+
+/*
+	CAMBIOS SETIEMBRE
+*/
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteRegistroEnCtasxCobrar')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteRegistroEnCtasxCobrar]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteRegistroEnCtasxCobrar
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	declare @I_ProcedenciaID tinyint = 2,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	exec USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteRegistroEnCtasxCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_TablaID int = 2
+	DECLARE @I_CountCtas int = 0
+
+	BEGIN TRY
+		SELECT D.*
+		INTO #temp_matchCtas
+		FROM TR_Cp_Des D
+			 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_Proceso P ON D.Cuota_pago = P.I_ProcesoID
+			 													  AND D.Eliminado = P.B_Eliminado
+		WHERE I_ProcedenciaID = @I_ProcedenciaID;
+
+		SET @I_CountCtas = (SELECT COUNT(*) FROM #temp_matchCtas);
+			  
+		UPDATE D
+		   SET B_ExisteCtas = IIF(T.Cuota_pago IS NULL, 0, 1)
+		  FROM TR_Cp_Des D
+			   LEFT JOIN #temp_matchCtas T ON D.Cuota_pago = T.Cuota_pago
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Summary", ' + 
+							 'Value: "Cuotas de pago que ya existen en BD RecaudaciÃ³n ' + CAST(@I_CountCtas AS varchar(11)) + ')."'  + 
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						 '}' 
 	END CATCH
 END
 GO
