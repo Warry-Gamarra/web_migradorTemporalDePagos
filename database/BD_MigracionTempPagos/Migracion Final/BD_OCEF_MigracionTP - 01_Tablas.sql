@@ -1,3 +1,10 @@
+/*
+======================================================
+	BD_OCEF_MigracionTP - 01_Tablas
+======================================================
+*/
+
+
 USE BD_OCEF_MigracionTP
 GO
 
@@ -18,21 +25,29 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABL
 GO
 
 CREATE TABLE dbo.TR_ControlTablas (
+	I_ControlID		 int IDENTITY (1, 1),
 	I_TablaID		 tinyint  NOT NULL,
 	I_ProcedenciaID	 tinyint  NOT NULL,
-	I_EtapaProcesoID tinyint  NOT NULL,
-	I_Anio			 int  NULL,
-	I_TotalOrigen	 int  NULL,
+	I_Anio			 int  NOT NULL,
+	I_CurrentEtapaID tinyint  NOT NULL,
+	I_TotalCopiar	 int  NULL,
 	I_CountCopiados	 int  NULL,
 	I_CountSnCopiar	 int  NULL,
-	D_LastCopia		 int  NULL,
+	D_LastCopia		 datetime  NULL,
+	I_TotalValidar	 int  NULL,
 	I_CountValidados int  NULL,
-	D_LastValidacion int  NULL,
 	I_CountSnValidar int  NULL,
+	D_LastValidacion datetime  NULL,
+	I_TotalMigrar	 int  NULL,
 	I_CountMigrados  int  NULL,
 	I_CountSnMigrar  int  NULL,
-	D_LastMigracion  int  NULL,
+	D_LastMigracion  datetime  NULL,
+	B_Habilitado	 bit  NOT NULL DEFAULT (1)
 )
+GO
+
+ALTER TABLE dbo.TR_ControlTablas 
+	ADD CONSTRAINT PK_ControlTablas PRIMARY KEY (I_ControlID)
 GO
 
 
@@ -40,7 +55,7 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABL
 	DROP TABLE TR_Tasas_Ec_Obl
 GO
 
-CREATE TABLE dbo.TR_Ec_Obl_Tasas (
+CREATE TABLE dbo.TR_Tasas_Ec_Obl (
 	I_RowID			int IDENTITY(1, 1) NOT NULL,
 	Ano				varchar(4) NULL,
 	P				varchar(3) NULL,
@@ -162,4 +177,21 @@ CREATE TABLE dbo.TR_Tasas_Ec_Det_Pagos (
 	I_CtasPagoBncTableRowID	int
 ) 
 GO
+
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_Cp_Des' AND COLUMN_NAME = 'B_ExisteCtas')
+BEGIN
+	ALTER TABLE [dbo].[TR_Cp_Des]
+		ADD B_ExisteCtas	bit  NULL
+END
+GO
+
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'TR_Cp_Pri' AND COLUMN_NAME = 'B_ExisteCtas')
+BEGIN
+	ALTER TABLE [dbo].[TR_Cp_Pri]
+		ADD B_ExisteCtas	bit  NULL
+END
+GO
+
 

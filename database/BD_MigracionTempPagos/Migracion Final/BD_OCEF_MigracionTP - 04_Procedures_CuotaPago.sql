@@ -1,3 +1,9 @@
+/*
+======================================================
+	BD_OCEF_MigracionTP - 04_Procedures_CuotaPago
+======================================================
+*/
+
 USE BD_OCEF_MigracionTP
 GO
 
@@ -20,12 +26,14 @@ CREATE PROCEDURE USP_Obligaciones_CuotaPago_TemporalPagos_MigracionTP_IU_CopiarT
 AS
 /*
 	declare @B_Resultado		bit,
-			@I_ProcedenciaID	tinyint = 3,
-			@T_SchemaDB			varchar(20) = 'euded',
-			@T_Codigo_bnc		varchar(250) = '''0658'', ''0685'', ''0687'', ''0688''',
+			@I_ProcedenciaID	tinyint = 2,
+			@T_SchemaDB			varchar(20) = 'eupg',
+			@T_Codigo_bnc		varchar(250) = '''0670'', ''0671'', ''0672'', ''0673'', ''0674'', ''0675'', 
+                                                ''0676'', ''0677'', ''0678'', ''0679'', ''0680'', ''0681'', 
+                                                ''0682'', ''0683'', ''0695'', ''0696'', ''0697'', ''0698''',
 			@B_IgnoreUpdated	bit = 0,
 			@T_Message			nvarchar(4000)
-	exec USP_Obligaciones_CuotaPago_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_Resultado output, @T_Message output
+	exec USP_Obligaciones_CuotaPago_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Codigo_bnc, @B_IgnoreUpdated, @B_Resultado output, @T_Message output
 	select @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -38,7 +46,8 @@ BEGIN
 	DECLARE @I_Actualizados int = 0
 	DECLARE @I_Insertados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE()
-
+	DECLARE @I_Anio smallint = 0
+ 
 	CREATE TABLE #Tbl_output  
 	(
 		accion  varchar(20), 
@@ -63,32 +72,31 @@ BEGIN
 
 		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE() ' + CHAR(10) + CHAR(13) +
 		 
-					  'MERGE TR_Cp_Des AS TRG ' + CHAR(13) + 
-					  'USING (SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des WHERE codigo_bnc IN (' + @T_Codigo_bnc + ')) AS SRC ' + CHAR(13) + 
-					  'ON	TRG.Cuota_pago = SRC.cuota_pago ' + CHAR(13) + 
-				  	  '		AND TRG.Eliminado = SRC.eliminado ' + CHAR(13) + 
-					  '		AND TRG.Codigo_bnc = SRC.codigo_bnc ' + CHAR(13) + 
-							IIF(@B_IgnoreUpdated = 0, '		AND TRG.B_Actualizado = 0' + CHAR(13),'') +
-					  'WHEN MATCHED THEN ' + CHAR(13) + 
-				  	  '	UPDATE SET	TRG.Descripcio = SRC.descripcio, ' + CHAR(13) + 
-				  	  '			TRG.N_cta_cte = SRC.n_cta_cte, ' + CHAR(13) +
-				  	  '			TRG.Codigo_bnc = SRC.codigo_bnc, ' + CHAR(13) +
-				  	  '			TRG.Fch_venc = SRC.fch_venc, ' + CHAR(13) + 
-				  	  '			TRG.Prioridad = SRC.prioridad, ' + CHAR(13) + 
-				  	  '			TRG.C_mora = SRC.c_mora ' + CHAR(13) + 
-					  'WHEN NOT MATCHED BY TARGET THEN ' + CHAR(13) + 
-				  	  '	INSERT (Cuota_pago, Descripcio, N_cta_cte, Eliminado, Codigo_bnc, Fch_venc, Prioridad, C_mora, I_ProcedenciaID, D_FecCarga, B_Actualizado) ' + CHAR(13) + 
-				  	  '	VALUES (SRC.cuota_pago, SRC.descripcio, SRC.n_cta_cte, SRC.eliminado, SRC.codigo_bnc, SRC.fch_venc, SRC.prioridad, SRC.c_mora, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', @D_FecProceso, 1) ' + CHAR(13) +
-					  'WHEN NOT MATCHED BY SOURCE AND TRG.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' THEN ' + CHAR(13) +
-				  	  '	UPDATE SET TRG.B_Removido = 1, ' +CHAR(13) +
-				  	  '			   TRG.D_FecRemovido = @D_FecProceso ' + CHAR(13) +
-					  'OUTPUT  $ACTION, inserted.CUOTA_PAGO, inserted.ELIMINADO, inserted.DESCRIPCIO, inserted.N_CTA_CTE, ' + CHAR(13) +  
-				  	  '		inserted.CODIGO_BNC, inserted.FCH_VENC, inserted.PRIORIDAD, inserted.C_MORA, deleted.DESCRIPCIO, ' + CHAR(13) +
-				  	  '		deleted.N_CTA_CTE, deleted.CODIGO_BNC, deleted.FCH_VENC, deleted.PRIORIDAD, deleted.C_MORA, ' + CHAR(13) +
-				  	  '		deleted.B_Removido INTO #Tbl_output;
-					  '
-		EXEC sp_executesql @T_SQL
+					 'MERGE TR_Cp_Des AS TRG ' + CHAR(13) + 
+					 'USING (SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des WHERE codigo_bnc IN (' + @T_Codigo_bnc + ')' + CHAR(13) + 
+					 '		) AS SRC ' + CHAR(13) + 
+					 'ON	TRG.Cuota_pago = SRC.cuota_pago ' + CHAR(13) + 
+				  	 '		AND TRG.Eliminado = SRC.eliminado ' + CHAR(13) + 
+					 '		AND TRG.Codigo_bnc = SRC.codigo_bnc ' + CHAR(13) + 
+					 'WHEN MATCHED ' + IIF(@B_IgnoreUpdated = 0, ' AND TRG.B_Actualizado = 0' + CHAR(13),'') + ' THEN ' + CHAR(13) + 
+				  	 '	UPDATE SET	TRG.Descripcio = SRC.descripcio, ' + CHAR(13) + 
+				  	 '			TRG.N_cta_cte = SRC.n_cta_cte, ' + CHAR(13) +
+				  	 '			TRG.Codigo_bnc = SRC.codigo_bnc, ' + CHAR(13) +
+				  	 '			TRG.Fch_venc = SRC.fch_venc, ' + CHAR(13) + 
+				  	 '			TRG.Prioridad = SRC.prioridad, ' + CHAR(13) + 
+				  	 '			TRG.C_mora = SRC.c_mora ' + CHAR(13) + 
+					 'WHEN NOT MATCHED BY TARGET THEN ' + CHAR(13) + 
+				  	 '	INSERT (Cuota_pago, Descripcio, N_cta_cte, Eliminado, Codigo_bnc, Fch_venc, Prioridad, C_mora, I_ProcedenciaID, D_FecCarga, B_Actualizado) ' + CHAR(13) + 
+				  	 '	VALUES (SRC.cuota_pago, SRC.descripcio, SRC.n_cta_cte, SRC.eliminado, SRC.codigo_bnc, SRC.fch_venc, SRC.prioridad, SRC.c_mora, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', @D_FecProceso, 1) ' + CHAR(13) +
+					 'WHEN NOT MATCHED BY SOURCE AND TRG.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + IIF(@B_IgnoreUpdated = 0, ' AND TRG.B_Actualizado = 0','') + ' THEN ' + CHAR(13) +
+				  	 '	UPDATE SET TRG.B_Removido = 1, ' +CHAR(13) +
+				  	 '			   TRG.D_FecRemovido = @D_FecProceso ' + CHAR(13) +
+					 'OUTPUT  $ACTION, inserted.CUOTA_PAGO, inserted.ELIMINADO, inserted.DESCRIPCIO, inserted.N_CTA_CTE, ' + CHAR(13) +  
+				  	 '		inserted.CODIGO_BNC, inserted.FCH_VENC, inserted.PRIORIDAD, inserted.C_MORA, deleted.DESCRIPCIO, ' + CHAR(13) +
+				  	 '		deleted.N_CTA_CTE, deleted.CODIGO_BNC, deleted.FCH_VENC, deleted.PRIORIDAD, deleted.C_MORA, ' + CHAR(13) +
+				  	 '		deleted.B_Removido INTO #Tbl_output;'
 
+		EXEC sp_executesql @T_SQL
 
 
 		UPDATE	TR_Cp_Des 
@@ -100,7 +108,7 @@ BEGIN
 		 WHERE	I_ProcedenciaID = @I_ProcedenciaID
 
 		
-		SET @T_SQL = 'SELECT cuota_pago FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des'
+		SET @T_SQL = 'SELECT cuota_pago FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des WHERE codigo_bnc IN (' + @T_Codigo_bnc + ')'
 		print @T_SQL
 		Exec sp_executesql @T_SQL
 
@@ -110,12 +118,12 @@ BEGIN
 		SET @I_Actualizados = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 0)
 		SET @I_Removidos = (SELECT COUNT(*) FROM #Tbl_output WHERE accion = 'UPDATE' AND B_Removido = 1)
 
-		INSERT INTO TR_ControlTablas (I_TablaID, I_ProcedenciaID, I_EtapaProcesoID, I_Anio, 
-									  I_TotalOrigen, I_CountCopiados, I_CountSnCopiar, D_LastCopia)
-							   VALUES (@I_TablaID, @I_ProcedenciaID, @I_EtapaProcesoID, NULL, 
-									   @I_CpDes, @I_Insertados + @I_Actualizados, @I_CpDes - (@I_Insertados + @I_Actualizados), 
-									   @D_FecProceso)
+		DECLARE @I_ToDo int = @I_CpDes
+		DECLARE @I_Done int = @I_Insertados + @I_Actualizados
+		DECLARE @I_Progress int = @I_CpDes - @I_Done
 
+		EXEC USP_Shared_ControlTabla_MigracionTP_IU_RegistrarCopiados @I_TablaID, @I_ProcedenciaID, @I_Anio, @I_ToDo, 
+																	  @I_Done, @I_Progress, @D_FecProceso
 
 		SELECT @I_CpDes AS tot_cuotaPago, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, 
 			   @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
