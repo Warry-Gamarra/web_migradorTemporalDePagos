@@ -165,11 +165,11 @@ GO
 
 
 
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteRegistroEnCtasxCobrar')
-	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteRegistroEnCtasxCobrar]
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteProcesoEnCtasxCobrar')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteProcesoEnCtasxCobrar]
 GO
 
-CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteRegistroEnCtasxCobrar
+CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteProcesoEnCtasxCobrar
 (	
 	@I_ProcedenciaID tinyint,
 	@B_Resultado  	 bit output,
@@ -180,7 +180,7 @@ AS
 	DECLARE @I_ProcedenciaID tinyint = 2,
 			@B_Resultado  	 bit,
 			@T_Message	  	 nvarchar(4000)
-	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteRegistroEnCtasxCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteProcesoEnCtasxCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
 	SELECT @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -219,24 +219,46 @@ GO
 
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteCtaDepoEnCtasxCobrar')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteCtaDepoEnCtasxCobrar]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteCtaDepoEnCtasxCobrar
+(	
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  	 bit output,
+	@T_Message	  	 nvarchar(4000) OUTPUT	
+)
+AS
+/*
+	DECLARE @I_ProcedenciaID tinyint = 2,
+			@B_Resultado  	 bit,
+			@T_Message	  	 nvarchar(4000)
+	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteCtaDepoEnCtasxCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
 BEGIN
 	DECLARE @I_TablaID int = 2
 	DECLARE @I_CountCtas int = 0
 
-	BEGIN TRY
-		SELECT D.*
-		INTO #temp_matchCtas
-		FROM TR_Cp_Des D
-			 INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_Proceso P ON D.Cuota_pago = P.I_ProcesoID
-			 													  AND D.Eliminado = P.B_Eliminado
-		WHERE I_ProcedenciaID = @I_ProcedenciaID;
+	BEGIN TRY 
 
-		SET @I_CountCtas = (SELECT COUNT(*) FROM #temp_matchCtas);
-			  
+		WITH CTE_CtasDepositoProceso AS (
+			SELECT CD.I_CtaDepositoID, CD.C_NumeroCuenta, CDP.I_CtaDepoProID, CDP.I_ProcesoID
+			  FROM BD_OCEF_CtasPorCobrar.dbo.TC_CuentaDeposito CD 
+				   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso CDP ON CD.I_CtaDepositoID = CDP.I_CtaDepositoID
+			 WHERE CD.B_Habilitado = 1
+			 	   AND CDP.B_Habilitado = 1
+		)
+		
 		UPDATE D
-		   SET B_ExisteCtas = IIF(T.Cuota_pago IS NULL, 0, 1)
+		   SET I_CtaDepoProID = CDP.I_CtaDepoProID
 		  FROM TR_Cp_Des D
-			   LEFT JOIN #temp_matchCtas T ON D.Cuota_pago = T.Cuota_pago
+		  	   LEFT JOIN CTE_CtasDepositoProceso CDP ON D.cuota_pago = CDP.I_ProcesoID 
+			   										AND D.N_cta_cte = CDP.C_NumeroCuenta
+		 WHERE D.I_ProcedenciaID = @I_ProcedenciaID
+
+		SET @I_CountCtas = (SELECT COUNT(*) FROM TR_Cp_Des WHERE B_ExisteCtas = 1 AND I_ProcedenciaID = @I_ProcedenciaID);
 
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
@@ -255,3 +277,5 @@ BEGIN
 	END CATCH
 END
 GO
+
+

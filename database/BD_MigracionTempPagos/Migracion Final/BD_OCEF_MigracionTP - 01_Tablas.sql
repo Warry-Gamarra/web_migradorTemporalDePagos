@@ -115,6 +115,7 @@ CREATE TABLE dbo.TR_Tasas_Ec_Obl (
 	D_FecMigrado	datetime  NULL,
 	B_Removido		bit  NOT NULL DEFAULT 0,
 	D_FecRemovido	datetime  NULL,
+	CONSTRAINT PK_TasasEcObl PRIMARY KEY (I_RowID)
 ) 
 GO
 
@@ -126,6 +127,7 @@ GO
 
 CREATE TABLE dbo.TR_Tasas_Ec_Det (
 	I_RowID			bigint IDENTITY(1, 1) NOT NULL,
+	I_OblRowID		int  NULL,
 	Cod_alu			varchar(20)  NULL,
 	Cod_rc			varchar(3) NULL,
 	Cuota_pago		int  NULL,
@@ -163,7 +165,9 @@ CREATE TABLE dbo.TR_Tasas_Ec_Det (
 	B_Removido		bit  NOT NULL DEFAULT 0,
 	D_FecRemovido	datetime  NULL,
 	B_Correcto		bit  NULL,
-	I_CtasPagoBncTableRowID	int
+	I_CtasPagoBncTableRowID	int,
+	CONSTRAINT PK_TasasEcDet PRIMARY KEY (I_RowID),
+	CONSTRAINT FK_TasasEcObl_TasasEcDet FOREIGN KEY (I_OblRowID) REFERENCES TR_Tasas_Ec_Obl(I_RowID)
 ) 
 GO
 
@@ -175,6 +179,7 @@ GO
 
 CREATE TABLE dbo.TR_Tasas_Ec_Det_Pagos (
 	I_RowID			bigint IDENTITY(1, 1) NOT NULL,
+	I_OblRowID		int  NULL,
 	Cod_alu			varchar(20)  NULL,
 	Cod_rc			varchar(3) NULL,
 	Cuota_pago		int  NULL,
@@ -213,6 +218,8 @@ CREATE TABLE dbo.TR_Tasas_Ec_Det_Pagos (
 	D_FecRemovido	datetime  NULL,
 	B_Correcto		bit  NULL,
 	I_CtasPagoBncTableRowID	int
+	CONSTRAINT PK_TasasEcDetPagos PRIMARY KEY (I_RowID),
+	CONSTRAINT FK_TasasEcObl_TasasEcDetPagos FOREIGN KEY (I_OblRowID) REFERENCES TR_Tasas_Ec_Obl(I_RowID)
 ) 
 GO
 

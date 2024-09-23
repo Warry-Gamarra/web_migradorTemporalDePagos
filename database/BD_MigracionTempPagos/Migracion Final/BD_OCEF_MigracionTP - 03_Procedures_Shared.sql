@@ -37,7 +37,7 @@ BEGIN
 	/*
 		1	Copia de datos
 		2	Validacion de consistencia
-		3	Migracion a Recaudación de Ingresos
+		3	Migracion a Recaudaciï¿½n de Ingresos
 	*/
 
 	DECLARE @I_CurrentEtapaID tinyint = 1
@@ -91,7 +91,7 @@ BEGIN
 	/*
 		1	Copia de datos
 		2	Validacion de consistencia
-		3	Migracion a Recaudación de Ingresos
+		3	Migracion a Recaudaciï¿½n de Ingresos
 	*/
 
 	DECLARE @I_CurrentEtapaID tinyint = 2
@@ -145,7 +145,7 @@ BEGIN
 	/*
 		1	Copia de datos
 		2	Validacion de consistencia
-		3	Migracion a Recaudación de Ingresos
+		3	Migracion a Recaudaciï¿½n de Ingresos
 	*/
 
 	DECLARE @I_CurrentEtapaID tinyint = 3
