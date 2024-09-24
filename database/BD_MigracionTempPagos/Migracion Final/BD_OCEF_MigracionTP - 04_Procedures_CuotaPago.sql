@@ -177,7 +177,7 @@ CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteProcesoEn
 )
 AS
 /*
-	DECLARE @I_ProcedenciaID tinyint = 2,
+	DECLARE @I_ProcedenciaID tinyint = 1,
 			@B_Resultado  	 bit,
 			@T_Message	  	 nvarchar(4000)
 	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteProcesoEnCtasxCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -195,7 +195,7 @@ BEGIN
 		  	   LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_Proceso P ON D.cuota_pago = P.I_ProcesoID 
 			   			 										   AND D.Eliminado = P.B_Eliminado
 		 WHERE D.I_ProcedenciaID = @I_ProcedenciaID
-		 	   AND D.I_RowID = ISNULL(@I_RowID, D.I_RowID)
+
 
 		SET @I_CountCtas = (SELECT COUNT(*) FROM TR_Cp_Des WHERE B_ExisteCtas = 1 AND I_ProcedenciaID = @I_ProcedenciaID);
 
@@ -203,7 +203,7 @@ BEGIN
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
 							 'Title: "Summary", ' + 
-							 'Value: "Cuotas de pago que ya existen en BD Recaudación ' + CAST(@I_CountCtas AS varchar(11)) + ')."'  + 
+							 'Value: "Cuotas de pago que ya existen en BD Recaudación ' + CAST(@I_CountCtas AS varchar(11)) + '."'  + 
 						 '}' 
 	END TRY
 	BEGIN CATCH
@@ -231,7 +231,7 @@ CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteCtaDepoEn
 )
 AS
 /*
-	DECLARE @I_ProcedenciaID tinyint = 2,
+	DECLARE @I_ProcedenciaID tinyint = 1,
 			@B_Resultado  	 bit,
 			@T_Message	  	 nvarchar(4000)
 	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteCtaDepoEnCtasxCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -248,6 +248,7 @@ BEGIN
 			  FROM BD_OCEF_CtasPorCobrar.dbo.TC_CuentaDeposito CD 
 				   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso CDP ON CD.I_CtaDepositoID = CDP.I_CtaDepositoID
 			 WHERE CD.B_Habilitado = 1
+				   AND CD.I_EntidadFinanID = 1
 			 	   AND CDP.B_Habilitado = 1
 		)
 		
@@ -257,14 +258,83 @@ BEGIN
 		  	   LEFT JOIN CTE_CtasDepositoProceso CDP ON D.cuota_pago = CDP.I_ProcesoID 
 			   										AND D.N_cta_cte = CDP.C_NumeroCuenta
 		 WHERE D.I_ProcedenciaID = @I_ProcedenciaID
+			   AND Eliminado = 0 
 
-		SET @I_CountCtas = (SELECT COUNT(*) FROM TR_Cp_Des WHERE B_ExisteCtas = 1 AND I_ProcedenciaID = @I_ProcedenciaID);
+		SET @I_CountCtas = (SELECT COUNT(*) FROM TR_Cp_Des WHERE I_CtaDepoProID IS NOT NULL AND I_ProcedenciaID = @I_ProcedenciaID);
 
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
 							 'Title: "Summary", ' + 
-							 'Value: "Cuotas de pago que ya existen en BD Recaudación ' + CAST(@I_CountCtas AS varchar(11)) + ')."'  + 
+							 'Value: "Cuentas de deposito proceso que ya existen en BD Recaudación ' + CAST(@I_CountCtas AS varchar(11)) + '."'  + 
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						 '}' 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_CtasPorCobrar_I_MigrarCtaDeposito')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_CtasPorCobrar_I_MigrarCtaDeposito]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_CtasPorCobrar_I_MigrarCtaDeposito
+(	
+	@I_ProcesoID	  int = NULL,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  	 bit output,
+	@T_Message	  	 nvarchar(4000) OUTPUT	
+)
+AS
+/*
+	DECLARE @I_ProcesoID	  int = NULL,
+			@I_ProcedenciaID tinyint = 1,
+			@B_Resultado  	 bit,
+			@T_Message	  	 nvarchar(4000)
+	EXEC USP_Obligaciones_CuotaPago_MigracionTP_CtasPorCobrar_I_MigrarCtaDeposito @I_ProcesoID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_TablaID int = 2
+	DECLARE @I_CountCtas int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_UsuarioID int = (SELECT dbo.Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID())
+
+	BEGIN TRY 
+
+		DECLARE @Tbl_outputCtas AS TABLE (T_Action varchar(20), I_RowID int)
+
+		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso AS TRG
+		USING (SELECT CD.I_CtaDepositoID, TP_CD.* FROM TR_Cp_Des TP_CD
+					  INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CuentaDeposito CD ON CD.C_NumeroCuenta COLLATE DATABASE_DEFAULT = TP_CD.N_CTA_CTE COLLATE DATABASE_DEFAULT
+				WHERE B_Migrable = 1 
+					  AND TP_CD.Eliminado = 0
+					  AND cuota_pago = ISNULL(@I_ProcesoID, cuota_pago)
+					  AND I_ProcedenciaID = @I_ProcedenciaID
+			   ) AS SRC
+		ON TRG.I_ProcesoID = SRC.CUOTA_PAGO AND TRG.I_CtaDepositoID = SRC.I_CtaDepositoID
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_CtaDepositoID, I_ProcesoID, B_Habilitado, B_Eliminado, D_FecCre, I_UsuarioCre)
+			VALUES (I_CtaDepositoID, CUOTA_PAGO, 1, ELIMINADO, @D_FecProceso, @I_UsuarioID)
+		OUTPUT $action, SRC.I_RowID INTO @Tbl_outputCtas;
+
+		SET @I_CountCtas = (SELECT COUNT(*) FROM @Tbl_outputCtas);
+
+
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Summary", ' + 
+							 'Value: "Se registraron ' + CAST(@I_CountCtas AS varchar(11)) + ' nuevas cuentas de deposito proceso en la BD de recaudación."'  + 
 						 '}' 
 	END TRY
 	BEGIN CATCH

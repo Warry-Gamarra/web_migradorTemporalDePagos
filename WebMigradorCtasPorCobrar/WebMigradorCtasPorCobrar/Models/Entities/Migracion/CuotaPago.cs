@@ -39,7 +39,7 @@ namespace WebMigradorCtasPorCobrar.Models.Entities.Migracion
         public IList<DetalleObligacion> DetalleObligaciones { get; set; }
         public bool B_ExisteCtas { get; set; }
         public bool B_Correcto { get; set; }
-        public int I_CtaDepoProID { get; set; }
+        public int? I_CtaDepoProID { get; set; }
     }
 
 
