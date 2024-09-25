@@ -231,12 +231,12 @@ CREATE PROCEDURE USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarExisteEnCt
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_RowID	  int = NULL,
-			@I_ProcedenciaID tinyint = 1,
+	DECLARE @I_RowID	  int = NULL,
+			@I_ProcedenciaID tinyint = 3,
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
-	exec USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarExisteEnCtas @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
-	select @B_Resultado as resultado, @T_Message as mensaje
+	EXEC USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarExisteEnCtas @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -286,12 +286,12 @@ CREATE PROCEDURE USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarMigracionE
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_RowID	  int = NULL,
-			@I_ProcedenciaID tinyint = 1,
+	DECLARE @I_RowID	  int = NULL,
+			@I_ProcedenciaID tinyint = 3,
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
-	exec USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarMigracionEnCtas @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
-	select @B_Resultado as resultado, @T_Message as mensaje
+	EXEC USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarMigracionEnCtas @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -350,11 +350,11 @@ CREATE PROCEDURE USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalen
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_ProcedenciaID tinyint = 1,
+	DECLARE @I_ProcedenciaID tinyint = 2,
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
-	exec USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaCtasID @I_ProcedenciaID, @B_Resultado output, @T_Message output
-	select @B_Resultado as resultado, @T_Message as mensaje
+	EXEC USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaCtasID @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 

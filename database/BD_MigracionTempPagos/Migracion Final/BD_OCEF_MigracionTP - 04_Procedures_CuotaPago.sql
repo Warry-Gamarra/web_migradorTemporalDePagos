@@ -177,7 +177,7 @@ CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteProcesoEn
 )
 AS
 /*
-	DECLARE @I_ProcedenciaID tinyint = 1,
+	DECLARE @I_ProcedenciaID tinyint = 3,
 			@B_Resultado  	 bit,
 			@T_Message	  	 nvarchar(4000)
 	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteProcesoEnCtasxCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -231,7 +231,7 @@ CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteCtaDepoEn
 )
 AS
 /*
-	DECLARE @I_ProcedenciaID tinyint = 1,
+	DECLARE @I_ProcedenciaID tinyint = 3,
 			@B_Resultado  	 bit,
 			@T_Message	  	 nvarchar(4000)
 	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteCtaDepoEnCtasxCobrar @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -296,7 +296,7 @@ CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_CtasPorCobrar_I_MigrarCt
 AS
 /*
 	DECLARE @I_ProcesoID	  int = NULL,
-			@I_ProcedenciaID tinyint = 1,
+			@I_ProcedenciaID tinyint = 3,
 			@B_Resultado  	 bit,
 			@T_Message	  	 nvarchar(4000)
 	EXEC USP_Obligaciones_CuotaPago_MigracionTP_CtasPorCobrar_I_MigrarCtaDeposito @I_ProcesoID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
@@ -315,7 +315,7 @@ BEGIN
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso AS TRG
 		USING (SELECT CD.I_CtaDepositoID, TP_CD.* FROM TR_Cp_Des TP_CD
 					  INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CuentaDeposito CD ON CD.C_NumeroCuenta COLLATE DATABASE_DEFAULT = TP_CD.N_CTA_CTE COLLATE DATABASE_DEFAULT
-				WHERE B_Migrable = 1 
+				WHERE B_ExisteCtas = 1 
 					  AND TP_CD.Eliminado = 0
 					  AND cuota_pago = ISNULL(@I_ProcesoID, cuota_pago)
 					  AND I_ProcedenciaID = @I_ProcedenciaID
