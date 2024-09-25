@@ -216,3 +216,191 @@ END
 GO
 
 
+
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarExisteEnCtas')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarExisteEnCtas]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarExisteEnCtas	
+	@I_RowID	  int = NULL,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	declare @I_RowID	  int = NULL,
+			@I_ProcedenciaID tinyint = 1,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	exec USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarExisteEnCtas @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_TablaID	int = 3
+	DECLARE @I_Count	int = 0
+	
+	BEGIN TRY 
+		UPDATE	cp_pri
+		   SET	cp_pri.B_ExisteCtas = IIF(I_ConcPagID IS NULL, 0, 1)
+		  FROM  TR_Cp_Pri cp_pri
+				LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago ctas_cp ON cp_pri.Id_cp = ctas_cp.I_ConcPagID
+																				AND cp_pri.Cuota_pago = ctas_cp.I_ProcesoID
+		WHERE	cp_pri.I_ProcedenciaID = @I_ProcedenciaID
+				AND I_RowID = ISNULL(@I_RowID, I_RowID)
+
+		SET @I_Count = (SELECT COUNT(Id_cp) FROM TR_Cp_Pri WHERE I_ProcedenciaID = @I_ProcedenciaID AND B_ExisteCtas = 1)
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Summary", ' + 
+							 'Value: "Existen ' + CAST(@I_Count as varchar(11)) + ' conceptos de pago registrados en BD de Recaudación."'  +
+						  '}' 
+
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}' 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarMigracionEnCtas')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarMigracionEnCtas]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarMigracionEnCtas	
+	@I_RowID	  int = NULL,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	declare @I_RowID	  int = NULL,
+			@I_ProcedenciaID tinyint = 1,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	exec USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarMigracionEnCtas @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_TablaID	int = 3
+	DECLARE @I_Count	int = 0
+	
+	BEGIN TRY 
+		UPDATE	cp_pri
+		   SET	cp_pri.B_Migrado = ctas_cp.B_Migrado
+		  FROM  TR_Cp_Pri cp_pri
+				INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago ctas_cp ON cp_pri.Id_cp = ctas_cp.I_ConcPagID
+																				AND cp_pri.Cuota_pago = ctas_cp.I_ProcesoID
+		WHERE	cp_pri.I_ProcedenciaID = @I_ProcedenciaID
+				AND I_RowID = ISNULL(@I_RowID, I_RowID)
+
+		UPDATE	ctas_cp
+		   SET	ctas_cp.I_MigracionRowID = cp_pri.I_RowID,
+				ctas_cp.I_MigracionTablaID = @I_TablaID
+		  FROM  TR_Cp_Pri cp_pri
+				INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago ctas_cp ON cp_pri.Id_cp = ctas_cp.I_ConcPagID
+																				AND cp_pri.Cuota_pago = ctas_cp.I_ProcesoID
+		WHERE	cp_pri.I_ProcedenciaID = @I_ProcedenciaID
+				AND ctas_cp.B_Migrado = 1
+				AND I_RowID = ISNULL(@I_RowID, I_RowID)
+
+
+		SET @I_Count = (SELECT COUNT(Id_cp) FROM TR_Cp_Pri WHERE I_ProcedenciaID = @I_ProcedenciaID AND B_Migrado = 1)
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Summary", ' + 
+							 'Value: "Existen ' + CAST(@I_Count as varchar(11)) + ' conceptos de pago registrados en BD de Recaudación."'  +
+						  '}' 
+
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaCtasID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaCtasID]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaCtasID	
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	declare @I_ProcedenciaID tinyint = 1,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	exec USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaCtasID @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_TablaID	int = 3
+	DECLARE @I_Count	int = 0
+	
+	BEGIN TRY 
+		-- Cuotas de pago antes del 2021
+
+		UPDATE	cp_pri
+		   SET	cp_pri.I_EquivDestinoID = ctas_cp.I_ConcPagID
+		  FROM  TR_Cp_Pri cp_pri
+				INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago ctas_cp ON cp_pri.Id_cp = ctas_cp.I_ConcPagID
+																				AND cp_pri.Cuota_pago = ctas_cp.I_ProcesoID
+		WHERE	cp_pri.I_ProcedenciaID = @I_ProcedenciaID
+				AND ctas_cp.I_ProcesoID < 513
+
+		-- Cuotas de pago entre 2021 y 2022
+		UPDATE	cp_pri
+		   SET	cp_pri.I_EquivDestinoID = ctas_cp.I_ConcPagID
+		  FROM  TR_Cp_Pri cp_pri
+				INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago ctas_cp ON cp_pri.Cuota_pago = ctas_cp.I_ProcesoID
+																				AND cp_pri.Descripcio = ctas_cp.T_ConceptoPagoDesc
+																				AND cp_pri.Monto = ctas_cp.M_Monto
+		WHERE	cp_pri.I_ProcedenciaID = @I_ProcedenciaID
+				AND ctas_cp.I_ProcesoID BETWEEN 513 AND 522
+
+
+		SET @I_Count = (SELECT COUNT(Id_cp) FROM TR_Cp_Pri WHERE I_ProcedenciaID = @I_ProcedenciaID AND B_Migrado = 1)
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Summary", ' + 
+							 'Value: "Existen ' + CAST(@I_Count as varchar(11)) + ' conceptos de pago registrados en BD de Recaudación."'  +
+						  '}' 
+
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}' 
+	END CATCH
+END
+GO
+

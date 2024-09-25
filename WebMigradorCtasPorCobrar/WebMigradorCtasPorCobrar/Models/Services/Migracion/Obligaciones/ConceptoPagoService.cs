@@ -207,6 +207,38 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
 
+        private Response VerificarExisteConceptosPagoCtasPorCobrar(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.VerificarExisteConceptoPagoCtasPorCobrar(procedenciaId, cuotaPagoRowID);
+
+            return response;
+        }
+
+        private Response VerificarMigracionConceptosPagoCtasPorCobrar(int? cuotaPagoRowID, int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.VerificarMigracionConceptoPagoCtasPorCobrar(procedenciaId, cuotaPagoRowID);
+
+            return response;
+        }
+
+
+        private Response ActualizarEquivConceptosPagoCtasPorCobrar(int procedenciaId)
+        {
+            Response response;
+            ConceptoPagoRepository conceptoPagoRepository = new ConceptoPagoRepository();
+
+            response = conceptoPagoRepository.ActualizarEquivalenciaConceptoPagoCtasPorCobrar(procedenciaId);
+
+            return response;
+        }
+
+
         public Response Save(ConceptoPago conceptoPago, int tipoObserv)
         {
             Response result = new Response();

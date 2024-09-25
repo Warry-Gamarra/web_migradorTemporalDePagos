@@ -37,12 +37,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 
         private IEnumerable<ConceptoPago> ObtenerConRepo(IEnumerable<ConceptoPago> conceptosPago, Procedencia procedencia)
         {
-            var conceptosPagoCtas = RepoCtas.ConceptoPagoRepository.Obtener((int)procedencia);
-
             var newCuotasPago = from c in conceptosPago
-                                join cr in conceptosPagoCtas on c.Id_cp equals cr.I_ConcPagID
-                                into conceptosPagoConceptosPagoCtasGroup
-                                from cpg in conceptosPagoConceptosPagoCtasGroup.DefaultIfEmpty()
+                                where c.I_ProcedenciaID == (int)procedencia
                                 select new ConceptoPago()
                                 {
                                     Id_cp = c.Id_cp,
@@ -57,7 +53,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
                                     B_Migrable = c.B_Migrable,
                                     B_Migrado = c.B_Migrado,
                                     I_RowID = c.I_RowID,
-                                    B_ExisteCtas = cpg == null ? false : true
+                                    B_ExisteCtas = c.B_ExisteCtas
                                 };
 
             return newCuotasPago;
