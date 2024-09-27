@@ -18,7 +18,7 @@ CREATE PROCEDURE USP_Obligaciones_Pagos_TemporalPagos_MigracionTP_IU_CopiarTabla
 	@T_Anio		  varchar(4),
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
-AS
+AS 
 /*
 	declare @I_ProcedenciaID	tinyint = 3,
 			@T_SchemaDB   varchar(20) = 'euded',

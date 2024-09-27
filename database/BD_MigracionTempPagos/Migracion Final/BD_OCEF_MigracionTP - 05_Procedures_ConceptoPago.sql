@@ -247,7 +247,7 @@ BEGIN
 		UPDATE	cp_pri
 		   SET	cp_pri.B_ExisteCtas = IIF(I_ConcPagID IS NULL, 0, 1)
 		  FROM  TR_Cp_Pri cp_pri
-				LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago ctas_cp ON cp_pri.Id_cp = ctas_cp.I_ConcPagID
+				LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TI_ConceptoPago ctas_cp ON cp_pri.I_EquivDestinoID = ctas_cp.I_ConcPagID
 																				AND cp_pri.Cuota_pago = ctas_cp.I_ProcesoID
 		WHERE	cp_pri.I_ProcedenciaID = @I_ProcedenciaID
 				AND I_RowID = ISNULL(@I_RowID, I_RowID)
@@ -350,7 +350,7 @@ CREATE PROCEDURE USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalen
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DECLARE @I_ProcedenciaID tinyint = 2,
+	DECLARE @I_ProcedenciaID tinyint = 3,
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
 	EXEC USP_Obligaciones_ConceptoPago_MigracionTP_U_ActualizarEquivalenciaCtasID @I_ProcedenciaID, @B_Resultado output, @T_Message output
