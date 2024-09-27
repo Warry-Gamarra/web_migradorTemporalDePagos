@@ -250,6 +250,14 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Observaciones-ConceptoPago.xlsx");
         }
 
+        public ActionResult ValidarMigracion(Procedencia procedencia)
+        {
+            var result = _conceptoPagoServiceMigracion.ValidarMigracionCtasPorCobrar(procedencia);
+            ViewBag.Reload = true;
+
+            return PartialView("_Message", result[0]);
+        }
+
         private Response ObtenerVistaEdicion(int obsID)
         {
             Response model = new Response();

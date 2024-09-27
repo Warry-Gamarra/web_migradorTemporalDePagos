@@ -22,6 +22,14 @@
     <div id="spinner-loading" class="spinner-border text-info mx-4" role="status" style="display:none;">
         <span class="sr-only">Loading...</span>
     </div>
+    <div class="col-md-4">
+        <button id="btn-validar" class="btn btn-outline-primary float-right">
+            Verificar Migración <i class="fa fa-refresh"></i>
+        </button>
+    </div>
+    <div id="spinner-loading2" class="spinner-border text-info mx-4" role="status" style="display:none;">
+        <span class="sr-only">Loading...</span>
+    </div>
 </div>
 
 <div class="table-responsive" style="min-height: 300px; font-size: 13px;">
@@ -70,6 +78,28 @@
         $('#link-exportar').hide();
         $('#spinner-loading').show();
         location.href = '@Url.Action(str_procedencia, "ConceptoPago", new { area = "", partial = "DatosMigracion" })' + '&tipo_obs=' + this.value;
+    })
+
+
+    $('#btn-validar').on('click', function () {
+        $.ajax({
+            url: '@Url.Action("ValidarMigracion", "ConceptoPago", new { area = "" })' + '?procedencia=' + '@str_procedencia',
+            type: 'POST',
+            cache: false,
+            beforeSend: function () {
+                $('#spinner-loading2').show();
+            },
+            success: function (data) {
+                console.log(data);
+                location.href = '@Url.Action(str_procedencia, "ConceptoPago", new { area = "", partial = "DatosMigracion" })' + '&tipo_obs=' + this.value;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText)
+            },
+            complete: function () {
+                $('#spinner-loading2').hide();
+            }
+        })
     })
 
 </script>

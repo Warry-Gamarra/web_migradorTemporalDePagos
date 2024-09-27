@@ -211,6 +211,22 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross
 
             return result.ToList();
         }
+
+        public List<Response> ValidarMigracionCtasPorCobrar(Procedencia procedencia)
+        {
+            IEnumerable<Response> result;
+
+            if (procedencia == Procedencia.Tasas)
+            {
+                result = _conceptoPagoTasasService.MigrarDatosTemporalPagos(procedencia); 
+            }
+            else
+            {
+                result = _conceptoPagoObligacionesService.ValidarMigracionCtasPorCobrar(procedencia);
+            }
+
+            return result.ToList();
+        }
     }
 
 }

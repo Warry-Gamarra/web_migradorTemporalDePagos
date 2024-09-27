@@ -205,6 +205,14 @@ namespace WebMigradorCtasPorCobrar.Controllers
             return File(model, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Observaciones-CuotaPago.xlsx");
         }
 
+        public ActionResult ValidarMigracion(Procedencia procedencia)
+        {
+            var result = _cuotaPagoServiceMigracionCross.ValidarMigracionCtasPorCobrar(procedencia);
+            ViewBag.Reload = true;
+
+            return PartialView("_Message", result[0]);
+        }
+
         private string ObtenerVistaEdicion(int obsID)
         {
             string viewName = "_Message";

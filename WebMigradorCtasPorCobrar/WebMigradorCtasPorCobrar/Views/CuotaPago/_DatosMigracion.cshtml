@@ -75,4 +75,26 @@
        location.href = '@Url.Action(str_procedencia, "CuotaPago", new { area = "", partial = "DatosMigracion" })' + '&tipo_obs=' + this.value;
     })
 
+
+
+    $('#btn-validar').on('click', function () {
+        $.ajax({
+            url: '@Url.Action("ValidarMigracion", "CuotaPago", new { area = "" })' + '?procedencia=' + '@str_procedencia',
+            type: 'POST',
+            cache: false,
+            beforeSend: function () {
+                $('#spinner-loading2').show();
+            },
+            success: function (data) {
+                console.log(data);
+                location.href = '@Url.Action(str_procedencia, "CuotaPago", new { area = "", partial = "DatosMigracion" })' + '&tipo_obs=' + this.value;
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.responseText)
+            },
+            complete: function () {
+                $('#spinner-loading2').hide();
+            }
+        })
+    })
 </script>

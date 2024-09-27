@@ -205,6 +205,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return response;
         }
 
+
+
+
         public IEnumerable<Response> MigrarDatosTemporalPagos(Procedencia procedencia)
         {
             List<Response> result = new List<Response>();
