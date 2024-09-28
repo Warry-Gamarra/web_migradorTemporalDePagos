@@ -222,6 +222,18 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result;
         }
 
+        public IEnumerable<Response> ValidarMigracionCtasPorCobrar(Procedencia procedencia)
+        {
+            List<Response> result = new List<Response>();
+            CuotaPagoRepository cuotaPagoRepository = new CuotaPagoRepository();
+
+            result.Add(cuotaPagoRepository.MigrarCtaDepositoCtasPorCobrar((int)procedencia, null));
+            result.Add(cuotaPagoRepository.ValidarExisteProcesoCtasPorCobrar((int)procedencia));
+            result.Add(cuotaPagoRepository.ValidarExisteCtaDepositoCtasPorCobrar((int)procedencia));
+
+            return result;
+        }
+
 
         public Response Save(CuotaPago cuotaPago, int? tipoObsID)
         {
