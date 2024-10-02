@@ -34,7 +34,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_24_
 AS
 /*
 	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando cod_alu no existe en la lista alumno migrada o en la base de datos de repositorio
-				 para el año y procedencia
+				 para el aÃ±o y procedencia
 
 	DECLARE @I_ProcedenciaID	tinyint = 3,
 			@T_Anio		  varchar(4) = '2010',
@@ -140,7 +140,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_26_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando no existe un valor válido de año para la procedencia de la obligacion
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando no existe un valor vï¿½lido de aï¿½o para la procedencia de la obligacion
 
 	DECLARE @I_ProcedenciaID	tinyint = 3, 
 			@I_RowID	  int = NULL,
@@ -190,7 +190,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_26_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando no existe un valor válido de año para el ID de la obligacion
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando no existe un valor vï¿½lido de aï¿½o para el ID de la obligacion
 
 	DECLARE @I_RowID	  int,
 			@B_Resultado  bit,
@@ -243,7 +243,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_27_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando no existe un valor válido para periodo para la procedencia y año de la obligacion 
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando no existe un valor vï¿½lido para periodo para la procedencia y aï¿½o de la obligacion 
 
 	DECLARE	@I_ProcedenciaID	tinyint = 3, 
 			@T_Anio		  varchar(4) = '2010',
@@ -291,7 +291,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_27_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando no existe un valor válido para periodo para el ID de la obligacion 
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando no existe un valor vï¿½lido para periodo para el ID de la obligacion 
 
 	DECLARE	I_RowID	  int,
 			@B_Resultado  bit,
@@ -344,7 +344,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la fecha de vencimiento es diferente a la fecha de vencimiento de la cuota de pago para el año y procedencia
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la fecha de vencimiento es diferente a la fecha de vencimiento de la cuota de pago para el aï¿½o y procedencia
 
 	DECLARE	@I_ProcedenciaID	tinyint = 2, 
 			@T_Anio				varchar(4) = 2016,
@@ -447,7 +447,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_32_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la cuota de pago de la procedencia y año no ha sido migrada, o no se encuentra en la base de datos de ctas x cobrar
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la cuota de pago de la procedencia y aï¿½o no ha sido migrada, o no se encuentra en la base de datos de ctas x cobrar
 
 	DECLARE	@I_ProcedenciaID	tinyint = 2, 
 			@T_Anio				varchar(4) = 2016,
@@ -551,8 +551,8 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_34_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la procedencia de la obligación no coincide con la procedencia de la cuota de pago migrada 
-						o en la base de datos de ctas x cobrar para el año y procedencia
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la procedencia de la obligaciï¿½n no coincide con la procedencia de la cuota de pago migrada 
+						o en la base de datos de ctas x cobrar para el aï¿½o y procedencia
 
 	DECLARE	@I_ProcedenciaID	tinyint = 2, 
 			@T_Anio				varchar(4) = 2016,
@@ -602,7 +602,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_34_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la procedencia de la obligación no coincide con la procedencia de la cuota de pago migrada 
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la procedencia de la obligaciï¿½n no coincide con la procedencia de la cuota de pago migrada 
 				 o en la base de datos de ctas x cobrar para el Id de la obligacion
 
 	DECLARE	@I_RowID	  int,
@@ -652,7 +652,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_36_
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la obligacion tiene conceptos que no estan migrados o no son migrables para el año y procedencia
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la obligacion tiene conceptos que no estan migrados o no son migrables para el aï¿½o y procedencia
 
 	DECLARE @I_ProcedenciaID	tinyint = 2, 
 	    	@T_Anio				varchar(4) = '2008',
@@ -665,8 +665,7 @@ BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 36
-	DECLARE @I_TablaID int = 4
-	DECLARE @I_TablaOblID int = 5
+	DECLARE @I_TablaID int = 5
 
 	BEGIN TRANSACTION
 	BEGIN TRY
@@ -714,7 +713,7 @@ AS
 BEGIN
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
-	DECLARE @I_ObservID int = 34
+	DECLARE @I_ObservID int = 36
 	DECLARE @I_TablaID int = 5
 
 	BEGIN TRANSACTION
@@ -739,3 +738,389 @@ BEGIN
 	END CATCH
 END
 GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_39_DetalleObservado')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_39_DetalleObservado]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_39_DetalleObservado]
+	@I_ProcedenciaID tinyint,
+	@T_Anio			varchar(4) = NULL,
+	@B_Resultado	bit output,
+	@T_Message		nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la obligacion tiene registros observados en el detalle para el aÃ±o y procedencia
+
+	DECLARE @I_ProcedenciaID	tinyint = 3, 
+			@T_Anio		  varchar(4) = '2005',
+			@B_Resultado  bit,
+			@T_Message    nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_39_DetalleObservado @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @I_ObservadosObl int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 39
+	DECLARE @I_TablaID int = 5
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+		COMMIT TRANSACTION
+
+	
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_39_DetalleObservadoPorOblID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_39_DetalleObservadoPorOblID]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_39_DetalleObservadoPorOblID]	
+	@I_RowID	  int,
+	@B_Resultado  bit OUTPUT,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la obligacion tiene conceptos que no estan migrados o no son migrables para el Id de la obligacion
+
+	DECLARE	@I_RowID	  int,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_39_DetalleObservado @I_RowID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 39
+	DECLARE @I_TablaID int = 5
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+
+		COMMIT TRANSACTION				
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados ", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_40_ObligacionSinDetalle')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_40_ObligacionSinDetalle]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_40_ObligacionSinDetalle]
+	@I_ProcedenciaID tinyint,
+	@T_Anio			varchar(4) = NULL,
+	@B_Resultado	bit output,
+	@T_Message		nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la obligacion no tiene registros asociados en el detalle para el aÃ±o y procedencia.
+
+	DECLARE @I_ProcedenciaID	tinyint = 2, 
+			@T_Anio		  varchar(4) = '2019',
+			@B_Resultado  bit,
+			@T_Message    nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_40_ObligacionSinDetalle @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @I_ObservadosObl int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 40
+	DECLARE @I_TablaID int = 5
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+
+		COMMIT TRANSACTION
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_40_ObligacionSinDetallePorOblID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_40_ObligacionSinDetallePorOblID]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_40_ObligacionSinDetallePorOblID]
+	@I_RowID	  int,
+	@B_Resultado  bit output,
+	@T_Message    nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la obligacion no tiene registros asociados en el detalle para el ID de obligacion.
+
+	DECLARE @I_RowID	  int,
+			@B_Resultado  bit,
+			@T_Message    nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_40_ObligacionSinDetallePorOblID @I_RowID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @I_ObservadosObl int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 40
+	DECLARE @I_TablaID int = 5
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+
+		COMMIT TRANSACTION
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
+/*	
+	===============================================================================================
+		Validaciones para migracion de ec_det (solo obligaciones de pago)	
+	===============================================================================================
+*/ 
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarDetalleObligacion')
+	DROP PROCEDURE [dbo].[USP_U_ValidarDetalleObligacion]
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabID]
+GO
+
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabID]	
+(
+	@I_ProcedenciaID tinyint,
+	@T_Anio		  varchar(4),
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+)
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Det con B_Migrable = 0 cuando la obligacion asociada tiene estado B_Migrable = 0.
+
+	DECLARE	@B_Resultado  bit,
+			@I_ProcedenciaID	tinyint = 2,
+			@T_Anio				varchar(4) = '2016',
+			@T_Message			nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabID @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @I_ObservadosObl int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 25
+	DECLARE @I_TablaID int = 4
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+
+
+		COMMIT TRANSACTION;
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados sin OblId", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
+
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabIDPorOblID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabIDPorOblID]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabIDPorOblID]
+	@I_RowID	  int,
+	@B_Resultado  bit output,
+	@T_Message    nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la obligacion no tiene registros asociados en el detalle para el ID de obligacion.
+
+	DECLARE @I_RowID	  int,
+			@B_Resultado  bit,
+			@T_Message    nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabIDPorOblID @I_RowID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @I_ObservadosObl int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 40
+	DECLARE @I_TablaID int = 5
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+
+		COMMIT TRANSACTION
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_58_SinObligacionCabID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_58_SinObligacionCabID]
+GO
+
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_58_SinObligacionCabID]	
+(
+	@I_ProcedenciaID tinyint,
+	@T_Anio		  varchar(4),
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+)
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Det con B_Migrable = 0 cuando NO tiene asociada un ID de obligacion.
+
+	DECLARE	@I_ProcedenciaID	tinyint = 2,
+			@T_Anio				varchar(4) = '2016',
+			@B_Resultado  bit,
+			@T_Message			nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_58_ObligacionCabID @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @I_ObservadosObl int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 58
+	DECLARE @I_TablaID int = 4
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+
+
+		COMMIT TRANSACTION;
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados sin OblId", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
+
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+

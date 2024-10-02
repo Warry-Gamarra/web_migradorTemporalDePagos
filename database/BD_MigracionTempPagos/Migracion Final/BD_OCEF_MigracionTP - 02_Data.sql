@@ -23,7 +23,7 @@ GO
 IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 51)
 BEGIN
 	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
-								VALUES (51, 'El concepto de pago contiene verdadero en el campo obligación', 'NO OBLIGACION', NULL, 3)
+								VALUES (51, 'El concepto de pago contiene verdadero en el campo obligaciï¿½n', 'NO OBLIGACION', NULL, 3)
 END
 GO
 
@@ -31,16 +31,24 @@ GO
 IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 57)
 BEGIN
 	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
-								VALUES (57, 'El pago tiene observaciones en la cabecera de la obligacion.', 'OBSERVACIÓN OBLIG.', NULL, 7)
+								VALUES (57, 'El pago tiene observaciones en la cabecera de la obligacion.', 'OBSERVACIï¿½N OBLIG.', NULL, 7)
 END
 GO
+
+IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 58)
+BEGIN
+	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
+								VALUES (58, 'El detalle de la obligacion no tiene asociado un ID de la obligacion.', 'SIN OBLIGACION', NULL, 4)
+END
+GO
+
 
 
 IF NOT EXISTS (SELECT * FROM TC_EtapaProceso)
 BEGIN
 	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (1, 'Copia de datos')
-	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (2, 'Validación de consistencia')
-	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (3, 'Migración a Recaudación de Ingresos')
+	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (2, 'Validaciï¿½n de consistencia')
+	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (3, 'Migraciï¿½n a Recaudaciï¿½n de Ingresos')
 END
 GO
 
