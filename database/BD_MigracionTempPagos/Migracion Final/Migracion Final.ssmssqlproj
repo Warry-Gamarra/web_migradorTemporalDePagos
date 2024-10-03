@@ -62,8 +62,8 @@
           <FullPath>BD_OCEF_MigracionTP - 05_Procedures_ConceptoPago.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_MigracionTP - 06_Procedures_ObligacionesPago.sql">
-          <AssociatedConnectionMoniker />
-          <AssociatedConnSrvName />
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 06_Procedures_ObligacionesPago.sql</FullPath>
         </FileNode>
