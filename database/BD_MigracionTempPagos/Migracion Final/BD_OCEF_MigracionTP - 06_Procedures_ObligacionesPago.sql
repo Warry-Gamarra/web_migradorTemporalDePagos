@@ -36,7 +36,7 @@ AS
 	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando cod_alu no existe en la lista alumno migrada o en la base de datos de repositorio
 				 para el año y procedencia
 
-	DECLARE @I_ProcedenciaID	tinyint = 3,
+	DECLARE @I_ProcedenciaID	tinyint = 1,
 			@T_Anio		  varchar(4) = '2010',
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
@@ -50,19 +50,72 @@ BEGIN
 	DECLARE @I_TablaID int = 5
 
 	BEGIN TRANSACTION
-	BEGIN TRY 
+	BEGIN TRY 		
+	
+		UPDATE	ec_obl
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		FROM	TR_Ec_Obl ec_obl
+				LEFT JOIN BD_UNFV_Repositorio.dbo.TC_Alumno ec_alu ON ec_obl.Cod_alu = ec_alu.C_CodAlu 
+																	  AND ec_obl.Cod_rc = ec_alu.C_RcCod
+		WHERE	ec_alu.C_CodAlu IS NULL
+				AND ec_obl.Ano = @T_Anio
+			    AND ec_obl.I_ProcedenciaID = @I_ProcedenciaID
+
+		MERGE   TI_ObservacionRegistroTabla AS TRG
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, ec_obl.I_RowID AS I_FilaTablaID, 
+						@D_FecProceso AS D_FecRegistro 
+				   FROM	TR_Ec_Obl ec_obl
+						LEFT JOIN BD_UNFV_Repositorio.dbo.TC_Alumno ec_alu ON ec_obl.Cod_alu = ec_alu.C_CodAlu 
+																			  AND ec_obl.Cod_rc = ec_alu.C_RcCod
+				  WHERE	ec_alu.C_CodAlu IS NULL
+						AND ec_obl.Ano = @T_Anio
+						AND ec_obl.I_ProcedenciaID = @I_ProcedenciaID
+				) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT ec_obl.*, ec_alu.C_CodAlu   
+							 FROM TR_Ec_Obl ec_obl
+								  LEFT JOIN BD_UNFV_Repositorio.dbo.TC_Alumno ec_alu ON ec_obl.Cod_alu = ec_alu.C_CodAlu 
+								  														AND ec_obl.Cod_rc = ec_alu.C_RcCod
+							WHERE ec_alu.C_CodAlu IS NOT NULL
+								  AND ec_obl.Ano = @T_Anio
+								  AND ec_obl.I_ProcedenciaID = @I_ProcedenciaID) OBL 
+						  ON OBS.I_FilaTablaID = OBL.I_RowID
+							 AND OBS.I_ProcedenciaID = OBL.I_ProcedenciaID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+
+		
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM (SELECT * FROM TR_Ec_Obl WHERE Ano = @T_Anio AND I_ProcedenciaID = @I_ProcedenciaID) OBL
+									INNER JOIN (SELECT * FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID) OBS 
+											   ON OBS.I_FilaTablaID = OBL.I_RowID AND OBS.I_ProcedenciaID = OBL.I_ProcedenciaID)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
 
 		COMMIT TRANSACTION				
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
-							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
-							 'Value: ' + CAST(@I_Observados AS varchar)  +
-						  '}' 
+							'Type: "summary", ' + 
+							'Title: "Observados", ' + 
+							'Value: ' + CAST(@I_Observados AS varchar)  +
+						 '}' 
 	END TRY
 	BEGIN CATCH
-		ROLLBACK TRANSACTION
+		IF (@@TRANCOUNT > 0)
+			ROLLBACK TRANSACTION
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
