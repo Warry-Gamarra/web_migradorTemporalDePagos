@@ -880,6 +880,82 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
+		
+		SELECT Ano, P, obl.I_Periodo, Cod_alu, Cod_rc, obl.Cuota_pago, obl.Fch_venc, Tipo_oblig, Monto, obl.I_RowID, Ctas_obl.I_MontoOblig
+		INTO  #temp_obl_Monto_dif_Ctas_anio
+		FROM  TR_Ec_Obl obl
+				LEFT JOIN (SELECT I_ObligacionAluID, I_ProcesoID, I_MontoOblig, D_FecVencto, M.C_CodAlu, M.C_CodRc, 
+								M.I_Anio, M.I_Periodo, C.B_Pagado 
+							FROM BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab C 
+								INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno M ON C.I_MatAluID = M.I_MatAluID
+						  ) Ctas_obl ON obl.Cuota_pago = Ctas_obl.I_ProcesoID
+										AND obl.I_Periodo = Ctas_obl.I_Periodo
+										AND obl.Ano = CAST(Ctas_obl.I_Anio as varchar(4))
+										AND obl.Cod_alu = Ctas_obl.C_CodAlu
+										AND obl.Cod_rc = Ctas_obl.C_CodRc
+										AND obl.Fch_venc = Ctas_obl.D_FecVencto									 
+		WHERE obl.I_ProcedenciaID = @I_ProcedenciaID
+			  AND Ctas_obl.I_ObligacionAluID IS NOT NULL
+			  AND Ano = @T_Anio 
+			  AND ISNULL(B_Correcto, 0) = 0 
+			  AND obl.Monto <> ISNULL(Ctas_obl.I_MontoOblig, 0)
+		ORDER BY Ano, obl.I_Periodo, Cuota_pago, Cod_rc, Cod_alu 
+
+
+		UPDATE	TRG_1
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		FROM	TR_Ec_Obl TRG_1
+				INNER JOIN #temp_obl_Monto_dif_Ctas_anio SRC_1 
+				ON TRG_1.I_RowID = SRC_1.I_RowID
+		WHERE	TRG_1.Ano = @T_Anio
+				AND ISNULL(TRG_1.B_Correcto, 0) = 0 
+
+					
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Ec_Obl TRG_1
+					  INNER JOIN #temp_obl_Monto_dif_Ctas_anio SRC_1 ON TRG_1.I_RowID = SRC_1.I_RowID
+				WHERE TRG_1.Ano = @T_Anio
+					  AND ISNULL(TRG_1.B_Correcto, 0) = 0 
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT TRG_1.Ano, TRG_1.P, TRG_1.I_Periodo, TRG_1.Cod_alu, TRG_1.Cod_rc, TRG_1.Cuota_pago, TRG_1.Fch_venc, 
+								  TRG_1.Tipo_oblig, TRG_1.Monto, TRG_1.I_RowID, TRG_1.I_ProcedenciaID 
+							 FROM TR_Ec_Obl TRG_1
+								  LEFT JOIN #temp_obl_Monto_dif_Ctas_anio SRC_1 ON TRG_1.I_RowID = SRC_1.I_RowID
+							WHERE TRG_1.Ano = @T_Anio
+								  AND SRC_1.I_RowID IS NULL
+								  AND ISNULL(TRG_1.B_Correcto, 0) = 0 
+						  ) OBL 
+						  ON OBS.I_FilaTablaID = OBL.I_RowID
+							 AND OBS.I_ProcedenciaID = OBL.I_ProcedenciaID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+			   AND OBS.I_FilaTablaID = @I_RowID
+
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla OBS INNER JOIN 
+												  TR_Ec_Obl OBL ON OBS.I_FilaTablaID = OBL.I_RowID 
+																	AND OBL.I_ProcedenciaID = OBS.I_ProcedenciaID
+																	AND OBS.I_TablaID = @I_TablaID 
+							  WHERE OBS.I_ObservID = @I_ObservID AND
+									OBL.Ano = @T_Anio AND
+									OBS.B_Resuelto = 0 AND
+									OBS.I_ProcedenciaID = @I_ProcedenciaID)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
 
 
 		COMMIT TRANSACTION				
@@ -931,6 +1007,82 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
+		
+		SELECT Ano, P, obl.I_Periodo, Cod_alu, Cod_rc, obl.Cuota_pago, obl.Fch_venc, Tipo_oblig, Monto, obl.I_RowID, Ctas_obl.I_MontoOblig
+		INTO  #temp_obl_Monto_dif_CtasObl
+		FROM  TR_Ec_Obl obl
+				LEFT JOIN (SELECT I_ObligacionAluID, I_ProcesoID, I_MontoOblig, D_FecVencto, M.C_CodAlu, M.C_CodRc, 
+								M.I_Anio, M.I_Periodo, C.B_Pagado 
+							FROM BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab C 
+								INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno M ON C.I_MatAluID = M.I_MatAluID
+						  ) Ctas_obl ON obl.Cuota_pago = Ctas_obl.I_ProcesoID
+										AND obl.I_Periodo = Ctas_obl.I_Periodo
+										AND obl.Ano = CAST(Ctas_obl.I_Anio as varchar(4))
+										AND obl.Cod_alu = Ctas_obl.C_CodAlu
+										AND obl.Cod_rc = Ctas_obl.C_CodRc
+										AND obl.Fch_venc = Ctas_obl.D_FecVencto									 
+		WHERE Ctas_obl.I_ObligacionAluID IS NOT NULL
+			  AND obl.I_RowID = @I_RowID 
+			  AND ISNULL(obl.B_Correcto, 0) = 0 
+			  AND obl.Monto <> ISNULL(Ctas_obl.I_MontoOblig, 0)
+		ORDER BY obl.Ano, obl.I_Periodo, obl.Cuota_pago, obl.Cod_rc, obl.Cod_alu 
+
+
+		UPDATE	TRG_1
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		FROM	TR_Ec_Obl TRG_1
+				INNER JOIN #temp_obl_Monto_dif_CtasObl SRC_1 
+				ON TRG_1.I_RowID = SRC_1.I_RowID
+		WHERE	TRG_1.I_RowID = @I_RowID
+				AND ISNULL(TRG_1.B_Correcto, 0) = 0 
+
+					
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, 
+					  @D_FecProceso AS D_FecRegistro, TRG_1.I_ProcedenciaID
+				 FROM TR_Ec_Obl TRG_1
+					  LEFT JOIN #temp_obl_Monto_dif_CtasObl SRC_1 ON TRG_1.I_RowID = SRC_1.I_RowID
+				WHERE TRG_1.I_RowID = @I_RowID
+					  AND ISNULL(TRG_1.B_Correcto, 0) = 0 
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, SRC.I_ProcedenciaID);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT  TRG_1.Ano, TRG_1.P, TRG_1.I_Periodo, TRG_1.Cod_alu, TRG_1.Cod_rc, TRG_1.Cuota_pago, TRG_1.Fch_venc, 
+								   TRG_1.Tipo_oblig, TRG_1.Monto, TRG_1.I_RowID, TRG_1.I_ProcedenciaID
+							 FROM TR_Ec_Obl TRG_1
+								  LEFT JOIN #temp_obl_Monto_dif_CtasObl SRC_1 ON TRG_1.I_RowID = SRC_1.I_RowID
+							WHERE TRG_1.I_RowID = @I_RowID
+								  AND SRC_1.I_RowID IS NULL
+								  AND ISNULL(TRG_1.B_Correcto, 0) = 0 
+						  ) OBL 
+						  ON OBS.I_FilaTablaID = OBL.I_RowID
+							 AND OBS.I_ProcedenciaID = OBL.I_ProcedenciaID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+			   AND OBS.I_FilaTablaID = @I_RowID
+
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla OBS INNER JOIN 
+												  TR_Ec_Obl OBL ON OBS.I_FilaTablaID = OBL.I_RowID 
+																	AND OBL.I_ProcedenciaID = OBS.I_ProcedenciaID
+																	AND OBS.I_TablaID = @I_TablaID 
+							  WHERE OBS.I_ObservID = @I_ObservID AND
+									OBS.B_Resuelto = 0 AND
+									OBS.i_ = @I_ProcedenciaID)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
+
 
 		COMMIT TRANSACTION				
 		SET @B_Resultado = 1
