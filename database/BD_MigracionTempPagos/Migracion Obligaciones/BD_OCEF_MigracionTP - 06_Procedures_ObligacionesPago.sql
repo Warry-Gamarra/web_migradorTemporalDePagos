@@ -1098,8 +1098,8 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_35_
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
-	declare @I_ProcedenciaID	tinyint = 3, 
-			@T_Anio		  varchar(4) = '2005',
+	declare @I_ProcedenciaID	tinyint = 1, 
+			@T_Anio		  varchar(4) = '2010',
 			@B_Resultado  bit,
 			@T_Message    nvarchar(4000)
 	exec USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_35_ConceptoPago @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
