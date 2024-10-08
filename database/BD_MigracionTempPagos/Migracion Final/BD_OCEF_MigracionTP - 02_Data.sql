@@ -20,10 +20,22 @@ END
 GO
 
 
+
+UPDATE TC_CatalogoObservacion
+   SET T_ObservDesc = 'El año de la cuota de pago en el detalle no coincide con año de la cuota en cp_pri'
+ WHERE I_ObservID = 43
+GO
+
+
+UPDATE TC_CatalogoObservacion
+   SET T_ObservDesc = 'Periodode la cuota de pago en el detalle no coincide con periodo de la cuota en cp_pri'
+ WHERE I_ObservID = 44
+GO
+
 IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 51)
 BEGIN
 	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
-								VALUES (51, 'El concepto de pago contiene verdadero en el campo obligaci�n', 'NO OBLIGACION', NULL, 3)
+								VALUES (51, 'El concepto de pago contiene verdadero en el campo obligación', 'NO OBLIGACION', NULL, 3)
 END
 GO
 
@@ -31,7 +43,7 @@ GO
 IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 57)
 BEGIN
 	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
-								VALUES (57, 'El pago tiene observaciones en la cabecera de la obligacion.', 'OBSERVACI�N OBLIG.', NULL, 7)
+								VALUES (57, 'El pago tiene observaciones en la cabecera de la obligacion.', 'OBSERVACIÓN OBLIG.', NULL, 7)
 END
 GO
 
@@ -47,8 +59,8 @@ GO
 IF NOT EXISTS (SELECT * FROM TC_EtapaProceso)
 BEGIN
 	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (1, 'Copia de datos')
-	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (2, 'Validaci�n de consistencia')
-	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (3, 'Migraci�n a Recaudaci�n de Ingresos')
+	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (2, 'Validación de consistencia')
+	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (3, 'Migración a Recaudación de Ingresos')
 END
 GO
 
