@@ -311,8 +311,8 @@ CREATE PROCEDURE USP_Obligaciones_ObligacionDet_MigracionTP_U_AsignarObligacionC
 AS
 /*
   declare	@B_Resultado  bit,
-			@I_ProcedenciaID	tinyint = 3,
-	    	@T_Anio		  varchar(4) = '2012',
+			@I_ProcedenciaID	tinyint = 1,
+	    	@T_Anio		  varchar(4) = '2010s',
 			@T_Message	  nvarchar(4000)
   exec USP_Obligaciones_ObligacionDet_MigracionTP_U_AsignarObligacionCabID @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
   select @B_Resultado as resultado, @T_Message as mensaje
