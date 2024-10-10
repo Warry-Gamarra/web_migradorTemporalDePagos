@@ -3328,7 +3328,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados sin OblId", ' + 
+							 'Title: "Observados", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -3534,7 +3534,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados sin OblId", ' + 
+							 'Title: "Observados", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -3741,7 +3741,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados sin OblId", ' + 
+							 'Title: "Observados", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -3965,7 +3965,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados sin OblId", ' + 
+							 'Title: "Observados", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -4175,7 +4175,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados sin OblId", ' + 
+							 'Title: "Observados", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
