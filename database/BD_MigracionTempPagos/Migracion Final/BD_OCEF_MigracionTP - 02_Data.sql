@@ -22,13 +22,15 @@ GO
 
 
 UPDATE TC_CatalogoObservacion
-   SET T_ObservDesc = 'El año de la cuota de pago en el detalle no coincide con año de la cuota en cp_pri'
+   SET T_ObservDesc = 'El año en el detalle de la obligacion no es un valor válido',
+	   T_ObservCod = 'AÑO NO VALIDO'
  WHERE I_ObservID = 43
 GO
 
 
 UPDATE TC_CatalogoObservacion
-   SET T_ObservDesc = 'Periodode la cuota de pago en el detalle no coincide con periodo de la cuota en cp_pri'
+   SET T_ObservDesc = 'Periodo en el detalle la obligacion no tiene equivalencia en la base de datos de Ctas por cobrar',
+	   T_ObservCod = 'SIN PERIODO'
  WHERE I_ObservID = 44
 GO
 

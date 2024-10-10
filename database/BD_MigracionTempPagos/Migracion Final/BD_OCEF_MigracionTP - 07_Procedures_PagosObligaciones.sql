@@ -25,10 +25,11 @@ AS
 			@T_Anio	      varchar(4) = '2016',
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
-	EXEC USP_Obligaciones_Pagos_MigracionTP_U_Validar_52_SinObligacionID @I_ProcedenciaID, @I_Anio, @B_Resultado output, @T_Message output
+	EXEC USP_Obligaciones_Pagos_MigracionTP_U_Validar_52_SinObligacionID @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
 	SELECT @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
+	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 52
 	DECLARE @I_TablaID int = 7
@@ -36,15 +37,63 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
+		UPDATE TR_Ec_Det_Pagos
+		   SET B_Migrable = 0, 
+			   D_FecMigrado = @D_FecProceso
+		 WHERE I_OblRowID IS NULL
+			   AND I_ProcedenciaID = @I_ProcedenciaID
+			   AND Ano = @T_Anio
+	 
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Ec_Det_Pagos 
+				WHERE I_OblRowID IS NULL
+					  AND I_ProcedenciaID = @I_ProcedenciaID
+					  AND Ano = @T_Anio
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_FilaTablaID = SRC.I_FilaTablaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT * FROM TR_Ec_Det_Pagos 
+							WHERE I_OblRowID IS NOT NULL 
+								  AND Ano = @T_Anio 
+								  AND I_ProcedenciaID = @I_ProcedenciaID
+						  ) DPG 
+						  ON OBS.I_FilaTablaID = DPG.I_RowID
+							 AND OBS.I_ProcedenciaID = DPG.I_ProcedenciaID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+
+		SET @I_Observados = (SELECT COUNT(*) 
+							  FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Det_Pagos DPG ON OBS.I_FilaTablaID = DPG.I_RowID 
+																	  AND DPG.I_ProcedenciaID = OBS.I_ProcedenciaID
+																	  AND OBS.I_TablaID = @I_TablaID 
+							  WHERE OBS.I_ObservID = @I_ObservID
+									AND DPG.Ano = @T_Anio 
+									AND OBS.B_Resuelto = 0 
+									AND OBS.I_ProcedenciaID = @I_ProcedenciaID)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
+		
+		COMMIT TRANSACTION;
 
 		SET @B_Resultado = 1
 		SET @T_Message =  '{' +
 							 'Type: "summary", ' + 
 							 'Title: "Actualizados", ' + 
-							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+							 'Value: ' + CAST(@I_Observados AS varchar) +  
 						  '}'
-
-		COMMIT TRANSACTION;
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
@@ -58,58 +107,6 @@ BEGIN
 END
 GO
 
-
-
-
-
-
-IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_U_Validar_52_SinObligacionIDPorID')
-	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_52_SinObligacionIDPorID]
-GO
-
-CREATE PROCEDURE USP_Obligaciones_Pagos_MigracionTP_U_Validar_52_SinObligacionIDPorID	
-	@I_OblRowID	  int,
-	@B_Resultado  bit output,
-	@T_Message	  nvarchar(4000) OUTPUT	
-AS
-/*
-  	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 las obligaciones con estado Pagado = 1 que no tengan pago en TR_Ec_Det_Pagos o cuyo monto pagado no coincide con el monto en obl 
-
-	DECLARE	@I_OblRowID	      int = 3,
-			@B_Resultado      bit,
-			@T_Message	      nvarchar(4000)
-	EXEC USP_Obligaciones_Pagos_MigracionTP_U_Validar_52_SinObligacionIDPorID @I_OblRowID, @B_Resultado output, @T_Message output
-	SELECT @B_Resultado as resultado, @T_Message as mensaje
-*/
-BEGIN
-	DECLARE @D_FecProceso datetime = GETDATE() 
-	DECLARE @I_ObservID int = 52
-	DECLARE @I_TablaID int = 5
-
-	BEGIN TRANSACTION
-	BEGIN TRY
-
-
-		SET @B_Resultado = 1
-		SET @T_Message =  '{' +
-							 'Type: "summary", ' + 
-							 'Title: "Actualizados", ' + 
-							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
-						  '}'
-
-		COMMIT TRANSACTION;
-	END TRY
-	BEGIN CATCH
-		ROLLBACK TRANSACTION
-		SET @B_Resultado = 0
-		SET @T_Message = '[{ ' +
-							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
-							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
-						  '}]' 
-	END CATCH
-END
-GO
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_U_Validar_53_MontoPagadoDetalle')
@@ -118,7 +115,7 @@ GO
 
 CREATE PROCEDURE USP_Obligaciones_Pagos_MigracionTP_U_Validar_53_MontoPagadoDetalle	
 	@I_ProcedenciaID tinyint,
-	@I_Anio	      smallint,
+	@T_Anio	      varchar(4),
 	@B_Resultado  bit output,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
@@ -126,11 +123,11 @@ AS
   	DESCRIPCION: Marcar TR_Ec_Det_Pagos con B_Migrable = 0 los pagos cuyo monto no coincida con el monto acumulado del detalle con estado pagado = 1 y 
 				 eliminado = 0  para la procedencia y año
 
-	DECLARE	@I_ProcedenciaID	tinyint = 3,
-			@I_Anio  	  smallint = 2010,
+	DECLARE	@I_ProcedenciaID	tinyint = 1,
+			@T_Anio	      varchar(4) = '2010',
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
-	EXEC USP_Obligaciones_Pagos_MigracionTP_U_Validar_53_MontoPagadoDetalle @I_ProcedenciaID, @I_Anio, @B_Resultado output, @T_Message output
+	EXEC USP_Obligaciones_Pagos_MigracionTP_U_Validar_53_MontoPagadoDetalle @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
 	SELECT @B_Resultado as resultado, @T_Message as mensaj
 */
 BEGIN
@@ -141,9 +138,76 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SET @B_Resultado = 1
+		SELECT I_OblRowID, SUM(Monto) Monto
+		  INTO #temp_detalle_monto_sum
+		  FROM TR_Ec_Det
+		 WHERE Ano = @T_Anio
+			   AND I_ProcedenciaID = @I_ProcedenciaID
+			   AND Eliminado = 0
+		 GROUP BY I_OblRowID
+
+		SELECT I_OblRowID  
+		  INTO #temp_detalle_monto_cabecera_monto
+		  FROM TR_Ec_Obl Obl
+			   INNER JOIN #temp_detalle_monto_sum tmp ON Obl.I_RowID = tmp.I_OblRowID
+		 WHERE Obl.Monto <> tmp.Monto
+
+		UPDATE Det
+		   SET B_Migrable = 0,
+			   D_FecEvalua = @D_FecProceso
+		  FROM TR_Ec_Det Det 
+			   INNER JOIN #temp_detalle_monto_cabecera_monto tmp ON Det.I_OblRowID = tmp.I_OblRowID
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+					  @D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID 
+				 FROM TR_Ec_Det Det 
+					  INNER JOIN #temp_detalle_monto_cabecera_monto tmp ON Det.I_OblRowID = tmp.I_OblRowID
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_ProcedenciaID = SRC.I_ProcedenciaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID);
+		
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+		   	   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+		  	   INNER JOIN (SELECT Det.I_RowID, Det.I_ProcedenciaID, tmp.I_OblRowID as TempOblRowID
+			   				 FROM TR_Ec_Det Det
+								  LEFT JOIN #temp_detalle_monto_cabecera_monto tmp ON tmp.I_OblRowID = Det.I_OblRowID
+							WHERE tmp.I_OblRowID IS NULL
+								  AND Det.Ano = @T_Anio
+								  AND Det.I_ProcedenciaID = @I_ProcedenciaID
+			   			  ) DET ON OBS.I_FilaTablaID = DET.I_RowID
+						  		   AND OBS.I_ProcedenciaID = DET.I_ProcedenciaID 
+		 WHERE OBS.I_ObservID = @I_ObservID 
+		 	   AND OBS.I_TablaID = @I_TablaID 
+		
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Det DET ON OBS.I_FilaTablaID = DET.I_RowID 
+																AND DET.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+									AND Det.Ano = @T_Anio
+									AND Det.I_ProcedenciaID = @I_ProcedenciaID 
+									AND OBS.B_Resuelto = 0
+							)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso		 
 
 		COMMIT TRANSACTION;
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados sin OblId", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
+
+
 	END TRY
 	BEGIN CATCH
 		ROLLBACK TRANSACTION
