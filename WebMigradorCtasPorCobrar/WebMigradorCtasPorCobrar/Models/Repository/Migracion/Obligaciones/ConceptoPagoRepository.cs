@@ -531,6 +531,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     rowCount = connection.Execute("UPDATE dbo.TR_Cp_Pri " +
                                                   "SET I_TipPerID = @I_TipPerID, " +
                                                       "P = @T_PerCod, " +
+                                                      "Ano = @I_Anio, " +
                                                       "B_Actualizado = 1, " +
                                                       "B_MantenerPeriodo = 1, " +
                                                       "D_FecActualiza = GETDATE() " +
@@ -539,7 +540,8 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                                                   {
                                                       I_TipPerID = conceptoPago.I_TipPerID,
                                                       I_RowID = conceptoPago.I_RowID,
-                                                      T_PerCod = conceptoPago.P
+                                                      T_PerCod = conceptoPago.P,
+                                                      I_Anio = conceptoPago.Ano
                                                   },
                                                   commandType: CommandType.Text);
 

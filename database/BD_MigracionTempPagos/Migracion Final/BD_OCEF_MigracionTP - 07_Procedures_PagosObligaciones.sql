@@ -570,9 +570,9 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEn
 	@T_Message			nvarchar(4000) OUTPUT	
 AS
 /*
-  	DESCRIPCION: Marcar TR_Ec_Det_Pagos con B_Migrable = 0 cuando el pago de la obligacion no migrada existe en la base de datos de destino para la procedencia y a�o.
+  	DESCRIPCION: Marcar TR_Ec_Det_Pagos con B_Migrable = 0 cuando el pago de la obligacion no migrada existe en la base de datos de destino para la procedencia y año.
 
-	DECLARE @I_ProcedenciaID tinyint = 3,
+	DECLARE @I_ProcedenciaID tinyint = 1,
 			@T_Anio		 varchar(4) = '2010', 
 			@B_Resultado  bit, 
 			@T_Message nvarchar(4000)
@@ -587,36 +587,81 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY
+		
+		SELECT Det_pg.* 
+		  INTO #temp_pago_existe_otro_banco 
+		  FROM BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco Ctas_pbco 
+			   INNER JOIN TR_Ec_Det_Pagos Det_pg ON Ctas_pbco.C_CodOperacion = Det_pg.Nro_recibo
+			   										AND Ctas_pbco.I_MontoPago = Det_pg.Monto
+													AND Ctas_pbco.D_FecPago = Det_pg.Fch_pago
+													AND Ctas_pbco.C_CodDepositante = Det_pg.Cod_alu
+		 WHERE Ctas_pbco.I_EntidadFinanID <> 1
+			   AND ISNULL(Ctas_pbco.B_Migrado, 0) = 0
+			   AND Det_pg.Concepto = 0
+			   AND Det_pg.Ano = @T_Anio 
+			   AND Det_pg.I_ProcedenciaID = @I_ProcedenciaID 
 
 		UPDATE Det_pg
 		   SET B_Migrable = 0,
 		   	   D_FecEvalua = @D_FecProceso
-		  FROM BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno ctas_mat
-		  	   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab ctas_cab ON ctas_cab.I_MatAluID = ctas_mat.I_MatAluID
-		  	   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluDet ctas_det ON ctas_det.I_ObligacionAluID = ctas_cab.I_ObligacionAluID
-		  	   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv Ctas_pproc ON Ctas_pproc.I_ObligacionAluDetID = ctas_det.I_ObligacionAluDetID
-		  	   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco Ctas_pbco ON Ctas_pproc.I_PagoBancoID = Ctas_pbco.I_PagoBancoID
-			   INNER JOIN TR_Ec_Obl Obl ON Obl.Cuota_pago = ctas_cab.I_ProcesoID
-			   							   AND ctas_cab.
-		  	   INNER JOIN TR_Ec_Det_Pagos Det_pg ON Ctas_pbco.C_CodOperacion = Det_pg.Nro_recibo
-			   										AND Ctas_pbco.I_MontoPago = Det_pg.Monto
-													AND ctas_mat.C_CodAlu = Det_pg.Cod_alu
-													AND ctas_cab.
-		 WHERE Ctas_pbco.I_EntidadFinanID <> 1
-			
+		  FROM TR_Ec_Det_Pagos Det_pg
+			   INNER JOIN #temp_pago_existe_otro_banco tmp ON Det_pg.I_RowID = tmp.I_RowID
+		 
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, EDP.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Ec_Det_Pagos EDP
+					  INNER JOIN #temp_pago_existe_otro_banco tmp ON EDP.I_RowID = tmp.I_RowID
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_FilaTablaID = SRC.I_FilaTablaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET AND SRC.I_FilaTablaID = SRC.I_FilaTablaID THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID);
 
-	
-		COMMIT TRANSACTION
-					
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT EDP.* FROM TR_Ec_Det_Pagos EDP
+								  LEFT JOIN #temp_pago_existe_otro_banco tmp ON EDP.I_RowID = tmp.I_RowID
+							WHERE EDP.I_ProcedenciaID = @I_ProcedenciaID
+								  AND EDP.Ano = @T_Anio
+								  AND EDP.Concepto = 0
+								  AND tmp.I_RowID IS NULL 
+						  ) DPG ON OBS.I_FilaTablaID = DPG.I_RowID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+
+
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Det_Pagos DET_PG ON OBS.I_FilaTablaID = DET_PG.I_RowID 
+																	  	 AND DET_PG.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+							  		AND OBS.I_TablaID = @I_TablaID
+									AND DET_PG.I_ProcedenciaID = @I_ProcedenciaID 
+									AND OBS.B_Resuelto = 0
+							)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso		 
+
+		COMMIT TRANSACTION;
+
 		SET @B_Resultado = 1
-		SET @T_Message = '[{ ' +
+		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
 							 'Title: "Observados", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
-						  '}]' 
+						 '}' 
 	END TRY
 	BEGIN CATCH
-		ROLLBACK TRANSACTION
+		IF(@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
@@ -648,14 +693,6 @@ AS
 	SELECT @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
-	DECLARE @Cuota_pago int
-	DECLARE @Anio int
-	DECLARE @P varchar(3)
-	DECLARE @fch_venc date
-	DECLARE @monto decimal(10,2)
-	DECLARE @cod_alu varchar(20)
-	DECLARE @cod_rc varchar(5)
-	DECLARE @Nro_recibo varchar(20)
 
 	DECLARE @I_Observados int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
@@ -664,7 +701,64 @@ BEGIN
 	
 	BEGIN TRANSACTION;
 	BEGIN TRY 
+		
+		SELECT Det_pg.* 
+		  INTO #temp_pago_existe_otro_banco 
+		  FROM BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco Ctas_pbco 
+			   INNER JOIN TR_Ec_Det_Pagos Det_pg ON Ctas_pbco.C_CodOperacion = Det_pg.Nro_recibo
+			   										AND Ctas_pbco.I_MontoPago = Det_pg.Monto
+													AND Ctas_pbco.D_FecPago = Det_pg.Fch_pago
+													AND Ctas_pbco.C_CodDepositante = Det_pg.Cod_alu
+		 WHERE Ctas_pbco.I_EntidadFinanID <> 1
+			   AND ISNULL(Ctas_pbco.B_Migrado, 0) = 0
+			   AND Det_pg.Concepto = 0
+			   AND Det_pg.I_OblRowID = @I_OblRowID
 
+		UPDATE Det_pg
+		   SET B_Migrable = 0,
+		   	   D_FecEvalua = @D_FecProceso
+		  FROM TR_Ec_Det_Pagos Det_pg
+			   INNER JOIN #temp_pago_existe_otro_banco tmp ON Det_pg.I_RowID = tmp.I_RowID
+		 
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, EDP.I_RowID AS I_FilaTablaID, 
+					  @D_FecProceso AS D_FecRegistro, EDP.I_ProcedenciaID 
+				 FROM TR_Ec_Det_Pagos EDP
+					  INNER JOIN #temp_pago_existe_otro_banco tmp ON EDP.I_RowID = tmp.I_RowID
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_FilaTablaID = SRC.I_FilaTablaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, SRC.I_ProcedenciaID);
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT EDP.* FROM TR_Ec_Det_Pagos EDP
+								  LEFT JOIN #temp_pago_existe_otro_banco tmp ON EDP.I_RowID = tmp.I_RowID
+							WHERE EDP.I_OblRowID = @I_OblRowID
+								  AND EDP.Concepto = 0
+								  AND tmp.I_RowID IS NULL 
+						  ) DPG ON OBS.I_FilaTablaID = DPG.I_RowID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+
+
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Det_Pagos DET_PG ON OBS.I_FilaTablaID = DET_PG.I_RowID 
+																	  	 AND DET_PG.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+							  		AND OBS.I_TablaID = @I_TablaID
+									AND DET_PG.I_OblRowID = @I_OblRowID 
+									AND OBS.B_Resuelto = 0
+							)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso		 
 
 		COMMIT TRANSACTION
 					
@@ -676,7 +770,11 @@ BEGIN
 						  '}]' 
 	END TRY
 	BEGIN CATCH
-		ROLLBACK TRANSACTION
+		IF(@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
@@ -711,15 +809,72 @@ AS
 */
 BEGIN
 	DECLARE @I_Observados int = 0
-	DECLARE @I_ObservadosObl int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 56
 	DECLARE @I_TablaID int = 7
+	DECLARE @I_DetTablaID int = 4
 
 	BEGIN TRANSACTION
 	BEGIN TRY
-		COMMIT TRANSACTION
+		
+		SELECT Det.*
+		  INTO #temp_obl_det_observada
+		  FROM TR_Ec_Det Det 
+			   INNER JOIN TI_ObservacionRegistroTabla Obs ON Det.I_RowID = Obs.I_FilaTablaID
+															 AND Det.I_ProcedenciaID = Obs.I_ProcedenciaID
+															 AND Obs.I_TablaID = @I_DetTablaID
+		 WHERE Obs.B_Resuelto = 0
+			   AND Det.Ano = @T_Anio 
+			   AND Det.I_ProcedenciaID = @I_ProcedenciaID
 
+
+		UPDATE Det_Pagos 
+		   SET B_Migrable = 0, 
+			   D_FecMigrado = @D_FecProceso
+		  FROM TR_Ec_Det_Pagos Det_Pagos
+			   INNER JOIN #temp_obl_det_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_OblRowID 
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Ec_Det_Pagos Det_Pagos
+				      INNER JOIN #temp_obl_det_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_OblRowID 
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_FilaTablaID = SRC.I_FilaTablaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT EDP.* FROM TR_Ec_Det_Pagos EDP
+								  LEFT JOIN #temp_obl_det_observada tmp ON EDP.I_OblRowID = tmp.I_OblRowID
+							WHERE EDP.I_ProcedenciaID = @I_ProcedenciaID
+								  AND EDP.Ano = @T_Anio
+								  AND tmp.I_RowID IS NULL 
+						  ) DPG ON OBS.I_FilaTablaID = DPG.I_RowID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+
+
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Det_Pagos DET_PG ON OBS.I_FilaTablaID = DET_PG.I_RowID 
+																	  	 AND DET_PG.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+							  		AND OBS.I_TablaID = @I_TablaID
+									AND DET_PG.I_ProcedenciaID = @I_ProcedenciaID 
+									AND OBS.B_Resuelto = 0
+							)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso		 
+
+		COMMIT TRANSACTION 
 
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
@@ -729,7 +884,11 @@ BEGIN
 						 '}' 
 	END TRY
 	BEGIN CATCH
-		ROLLBACK TRANSACTION
+		IF(@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
@@ -766,11 +925,68 @@ BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 56
 	DECLARE @I_TablaID int = 7
+	DECLARE @I_DetTablaID int = 4
 
 	BEGIN TRANSACTION
 	BEGIN TRY
-		COMMIT TRANSACTION
+		
+		SELECT Det.*
+		  INTO #temp_obl_det_observada
+		  FROM TR_Ec_Det Det 
+			   INNER JOIN TI_ObservacionRegistroTabla Obs ON Det.I_RowID = Obs.I_FilaTablaID
+															 AND Det.I_ProcedenciaID = Obs.I_ProcedenciaID
+															 AND Obs.I_TablaID = @I_DetTablaID
+		 WHERE Obs.B_Resuelto = 0
+			   AND Det.I_OblRowID = @I_OblRowID
 
+
+		UPDATE Det_Pagos 
+		   SET B_Migrable = 0, 
+			   D_FecMigrado = @D_FecProceso
+		  FROM TR_Ec_Det_Pagos Det_Pagos
+			   INNER JOIN #temp_obl_det_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_OblRowID 
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, 
+				      @D_FecProceso AS D_FecRegistro, Det_Pagos.I_ProcedenciaID 
+				 FROM TR_Ec_Det_Pagos Det_Pagos
+				      INNER JOIN #temp_obl_det_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_OblRowID 
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_FilaTablaID = SRC.I_FilaTablaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, SRC.I_ProcedenciaID);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT EDP.* FROM TR_Ec_Det_Pagos EDP
+								  LEFT JOIN #temp_obl_det_observada tmp ON EDP.I_OblRowID = tmp.I_OblRowID
+							WHERE EDP.I_OblRowID = @I_OblRowID
+								  AND tmp.I_RowID IS NULL 
+						  ) DPG ON OBS.I_FilaTablaID = DPG.I_RowID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+
+
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Det_Pagos DET_PG ON OBS.I_FilaTablaID = DET_PG.I_RowID 
+																	  	 AND DET_PG.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+							  		AND OBS.I_TablaID = @I_TablaID
+									AND DET_PG.I_OblRowID = @I_OblRowID  
+									AND OBS.B_Resuelto = 0
+							)
+		
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso		 
+
+		COMMIT TRANSACTION 
 
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
@@ -803,10 +1019,10 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_57_CabOblig
 	@T_Message		nvarchar(4000) OUTPUT	
 AS
 /*
-  	DESCRIPCION: Marcar TR_Ec_Det_Pagos con B_Migrable = 0 cuando la cabecera de la obligaci�n asociada se encuentra observada para la procedencia y a�o.	
+  	DESCRIPCION: Marcar TR_Ec_Det_Pagos con B_Migrable = 0 cuando la cabecera de la obligación asociada se encuentra observada para la procedencia y año.	
 
-	DECLARE @I_ProcedenciaID	tinyint = 3, 
-			@T_Anio		  varchar(4) = '2005',
+	DECLARE @I_ProcedenciaID	tinyint = 1, 
+			@T_Anio		  varchar(4) = '2010',
 			@B_Resultado  bit,
 			@T_Message    nvarchar(4000)
 	EXEC USP_Obligaciones_Pagos_MigracionTP_U_Validar_57_CabObligacionObservada @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
@@ -817,14 +1033,70 @@ BEGIN
 	DECLARE @I_ObservadosObl int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 57
+	DECLARE @I_OblTablaID int = 5
 	DECLARE @I_TablaID int = 7
 
 	BEGIN TRANSACTION
 	BEGIN TRY
-		COMMIT TRANSACTION
+		
+		SELECT Obl.*
+		  INTO #temp_obl_cab_observada
+		  FROM TR_Ec_Obl Obl 
+			   INNER JOIN TI_ObservacionRegistroTabla Obs ON Obl.I_RowID = Obs.I_FilaTablaID
+															 AND Obl.I_ProcedenciaID = Obs.I_ProcedenciaID
+															 AND Obs.I_TablaID = @I_OblTablaID
+		 WHERE Obs.B_Resuelto = 0
+			   AND Obl.Ano = @T_Anio 
+			   AND Obl.I_ProcedenciaID = @I_ProcedenciaID
 
-		SET @I_ObservadosObl = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
-								WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+
+		UPDATE Det_Pagos 
+		   SET B_Migrable = 0, 
+			   D_FecMigrado = @D_FecProceso
+		  FROM TR_Ec_Det_Pagos Det_Pagos
+			   INNER JOIN #temp_obl_cab_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_RowID 
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Ec_Det_Pagos Det_Pagos
+				      INNER JOIN #temp_obl_cab_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_RowID 
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_FilaTablaID = SRC.I_FilaTablaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT EDP.* FROM TR_Ec_Det_Pagos EDP
+								  LEFT JOIN #temp_obl_cab_observada tmp ON EDP.I_OblRowID = tmp.I_RowID
+							WHERE EDP.I_ProcedenciaID = @I_ProcedenciaID
+								  AND EDP.Ano = @T_Anio
+								  AND tmp.I_RowID IS NULL 
+						  ) DPG ON OBS.I_FilaTablaID = DPG.I_RowID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+
+
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Det_Pagos DET_PG ON OBS.I_FilaTablaID = DET_PG.I_RowID 
+																	  	 AND DET_PG.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+							  		AND OBS.I_TablaID = @I_TablaID
+									AND DET_PG.I_ProcedenciaID = @I_ProcedenciaID 
+									AND OBS.B_Resuelto = 0
+							)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso		 
+
+		COMMIT TRANSACTION 
 
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
@@ -834,7 +1106,11 @@ BEGIN
 						 '}' 
 	END TRY
 	BEGIN CATCH
-		ROLLBACK TRANSACTION
+		IF(@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
@@ -871,11 +1147,68 @@ BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 56
 	DECLARE @I_TablaID int = 7
+	DECLARE @I_OblTablaID int = 5
 
 	BEGIN TRANSACTION
 	BEGIN TRY
-		COMMIT TRANSACTION
+		
+		SELECT Obl.*
+		  INTO #temp_obl_cab_observada
+		  FROM TR_Ec_Obl Obl 
+			   INNER JOIN TI_ObservacionRegistroTabla Obs ON Obl.I_RowID = Obs.I_FilaTablaID
+															 AND Obl.I_ProcedenciaID = Obs.I_ProcedenciaID
+															 AND Obs.I_TablaID = @I_OblTablaID
+		 WHERE Obs.B_Resuelto = 0
+			   AND Obl.I_RowID = @I_OblRowID
 
+
+		UPDATE Det_Pagos 
+		   SET B_Migrable = 0, 
+			   D_FecMigrado = @D_FecProceso
+		  FROM TR_Ec_Det_Pagos Det_Pagos
+			   INNER JOIN #temp_obl_cab_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_RowID 
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, 
+				      @D_FecProceso AS D_FecRegistro, Det_Pagos.I_ProcedenciaID 
+				 FROM TR_Ec_Det_Pagos Det_Pagos
+				      INNER JOIN #temp_obl_cab_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_RowID 
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_FilaTablaID = SRC.I_FilaTablaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, SRC.I_ProcedenciaID);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT EDP.* FROM TR_Ec_Det_Pagos EDP
+								  LEFT JOIN #temp_obl_cab_observada tmp ON EDP.I_OblRowID = tmp.I_RowID
+							WHERE EDP.I_OblRowID = @I_OblRowID
+								  AND tmp.I_RowID IS NULL 
+						  ) DPG ON OBS.I_FilaTablaID = DPG.I_RowID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+
+
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Det_Pagos DET_PG ON OBS.I_FilaTablaID = DET_PG.I_RowID 
+																	  	 AND DET_PG.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+							  		AND OBS.I_TablaID = @I_TablaID
+									AND DET_PG.I_OblRowID = @I_OblRowID  
+									AND OBS.B_Resuelto = 0
+							)
+		
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso		 
+
+		COMMIT TRANSACTION 
 
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
@@ -885,7 +1218,11 @@ BEGIN
 						 '}' 
 	END TRY
 	BEGIN CATCH
-		ROLLBACK TRANSACTION
+		IF(@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 

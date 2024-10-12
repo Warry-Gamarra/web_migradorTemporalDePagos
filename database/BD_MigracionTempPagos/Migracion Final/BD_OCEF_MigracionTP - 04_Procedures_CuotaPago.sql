@@ -328,6 +328,11 @@ BEGIN
 
 		SET @I_CountCtas = (SELECT COUNT(*) FROM @Tbl_outputCtas);
 
+		
+		DECLARE @B_Resultado2  	 bit,
+				@T_Message2	  	 nvarchar(4000)
+
+		EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteCtaDepoEnCtasxCobrar @I_ProcedenciaID, @B_Resultado2 OUTPUT, @T_Message2 OUTPUT
 
 
 		SET @B_Resultado = 1

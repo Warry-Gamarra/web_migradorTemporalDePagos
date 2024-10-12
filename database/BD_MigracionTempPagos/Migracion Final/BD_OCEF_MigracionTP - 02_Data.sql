@@ -57,7 +57,6 @@ END
 GO
 
 
-
 IF NOT EXISTS (SELECT * FROM TC_EtapaProceso)
 BEGIN
 	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (1, 'Copia de datos')
@@ -66,3 +65,31 @@ BEGIN
 END
 GO
 
+
+DELETE dbo.TI_ObservacionRegistroTabla where I_TablaID in (4,5,7)
+DECLARE @I_ObsTablaID INT = (SELECT MAX(I_ObsTablaID) FROM TI_ObservacionRegistroTabla)
+DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_ObsTablaID)
+
+SELECT * INTO #temp_observados FROM TI_ObservacionRegistroTabla
+
+TRUNCATE TABLE dbo.TI_ObservacionRegistroTabla
+
+INSERT INTO TI_ObservacionRegistroTabla (I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_Resuelto, D_FecResuelto, B_ObligProc)
+SELECT I_ObservID, I_TablaID, I_FilaTablaID, I_ProcedenciaID, D_FecRegistro, B_Resuelto, D_FecResuelto, B_ObligProc
+FROM #temp_observados
+
+
+UPDATE Obs
+   SET I_ProcedenciaID = CP.I_ProcedenciaID
+  FROM TI_ObservacionRegistroTabla Obs
+	   INNER JOIN TR_Cp_Des CP ON Obs.I_FilaTablaID = CP.I_RowID
+								  AND Obs.I_TablaID = 2
+ WHERE Obs.I_ProcedenciaID IS NULL
+
+
+ UPDATE Obs
+   SET I_ProcedenciaID = CP.I_ProcedenciaID
+  FROM TI_ObservacionRegistroTabla Obs
+	   INNER JOIN TR_Cp_Pri CP ON Obs.I_FilaTablaID = CP.I_RowID
+								  AND Obs.I_TablaID = 3
+ WHERE Obs.I_ProcedenciaID IS NULL
