@@ -67,7 +67,8 @@ BEGIN
 		DEL_C_MORA varchar(255),
 		B_Removido	bit
 	)
-
+	
+	BEGIN TRANSACTION
 	BEGIN TRY 
 
 		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE() ' + CHAR(10) + CHAR(13) +
@@ -128,6 +129,8 @@ BEGIN
 		SELECT @I_CpDes AS tot_cuotaPago, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, 
 			   @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
 
+		COMMIT TRANSACTION
+
 		SET @B_Resultado = 1
 
 		SET @T_Message =  '[{ ' +
@@ -153,6 +156,11 @@ BEGIN
 
 	END TRY
 	BEGIN CATCH
+		IF(@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION 
+		END
+
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
@@ -164,6 +172,354 @@ END
 GO
 
 
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_AsignarCategoriaCuotaPago')
+	DROP PROCEDURE [dbo].[USP_U_AsignarCategoriaCuotaPago]
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_09_VariasCategoriasAsignadas')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_09_VariasCategoriasAsignadas]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_09_VariasCategoriasAsignadas
+	@I_RowID	  int = NULL,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: B_Migrable = 0, cuando la cuota de pago presenta más de una categoría según codBanco
+
+	DECLARE @I_RowID	  int = NULL,
+			@I_ProcedenciaID tinyint = 3,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_09_VariasCategoriasAsignadas @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_TablaID int = 2
+	DECLARE @I_ObsMasUnCategoria int = 9
+	DECLARE @I_cant_masCategorias int = 0
+	
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		DECLARE @categoria_pago AS TABLE (cuota_pago int, I_CatPagoID int, N_CodBanco varchar(10))
+
+		INSERT INTO @categoria_pago (cuota_pago, I_CatPagoID, N_CodBanco)
+			SELECT	d.Cuota_pago, c.I_CatPagoID, c.N_CodBanco FROM TR_Cp_Des d
+					LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CategoriaPago c ON d.Codigo_bnc = c.N_CodBanco
+			WHERE	I_ProcedenciaID = @I_ProcedenciaID 
+
+
+		SELECT  cat1.*
+		  INTO  #temp_cuota_una_categorias
+		  FROM  @categoria_pago cat1
+				INNER JOIN (SELECT cuota_pago 
+							  FROM @categoria_pago 
+							GROUP BY cuota_pago HAVING COUNT(*) = 1) cat2 ON cat1.cuota_pago = cat2.cuota_pago
+
+
+		UPDATE	tb_des  
+		   SET	I_CatPagoID = cat1.I_CatPagoID,
+				D_FecEvalua = @D_FecProceso
+		  FROM	TR_Cp_Des tb_des
+			    INNER JOIN #temp_cuota_varias_categorias tmp ON tb_des.I_RowID = tmp.I_RowID
+
+
+		UPDATE	tb_des  
+		SET		I_CatPagoID = CASE WHEN(tb_des.Descripcio) LIKE '%REG%' THEN 18 
+								   WHEN(tb_des.Descripcio) LIKE '%ING%' THEN 17 
+								   ELSE NULL END,
+				D_FecEvalua = @D_FecProceso
+		FROM	TR_Cp_Des tb_des
+				INNER JOIN (SELECT DISTINCT cuota_pago FROM @categoria_pago WHERE N_CodBanco = '0685') cat2
+				ON tb_des.Cuota_pago = cat2.cuota_pago
+		WHERE	tb_des.I_CatPagoID IS NULL
+				AND I_ProcedenciaID = @I_ProcedenciaID
+				AND tb_des.I_RowID = IIF(@I_RowID IS NULL, tb_des.I_RowID, @I_RowID)
+			
+
+		SET @I_cant_masCategorias = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla WHERE I_ObservID = @I_ObsMasUnCategoria AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND B_Resuelto = 0)
+		
+		COMMIT TRANSACTION
+		SET @B_Resultado = 1
+		SET @T_Message = CAST(@I_cant_masCategorias AS varchar)
+
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+ 		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						 '}' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_10_SinCategoriaAsingada')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_10_SinCategoriaAsingada]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_10_SinCategoriaAsingada
+	@I_RowID	  int = NULL,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: B_Migrable = 0, cuando cuota de pago no presenta una categoria asociada según codigo_bnc.
+	
+	DECLARE @I_RowID	  int = NULL,
+			@I_ProcedenciaID tinyint = 3,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_10_SinCategoriaAsingada @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_TablaID int = 2
+	DECLARE @I_ObsSinCategoria int = 10
+	DECLARE @I_cant_sinCategorias int = 0
+	
+	BEGIN TRANSACTION
+	BEGIN TRY 
+
+		UPDATE	TR_Cp_Des
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	I_CatPagoID IS NULL
+				AND Eliminado = 0
+				AND I_ProcedenciaID = @I_ProcedenciaID
+				AND I_RowID = ISNULL(@I_RowID, I_RowID)
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING 	(SELECT	@I_ObsSinCategoria AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro FROM TR_Cp_Des
+				  WHERE	I_CatPagoID IS NULL 
+						AND Eliminado = 0
+						AND I_ProcedenciaID = @I_ProcedenciaID
+						AND I_RowID = ISNULL(@I_RowID, I_RowID)
+				) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+		WHEN NOT MATCHED BY SOURCE 
+				AND TRG.I_ObservID = @I_ObsSinCategoria 
+				AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+				AND TRG.I_TablaID = @I_TablaID
+				AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
+			UPDATE SET D_FecResuelto = D_FecProceso,
+					   B_Resuelto = 1;
+
+
+		SET @I_cant_sinCategorias = (SELECT COUNT(*) 
+									   FROM TI_ObservacionRegistroTabla 
+									  WHERE I_ObservID = @I_ObsSinCategoria 
+									  		AND I_TablaID = @I_TablaID 
+									  		AND I_ProcedenciaID = @I_ProcedenciaID 
+											AND B_Resuelto = 0)
+		
+		COMMIT TRANSACTION
+
+		SET @B_Resultado = 1
+		SET @T_Message = CAST(@I_cant_sinCategorias AS varchar)
+	END TRY
+	BEGIN CATCH
+		IF(@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
+ 		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}' 
+	END CATCH
+END
+GO
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_45_Eliminados')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_45_Eliminados]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_45_Eliminados	
+	@I_RowID	  int = NULL,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DECLARE @I_RowID	  int = NULL,
+			@I_ProcedenciaID	tinyint = 3,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_45_Eliminados @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 45
+	DECLARE @I_TablaID int = 2 
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		UPDATE	TR_Cp_Des 
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		 WHERE	I_ProcedenciaID = @I_ProcedenciaID
+				AND Eliminado = 1
+				AND I_RowID = ISNULL(@I_RowID, I_RowID)
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Cp_Des 
+				WHERE I_ProcedenciaID = @I_ProcedenciaID
+					  AND Eliminado = 1
+					  AND I_RowID = ISNULL(@I_RowID, I_RowID)
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.I_FilaTablaID = ISNULL(@I_RowID, TRG.I_FilaTablaID) 
+								   AND TRG.I_TablaID = @I_TablaID THEN
+			UPDATE SET D_FecResuelto = GETDATE(),
+					   B_Resuelto = 1;
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						 '}' 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_50_RepetidoConDiferentesProcedencias')
+BEGIN
+	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_50_RepetidoConDiferentesProcedencias]
+END
+GO
+
+CREATE PROCEDURE USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_50_RepetidoConDiferentesProcedencias
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DECLARE @I_ProcedenciaID tinyint = 3,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_CuotaPago_MigracionTP_U_Validar_50_RepetidoConDiferentesProcedencias @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN	
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 50
+	DECLARE @I_TablaID int = 2 
+	DECLARE @I_Observados int = 0
+
+	BEGIN TRY
+		SELECT DISTINCT reps.Cuota_pago
+		  INTO #temp_cuota_repetida_dif_procedencia
+		  FROM (SELECT Cuota_pago FROM TR_Cp_Des 
+				GROUP BY Cuota_pago HAVING COUNT(Cuota_pago) > 1) AS reps
+				INNER JOIN (SELECT Cuota_pago, I_ProcedenciaID FROM TR_Cp_Des
+							GROUP BY Cuota_pago, I_ProcedenciaID HAVING COUNT(Cuota_pago) = 1) noRepsProc 
+						   ON reps.Cuota_pago = noRepsProc.Cuota_pago
+		
+
+		UPDATE	TR_Cp_Des
+		   SET	B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		  FROM	TR_Cp_Des cp_des
+				INNER JOIN #temp_cuota_repetida_dif_procedencia tmp ON cp_des.Cuota_pago = tmp.Cuota_pago
+		  WHERE ISNULL(B_Correcto, 0) = 0
+
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, 
+					  @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Cp_Des cp_des
+					  INNER JOIN #temp_cuota_repetida_dif_procedencia tmp ON cp_des.Cuota_pago = tmp.Cuota_pago
+		  		WHERE ISNULL(B_Correcto, 0) = 0
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+								   AND TRG.I_TablaID = @I_TablaID THEN
+			UPDATE SET D_FecResuelto = GETDATE(),
+					   B_Resuelto = 1;
+
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID 
+									AND I_TablaID = @I_TablaID 
+									AND I_ProcedenciaID = @I_ProcedenciaID 
+									AND B_Resuelto = 0)
+
+		SET @B_Resultado = 1
+		SET @T_Message = CAST(@I_Observados AS varchar) 
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}' 
+	END CATCH
+END
+GO
+
+
+
+-----
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteProcesoEnCtasxCobrar')
 	DROP PROCEDURE [dbo].[USP_Obligaciones_CuotaPago_MigracionTP_U_ValidarExisteProcesoEnCtasxCobrar]
