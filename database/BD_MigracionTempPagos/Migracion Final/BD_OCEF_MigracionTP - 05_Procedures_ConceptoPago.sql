@@ -220,6 +220,184 @@ GO
 
 
 
+
+
+
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_45_Eliminados')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_45_Eliminados]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_45_Eliminados	
+	@I_RowID	  int = NULL,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: B_Migrable = 0 cuando el registro se encuentra con estado Eliminado.
+
+	DECLARE @I_RowID	  int = NULL,
+			@I_ProcedenciaID tinyint = 3,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_45_Eliminados @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 45
+	DECLARE @I_TablaID int = 3
+	DECLARE @I_Observados int = 0
+	
+	BEGIN TRY 
+		UPDATE	TR_Cp_Pri
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	I_ProcedenciaID = @I_ProcedenciaID
+				AND Eliminado = 1
+				AND I_RowID = ISNULL(@I_RowID, I_RowID)
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Cp_Pri 
+				 WHERE I_ProcedenciaID = @I_ProcedenciaID
+					   AND Eliminado = 1
+					   AND I_RowID = ISNULL(@I_RowID, I_RowID)
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID 
+		   AND TRG.I_FilaTablaID = SRC.I_FilaTablaID AND TRG.I_ProcedenciaID = @I_ProcedenciaID
+		WHEN MATCHED  THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro,
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID 
+								   AND TRG.I_ProcedenciaID = @I_ProcedenciaID 
+								   AND TRG.I_TablaID = @I_TablaID
+								   AND TRG.I_FilaTablaID = ISNULL(@I_RowID, TRG.I_FilaTablaID) THEN
+			UPDATE SET D_FecResuelto = GETDATE(),
+					   B_Resuelto = 1;
+
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+								WHERE I_ObservID = @I_ObservID 
+									  AND I_TablaID = @I_TablaID 
+									  AND I_ProcedenciaID = @I_ProcedenciaID
+									  AND I_FilaTablaID = IIF(@I_RowID IS NULL, I_FilaTablaID, @I_RowID) 
+									  AND B_Resuelto = 0
+						 )
+
+		SET @B_Resultado = 1
+		SET @T_Message = CAST(@I_Observados AS varchar)
+
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}' 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_MarcarConceptosPagoNoObligacion')
+	DROP PROCEDURE [dbo].[USP_U_MarcarConceptosPagoNoObligacion]
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_46_TipoObligacion')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_46_TipoObligacion]
+GO
+
+
+CREATE PROCEDURE USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_46_TipoObligacion	
+	@I_RowID	  int = NULL,
+	@I_ProcedenciaID tinyint,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: B_Migrable = 0 cuando el concepto de pago contiene falso en el campo obligación.
+
+	DECLARE @I_RowID	  int = NULL,
+			@I_ProcedenciaID tinyint = 3,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_ConceptoPago_MigracionTP_U_Validar_46_TipoObligacion @I_RowID, @I_ProcedenciaID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 46
+	DECLARE @I_TablaID int = 3
+	DECLARE @I_Observados int = 0
+	
+	BEGIN TRY 
+		UPDATE	TR_Cp_Pri
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		WHERE	Tipo_oblig = 0
+				AND I_ProcedenciaID = @I_ProcedenciaID
+				AND Eliminado = 0
+				AND I_RowID = ISNULL(@I_RowID, I_RowID)
+
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Cp_Pri 
+				WHERE Tipo_oblig = 0 
+					  AND Eliminado = 0
+					  AND I_ProcedenciaID = @I_ProcedenciaID
+					  AND I_RowID = ISNULL(@I_RowID, I_RowID)
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0,
+					   B_ObligProc = 1
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID, 1)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID  
+								   AND TRG.I_FilaTablaID = ISNULL(@I_RowID, TRG.I_FilaTablaID)
+								   AND TRG.I_TablaID = @I_TablaID THEN
+			UPDATE SET D_FecResuelto = GETDATE(),
+					   B_Resuelto = 1;
+
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+								WHERE I_ObservID = @I_ObservID 
+									  AND I_TablaID = @I_TablaID 
+									  AND I_ProcedenciaID = @I_ProcedenciaID
+									  AND I_FilaTablaID = ISNULL(@I_RowID, I_FilaTablaID)
+									  AND B_Resuelto = 0
+							)
+
+		SET @B_Resultado = 1
+		SET @T_Message = CAST(@I_Observados AS varchar)
+
+	END TRY
+	BEGIN CATCH
+		SET @B_Resultado = 0
+		SET @T_Message = '{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}' 
+	END CATCH
+END
+GO
+
+
+
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarExisteEnCtas')
 	DROP PROCEDURE [dbo].[USP_Obligaciones_ConceptoPago_MigracionTP_U_VerificarExisteEnCtas]
 GO
@@ -272,6 +450,10 @@ BEGIN
 	END CATCH
 END
 GO
+
+
+
+
 
 
 
