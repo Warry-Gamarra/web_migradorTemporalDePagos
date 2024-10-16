@@ -49,10 +49,10 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion
             using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
                 result = connection.Query<Observacion>("SELECT DISTINCT I_ObservID, I_TablaID, T_TablaNom, T_ObservDesc, T_ObservCod, I_ProcedenciaID " +
-                                                       "FROM dbo.VW_ObservacionesTabla " +
-                                                       "WHERE I_TablaID = @I_TablaID " +
-                                                             "AND B_ObligProc = @B_ObligProc " +
-                                                             "AND B_Resuelto = 0;"
+                                                         "FROM dbo.VW_ObservacionesTabla " +
+                                                        "WHERE I_TablaID = @I_TablaID " +
+                                                              "AND B_ObligProc = @B_ObligProc " +
+                                                              "AND B_Resuelto = 0;"
                                                        , new { I_TablaID = tablaID, B_ObligProc = procObligacion }
                                                        , commandType: CommandType.Text);
             }
