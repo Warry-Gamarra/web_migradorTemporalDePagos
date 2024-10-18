@@ -3234,6 +3234,103 @@ END
 GO
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_ValidarDetalleObligacionConceptoPagoMigrado')
+	DROP PROCEDURE [dbo].[USP_U_ValidarDetalleObligacionConceptoPagoMigrado]
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_ConceptoPagoMigrado')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_ConceptoPagoMigrado]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_ConceptoPagoMigrado]	
+	@I_ProcedenciaID tinyint,
+	@T_Anio		  varchar(4),
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Det con B_Migrable = 0 cuando el detalle de pago tiene un concepto de pago sin migrar.
+
+	DECLARE	@I_ProcedenciaID	tinyint = 2,
+			@T_Anio				varchar(4) = '2016',
+			@B_Resultado		bit,
+			@T_Message			nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_42_CuotaDetalleCuotaConcepto @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 33
+	DECLARE @I_TablaID int = 4
+	DECLARE @I_TablaOblID int = 5
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+
+		SELECT Det.I_RowID, Det.I_OblRowID, Det.Concepto, Pri.Id_cp, Pri.I_RowID AS I_PriRowID
+		  INTO #temp_detalle_conceptos_sin_migrar
+		  FROM TR_Ec_Det Det
+			   INNER JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
+		 WHERE Pri.B_Migrado = 0
+			   AND Det.I_ProcedenciaID = @I_ProcedenciaID
+			   AND Ano = @T_Anio 
+
+		UPDATE	Det
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		FROM    TR_Ec_Det Det
+				LEFT JOIN #temp_detalle_conceptos_sin_migrar tmp ON Det.I_RowID = tmp.I_RowID
+		WHERE	Pri.Id_cp IS NULL
+				AND Det.I_ProcedenciaID = @I_ProcedenciaID
+				AND Det.Ano = @T_Anio 
+					
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+						@D_FecProceso AS D_FecRegistro 
+				   FROM TR_Ec_Det Det
+						LEFT JOIN #temp_detalle_conceptos_sin_migrar tmp ON Det.I_RowID = tmp.I_RowID
+				  WHERE	Pri.Id_cp IS NULL
+						AND Det.I_ProcedenciaID = @I_ProcedenciaID
+						AND Det.Ano = @T_Anio 
+				 ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID)
+		WHEN NOT MATCHED BY SOURCE AND TRG.I_ObservID = @I_ObservID AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			DELETE;
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla 
+							  WHERE I_ObservID = @I_ObservID AND I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID)
+
+		SELECT @I_Observados as cant_obs_det, @I_ObservadosObl as cant_obs_obl, @D_FecProceso as fec_proceso
+
+		COMMIT TRANSACTION				
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Detalles con concepto no migrado", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_42_CuotaDetalleCuotaConcepto')
 	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_42_CuotaDetalleCuotaConcepto]

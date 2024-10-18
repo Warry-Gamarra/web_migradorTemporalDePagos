@@ -202,7 +202,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private Response ValidarDetalleObligacionSinCabeceraID(int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Detalle = obligacionRepository.ValidarDetalleObligacionSinCabeceraID(procedencia, anio);
+            Response result_Detalle = obligacionRepository.ValidarDetalleObligacionCabeceraMigrable(procedencia, anio);
 
             result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Observados por no tener Id de obligacion.",
                                                          (int)DetalleObligacionObs.SinObligacionMigrada,
