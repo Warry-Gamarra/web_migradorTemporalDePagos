@@ -1334,7 +1334,8 @@ BEGIN
 		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso		
 
 
-		COMMIT TRANSACTION				
+		COMMIT TRANSACTION			
+		
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
@@ -3276,7 +3277,7 @@ BEGIN
 			   INNER JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
 		 WHERE Pri.B_Migrado = 0
 			   AND Det.I_ProcedenciaID = @I_ProcedenciaID
-			   AND Ano = @T_Anio 
+			   AND Det.Ano = @T_Anio 
 
 		UPDATE	Det
 		SET		B_Migrable = 0,

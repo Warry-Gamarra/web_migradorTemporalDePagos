@@ -355,6 +355,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             return result;
         }
 
+
         public Response ValidarPeriodoEnCabeceraObligacion(int procedenciaID, string anio)
         {
             Response result = new Response();
@@ -411,6 +412,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
 
             return result;
         }
+
 
         public Response ValidarFechaVencimientoCuotaObligacion(int procedenciaID, string anio)
         {
@@ -527,6 +529,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             return result;
         }
 
+
         public Response ValidarObligacionCuotaPagoMigrada(int procedenciaID, string anio)
         {
             Response result = new Response();
@@ -583,6 +586,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
 
             return result;
         }
+
 
         public Response ValidarProcedenciaObligacionCuotaPago(int procedenciaID, string anio)
         {
@@ -932,6 +936,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         }
 
 
+        //Detalle
         public Response ValidarAnioDetalleAnioConcepto(int procedenciaID, string anio)
         {
             Response result = new Response();
@@ -1135,7 +1140,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             return result;
         }
 
-
         public Response ValidarDetalleExisteConceptoPagoPorOblID(int rowID)
         {
             Response result = new Response();
@@ -1193,7 +1197,6 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
 
             return result;
         }
-
 
 
         public Response MigrarDataObligacionesCtasPorCobrar(int procedenciaID, string anio)

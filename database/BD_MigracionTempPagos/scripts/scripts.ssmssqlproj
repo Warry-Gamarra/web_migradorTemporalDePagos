@@ -27,6 +27,18 @@
           <ConnectionProtocol>NotSpecified</ConnectionProtocol>
           <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
         </ConnectionNode>
+        <ConnectionNode Name="DESKTOP-A2584VF\SQL_2017E:DESKTOP-A2584VF\gamar">
+          <Created>2024-10-18T15:34:09.5605942-05:00</Created>
+          <Type>SQL</Type>
+          <Server>DESKTOP-A2584VF\SQL_2017E</Server>
+          <UserName />
+          <Authentication>Windows Authentication</Authentication>
+          <InitialDB />
+          <LoginTimeout>30</LoginTimeout>
+          <ExecutionTimeout>0</ExecutionTimeout>
+          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
+          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
+        </ConnectionNode>
       </Items>
     </LogicalFolder>
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
@@ -38,8 +50,8 @@
           <FullPath>1. BD_OCEF_CtasPorCobrar - Creación de columnas de migracion.sql</FullPath>
         </FileNode>
         <FileNode Name="1. BD_OCEF_MigracionTP - Creación de base de datos.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-A2584VF\SQL_2017E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-A2584VF\SQL_2017E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>1. BD_OCEF_MigracionTP - Creación de base de datos.sql</FullPath>
         </FileNode>
