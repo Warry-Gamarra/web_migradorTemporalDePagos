@@ -215,7 +215,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private Response ValidarDetalleObligacionConceptoPago(int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Detalle = obligacionRepository.ValidarDetalleObligacionConceptoPago(procedencia, anio);
+            Response result_Detalle = obligacionRepository.ValidarDetalleExisteConceptoPago(procedencia, anio);
 
             result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Observados por no existir en cp_pri.",
                                                          (int)DetalleObligacionObs.ConceptoNoExiste,
