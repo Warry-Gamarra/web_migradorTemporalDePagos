@@ -67,7 +67,7 @@ GO
 
 
 DELETE dbo.TI_ObservacionRegistroTabla where I_TablaID in (4,5,7)
-DECLARE @I_ObsTablaID INT = (SELECT MAX(I_ObsTablaID) FROM TI_ObservacionRegistroTabla)
+DECLARE @I_ObsTablaID INT = (SELECT ISNULL(MAX(I_ObsTablaID), 0) FROM TI_ObservacionRegistroTabla)
 DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_ObsTablaID)
 
 SELECT * INTO #temp_observados FROM TI_ObservacionRegistroTabla
