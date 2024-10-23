@@ -56,6 +56,13 @@ BEGIN
 END
 GO
 
+IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 59)
+BEGIN
+	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
+								VALUES (59, 'La cabecera de obligacion se encuentra duplicada.', 'OBL duplicado', NULL, 5)
+END
+GO
+
 
 IF NOT EXISTS (SELECT * FROM TC_EtapaProceso)
 BEGIN

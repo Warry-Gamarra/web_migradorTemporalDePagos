@@ -3033,6 +3033,253 @@ END
 GO
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_59_ObligacionRepetida')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_59_ObligacionRepetida]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_59_ObligacionRepetida]
+	@I_ProcedenciaID tinyint,
+	@T_Anio			 varchar(4) = NULL,
+	@B_Resultado	 bit output,
+	@T_Message		 nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la cabecera de obligacion se encuentra duplicada para el año y procedencia.
+
+	DECLARE @I_ProcedenciaID tinyint = 1, 
+			@T_Anio		  	 varchar(4) = '2010',
+			@B_Resultado  	 bit,
+			@T_Message    	 nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_59_ObligacionRepetida @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 59
+	DECLARE @I_TablaID int = 5
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+
+		SELECT  Obl.I_RowID
+		  INTO	#temp_obl_duplicados
+		  FROM  TR_Ec_Obl Obl
+		  		INNER JOIN (SELECT Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
+		    				  FROM TR_Ec_Obl
+							 WHERE Ano = @T_Anio
+								   AND I_ProcedenciaID = @I_ProcedenciaID
+							GROUP BY Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
+							HAVING COUNT(*) = 1) OBL1 ON OBL1.I_ProcedenciaID = Obl.I_ProcedenciaID
+														AND OBL1.Cuota_pago = Obl.Cuota_pago
+														AND OBL1.Ano = Obl.Ano
+														AND OBL1.P = Obl.P
+														AND OBL1.Cod_alu = Obl.Cod_alu
+														AND OBL1.Cod_rc = Obl.Cod_rc
+														AND OBL1.Tipo_oblig = Obl.Tipo_oblig
+														AND OBL1.Fch_venc = Obl.Fch_venc
+														AND OBL1.Pagado = Obl.Pagado
+														AND OBL1.Monto = Obl.Monto		
+
+		UPDATE	Obl
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		FROM    TR_Ec_Obl Obl
+				INNER JOIN #temp_obl_duplicados tmp ON Obl.I_RowID = tmp.I_RowID
+		WHERE	ISNULL(Obl.B_Correcto, 0) = 0
+			
+
+		MERGE  TI_ObservacionRegistroTabla AS TRG
+		USING  (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Obl.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				  FROM TR_Ec_Obl Obl
+					   INNER JOIN #temp_obl_duplicados tmp ON Obl.I_RowID = tmp.I_RowID
+				 WHERE ISNULL(Obl.B_Correcto, 0) = 0
+				) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_ProcedenciaID = @I_ProcedenciaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID, 1);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+		   	   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+		  	   INNER JOIN (SELECT Obl.I_RowID, Obl.I_ProcedenciaID, tmp.I_RowID as TempRowID
+			   				 FROM TR_Ec_Obl Obl
+							      LEFT JOIN #temp_obl_duplicados tmp ON Obl.I_RowID = tmp.I_RowID
+							WHERE Obl.Ano = @T_Anio
+								  AND Obl.I_ProcedenciaID = @I_ProcedenciaID
+								  AND tmp.I_RowID IS NULL
+			   			  ) OBL ON OBS.I_FilaTablaID = OBL.I_RowID
+						  		   AND OBS.I_ProcedenciaID = OBL.I_ProcedenciaID 
+		 WHERE OBS.I_ObservID = @I_ObservID 
+		 	   AND OBS.I_TablaID = @I_TablaID
+		
+
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Obl OBL ON OBS.I_FilaTablaID = OBL.I_RowID 
+																AND OBL.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+									AND OBL.Ano = @T_Anio 
+									AND OBL.I_ProcedenciaID = @I_ProcedenciaID 
+									AND OBS.B_Resuelto = 0
+							)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
+
+		COMMIT TRANSACTION
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		IF (@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_59_ObligacionRepetidaPorOblID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_59_ObligacionRepetidaPorOblID]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_59_ObligacionRepetidaPorOblID]
+	@I_RowID	  int,
+	@B_Resultado  bit output,
+	@T_Message    nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la cabecera de obligacion se encuentra duplicada para el ID de obligacion.
+
+	DECLARE @I_RowID	  int,
+			@B_Resultado  bit,
+			@T_Message    nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_59_ObligacionRepetidaPorOblID @I_RowID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @I_ObservadosObl int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 59
+	DECLARE @I_TablaID int = 5
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+		SELECT  Obl.I_RowID
+		  INTO	#temp_obl_duplicados
+		  FROM  (SELECT * FROM TR_Ec_Obl WHERE I_RowID = @I_RowID) Obl
+		  		INNER JOIN (SELECT Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
+		    				  FROM TR_Ec_Obl
+							GROUP BY Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
+							HAVING COUNT(*) = 1) OBL1 ON OBL1.I_ProcedenciaID = Obl.I_ProcedenciaID
+														AND OBL1.Cuota_pago = Obl.Cuota_pago
+														AND OBL1.Ano = Obl.Ano
+														AND OBL1.P = Obl.P
+														AND OBL1.Cod_alu = Obl.Cod_alu
+														AND OBL1.Cod_rc = Obl.Cod_rc
+														AND OBL1.Tipo_oblig = Obl.Tipo_oblig
+														AND OBL1.Fch_venc = Obl.Fch_venc
+														AND OBL1.Pagado = Obl.Pagado
+														AND OBL1.Monto = Obl.Monto		
+
+		UPDATE	Obl
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		FROM    TR_Ec_Obl Obl
+				INNER JOIN #temp_obl_duplicados tmp ON Obl.I_RowID = tmp.I_RowID
+		WHERE	ISNULL(Obl.B_Correcto, 0) = 0
+			
+
+		MERGE  TI_ObservacionRegistroTabla AS TRG
+		USING  (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Obl.I_RowID AS I_FilaTablaID, 
+					   @D_FecProceso AS D_FecRegistro, Obl.I_ProcedenciaID
+				  FROM TR_Ec_Obl Obl
+					   INNER JOIN #temp_obl_duplicados tmp ON Obl.I_RowID = tmp.I_RowID
+				 WHERE ISNULL(Obl.B_Correcto, 0) = 0
+				) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_ProcedenciaID = SRC.I_ProcedenciaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, SRC.I_ProcedenciaID, 1);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+		   	   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+		  	   INNER JOIN (SELECT Obl.I_RowID, Obl.I_ProcedenciaID, tmp.I_RowID as TempRowID
+			   				 FROM TR_Ec_Obl Obl
+							      LEFT JOIN #temp_obl_duplicados tmp ON Obl.I_RowID = tmp.I_RowID
+							WHERE Obl.I_RowID = @I_RowID
+								  AND tmp.I_RowID IS NULL
+			   			  ) OBL ON OBS.I_FilaTablaID = OBL.I_RowID
+						  		   AND OBS.I_ProcedenciaID = OBL.I_ProcedenciaID 
+		 WHERE OBS.I_ObservID = @I_ObservID 
+		 	   AND OBS.I_TablaID = @I_TablaID 
+			   AND OBS.I_FilaTablaID = @I_RowID 
+		
+
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Obl OBL ON OBS.I_FilaTablaID = OBL.I_RowID 
+																AND OBL.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+									AND OBL.I_RowID = @I_RowID 
+									AND OBS.B_Resuelto = 0
+							)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
+
+		COMMIT TRANSACTION
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		IF (@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
 
 /*	
 	===============================================================================================
