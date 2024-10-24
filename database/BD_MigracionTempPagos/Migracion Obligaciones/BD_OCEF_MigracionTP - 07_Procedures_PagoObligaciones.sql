@@ -20,14 +20,14 @@ CREATE PROCEDURE USP_Obligaciones_Pagos_TemporalPagos_MigracionTP_IU_CopiarTabla
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS 
 /*
-	declare @I_ProcedenciaID	tinyint = 3,
+	DECLARE @I_ProcedenciaID	tinyint = 3,
 			@T_SchemaDB   varchar(20) = 'euded',
 			@T_Anio		  varchar(4) = '2005',
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
-	exec USP_Obligaciones_Pagos_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Anio, 
+	EXEC USP_Obligaciones_Pagos_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Anio, 
 																		 @B_Resultado output, @T_Message output
-	select @B_Resultado as resultado, @T_Message as mensaje
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
 	DECLARE @I_EcDet int = 0

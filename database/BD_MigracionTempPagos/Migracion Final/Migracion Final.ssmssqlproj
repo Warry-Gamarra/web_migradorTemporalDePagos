@@ -32,44 +32,44 @@
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
       <Items>
         <FileNode Name="BD_OCEF_MigracionTP - 01_Tablas.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-A2584VF\SQL_2017E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-A2584VF\SQL_2017E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 01_Tablas.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_MigracionTP - 02_Data.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-A2584VF\SQL_2017E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-A2584VF\SQL_2017E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 02_Data.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_MigracionTP - 03_Procedures_Shared.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-A2584VF\SQL_2017E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-A2584VF\SQL_2017E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 03_Procedures_Shared.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_MigracionTP - 04_Procedures_CuotaPago.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-A2584VF\SQL_2017E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-A2584VF\SQL_2017E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 04_Procedures_CuotaPago.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_MigracionTP - 05_Procedures_ConceptoPago.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-A2584VF\SQL_2017E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-A2584VF\SQL_2017E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 05_Procedures_ConceptoPago.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_MigracionTP - 06_Procedures_ObligacionesPago.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-A2584VF\SQL_2017E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-A2584VF\SQL_2017E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 06_Procedures_ObligacionesPago.sql</FullPath>
         </FileNode>
         <FileNode Name="BD_OCEF_MigracionTP - 07_Procedures_PagosObligaciones.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:(local)\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>(local)\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-A2584VF\SQL_2017E:True</AssociatedConnectionMoniker>
+          <AssociatedConnSrvName>DESKTOP-A2584VF\SQL_2017E</AssociatedConnSrvName>
           <AssociatedConnUserName />
           <FullPath>BD_OCEF_MigracionTP - 07_Procedures_PagosObligaciones.sql</FullPath>
         </FileNode>

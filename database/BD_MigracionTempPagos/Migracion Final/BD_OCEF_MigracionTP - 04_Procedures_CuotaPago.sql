@@ -319,7 +319,7 @@ BEGIN
 				AND TRG.I_ProcedenciaID = @I_ProcedenciaID
 				AND TRG.I_TablaID = @I_TablaID
 				AND TRG.I_FilaTablaID = IIF(@I_RowID IS NULL, TRG.I_FilaTablaID, @I_RowID) THEN
-			UPDATE SET D_FecResuelto = D_FecProceso,
+			UPDATE SET D_FecResuelto = @D_FecProceso,
 					   B_Resuelto = 1;
 
 
