@@ -8,7 +8,160 @@
 USE BD_OCEF_MigracionTP
 GO
 
+/*	
+	====================================================================================
+		Copiar tablas ec_obl y ec_det segun procedencia	(solo obligaciones de pago)
+	====================================================================================
+*/ 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_CopiarTablaObligacionesPago')
+	DROP PROCEDURE [dbo].[USP_IU_CopiarTablaObligacionesPago]
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_TemporalPagos_MigracionTP_IU_CopiarTabla')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_TemporalPagos_MigracionTP_IU_CopiarTabla]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_ObligacionCab_TemporalPagos_MigracionTP_IU_CopiarTabla 
+	@I_ProcedenciaID tinyint,
+	@T_SchemaDB	  varchar(20),
+	@T_Anio		  varchar(4),
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DECLARE @I_ProcedenciaID	tinyint = 1,
+			@T_SchemaDB   varchar(20) = 'pregrado',
+			@T_Anio		  varchar(4) = '2010',
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionCab_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Anio, 
+																		 @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_EcObl int = 0
+	DECLARE @I_Removidos int = 0
+	DECLARE @I_Actualizados int = 0
+	DECLARE @I_Insertados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @T_SQL nvarchar(max)
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		SET @T_SQL = 'DELETE TR_Ec_Det_Pagos ' + CHAR(13) +
+					 ' WHERE Ano = ''' + @T_Anio + ''' ' + CHAR(13) +
+							'AND B_Migrado = 0 ' + CHAR(13) +
+							'AND I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ';'
+
+		PRINT @T_SQL
+		EXEC sp_executesql @T_SQL
+
+
+		SET @T_SQL = 'DELETE TR_Ec_Det ' + CHAR(13) +
+					  'WHERE Ano = ''' + @T_Anio + ''' ' + CHAR(13) +
+							'AND B_Migrado = 0 ' + CHAR(13) +
+							'AND I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ';'
+
+		PRINT @T_SQL
+		EXEC sp_executesql @T_SQL
+
+		DELETE TI_ObservacionRegistroTabla 				
+		 WHERE I_TablaID = 4 
+			   AND I_ProcedenciaID = @I_ProcedenciaID
+			   AND NOT EXISTS (SELECT I_RowID 
+								 FROM TR_Ec_Det 
+								WHERE I_RowID = I_FilaTablaID AND Ano = @T_Anio);
+
+
+		SET @T_SQL = 'DELETE TR_Ec_Obl ' +  CHAR(13) +
+					  'WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' ' +  CHAR(13) +
+							'AND TR_Ec_Obl.Ano = ''' + @T_Anio + ''' ' +  CHAR(13) +
+							'AND TR_Ec_Obl.B_Migrado = 0;'
+
+		PRINT @T_SQL
+		EXEC sp_executesql @T_SQL
+
+		DELETE FROM TI_ObservacionRegistroTabla 
+			  WHERE	I_TablaID = 5  
+					AND I_ProcedenciaID = @I_ProcedenciaID
+					AND NOT EXISTS (SELECT I_RowID 
+									  FROM TR_Ec_Det 
+									 WHERE I_RowID = I_FilaTablaID AND Ano = @T_Anio);
+
+
+		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE(); ' + CHAR(10) + CHAR(13) +
+					  'INSERT TR_Ec_Obl (Ano, P, I_Periodo, Cod_alu, Cod_rc, Cuota_pago, Tipo_oblig, Fch_venc, Monto, Pagado, ' + CHAR(13) +
+										'D_FecCarga, B_Migrable, B_Migrado, I_ProcedenciaID, B_Obligacion) ' + CHAR(13) +
+								 'SELECT ano, p, I_OpcionID as I_periodo, cod_alu, cod_rc, cuota_pago, tipo_oblig, fch_venc, monto, pagado, ' + CHAR(13) +
+										'@D_FecProceso, 1, 0, ' + CAST(@I_ProcedenciaID as varchar(3)) + ', 1 ' + CHAR(13) +
+								   'FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl OBL ' + CHAR(13) +
+								 		'LEFT JOIN BD_OCEF_CtasPorCobrar.dbo.TC_CatalogoOpcion cop_per ON OBL.P = cop_per.T_OpcionCod AND cop_per.I_ParametroID = 5 ' + CHAR(13) +
+								  'WHERE NOT EXISTS (SELECT I_RowID FROM TR_Ec_Obl TRG ' + CHAR(13) +
+								 					'WHERE TRG.Ano = OBL.Ano AND TRG.P = OBL.p AND TRG.Cod_alu = OBL.cod_alu  ' + CHAR(13) +
+														  'AND TRG.Cod_rc = OBL.cod_rc AND TRG.Cuota_pago = OBL.cuota_pago ' + CHAR(13) +
+								 						  'AND ISNULL(TRG.Fch_venc, ''19000101'') = ISNULL(OBL.fch_venc, ''19000101'') ' + CHAR(13) +
+								 						  'AND ISNULL(TRG.Tipo_oblig, 0) = ISNULL(OBL.tipo_oblig, 0) AND TRG.Monto = OBL.monto ' + CHAR(13) +
+								 						  'AND TRG.Pagado = OBL.pagado AND TRG.I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ') ' + CHAR(13) +
+								 	   'AND OBL.ano = ''' + @T_Anio + ''';'
+
+		PRINT @T_SQL
+		EXEC sp_executesql @T_SQL
+		SET @I_Insertados = @@ROWCOUNT
+
+		SET @T_SQL = 'SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_obl WHERE Ano = ''' + @T_Anio + ''';'
+
+		PRINT @T_SQL
+		EXEC sp_executesql @T_SQL
+		SET @I_EcObl = @@ROWCOUNT
+
+		IF(@I_Removidos <> 0)
+		BEGIN
+			SET @I_Actualizados = @I_Insertados
+		END
+
+		SELECT @I_EcObl AS tot_obligaciones, @I_Insertados AS cant_inserted, @I_Actualizados AS cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso;
+
+		COMMIT TRANSACTION
+
+		SET @B_Resultado = 1					
+		SET @T_Message =  '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "EC_OBL Total ' + @T_Anio + ':", '+ 
+							 'Value: ' + CAST(@I_EcObl AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Insertados ' + @T_Anio + ':", ' + 
+							 'Value: ' + CAST(@I_Insertados AS varchar) +
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Actualizados ' + @T_Anio + ':", ' + 
+							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Removidos ' + @T_Anio + ':", ' + 
+							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
+						  '}]'				
+
+	END TRY
+	BEGIN CATCH
+		IF(@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
 
 
 /*	

@@ -72,7 +72,6 @@ BEGIN
 	BEGIN TRY 
 
 		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE() ' + CHAR(10) + CHAR(13) +
-		 
 					 'MERGE TR_Cp_Des AS TRG ' + CHAR(13) + 
 					 'USING (SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des WHERE codigo_bnc IN (' + @T_Codigo_bnc + ')' + CHAR(13) + 
 					 '		) AS SRC ' + CHAR(13) + 

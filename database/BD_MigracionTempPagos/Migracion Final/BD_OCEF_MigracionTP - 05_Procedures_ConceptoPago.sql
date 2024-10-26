@@ -81,7 +81,7 @@ BEGIN
 
 	BEGIN TRY 
 		
-		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE() ' + CHAR(13) + 			 
+		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE() ' + CHAR(10) + CHAR(13) + 			 
 					 'MERGE TR_Cp_Pri AS TRG ' + CHAR(13) + 
 					 'USING (SELECT cp_pri.* FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_pri cp_pri ' + CHAR(13) + 
 					 '							  LEFT JOIN BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_des cp_des ON cp_pri.cuota_pago = cp_des.cuota_pago ' + CHAR(13) + 
@@ -169,7 +169,7 @@ BEGIN
 				t_out.INS_OBLIG_MORA <> t_out.DEL_OBLIG_MORA
 
 
-		SET @T_SQL = 'SELECT id_cp FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_pri'
+		SET @T_SQL = 'SELECT id_cp FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.cp_pri;'
 		print @T_SQL
 		Exec sp_executesql @T_SQL
 

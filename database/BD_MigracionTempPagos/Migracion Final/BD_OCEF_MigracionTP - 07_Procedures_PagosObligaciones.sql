@@ -56,7 +56,7 @@ BEGIN
 
 		IF (@I_ProcedenciaID = @I_Proced_pregrado)
 		BEGIN
-			SET @T_variables_conceptos = 'DECLARE @recibo_pago int = 0 ' + CHAR(10) + CHAR(13) +
+			SET @T_variables_conceptos = 'DECLARE @recibo_pago int = 0 ' + CHAR(13) +
 										 'DECLARE @deudas_anteriores_2017 int = 6924 ' + CHAR(10) + CHAR(13) 
 
 
@@ -64,9 +64,9 @@ BEGIN
 		END
 		ELSE IF (@I_ProcedenciaID = @I_Proced_eupg)
 		BEGIN
-			SET @T_variables_conceptos = 'DECLARE @recibo_pago int = 0 ' + CHAR(10) + CHAR(13) +
-										 'DECLARE @mora_pensiones int = 4788 ' + CHAR(10) + CHAR(13) +
-										 'DECLARE @mat_ext_ma_reg_2008 int = 4817 ' + CHAR(10) + CHAR(13) +
+			SET @T_variables_conceptos = 'DECLARE @recibo_pago int = 0 ' + CHAR(13) +
+										 'DECLARE @mora_pensiones int = 4788 ' + CHAR(13) +
+										 'DECLARE @mat_ext_ma_reg_2008 int = 4817 ' + CHAR(13) +
 										 'DECLARE @mat_ext_do_reg_2008 int = 4818 ' + CHAR(10) + CHAR(13) 
 
 			SET @T_filtros_conceptos = '@recibo_pago, @mora_pensiones, @mat_ext_ma_reg_2008, @mat_ext_do_reg_2008'
@@ -74,13 +74,13 @@ BEGIN
 		END
 		ELSE IF (@I_ProcedenciaID = @I_Proced_euded)
 		BEGIN
-			SET @T_variables_conceptos = 'DECLARE @recibo_pago int = 0 ' + CHAR(10) + CHAR(13) +
-										 'DECLARE @mora_pensiones int = 4788 ' + CHAR(10) + CHAR(13) +
-										 'DECLARE @mat_2007_1 int = 304 ' + CHAR(10) + CHAR(13) +
-										 'DECLARE @pen_2007_1 int = 305 ' + CHAR(10) + CHAR(13) +
-										 'DECLARE @pen_2006_2 int = 301 ' + CHAR(10) + CHAR(13) +
-										 'DECLARE @mat_2006_2 int = 300 ' + CHAR(10) + CHAR(13) +
-										 'DECLARE @pen_2005_2 int = 54 ' + CHAR(10) + CHAR(13) +
+			SET @T_variables_conceptos = 'DECLARE @recibo_pago int = 0 ' +CHAR(13) +
+										 'DECLARE @mora_pensiones int = 4788 ' +CHAR(13) +
+										 'DECLARE @mat_2007_1 int = 304 ' + CHAR(13) +
+										 'DECLARE @pen_2007_1 int = 305 ' + CHAR(13) +
+										 'DECLARE @pen_2006_2 int = 301 ' + CHAR(13) +
+										 'DECLARE @mat_2006_2 int = 300 ' + CHAR(13) +
+										 'DECLARE @pen_2005_2 int = 54 ' + CHAR(13) +
 										 'DECLARE @pen_ing_2014_2 int = 6645 ' + CHAR(10) + CHAR(13) 
 
 			SET @T_filtros_conceptos = '@recibo_pago, @mora_pensiones, @mat_2007_1, @mat_2006_2, @pen_2007_1, @pen_2006_2, @pen_2005_2, @pen_ing_2014_2'
@@ -88,12 +88,12 @@ BEGIN
 		END
 
 
-		SET @T_SQL = 'DELETE TR_Ec_Det_Pagos ' + CHAR(10) + CHAR(13) +
-					 ' WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' ' + CHAR(10) + CHAR(13) +
-							'AND EXISTS (SELECT * FROM TR_Ec_Obl ' + CHAR(10) + CHAR(13) +
-										 'WHERE TR_Ec_Obl.I_RowID = I_OblRowID ' + CHAR(10) + CHAR(13) +
-												'AND TR_Ec_Obl.Ano = ''' + @T_Anio + ''' ' + CHAR(10) + CHAR(13) +
-												'AND TR_Ec_Obl.B_Migrado = 0 ' + CHAR(10) + CHAR(13) +
+		SET @T_SQL = 'DELETE TR_Ec_Det_Pagos ' + CHAR(13) +
+					 ' WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' ' + CHAR(13) +
+							'AND EXISTS (SELECT * FROM TR_Ec_Obl ' + CHAR(13) +
+										 'WHERE TR_Ec_Obl.I_RowID = I_OblRowID ' + CHAR(13) +
+												'AND TR_Ec_Obl.Ano = ''' + @T_Anio + ''' ' + CHAR(13) +
+												'AND TR_Ec_Obl.B_Migrado = 0 ' + CHAR(13) +
 												'AND TR_Ec_Obl.I_ProcedenciaID = I_ProcedenciaID);'
 
 		PRINT @T_SQL
@@ -101,9 +101,9 @@ BEGIN
 		SET @I_Removidos = @@ROWCOUNT
 
 						
-		SET @T_SQL = 'DELETE TR_Ec_Det_Pagos ' + CHAR(10) + CHAR(13) +
-					  'WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' ' + CHAR(10) + CHAR(13) +
-							'AND I_OblRowID IS NULL ' + CHAR(10) + CHAR(13) +
+		SET @T_SQL = 'DELETE TR_Ec_Det_Pagos ' + CHAR(13) +
+					  'WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + ' ' + CHAR(13) +
+							'AND I_OblRowID IS NULL ' + CHAR(13) +
 							'AND Ano = ''' + @T_Anio + ''' '
 						
 		PRINT @T_SQL
@@ -113,30 +113,30 @@ BEGIN
 
 
 		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE() ' + @T_variables_conceptos + CHAR(10) + CHAR(13) +
-					 'INSERT INTO TR_Ec_Det_Pagos (Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, ' + CHAR(10) + CHAR(13) +
-												  'Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, ' + CHAR(10) + CHAR(13) +
-												  'Pag_demas, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, Eliminado, B_Obligacion, D_FecCarga, ' + CHAR(10) + CHAR(13) +
-												  'Cod_cajero, B_Migrable, D_FecEvalua, B_Migrado, D_FecMigrado) ' + CHAR(10) + CHAR(13) +
-										   'SELECT Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, Id_lug_pag, ' + CHAR(10) + CHAR(13) +
-												  'Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Pag_demas, Tipo_pago, No_banco, ' + CHAR(10) + CHAR(13) +
-												  'Cod_dep, '+ CAST(@I_ProcedenciaID as varchar(3)) + ', Eliminado, 1 as B_Obligacion, @D_FecProceso as D_FecCarga, ' + CHAR(10) + CHAR(13) +
-												  'Cod_cajero, 0 as B_Migrable, NULL as D_FecEvalua, 0  as B_Migrado, NULL as D_FecMigrado ' + CHAR(10) + CHAR(13) +
-											'FROM  BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det ' + CHAR(10) + CHAR(13) +
-											'WHERE ' + CHAR(10) + CHAR(13) +
-												  'Pagado = 1 ' + CHAR(10) + CHAR(13) +
-						 						  'AND Ano = ''' + @T_Anio + ''' ' + CHAR(10) + CHAR(13) +
-												  'AND Concepto_f = 1 ' + CHAR(10) + CHAR(13) +
+					 'INSERT INTO TR_Ec_Det_Pagos (Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, ' + CHAR(13) +
+												  'Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, ' + CHAR(13) +
+												  'Pag_demas, Tipo_pago, No_banco, Cod_dep, I_ProcedenciaID, Eliminado, B_Obligacion, D_FecCarga, ' + CHAR(13) +
+												  'Cod_cajero, B_Migrable, D_FecEvalua, B_Migrado, D_FecMigrado) ' + CHAR(13) +
+										   'SELECT Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, Id_lug_pag, ' + CHAR(13) +
+												  'Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Pag_demas, Tipo_pago, No_banco, ' + CHAR(13) +
+												  'Cod_dep, '+ CAST(@I_ProcedenciaID as varchar(3)) + ', Eliminado, 1 as B_Obligacion, @D_FecProceso as D_FecCarga, ' + CHAR(13) +
+												  'Cod_cajero, 0 as B_Migrable, NULL as D_FecEvalua, 0  as B_Migrado, NULL as D_FecMigrado ' + CHAR(13) +
+											'FROM  BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det ' + CHAR(13) +
+											'WHERE ' + CHAR(13) +
+												  'Pagado = 1 ' + CHAR(13) +
+						 						  'AND Ano = ''' + @T_Anio + ''' ' + CHAR(13) +
+												  'AND Concepto_f = 1 ' + CHAR(13) +
 												  'AND concepto IN (' + @T_filtros_conceptos +')' 
 
 		PRINT @T_SQL
 		EXEC sp_executesql @T_SQL
 		SET @I_Insertados = @@ROWCOUNT
 
-		SET @T_SQL =  @T_variables_conceptos + CHAR(10) + CHAR(13) + 
-					 'SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det ' + CHAR(10) + CHAR(13) +								
-					 'WHERE Pagado = 1 ' + CHAR(10) + CHAR(13) +
-							'AND Ano = ''' + @T_Anio + ''' ' + CHAR(10) + CHAR(13) +
-							'AND Concepto_f = 1 ' + CHAR(10) + CHAR(13) +
+		SET @T_SQL =  @T_variables_conceptos + CHAR(13) + 
+					 'SELECT * FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det ' + CHAR(13) +								
+					 'WHERE Pagado = 1 ' + CHAR(13) +
+							'AND Ano = ''' + @T_Anio + ''' ' + CHAR(13) +
+							'AND Concepto_f = 1 ' + CHAR(13) +
 							'AND concepto IN (' + @T_filtros_conceptos +')' 
 
 		PRINT @T_SQL
@@ -174,10 +174,13 @@ BEGIN
 							 'Title: "Removidos ' + @T_Anio + ':", ' +
 							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
 						  '}]'
-
 	END TRY
 	BEGIN CATCH
-		ROLLBACK TRANSACTION
+		IF(@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
@@ -1388,6 +1391,9 @@ END
 GO
 
 
+
+
+
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2')
 	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2]
 GO
@@ -1397,7 +1403,7 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID]
 GO
 
-CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2]	
+CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID]	
 	@I_OblRowID		int,
 	@I_UsuarioID	int,
 	@I_PagoBancoID	int output,
@@ -1411,7 +1417,7 @@ AS
 			@B_Resultado	bit,
 			@T_Message		nvarchar(4000)
 	EXEC USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID @I_OblRowID, @I_UsuarioID, @I_PagoBancoID output, @B_Resultado output, @T_Message output
-	select @I_PagoBancoID as I_PagoBancoID, @B_Resultado as resultado, @T_Message as mensaje
+	SELECT @I_PagoBancoID as I_PagoBancoID, @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
 	DECLARE @D_FecProceso datetime = GETDATE(); 
@@ -1427,6 +1433,34 @@ BEGIN
 
 	DECLARE @I_Det_Actualizados int = 0;
 	DECLARE @I_Det_Insertados int = 0;
+
+
+	IF NOT EXISTS (SELECT I_RowID FROM TR_Ec_Det_Pagos WHERE I_OblRowID = @I_OblRowID)
+	BEGIN
+		SET @I_PagoBancoID = 0
+		SET @B_Resultado = 1
+		SET @T_Message = '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Pagos Banco Insertados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
+							 'Value: ' + CAST(@I_Pagos_Insertados AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Pagos Procesados Insertados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
+							 'Value: ' + CAST(@I_Det_Insertados AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Pagos Banco Actualizados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
+							 'Value: ' + CAST(@I_Pagos_Actualizados AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Pagos Procesados Actualizados (OBL_ID: ' + CAST(@I_OblRowID AS varchar) + ')", ' + 
+							 'Value: ' + CAST(@I_Det_Actualizados AS varchar) +
+						  '}]'
+		RETURN 0;
+	END
 
 	BEGIN TRANSACTION;
 	BEGIN TRY 
