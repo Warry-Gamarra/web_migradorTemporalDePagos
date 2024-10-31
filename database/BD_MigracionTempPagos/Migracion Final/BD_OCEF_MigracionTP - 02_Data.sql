@@ -72,10 +72,26 @@ END
 GO
 
 
-IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 60)
+IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 61)
 BEGIN
 	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
 								VALUES (61, 'La cabecera de obligación no pudo asociarse registrarse en la tabla de matricula.', 'MIGRACION', NULL, 5)
+END
+GO
+
+
+IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 62)
+BEGIN
+	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
+								VALUES (62, 'El detalle de la obligación asociada no pudo migrarse por no tener cabecera migrada.', 'MIGRACION', NULL, 4)
+END
+GO
+
+
+IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 63)
+BEGIN
+	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
+								VALUES (63, 'La pago de la obligación asociada no pudo migrarse por no tener cabecera migrada.', 'MIGRACION', NULL, 7)
 END
 GO
 

@@ -1392,6 +1392,224 @@ GO
 
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabecera')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabecera]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabecera]	
+(
+	@I_ProcedenciaID tinyint,
+	@T_Anio		  varchar(4),
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+)
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Det con B_Migrable = 0 cuando la cabecera de la obligacion asociada al detella no fue migrada para el año y procedencia.
+
+	DECLARE	@B_Resultado  bit,
+			@I_ProcedenciaID	tinyint = 2,
+			@T_Anio				varchar(4) = '2016',
+			@T_Message			nvarchar(4000)
+	EXEC USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabecera @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 63
+	DECLARE @I_TablaID int = 7
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+
+		SELECT I_OblRowID
+		  INTO #temp_det_migrable_obl_no_migrado
+		  FROM TR_Ec_Det_Pagos det
+			   INNER JOIN TR_Ec_Obl obl ON det.I_OblRowID = obl.I_RowID
+		 WHERE obl.Ano = @T_Anio
+			   AND obl.I_ProcedenciaID = @I_ProcedenciaID
+			   AND obl.B_Migrado = 0			   
+
+		UPDATE Det
+		   SET B_Migrable = 0,
+			   D_FecEvalua = @D_FecProceso
+		  FROM TR_Ec_Det_Pagos Det 
+			   INNER JOIN #temp_det_migrable_obl_no_migrado tmp ON Det.I_OblRowID = tmp.I_OblRowID
+		 WHERE B_Migrable = 1
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+					  @D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID 
+				 FROM TR_Ec_Det Det 
+					  INNER JOIN #temp_det_migrable_obl_no_migrado tmp ON Det.I_OblRowID = tmp.I_OblRowID
+				WHERE B_Migrable = 1
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_ProcedenciaID = SRC.I_ProcedenciaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID, 1);
+		
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+		   	   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+		  	   INNER JOIN (SELECT Det.I_RowID, Det.I_ProcedenciaID, tmp.I_OblRowID as TempOblRowID
+			   				 FROM TR_Ec_Det_Pagos Det
+								  LEFT JOIN #temp_det_migrable_obl_no_migrado tmp ON tmp.I_OblRowID = Det.I_OblRowID
+							WHERE tmp.I_OblRowID IS NULL
+								  AND Det.Ano = @T_Anio
+								  AND Det.I_ProcedenciaID = @I_ProcedenciaID
+			   			  ) DET ON OBS.I_FilaTablaID = DET.I_RowID
+						  		   AND OBS.I_ProcedenciaID = DET.I_ProcedenciaID 
+		 WHERE OBS.I_ObservID = @I_ObservID 
+		 	   AND OBS.I_TablaID = @I_TablaID 
+		
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Det_Pagos DET ON OBS.I_FilaTablaID = DET.I_RowID 
+																	  AND DET.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+									AND Det.Ano = @T_Anio
+									AND Det.I_ProcedenciaID = @I_ProcedenciaID 
+									AND OBS.B_Resuelto = 0
+							)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso		 
+
+		COMMIT TRANSACTION;
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
+
+	END TRY
+	BEGIN CATCH
+		IF (@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabeceraPorOblID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabeceraPorOblID]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabeceraPorOblID]
+	@I_OblRowID	  int,
+	@B_Resultado  bit output,
+	@T_Message    nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la suma de los montos en el detalle no coinciden con el monto de la cabecera para el ID de obligacion.
+
+	DECLARE @I_OblRowID	  int,
+			@B_Resultado  bit,
+			@T_Message    nvarchar(4000)
+	EXEC USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabeceraPorOblID @I_OblRowID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 63
+	DECLARE @I_TablaID int = 7
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+
+		SELECT I_OblRowID
+		  INTO #temp_det_migrable_obl_no_migrado
+		  FROM TR_Ec_Det_Pagos det
+			   INNER JOIN TR_Ec_Obl obl ON det.I_OblRowID = obl.I_RowID
+		 WHERE obl.I_RowID = @I_OblRowID
+			   AND obl.B_Migrado = 0			   
+			   AND obl.B_Migrable = 1
+
+		UPDATE Det
+		   SET B_Migrable = 0,
+			   D_FecEvalua = @D_FecProceso
+		  FROM TR_Ec_Det_Pagos Det 
+			   INNER JOIN #temp_det_migrable_obl_no_migrado tmp ON Det.I_OblRowID = tmp.I_OblRowID
+
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+					  @D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID 
+				 FROM TR_Ec_Det_Pagos Det 
+					  INNER JOIN #temp_det_migrable_obl_no_migrado tmp ON Det.I_OblRowID = tmp.I_OblRowID
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND TRG.I_ProcedenciaID = SRC.I_ProcedenciaID THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, SRC.I_ProcedenciaID, 1);
+		
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+		   	   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+		  	   INNER JOIN (SELECT Det.I_RowID, Det.I_ProcedenciaID, tmp.I_OblRowID as TempOblRowID
+			   				 FROM TR_Ec_Det_Pagos Det
+								  LEFT JOIN #temp_det_migrable_obl_no_migrado tmp ON tmp.I_OblRowID = Det.I_OblRowID
+							WHERE tmp.I_OblRowID IS NULL
+								  AND Det.I_OblRowID = @I_OblRowID
+			   			  ) DET ON OBS.I_FilaTablaID = DET.I_RowID
+						  		   AND OBS.I_ProcedenciaID = DET.I_ProcedenciaID 
+		 WHERE OBS.I_ObservID = @I_ObservID 
+		 	   AND OBS.I_TablaID = @I_TablaID 
+		
+		SET @I_Observados = (SELECT COUNT(*) 
+							   FROM TI_ObservacionRegistroTabla OBS 
+									INNER JOIN TR_Ec_Det_Pagos DET ON OBS.I_FilaTablaID = DET.I_RowID 
+																AND DET.I_ProcedenciaID = OBS.I_ProcedenciaID
+							  WHERE OBS.I_ObservID = @I_ObservID 
+									AND Det.I_OblRowID = @I_OblRowID
+									AND OBS.B_Resuelto = 0
+							)
+		COMMIT TRANSACTION
+
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Observados", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		IF (@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID2')
@@ -1499,25 +1717,7 @@ BEGIN
 		SET @I_CtasMora_RowID = (SELECT TOP 1 I_RowID FROM #temp_det_pago_mora WHERE I_OblRowID = @I_OblRowID);
 
 		/*
-			insert new pago banco in ctas x cobrar
-		*/
-		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco (I_EntidadFinanID, C_CodOperacion, C_CodDepositante, T_NomDepositante, C_Referencia, 
-													D_FecPago, I_Cantidad, C_Moneda, I_MontoPago, T_LugarPago, B_Anulado, I_UsuarioCre, 
-													D_FecCre, T_Observacion, T_InformacionAdicional, I_CondicionPagoID, I_TipoPagoID, 
-													I_CtaDepositoID, I_InteresMora, B_Migrado, T_MotivoCoreccion, C_CodigoInterno, 
-													I_MigracionTablaID, I_MigracionRowID, I_MigracionMoraRowID)
-											SELECT  IIF(Cod_cajero = 'BCP', 2, 1) AS I_EntidadFinanID, Nro_recibo, Cod_alu, T_NomDepositante,  
-													Nro_recibo, Fch_pago, Cantidad, @T_Moneda, Monto, Id_lug_pag, Eliminado, @I_UsuarioID, 
-													@D_FecProceso, NULL as observacion, NULL as adicional, 131 as condpago, 133 as tipoPago, 
-													I_CtaDepositoID, ISNULL(@mora, 0) as mora, 1 AS migrado, NULL as motivo, Nro_recibo, 
-													@I_TablaID_Det_Pago, I_RowID, @I_CtasMora_RowID
-												FROM	#temp_det_pago
-												WHERE I_CtasPagoBncTableRowID IS NULL;
-
-		SET @I_Pagos_Insertados = @@ROWCOUNT;
-
-		/*
-			uptdat if exists pago banco in ctas x cobrar
+			uptdate if exists pago banco in ctas x cobrar
 		*/
 		UPDATE cta_pago_banco
 		   SET T_NomDepositante = SRC_pago.T_NomDepositante,
@@ -1531,9 +1731,27 @@ BEGIN
 		  FROM BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco cta_pago_banco
 			   INNER JOIN #temp_det_pago SRC_pago ON cta_pago_banco.I_PagoBancoID = SRC_pago.I_CtasPagoBncTableRowID
 													 AND cta_pago_banco.I_MigracionTablaID = SRC_pago.I_RowID
-		 WHERE I_CtasPagoBncTableRowID IS NOT NULL;
 		 
 		 SET @I_Pagos_Actualizados = @@ROWCOUNT;
+
+
+		/*
+			insert new pago banco in ctas x cobrar
+		*/
+		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TR_PagoBanco (I_EntidadFinanID, C_CodOperacion, C_CodDepositante, T_NomDepositante, C_Referencia, 
+													D_FecPago, I_Cantidad, C_Moneda, I_MontoPago, T_LugarPago, B_Anulado, I_UsuarioCre, 
+													D_FecCre, T_Observacion, T_InformacionAdicional, I_CondicionPagoID, I_TipoPagoID, 
+													I_CtaDepositoID, I_InteresMora, B_Migrado, T_MotivoCoreccion, C_CodigoInterno, 
+													I_MigracionTablaID, I_MigracionRowID, I_MigracionMoraRowID)
+											SELECT  IIF(Cod_cajero = 'BCP', 2, 1) AS I_EntidadFinanID, Nro_recibo, Cod_alu, T_NomDepositante,  
+													Nro_recibo, Fch_pago, Cantidad, @T_Moneda, Monto, Id_lug_pag, Eliminado, @I_UsuarioID, 
+													@D_FecProceso, NULL as observacion, NULL as adicional, 131 as condpago, 133 as tipoPago, 
+													I_CtaDepositoID, ISNULL(@mora, 0) as mora, 1 AS migrado, NULL as motivo, Nro_recibo, 
+													@I_TablaID_Det_Pago, I_RowID, @I_CtasMora_RowID
+											  FROM	#temp_det_pago
+											 WHERE  I_CtasPagoBncTableRowID IS NULL;
+
+		SET @I_Pagos_Insertados = @@ROWCOUNT;
 
 
 		/*	UPDATE REGISTROS PAGO	*/
@@ -1565,6 +1783,21 @@ BEGIN
 			upsert pago procesado in ctas x cobrar
 		*/
 
+		UPDATE pago_proc
+		   SET I_CtaDepositoID = temp_det_pagos.I_CtaDepositoID,
+			   B_Anulado = tmp_det.Eliminado,
+			   D_FecMod = @D_FecProceso,
+			   I_MontoPagado = tmp_det.Monto,						   
+			   B_Migrado = 1,
+			   I_MigracionTablaID = @I_TablaID_Det
+		  FROM BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv pago_proc
+			   INNER JOIN #temp_det_obl tmp_det ON pago_proc.I_MigracionRowID = tmp_det.I_RowID
+			   INNER JOIN #temp_det_pago temp_det_pagos ON tmp_det.I_OblRowID = temp_det_pagos.I_OblRowID
+		 WHERE tmp_det.I_CtasPagoProcTableRowID IS NOT NULL;
+
+		 SET @I_Det_Actualizados = @@ROWCOUNT;
+
+
 		INSERT INTO BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv(I_PagoBancoID, I_CtaDepositoID, I_TasaUnfvID, I_MontoPagado, I_SaldoAPagar, 
 																	I_PagoDemas, B_PagoDemas, N_NroSIAF, B_Anulado,  D_FecCre, I_UsuarioCre, D_FecMod, 
 																	I_UsuarioMod, I_ObligacionAluDetID, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
@@ -1579,20 +1812,6 @@ BEGIN
 																	AND tmp_det.I_CtasPagoProcTableRowID IS NULL;
 
 		SET @I_Det_Insertados = @@ROWCOUNT;
-
-		UPDATE pago_proc
-		   SET I_CtaDepositoID = temp_det_pagos.I_CtaDepositoID,
-			   B_Anulado = tmp_det.Eliminado,
-			   D_FecMod = @D_FecProceso,
-			   I_MontoPagado = tmp_det.Monto,						   
-			   B_Migrado = 1,
-			   I_MigracionTablaID = @I_TablaID_Det
-		  FROM BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv pago_proc
-			   INNER JOIN #temp_det_obl tmp_det ON pago_proc.I_MigracionRowID = tmp_det.I_RowID
-			   INNER JOIN #temp_det_pago temp_det_pagos ON tmp_det.I_OblRowID = temp_det_pagos.I_OblRowID
-		 WHERE tmp_det.I_CtasPagoProcTableRowID IS NOT NULL;
-
-		 SET @I_Det_Actualizados = @@ROWCOUNT;
 
 		/*		
 			Actualizar tmp_det con el id de pago procesado creado	
@@ -1658,6 +1877,107 @@ BEGIN
 							 'Type: "error", ' + 
 							 'Title: "Error", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_MigrarPagoObligacionesCtasPorCobrar')
+	DROP PROCEDURE [dbo].[USP_IU_MigrarPagoObligacionesCtasPorCobrar]
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio]	
+	@I_ProcedenciaID	tinyint,
+	@T_Anio				varchar(4),
+	@B_Resultado		bit output,
+	@T_Message			nvarchar(4000) OUTPUT	
+AS
+/*
+	DECLARE @I_ProcedenciaID tinyint = 2,
+			@T_Anio		  varchar(4) = '2008', 
+			@B_Resultado  bit, 
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_TablaID_Obl int = 5
+	DECLARE @I_TablaID_Det int = 4
+	DECLARE @I_UsuarioID int = (SELECT dbo.Func_Config_CtasPorCobrar_I_ObtenerUsuarioMigracionID())
+
+	DECLARE @I_CtasCabObl_RowID  int
+	DECLARE @I_CtasDetObl_RowID  int
+	DECLARE @T_Moneda varchar(3) = 'PEN'
+
+	DECLARE @I_Obl_Actualizados int = 0
+	DECLARE @I_Obl_Insertados int = 0
+
+	DECLARE @I_Det_Actualizados int = 0
+	DECLARE @I_Det_Insertados int = 0
+
+	DECLARE @Tbl_outputObl AS TABLE (T_Action varchar(20), I_RowID int, I_Inserted_RowID int, I_Deleted_RowID int)
+	DECLARE @Tbl_outputDet AS TABLE (T_Action varchar(20), I_RowID int, I_Inserted_RowID int, I_Deleted_RowID int)
+
+	BEGIN TRANSACTION;
+	BEGIN TRY 
+		SELECT I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
+			   Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, 
+			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, det.I_ProcedenciaID, B_Obligacion, det.B_Migrable, 
+			   det.I_CtasDetTableRowID, det.I_CtasPagoProcTableRowID  
+		  INTO #temp_det_obl
+		  FROM TR_Ec_Det det
+		 WHERE Ano = @T_Anio
+			   AND I_ProcedenciaID = @I_ProcedenciaID
+			   AND det.B_Migrable = 1;
+
+		SELECT det.I_RowID, I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, 
+			   Fch_pago, Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, Eliminado, 
+			   Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, det.I_ProcedenciaID, B_Obligacion, det.B_Migrable, 
+			   (a.T_ApePaterno + ' ' + a.T_ApeMaterno + ', ' + a.T_Nombre) AS T_NomDepositante, cdp.I_CtaDepositoID,
+			   det.I_CtasPagoBncTableRowID
+		  INTO #temp_det_pago
+		  FROM TR_Ec_Det_Pagos det
+			   INNER JOIN  TR_Alumnos a ON det.Cod_alu = a.C_CodAlu AND det.Cod_rc = a.C_RcCod
+			   INNER JOIN  BD_OCEF_CtasPorCobrar.dbo.TI_CtaDepo_Proceso cdp ON det.cuota_pago = cdp.I_ProcesoID
+		 WHERE det.Ano = @T_Anio
+			   AND det.I_ProcedenciaID = @I_ProcedenciaID
+			   AND det.Concepto = 0
+			   AND det.B_Migrable = 1
+			   AND cdp.B_Eliminado = 0;
+	
+		SELECT I_RowID, I_OblRowID, Monto 
+		  INTO #temp_det_pago_mora
+		  FROM TR_Ec_Det_Pagos
+		 WHERE Ano = @T_Anio
+			   AND I_ProcedenciaID = @I_ProcedenciaID
+			   AND Concepto <> 0
+			   AND B_Migrable = 1
+			   AND Eliminado = 0;
+
+		COMMIT TRANSACTION;
+
+		SET @B_Resultado = 1
+
+	END TRY
+	BEGIN CATCH
+		IF(@@TRANCOUNT > 0)
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(10)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
