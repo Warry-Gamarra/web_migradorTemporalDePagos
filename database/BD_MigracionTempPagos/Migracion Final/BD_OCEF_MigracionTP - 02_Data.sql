@@ -72,6 +72,14 @@ END
 GO
 
 
+IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 60)
+BEGIN
+	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
+								VALUES (61, 'La cabecera de obligación no pudo asociarse registrarse en la tabla de matricula.', 'MIGRACION', NULL, 5)
+END
+GO
+
+
 IF NOT EXISTS (SELECT * FROM TC_EtapaProceso)
 BEGIN
 	INSERT INTO TC_EtapaProceso (I_EtapaProcesoID, T_EtapaProcDesc) VALUES (1, 'Copia de datos')
