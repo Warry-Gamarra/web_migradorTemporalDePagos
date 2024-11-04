@@ -164,6 +164,356 @@ END
 GO
 
 
+
+/*	
+	===============================================================================================
+		relacionar registros de tablas ec_obl y ec_det segun procedencia (I_OblID)
+	===============================================================================================
+*/ 
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_AsignarObligacionIdDetalleId')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_AsignarObligacionIdDetalleId]
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_AsignarObligacionCabID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_AsignarObligacionCabID]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_ObligacionDet_MigracionTP_U_AsignarObligacionCabID 
+(
+	@I_ProcedenciaID tinyint,
+	@T_Anio		  varchar(4),
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+)
+AS
+/*
+	DECLARE @I_ProcedenciaID	tinyint = 1,
+			@T_Anio		  varchar(4) = '2010',
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionDet_MigracionTP_U_AsignarObligacionCabID @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN 
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_Actualizados int = 0
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+		
+		--Para obtener ID de obligación que no se encuentren repetidos
+		SELECT OBL2.*
+		  INTO #temp_obl_sin_repetir_anio_procedencia 
+		  FROM (SELECT Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
+		    	  FROM TR_Ec_Obl
+				 WHERE Ano = @T_Anio
+					   AND I_ProcedenciaID = @I_ProcedenciaID
+				GROUP BY Cuota_pago, Ano, P, Cod_alu, Cod_rc, Tipo_oblig, Fch_venc, Pagado, Monto, I_ProcedenciaID
+				HAVING COUNT(*) = 1) OBL1
+			   INNER JOIN TR_Ec_Obl OBL2 ON OBL1.I_ProcedenciaID = OBL2.I_ProcedenciaID
+											AND OBL1.Cuota_pago = OBL2.Cuota_pago
+											AND OBL1.Ano = OBL2.Ano
+											AND OBL1.P = OBL2.P
+											AND OBL1.Cod_alu = OBL2.Cod_alu
+											AND OBL1.Cod_rc = OBL2.Cod_rc
+											AND OBL1.Tipo_oblig = OBL2.Tipo_oblig
+											AND OBL1.Fch_venc = OBL2.Fch_venc
+											AND OBL1.Pagado = OBL2.Pagado
+											AND OBL1.Monto = OBL2.Monto
+
+		--Se actualiza los detalles con ID de obligación que no se encuentre repetido
+
+		UPDATE det
+		   SET I_OblRowID = obl.I_RowID
+		  FROM TR_Ec_Det det
+			   INNER JOIN #temp_obl_sin_repetir_anio_procedencia obl ON det.I_ProcedenciaID = obl.I_ProcedenciaID
+																		AND det.Cuota_pago = obl.Cuota_pago
+																		AND det.Ano = obl.Ano
+																		AND det.P = obl.P
+																		AND det.Cod_alu = obl.Cod_alu
+																		AND det.Cod_rc = obl.Cod_rc
+																		AND det.Fch_venc = obl.Fch_venc
+		 WHERE det.Ano = @T_Anio
+			   AND det.I_ProcedenciaID = @I_ProcedenciaID
+
+		
+
+		COMMIT TRANSACTION
+		SET @B_Resultado = 1					
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
+						  '}'
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
+
+
+/*	
+	===============================================================================================
+		Inicializar parámetros para validaciones de tablas ec_obl y ec_det segun procedencia	
+	===============================================================================================
+*/ 
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_InicializarEstadoValidacionObligacionPago')
+	DROP PROCEDURE [dbo].[USP_U_InicializarEstadoValidacionObligacionPago]
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacion')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacion]
+GO
+CREATE PROCEDURE USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacion 
+	@I_ProcedenciaID tinyint,
+	@T_Anio	      varchar(4),
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DECLARE @I_ProcedenciaID	tinyint = 1,
+			@T_Anio		  varchar(4) = '2010',
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @T_Anio, 
+																		 @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_TablaID INT = 5
+	DECLARE @I_FilaTablaID INT = (SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla)
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		DELETE TI_ObservacionRegistroTabla
+		 WHERE I_TablaID = @I_TablaID
+		 	   AND I_ProcedenciaID = @I_ProcedenciaID
+		 	   AND EXISTS (SELECT I_RowID FROM TR_Ec_Obl OBL
+							WHERE OBL.I_ProcedenciaID = TI_ObservacionRegistroTabla.I_ProcedenciaID
+								  AND OBL.I_RowID = TI_ObservacionRegistroTabla.I_FilaTablaID
+								  AND Ano = @T_Anio)
+
+		DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_FilaTablaID)
+
+		UPDATE	TR_Ec_Obl 
+		   SET	B_Actualizado = 0,
+				B_Migrable = 1, 
+				D_FecMigrado = NULL, 
+				B_Migrado = 0
+		 WHERE I_ProcedenciaID = @I_ProcedenciaID
+			   AND Ano = @T_Anio
+			   AND ISNULL(B_Correcto, 0) = 0
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacionPorID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacionPorID]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacionPorID 
+	@I_RowID      int,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DECLARE @I_RowID  	  int,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_InicializarEstadoValidacionPorID @I_RowID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_TablaID INT = 5
+	DECLARE @I_FilaTablaID INT = (SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla)
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		DELETE TI_ObservacionRegistroTabla
+		 WHERE I_TablaID = @I_TablaID
+		 	   AND I_FilaTablaID = @I_RowID
+
+		UPDATE	TR_Ec_Obl 
+		   SET	B_Actualizado = 0, 
+				B_Migrable = 1, 
+				D_FecMigrado = NULL, 
+				B_Migrado = 0
+		 WHERE I_RowID = @I_RowID
+			   AND B_Correcto = 0
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_U_InicializarEstadoValidacionDetalleObligacionPago')
+	DROP PROCEDURE [dbo].[USP_U_InicializarEstadoValidacionDetalleObligacionPago]
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacion')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacion]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacion 
+	@I_ProcedenciaID tinyint,
+	@T_Anio	      varchar(4),
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DECLARE @I_ProcedenciaID	tinyint = 1,
+			@T_Anio		  varchar(4) = '2010',
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacion @I_ProcedenciaID, @T_Anio, 
+																		 @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_TablaID INT = 4
+	DECLARE @I_FilaTablaID INT = (SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla)
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+		DELETE TI_ObservacionRegistroTabla
+		 WHERE I_TablaID = @I_TablaID
+		 	   AND I_ProcedenciaID = @I_ProcedenciaID
+		 	   AND EXISTS (SELECT I_RowID FROM TR_Ec_Det DET
+							WHERE DET.I_ProcedenciaID = TI_ObservacionRegistroTabla.I_ProcedenciaID
+								  AND DET.I_RowID = TI_ObservacionRegistroTabla.I_FilaTablaID
+								  AND Ano = @T_Anio)
+
+		DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_FilaTablaID);
+
+
+		WITH cte_obl_anio (I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, P, Fch_venc, Pagado, Monto)
+		AS ( 
+			SELECT I_RowID, Cod_alu, Cod_rc, Cuota_pago, P, Fch_venc, Pagado, Monto
+			  FROM TR_Ec_Obl 
+			 WHERE I_ProcedenciaID = @I_ProcedenciaID
+				   AND Ano = @T_Anio
+		)
+
+		UPDATE	det
+		   SET	B_Actualizado = IIF(B_Actualizado = 1, B_Actualizado, 0), 
+				B_Migrable = 1, 
+				D_FecMigrado = NULL, 
+				B_Migrado = 0
+		  FROM  TR_Ec_Det det 
+				INNER JOIN cte_obl_anio obl ON det.I_OblRowID = obl.I_OblRowID
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacionPorID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacionPorID]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacionPorID	
+	@I_OblRowID   int,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DECLARE @I_RowID  	  int,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacionPorID @I_RowID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_TablaID INT = 5
+	DECLARE @I_FilaTablaID INT = (SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla)
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		DELETE TI_ObservacionRegistroTabla
+		 WHERE I_TablaID = @I_TablaID
+		 	   AND EXISTS (SELECT I_RowID FROM TR_Ec_Det Det
+							WHERE Det.I_ProcedenciaID = TI_ObservacionRegistroTabla.I_ProcedenciaID
+								  AND Det.I_RowID = TI_ObservacionRegistroTabla.I_FilaTablaID
+								  AND Det.I_OblRowID = @I_OblRowID)
+
+
+		UPDATE	TR_Ec_Det
+		   SET	B_Actualizado = IIF(B_Actualizado = 1, B_Actualizado, 0), 
+				B_Migrable = 1, 
+				D_FecMigrado = NULL, 
+				B_Migrado = 0
+		 WHERE	I_OblRowID = I_OblRowID
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+
 /*	
 	===============================================================================================
 		Validaciones para migracion de ec_obl (solo obligaciones de pago)	
