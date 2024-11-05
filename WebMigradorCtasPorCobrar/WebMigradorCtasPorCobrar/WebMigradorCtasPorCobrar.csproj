@@ -196,6 +196,8 @@
     <Compile Include="Models\Repository\Migracion\Cross\PagoObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Cross\ProcedenciaRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\ConceptoPagoRepository.cs" />
+    <Compile Include="Models\Repository\Migracion\Obligaciones\OblCabRepository.cs" />
+    <Compile Include="Models\Repository\Migracion\Obligaciones\OblDetRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\PagoObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\ObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Tasas\ConceptoPagoRepository.cs" />

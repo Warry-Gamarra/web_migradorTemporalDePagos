@@ -15,30 +15,6 @@
           <ConnectionProtocol>NotSpecified</ConnectionProtocol>
           <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
         </ConnectionNode>
-        <ConnectionNode Name="C16-OCGTI-OD-02\SQL_2016E:DESKTOP-A2584VF\gamar">
-          <Created>2024-02-08T12:58:47.7296545-05:00</Created>
-          <Type>SQL</Type>
-          <Server>C16-OCGTI-OD-02\SQL_2016E</Server>
-          <UserName />
-          <Authentication>Windows Authentication</Authentication>
-          <InitialDB />
-          <LoginTimeout>30</LoginTimeout>
-          <ExecutionTimeout>0</ExecutionTimeout>
-          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
-          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
-        </ConnectionNode>
-        <ConnectionNode Name="DESKTOP-A2584VF\SQL_2017E:DESKTOP-A2584VF\gamar">
-          <Created>2024-10-18T15:34:09.5605942-05:00</Created>
-          <Type>SQL</Type>
-          <Server>DESKTOP-A2584VF\SQL_2017E</Server>
-          <UserName />
-          <Authentication>Windows Authentication</Authentication>
-          <InitialDB />
-          <LoginTimeout>30</LoginTimeout>
-          <ExecutionTimeout>0</ExecutionTimeout>
-          <ConnectionProtocol>NotSpecified</ConnectionProtocol>
-          <ApplicationName>Microsoft SQL Server Management Studio - Query</ApplicationName>
-        </ConnectionNode>
       </Items>
     </LogicalFolder>
     <LogicalFolder Name="Queries" Type="0" Sorted="true">
@@ -50,8 +26,8 @@
           <FullPath>1. BD_OCEF_CtasPorCobrar - Creación de columnas de migracion.sql</FullPath>
         </FileNode>
         <FileNode Name="1. BD_OCEF_MigracionTP - Creación de base de datos.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:DESKTOP-A2584VF\SQL_2017E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>DESKTOP-A2584VF\SQL_2017E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>1. BD_OCEF_MigracionTP - Creación de base de datos.sql</FullPath>
         </FileNode>
@@ -86,20 +62,20 @@
           <FullPath>5. BD_OCEF_MigracionTP - Procedures Alumno.sql</FullPath>
         </FileNode>
         <FileNode Name="6. BD_OCEF_MigracionTP - Procedures Cuota Pago.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:C16-OCGTI-OD-02\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>C16-OCGTI-OD-02\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>6. BD_OCEF_MigracionTP - Procedures Cuota Pago.sql</FullPath>
         </FileNode>
         <FileNode Name="7. BD_OCEF_MigracionTP - Procedures Concepto Pago.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:C16-OCGTI-OD-02\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>C16-OCGTI-OD-02\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>7. BD_OCEF_MigracionTP - Procedures Concepto Pago.sql</FullPath>
         </FileNode>
         <FileNode Name="8. BD_OCEF_MigracionTP - Procedures Detalle de obligaciones.sql">
-          <AssociatedConnectionMoniker>8c91a03d-f9b4-46c0-a305-b5dcc79ff907:C16-OCGTI-OD-02\SQL_2016E:True</AssociatedConnectionMoniker>
-          <AssociatedConnSrvName>C16-OCGTI-OD-02\SQL_2016E</AssociatedConnSrvName>
+          <AssociatedConnectionMoniker />
+          <AssociatedConnSrvName />
           <AssociatedConnUserName />
           <FullPath>8. BD_OCEF_MigracionTP - Procedures Detalle de obligaciones.sql</FullPath>
         </FileNode>
