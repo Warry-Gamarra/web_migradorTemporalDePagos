@@ -129,6 +129,296 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         }
 
 
+        public Response ValidarPeriodoDetallePeriodoConcepto(int procedenciaID, string anio)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "T_Anio", dbType: DbType.String, size: 4, value: anio);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_17_PeriodoDetallePeriodoConcepto", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response ValidarPeriodoDetallePeriodoConceptoPorOblID(int rowID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_17_PeriodoDetallePeriodoConceptoPorOblID", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response ValidarDetalleObligacionCabeceraMigrable(int procedenciaID, string anio)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "T_Anio", dbType: DbType.String, size: 4, value: anio);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabID", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response ValidarDetalleObligacionCabeceraMigrablePorOblID(int rowID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabIDPorOblID", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response ValidarDetalleConceptoPagoMigrado(int procedenciaID, string anio)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "T_Anio", dbType: DbType.String, size: 4, value: anio);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_ConceptoPagoMigrado", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response ValidarDetalleConceptoPagoMigradoPorOblID(int rowID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_ConceptoPagoMigradoPorOblID", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response ValidarDetalleExisteConceptoPago(int procedenciaID, string anio)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "T_Anio", dbType: DbType.String, size: 4, value: anio);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_35_ConceptoPago", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response ValidarDetalleExisteConceptoPagoPorOblID(int rowID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_35_ConceptoPagoPorOblID", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
+        public Response ValidarCuotaDetalleCuotaConcepto(int procedenciaID, string anio)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_ProcedenciaID", dbType: DbType.Byte, value: procedenciaID);
+                    parameters.Add(name: "T_Anio", dbType: DbType.String, size: 4, value: anio);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_42_CuotaDetalleCuotaConcepto", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+        public Response ValidarCuotaDetalleCuotaConceptoPorOblID(int rowID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_42_CuotaDetalleCuotaConceptoPorOblID", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+
+            return result;
+        }
+
+
 
     }
 }
