@@ -365,6 +365,61 @@ END
 GO
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_Pagos_MigracionTP_U_InicializarEstadoValidacionPorID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_InicializarEstadoValidacionPorID]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_Pagos_MigracionTP_U_InicializarEstadoValidacionPorID	
+	@I_OblRowID   int,
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DECLARE @I_RowID  	  int,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_Pagos_MigracionTP_U_InicializarEstadoValidacionPorID @I_RowID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_TablaID INT = 7
+	DECLARE @I_FilaTablaID INT = (SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla)
+
+	BEGIN TRANSACTION
+	BEGIN TRY 
+		DELETE TI_ObservacionRegistroTabla
+		 WHERE I_TablaID = @I_TablaID
+		 	   AND EXISTS (SELECT I_RowID FROM TR_Ec_Det Det
+							WHERE Det.I_ProcedenciaID = TI_ObservacionRegistroTabla.I_ProcedenciaID
+								  AND Det.I_RowID = TI_ObservacionRegistroTabla.I_FilaTablaID
+								  AND Det.I_OblRowID = @I_OblRowID)
+
+
+		UPDATE	TR_Ec_Det_Pagos
+		   SET	B_Actualizado = IIF(B_Actualizado = 1, B_Actualizado, 0), 
+				B_Migrable = 1, 
+				D_FecMigrado = NULL, 
+				B_Migrado = 0
+		 WHERE	I_OblRowID = I_OblRowID
+
+		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @B_Resultado = 1
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
 
 /*	
 	===============================================================================================

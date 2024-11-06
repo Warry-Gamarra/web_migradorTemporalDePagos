@@ -83,6 +83,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result;
         }
 
+		public IEnumerable<Response> EjecutarValidacionesPorID(int ObligacionID)
+        {
+			List<Response> result = new List<Response>();
+            ObligacionRepository obligacionRepository = new ObligacionRepository();
+            var pagosSetvice = new PagoObligacionService();
+
+            
+		}
+
         private List<Response> EjecutarValidacionesPorAnio(int procedencia_id, string anio)
         {
             List<Response> result = new List<Response>();
@@ -110,10 +119,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
         }
 
-        public Response EjecutarValidacionPorObsId(int procedencia, int observacionId)
-        {
-            throw new System.NotImplementedException();
-        }
 
 
         private Response ValidarProcedenciaObligacionCuotaPago(int procedencia, string anio)
