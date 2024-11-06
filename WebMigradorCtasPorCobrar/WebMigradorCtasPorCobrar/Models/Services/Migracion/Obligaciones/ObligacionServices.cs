@@ -42,7 +42,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             Response result_Pago = pagoObligacionRepository.CopiarRegistrosPago(procedencia, schema, anio);
             Response result_Cabecera = obligacionRepository.CopiarRegistrosCabecera(procedencia, schema, anio);
             Response result_Detalle = obligacionRepository.CopiarRegistrosDetalle(procedencia, schema, anio);
-            
+
             Response _ = obligacionRepository.VincularCabeceraDetalle(procedencia, anio);
             Response _p = pagoObligacionRepository.VincularCabeceraPago(procedencia, anio);
 
@@ -63,7 +63,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             List<Response> result = new List<Response>();
             int procedencia_id = (int)procedencia;
             var pagosSetvice = new PagoObligacionService();
-            
+
             result.Add(ValidarAnioEnCabeceraObligacion(procedencia_id));
 
             if (!string.IsNullOrEmpty(anioValidacion))
@@ -83,14 +83,22 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result;
         }
 
-		public IEnumerable<Response> EjecutarValidacionesPorID(int ObligacionID)
+        public IEnumerable<Response> EjecutarValidacionesPorObligacionID(int obligacionID)
         {
-			List<Response> result = new List<Response>();
+            List<Response> result = new List<Response>();
             ObligacionRepository obligacionRepository = new ObligacionRepository();
             var pagosSetvice = new PagoObligacionService();
 
-            
-		}
+            return new List<Response>();
+
+        }
+
+
+        public IEnumerable<Response> EjecutarValidacionPorObaservacion(Procedencia procedencia, int observacionId)
+        {
+            return new List<Response>();
+        }
+
 
         private List<Response> EjecutarValidacionesPorAnio(int procedencia_id, string anio)
         {

@@ -161,7 +161,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         public ActionResult EjecutarValidacion(Procedencia procedencia, int ObservacionId)
         {
 
-            Response result = _obligacionServiceMigracion.EjecutarValidacionPorObsId((int)procedencia, ObservacionId);
+            Response result = _obligacionServiceMigracion.EjecutarValidacionPorObaservacion(procedencia, ObservacionId);
             ViewBag.Procedencia = procedencia.ToString();
 
             return PartialView("_ResultadoValidacion", result);
