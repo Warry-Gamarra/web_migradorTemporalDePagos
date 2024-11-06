@@ -125,7 +125,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private Response ValidarObligacionIdEnPagoObligacion(int procedencia, string anio)
         {
             PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
-            Response result = pagoObligacionRepository.ValidarObligacionIdEnPagoObligacion(procedencia, anio);
+            Response result = pagoObligacionRepository.ValidarPagoSinObligacionID(procedencia, anio);
 
             result.ReturnViewValidationsMessage($"Año {anio} - Observado por id de obligacion en pago",
                                                 (int)PagoObligacionObs.SinObligacionId,
@@ -138,7 +138,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private Response ValidarDetallesEnPagoObligacion(int procedencia, string anio)
         {
             PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
-            Response result = pagoObligacionRepository.ValidarDetallesEnPagoObligacion(procedencia, anio);
+            Response result = pagoObligacionRepository.ValidarDetalleObligacionObservada(procedencia, anio);
 
             result.ReturnViewValidationsMessage($"Año {anio} - Observado por error en detalle",
                                                 (int)PagoObligacionObs.ErrorDetalleOblig,
@@ -150,7 +150,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private Response ValidarCabObligacionObservada(int procedencia, string anio)
         {
             PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
-            Response result = pagoObligacionRepository.ValidarCabObligacionObservada(procedencia, anio);
+            Response result = pagoObligacionRepository.ValidarCabeceraObligacionObservada(procedencia, anio);
 
             result.ReturnViewValidationsMessage($"Año {anio} - Observado por error en cabecera de obligación",
                                                 (int)PagoObligacionObs.ErrorEnCabObligacion,

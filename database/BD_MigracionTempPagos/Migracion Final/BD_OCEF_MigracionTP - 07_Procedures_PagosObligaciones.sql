@@ -1407,9 +1407,9 @@ AS
 /*
 	DESCRIPCION: Marcar TR_Ec_Det con B_Migrable = 0 cuando la cabecera de la obligacion asociada al detella no fue migrada para el año y procedencia.
 
-	DECLARE	@B_Resultado  bit,
-			@I_ProcedenciaID	tinyint = 2,
+	DECLARE	@I_ProcedenciaID	tinyint = 2,
 			@T_Anio				varchar(4) = '2016',
+			@B_Resultado		bit,
 			@T_Message			nvarchar(4000)
 	EXEC USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabecera @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
 	SELECT @B_Resultado as resultado, @T_Message as mensaje

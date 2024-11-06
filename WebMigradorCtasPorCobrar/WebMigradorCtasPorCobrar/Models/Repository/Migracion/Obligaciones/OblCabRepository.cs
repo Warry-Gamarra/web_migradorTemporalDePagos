@@ -506,7 +506,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         }
 
 
-        public Response ValidarConceptoPagoMigrado(int procedenciaID, string anio)
+        public Response ValidarCabeceraConceptoPagoMigrado(int procedenciaID, string anio)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -535,7 +535,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             return result;
         }
 
-        public Response ValidarConceptoPagoMigradoPorOblID(int rowID)
+        public Response ValidarCabObligacionConceptoPagoMigradoPorOblID(int rowID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();

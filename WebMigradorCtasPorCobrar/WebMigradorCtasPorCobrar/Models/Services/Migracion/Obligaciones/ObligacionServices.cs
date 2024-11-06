@@ -227,7 +227,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private Response ValidarCabeceraObligacionConceptoPagoMigrado(int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Detalle = obligacionRepository.ValidarCabObligacionConceptoPagoMigrado(procedencia, anio);
+            Response result_Detalle = obligacionRepository.ValidarCabeceraConceptoPagoMigrado(procedencia, anio);
 
             result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Cabecera observados por no tener el concepto migrado.",
                                                          (int)DetalleObligacionObs.SinConceptoMigrado,
@@ -240,7 +240,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private Response ValidarDetalleObligacionConceptoPagoMigrado(int procedencia, string anio)
         {
             ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Detalle = obligacionRepository.ValidarDetalleObligacionConceptoPagoMigrado(procedencia, anio);
+            Response result_Detalle = obligacionRepository.ValidarDetalleConceptoPagoMigrado(procedencia, anio);
 
             result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Detalle Observados por no tener el concepto migrado.",
                                                          (int)DetalleObligacionObs.SinConceptoMigrado,
