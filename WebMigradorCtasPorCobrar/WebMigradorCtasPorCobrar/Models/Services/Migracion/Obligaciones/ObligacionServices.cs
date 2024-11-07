@@ -94,9 +94,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
 
-        public IEnumerable<Response> EjecutarValidacionPorObaservacion(Procedencia procedencia, int observacionId)
+        public Response EjecutarValidacionPorObaservacion(Procedencia procedencia, int observacionId)
         {
-            return new List<Response>();
+            return new Response();
         }
 
 
