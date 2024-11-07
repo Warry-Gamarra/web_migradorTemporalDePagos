@@ -8,7 +8,7 @@ using static WebMigradorCtasPorCobrar.Models.Helpers.CtasPorCobrar;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
-    public class PagoObligacionService
+    public class PagoOblService
     {
 
         public IEnumerable<Response> MigrarDatosTemporalPagosObligacionID(int obl_rowId)

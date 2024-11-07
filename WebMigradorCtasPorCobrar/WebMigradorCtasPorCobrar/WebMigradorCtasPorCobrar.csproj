@@ -195,6 +195,7 @@
     <Compile Include="Models\Repository\Migracion\Cross\ObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Cross\PagoObligacionRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Cross\ProcedenciaRepository.cs" />
+    <Compile Include="Models\Repository\Migracion\Cross\UsuarioRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\ConceptoPagoRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\OblCabRepository.cs" />
     <Compile Include="Models\Repository\Migracion\Obligaciones\OblDetRepository.cs" />
@@ -237,8 +238,11 @@
     <Compile Include="Models\Services\Migracion\DetalleObservacionService.cs" />
     <Compile Include="Models\Services\Migracion\Obligaciones\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\Migracion\Obligaciones\CuotaPagoService.cs" />
-    <Compile Include="Models\Services\Migracion\Obligaciones\ObligacionServices.cs" />
-    <Compile Include="Models\Services\Migracion\Obligaciones\PagoObligacionService.cs" />
+    <Compile Include="Models\Services\Migracion\Obligaciones\OblCabService.cs" />
+    <Compile Include="Models\Services\Migracion\Obligaciones\OblDetService.cs" />
+    <Compile Include="Models\Services\Migracion\Obligaciones\ObligacionService.cs" />
+    <Compile Include="Models\Services\Migracion\Obligaciones\OblPagoService.cs" />
+    <Compile Include="Models\Services\Migracion\Obligaciones\PagoOblService.cs" />
     <Compile Include="Models\Services\Migracion\Tasas\ConceptoPagoService.cs" />
     <Compile Include="Models\Services\Migracion\Tasas\CuotaPagoService.cs" />
     <Compile Include="Models\Services\Migracion\Cross\ObligacionService.cs" />
