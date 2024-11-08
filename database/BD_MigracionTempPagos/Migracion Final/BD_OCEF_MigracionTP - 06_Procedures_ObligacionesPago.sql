@@ -237,7 +237,7 @@ BEGIN
 		 WHERE det.Ano = @T_Anio
 			   AND det.I_ProcedenciaID = @I_ProcedenciaID
 
-		
+		SET @I_Actualizados = @@ROWCOUNT
 
 		COMMIT TRANSACTION
 		SET @B_Resultado = 1					
@@ -429,8 +429,8 @@ BEGIN
 		AS ( 
 			SELECT I_RowID, Cod_alu, Cod_rc, Cuota_pago, P, Fch_venc, Pagado, Monto
 			  FROM TR_Ec_Obl 
-			 WHERE I_ProcedenciaID = @I_ProcedenciaID
-				   AND Ano = @T_Anio
+			 WHERE I_ProcedenciaID = 1
+				   AND Ano = '2010'
 		)
 
 		UPDATE	det

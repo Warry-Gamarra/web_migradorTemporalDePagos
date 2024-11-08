@@ -327,6 +327,8 @@ AS
 BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
+		DECLARE @Row_count int;
+
 		WITH cte_obl_anio (I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, P, Fch_venc, Pagado, Monto)
 		AS ( 
 			SELECT I_RowID, Cod_alu, Cod_rc, Cuota_pago, P, Fch_venc, Pagado, Monto
@@ -344,11 +346,13 @@ BEGIN
 		  FROM  TR_Ec_Det_Pagos det 
 				INNER JOIN cte_obl_anio obl ON det.I_OblRowID = obl.I_OblRowID
 
+		SET @Row_count = @@ROWCOUNT
+
 		SET @B_Resultado = 1
 		SET @T_Message =  '{' +
 							 'Type: "summary", ' + 
 							 'Title: "Actualizados", ' + 
-							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+							 'Value: ' + CAST(@Row_count AS varchar) +  
 						  '}'
 
 		COMMIT TRANSACTION;
@@ -1191,7 +1195,6 @@ AS
 */
 BEGIN
 	DECLARE @I_Observados int = 0
-	DECLARE @I_ObservadosObl int = 0
 	DECLARE @D_FecProceso datetime = GETDATE() 
 	DECLARE @I_ObservID int = 57
 	DECLARE @I_OblTablaID int = 5
@@ -1263,7 +1266,7 @@ BEGIN
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
 							 'Title: "Observados", ' + 
-							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
+							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
 	BEGIN CATCH
