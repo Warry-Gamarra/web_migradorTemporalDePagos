@@ -367,7 +367,12 @@ BEGIN
 		 WHERE I_RowID = @I_RowID
 			   AND B_Correcto = 0
 
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
+
 		SET @B_Resultado = 1
 
 		COMMIT TRANSACTION;
@@ -441,7 +446,11 @@ BEGIN
 		  FROM  TR_Ec_Det det 
 				INNER JOIN cte_obl_anio obl ON det.I_OblRowID = obl.I_OblRowID
 
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
 		SET @B_Resultado = 1
 
 		COMMIT TRANSACTION;
