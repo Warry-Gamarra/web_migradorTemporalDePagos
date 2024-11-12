@@ -243,7 +243,7 @@ BEGIN
 		SET @B_Resultado = 1					
 		SET @T_Message =  '{' +
 							 'Type: "summary", ' + 
-							 'Title: "Actualizados", ' + 
+							 'Title: "Obl Asignados", ' + 
 							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
 						  '}'
 	END TRY
@@ -316,7 +316,11 @@ BEGIN
 			   AND Ano = @T_Anio
 			   AND ISNULL(B_Correcto, 0) = 0
 
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Estados de validación de cabecera actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
 		SET @B_Resultado = 1
 
 		COMMIT TRANSACTION;
@@ -369,7 +373,7 @@ BEGIN
 
 		SET @T_Message =  '{' +
 							 'Type: "summary", ' + 
-							 'Title: "Actualizados", ' + 
+							 'Title: "Estados de validación de cabecera actualizados", ' + 
 							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
 						  '}'
 
@@ -448,7 +452,7 @@ BEGIN
 
 		SET @T_Message =  '{' +
 							 'Type: "summary", ' + 
-							 'Title: "Actualizados", ' + 
+							 'Title: "Estados de validacion de detalle actualizados", ' + 
 							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
 						  '}'
 		SET @B_Resultado = 1
@@ -504,7 +508,11 @@ BEGIN
 				B_Migrado = 0
 		 WHERE	I_OblRowID = I_OblRowID
 
-		SET @T_Message = CAST(@@ROWCOUNT AS varchar)
+		SET @T_Message =  '{' +
+							 'Type: "summary", ' + 
+							 'Title: "Estados de validación de detalle actualizados", ' + 
+							 'Value: ' + CAST(@@ROWCOUNT AS varchar) +  
+						  '}'
 		SET @B_Resultado = 1
 
 		COMMIT TRANSACTION;
@@ -624,7 +632,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							'Type: "summary", ' + 
-							'Title: "Observados", ' + 
+							'Title: "Validar_24_ExisteAlumno", ' + 
 							'Value: ' + CAST(@I_Observados AS varchar)  +
 						 '}' 
 	END TRY
@@ -730,7 +738,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							'Type: "summary", ' + 
-							'Title: "Observados", ' + 
+							'Title: "Validar_24_ExisteAlumnoPorOblID", ' + 
 							'Value: ' + CAST(@I_Observados AS varchar)  +
 						 '}' 
 
@@ -831,7 +839,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_26_AnioNumerico", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -922,7 +930,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_26_AnioNumericoPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -1030,7 +1038,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_27_Periodo", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -1128,7 +1136,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_27_PeriodoPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -1248,7 +1256,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados ", ' + 
+							 'Title: "Validar_28_FechaVencimientoCuota ", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -1360,7 +1368,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados ", ' + 
+							 'Title: "Validar_28_FechaVencimientoCuotaPorOblID ", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -1492,7 +1500,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_29_ExisteEnDestino", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar)  +
 						  '}' 
 	END TRY
@@ -1623,7 +1631,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_29_ExisteEnDestinoPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						  '}' 
 
@@ -1750,7 +1758,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_32_ObligacionCuotaPagoMigrada", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -1863,7 +1871,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados ", ' + 
+							 'Title: "Validar_32_ObligacionCuotaPagoMigradaPorOblID ", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -1991,7 +1999,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_34_ProcedenciaCuotaPago", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -2109,7 +2117,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados ", ' + 
+							 'Title: "Validar_34_ProcedenciaCuotaPagoPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -2229,7 +2237,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Obligaciones con concepto no migrado", ' + 
+							 'Title: "Validar_36_ConceptoPagoMigrado", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -2351,7 +2359,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados ", ' + 
+							 'Title: "Validar_36_ConceptoPagoMigradoPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -2477,7 +2485,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Obligaciones con concepto no migrado", ' + 
+							 'Title: "Validar_37_ObservacionAnioDetalle", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -2597,7 +2605,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados ", ' + 
+							 'Title: "Validar_37_ObservacionAnioDetallePorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -2720,7 +2728,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Obligaciones con concepto no migrado", ' + 
+							 'Title: "Validar_38_ObservacionPeriodoDetalle", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -2840,7 +2848,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados ", ' + 
+							 'Title: "Validar_38_ObservacionPeriodoDetallePorOblID ", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -2957,7 +2965,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_39_DetalleObservado", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -3066,7 +3074,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados ", ' + 
+							 'Title: "Validar_39_DetalleObservadoPorOblID ", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -3186,7 +3194,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_40_ObligacionSinDetalle", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -3300,7 +3308,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_40_ObligacionSinDetallePorOblID", ' + 
 							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
 						 '}' 
 	END TRY
@@ -3414,7 +3422,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_54_PagoEnObligacionNoPagado", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -3524,7 +3532,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_54_PagoEnObligacionNoPagadoPorOblID", ' + 
 							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
 						 '}' 
 	END TRY
@@ -3649,7 +3657,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_59_ObligacionRepetida", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -3770,7 +3778,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_59_ObligacionRepetidaPorOblID", ' + 
 							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
 						 '}' 
 	END TRY
@@ -3885,7 +3893,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_60_SinPagoEnObligacioPagada", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -3998,7 +4006,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_60_SinPagoEnObligacioPagadaPorOblID", ' + 
 							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
 						 '}' 
 	END TRY
@@ -4109,7 +4117,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_61_MigracionMatricula", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -4216,7 +4224,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_61_MigracionMatriculaPorOblID", ' + 
 							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
 						 '}' 
 	END TRY
@@ -4340,7 +4348,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_15_AnioDetalleAnioConcepto", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -4447,7 +4455,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_15_AnioDetalleAnioConceptoPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -4562,7 +4570,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_17_PeriodoDetallePeriodoConcepto", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -4669,7 +4677,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_17_PeriodoDetallePeriodoConceptoPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -4786,7 +4794,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "alidar_25_ObligacionCabID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -4894,7 +4902,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_25_ObligacionCabIDPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -5012,7 +5020,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Detalles con concepto no migrado", ' + 
+							 'Title: "Validar_33_ConceptoPagoMigrado", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -5123,7 +5131,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Detalles con concepto no migrado", ' + 
+							 'Title: "Validar_33_ConceptoPagoMigradoPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -5240,7 +5248,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_35_ConceptoPago", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -5344,7 +5352,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_35_ConceptoPagoPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -5455,7 +5463,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_42_CuotaDetalleCuotaConcepto", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -5565,7 +5573,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_42_CuotaDetalleCuotaConceptoPorOblID", ' + 
 							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
 						 '}' 
 	END TRY
@@ -5663,7 +5671,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_43_AnioDetalleNumerico", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -5759,7 +5767,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_43_AnioDetalleNumericoPorOblID", ' + 
 							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
 						 '}' 
 	END TRY
@@ -5875,7 +5883,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_44_PeriodoDetalleEquivPeriodoCtas", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -5986,7 +5994,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_44_PeriodoDetalleEquivPeriodoCtasPorOblID", ' + 
 							 'Value: ' + CAST(@I_ObservadosObl AS varchar) +
 						 '}' 
 	END TRY
@@ -6104,7 +6112,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_49_MontoDetalleMontoCab", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -6213,7 +6221,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_49_MontoDetalleMontoCabPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -6316,7 +6324,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_58_SinObligacionCabID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -6428,7 +6436,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_62_MigracionCabecera", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -6533,7 +6541,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Observados", ' + 
+							 'Title: "Validar_62_MigracionCabeceraPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
