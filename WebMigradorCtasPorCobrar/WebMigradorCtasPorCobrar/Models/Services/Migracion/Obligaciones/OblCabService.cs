@@ -14,6 +14,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             _obligacionRepository = new ObligacionRepository();
         }
 
+        #region -- copia y equivalencias ---
+            
+        #endregion
         
 
         #region -- Valiodaciones --

@@ -34,6 +34,13 @@ UPDATE TC_CatalogoObservacion
  WHERE I_ObservID = 44
 GO
 
+
+UPDATE TC_CatalogoObservacion
+   SET T_ObservDesc = 'El monto pagado no corresponde con la suma de los conceptos relacionados en el detalle',
+ WHERE I_ObservID = 53
+GO
+
+
 IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 51)
 BEGIN
 	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 

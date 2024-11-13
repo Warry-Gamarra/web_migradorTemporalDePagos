@@ -14,59 +14,89 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             _pagoObligacionRepository = new PagoObligacionRepository();
         }
 
+        #region -- copia y equivalencias ---
+            
+        #endregion
+
+
         #region -- Validaciones --
 
         private Response ValidarMontoPagadoIgualTotalMontoPagado (int procedencia, string anio){
-            return new Response();
+            Response result = _pagoObligacionRepository.ValidarTotalMontoPagadoDetalle(procedencia, anio);
+
+            result.ReturnViewValidationsMessage()
+            return result;
         }
 
         private Response ValidarMontoPagadoIgualTotalMontoPagado (int ObligacionId){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
 
         private Response ValidarExisteEnDestinoConOtroBanco (int procedencia, string anio){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
         private Response ValidarExisteEnDestinoConOtroBanco (int ObligacionId){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
 
         private Response ValidarDetalleOblgObservedo (int procedencia, string anio){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
         private Response ValidarDetalleOblgObservedo (int ObligacionId){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
 
         private Response ValidarCabeceraObligacionObservada (int procedencia, string anio){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
         private Response ValidarCabeceraObligacionObservada (int ObligacionId){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
 
         private Response ValidarMigracionCabeceraObligacion (int procedencia, string anio){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
         private Response ValidarMigracionCabeceraObligacion (int ObligacionId){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
 
         private Response ValidarMigracionDataPagoCtasxCobrar (int procedencia, string anio){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
         private Response ValidarMigracionDataPagoCtasxCobrar (int ObligacionId){
-            return new Response();
+            Response result = new Response();
+
+            return result;
         }
 
 
