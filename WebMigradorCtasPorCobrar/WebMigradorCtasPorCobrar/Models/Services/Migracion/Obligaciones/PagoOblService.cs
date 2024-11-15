@@ -153,7 +153,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             Response result = pagoObligacionRepository.ValidarCabeceraObligacionObservada(procedencia, anio);
 
             result.ReturnViewValidationsMessage($"Año {anio} - Observado por error en cabecera de obligación",
-                                                (int)PagoObligacionObs.ErrorEnCabObligacion,
+                                                (int)PagoObligacionObs.CabObligacionObservada,
                                                 "Obligaciones", "EjecutarValidacion");
 
             return result;

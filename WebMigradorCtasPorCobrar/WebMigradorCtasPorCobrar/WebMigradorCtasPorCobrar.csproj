@@ -175,6 +175,7 @@
     <Compile Include="Models\Entities\UnfvRepositorio\Alumno.cs" />
     <Compile Include="Models\Entities\UnfvRepositorio\AlumnoPersona.cs" />
     <Compile Include="Models\Entities\UnfvRepositorio\Persona.cs" />
+    <Compile Include="Models\Helpers\Constants.cs" />
     <Compile Include="Models\Helpers\ListEnums.cs" />
     <Compile Include="Models\Helpers\Migracion.cs" />
     <Compile Include="Models\Helpers\Observaciones.cs" />
@@ -221,7 +222,6 @@
     <Compile Include="Models\Entities\TemporalPagos\ConceptoPago.cs" />
     <Compile Include="Models\Entities\TemporalPagos\CuotaPago.cs" />
     <Compile Include="Models\Helpers\AnioObligacion.cs" />
-    <Compile Include="Models\Helpers\Constant.cs" />
     <Compile Include="Models\Helpers\Procedencia.cs" />
     <Compile Include="Models\Helpers\Response.cs" />
     <Compile Include="Models\Repository\Migracion\Tasas\CuotaPagoRepository.cs" />

@@ -64,26 +64,36 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             ObsPeriodoDetalle =38,
             ObsConceptoDetalle =39,
             SinDetalle =40,
-            Removido = 45
+            Removido = 45,
+            PagoEnObligacionNoPagado = 54,
+            ObligacionRepetida = 59,
+            SinPagoEnObligacioPagada = 60,
+            MigracionMatricula = 61
         }
 
         public enum DetalleObligacionObs
         {
+            PeriodoDetalleConcepto = 17,
             SinObligacionMigrada = 25,
             SinConceptoMigrado = 33,
-            ProcedenciaNoCoincide = 34,
             ConceptoNoExiste = 35,
             CuotaConceptoNoCoincide = 42,
             AnioConceptoNoCoincide = 43,
             PeriodoConceptoNoCoincide = 44,
-            Removido = 45
+            Removido = 45,
+            MontoDetalleMontoCab = 49,
+            SinObligacionCabID = 58,
+            MigracionCabecera = 62
         }
 
         public enum PagoObligacionObs
         {
             SinObligacionId = 52,
-            ErrorDetalleOblig = 56,
-            ErrorEnCabObligacion = 57
+            MontoPagadoDetalle = 53,
+            ExisteEnDestinoConOtroBanco = 55,
+            DetalleObservado = 56,
+            CabObligacionObservada = 57,
+            MigracionCabecera = 63
         }
 
     }

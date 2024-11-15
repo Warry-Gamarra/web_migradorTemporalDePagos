@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using WebMigradorCtasPorCobrar.Models.Helpers;
+using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
+using WebMigradorCtasPorCobrar.Models.ViewModels;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
@@ -24,25 +28,44 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private Response ValidarMontoPagadoIgualTotalMontoPagado (int procedencia, string anio){
             Response result = _pagoObligacionRepository.ValidarTotalMontoPagadoDetalle(procedencia, anio);
 
-            result.ReturnViewValidationsMessage()
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.MONTO_PAGO_VS_DETALLE_PAGADO,
+                                                    (int)PagoObligacionObs.MontoPagadoDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
             return result;
         }
 
         private Response ValidarMontoPagadoIgualTotalMontoPagado (int ObligacionId){
-            Response result = new Response();
+            Response result = _pagoObligacionRepository.ValidarTotalMontoPagadoDetallePorOblID(ObligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.MONTO_PAGO_VS_DETALLE_PAGADO,
+                                                    (int)PagoObligacionObs.MontoPagadoDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
 
             return result;
         }
 
 
         private Response ValidarExisteEnDestinoConOtroBanco (int procedencia, string anio){
-            Response result = new Response();
+            Response result = _pagoObligacionRepository.ValidarPagoExisteEnDestinoConOtroBanco(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_EXISTE_CTAS_OTRO_BNC,
+                                                    (int)PagoObligacionObs.ExisteEnDestinoConOtroBanco,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
 
             return result;
         }
 
         private Response ValidarExisteEnDestinoConOtroBanco (int ObligacionId){
-            Response result = new Response();
+            Response result = _pagoObligacionRepository.ValidarPagoExisteEnDestinoConOtroBancoPorOblID(ObligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_EXISTE_CTAS_OTRO_BNC,
+                                                    (int)PagoObligacionObs.ExisteEnDestinoConOtroBanco,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
 
             return result;
         }

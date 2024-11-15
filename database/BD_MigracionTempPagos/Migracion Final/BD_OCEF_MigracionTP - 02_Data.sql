@@ -22,6 +22,18 @@ GO
 
 
 UPDATE TC_CatalogoObservacion
+   SET T_ObservCod = 'FEC VENC REPETIDO'
+ WHERE I_ObservID = 28
+GO
+
+
+UPDATE TC_CatalogoObservacion
+   SET T_ObservCod = 'PROC CUOTA PAGO'
+ WHERE I_ObservID = 34
+GO
+
+
+UPDATE TC_CatalogoObservacion
    SET T_ObservDesc = 'El año en el detalle de la obligacion no es un valor válido',
 	   T_ObservCod = 'AÑO NO VALIDO'
  WHERE I_ObservID = 43
@@ -36,7 +48,7 @@ GO
 
 
 UPDATE TC_CatalogoObservacion
-   SET T_ObservDesc = 'El monto pagado no corresponde con la suma de los conceptos relacionados en el detalle',
+   SET T_ObservDesc = 'El monto pagado no corresponde con la suma de los conceptos relacionados en el detalle'
  WHERE I_ObservID = 53
 GO
 
