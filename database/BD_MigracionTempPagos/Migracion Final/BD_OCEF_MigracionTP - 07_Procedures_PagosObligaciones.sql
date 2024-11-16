@@ -1411,7 +1411,7 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_Migracio
 )
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Det con B_Migrable = 0 cuando la cabecera de la obligacion asociada al detella no fue migrada para el año y procedencia.
+	DESCRIPCION: Marcar TR_Ec_Det con B_Migrable = 0 cuando la cabecera de la obligacion asociada al pago no fue migrada para el año y procedencia.
 
 	DECLARE	@I_ProcedenciaID	tinyint = 2,
 			@T_Anio				varchar(4) = '2016',

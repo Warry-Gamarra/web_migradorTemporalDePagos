@@ -22,7 +22,14 @@ GO
 
 
 UPDATE TC_CatalogoObservacion
-   SET T_ObservCod = 'FEC VENC REPETIDO'
+   SET T_ObservDesc = 'La obligación correspondiente no es migrable.'
+ WHERE I_ObservID = 25
+GO
+
+
+UPDATE TC_CatalogoObservacion
+   SET T_ObservDesc = 'La fecha de vencimiento se no coincide con la fecha en la cuota de pago.',
+   	   T_ObservCod = 'FEC VENC CP_DES'
  WHERE I_ObservID = 28
 GO
 
@@ -110,7 +117,7 @@ GO
 IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 63)
 BEGIN
 	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
-								VALUES (63, 'La pago de la obligación asociada no pudo migrarse por no tener cabecera migrada.', 'MIGRACION', NULL, 7)
+								VALUES (63, 'La pago de la obligación no pudo migrarse por no tener cabecera migrada.', 'MIGRACION', NULL, 7)
 END
 GO
 

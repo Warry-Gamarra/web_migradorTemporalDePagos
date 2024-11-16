@@ -1,16 +1,25 @@
 ﻿using System.Collections.Generic;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
-using CrossRepo = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
-using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos.ObligacionRepository;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
+using CrossRepo = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
+using Temporal = WebMigradorCtasPorCobrar.Models.Repository.TemporalPagos.ObligacionRepository;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
     public class ObligacionService
     {
+        private readonly OblDetService _oblDetService;
+        private readonly OblCabService _oblCabService;
+        private readonly OblPagoService _oblPagoService;
+        public ObligacionService()
+        {
+            _oblCabService = new OblCabService();
+            _oblDetService = new OblDetService();
+            _oblPagoService = new OblPagoService();
+        }
         public IEnumerable<Response> CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia, string anio)
         {
             List<Response> result = new List<Response>();
@@ -107,163 +116,51 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private List<Response> EjecutarValidacionesPorAnio(int procedencia_id, string anio)
         {
             List<Response> result = new List<Response>();
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
 
-            _ = obligacionRepository.InicializarEstadoValidacionObligacionPago(procedencia_id, anio);
+            _ = _oblCabService.InicializarEstadosValidacionCabecera(procedencia_id, anio);
+            _ = _oblDetService.InicializarEstadosValidacionCabecera(procedencia_id, anio);
+            _ = _oblPagoService.InicializarEstadosValidacionCabecera(procedencia_id, anio);
 
-            result.Add(ValidarAlumnoCabeceraObligacion(procedencia_id, anio));
-            result.Add(ValidarPeriodoEnCabeceraObligacion(procedencia_id, anio));
-            result.Add(ValidarCabeceraObligacionSinDetalle(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarExisteCodigoAlumno(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarAnio(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarPeriodo(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarFechaVencimiento(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarCuotaPagoDeObligacionMigrada(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarProcedenciaObligProcecedenciaCuotaPago(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarTieneDetallesAsociados(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarCabeceraObligacionRepetida(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarObligacionTieneConceptosMigrados(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarNoExistePagoEnObligacionPagada(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarNoExistePagoEnObligacionPagada(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarExisteConOtroMontoEnCtasxCobrar(procedencia_id, anio));
 
-            result.Add(ValidarObligacionCuotaPagoMigrada(procedencia_id, anio));
-            result.Add(ValidarProcedenciaObligacionCuotaPago(procedencia_id, anio));
+            result.Add(_oblDetService.ValidarSinObligacionID(procedencia_id, anio));
+            result.Add(_oblDetService.ValidarConceptoExisteEnCatalogo(procedencia_id, anio));
+            result.Add(_oblDetService.ValidarAnioEsUnNumero(procedencia_id, anio));
+            result.Add(_oblDetService.ValidarTieneConceptoPagoMigrado(procedencia_id, anio));
+            result.Add(_oblDetService.ValidarAnioIgualAnioConcepto(procedencia_id, anio));
+            result.Add(_oblDetService.ValidarPeriodoIgualPeriodoConcepto(procedencia_id, anio));
+            result.Add(_oblDetService.ValidarPeriodoExisteCatologoCtas(procedencia_id, anio));
+            result.Add(_oblDetService.ValidarCuotaPagoIgualCuotaPagoConcepto(procedencia_id, anio));
+            result.Add(_oblDetService.ValidarTotalMontoIgualMontoCabecera(procedencia_id, anio));
 
-            _ = obligacionRepository.InicializarEstadoValidacionDetalleObligacion(procedencia_id, anio);
-            result.Add(ValidarDetalleObligacionSinCabeceraID(procedencia_id, anio));
-            result.Add(ValidarDetalleObligacionConceptoPago(procedencia_id, anio));
-            result.Add(ValidarDetalleObligacionConceptoPagoMigrado(procedencia_id, anio));
-            result.Add(ValidarCabeceraObligacionConceptoPagoMigrado(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarSinObservacionesEnDetalle(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarObservacionesAnioDetalle(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarObservacionesPeriodoDetalle(procedencia_id, anio));
 
-            _ = pagoObligacionRepository.InicializarEstadoValidacion(procedencia_id, anio);
+            result.Add(_oblDetService.ValidarMigracionCabecera(procedencia_id, anio));
 
-            return result;
-        }
-
-
-        
-        private Response ValidarProcedenciaObligacionCuotaPago(int procedencia, string anio)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Procedencia = obligacionRepository.ValidarProcedenciaObligacionCuotaPago(procedencia, anio);
-
-            result_Procedencia.ReturnViewValidationsMessage($"Año {anio} - Observado por procedencia de la cuota de pago",
-                                                            (int)ObligacionesPagoObs.ProcedenciaNoCoincide,
-                                                            "Obligaciones", "EjecutarValidacion");
-
-            return result_Procedencia;
-        }
-
-        private Response ValidarObligacionCuotaPagoMigrada(int procedencia, string anio)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_CuotaPagoMigrada = obligacionRepository.ValidarObligacionCuotaPagoMigrada(procedencia, anio);
-
-            result_CuotaPagoMigrada.ReturnViewValidationsMessage($"Año {anio} - Observado por cuota de pago sin migrar",
-                                                                   (int)ObligacionesPagoObs.SinCuotaPagoMigrable,
-                                                                   "Obligaciones", "EjecutarValidacion");
-
-            return result_CuotaPagoMigrada;
-        }
-
-        private Response ValidarFechaVencimientoCuotaObligacion(int procedencia, string anio)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_FecVencimiento = obligacionRepository.ValidarFechaVencimientoCuotaObligacion(procedencia, anio);
-
-            result_FecVencimiento.ReturnViewValidationsMessage($"Año {anio} - Observado por fecha de vencimiento repetido para diferentes cuotas de pago",
-                                                                (int)ObligacionesPagoObs.FchVencRepetido,
-                                                                "Obligaciones", "EjecutarValidacion");
-
-            return result_FecVencimiento;
-        }
-
-        private Response ValidarAlumnoCabeceraObligacion(int procedencia, string anio)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Alumnos = obligacionRepository.ValidarAlumnoCabeceraObligacion(procedencia, anio);
-
-            result_Alumnos.ReturnViewValidationsMessage($"Año {anio} - Observados por código de alumno inexistente en la relación de alumnos.",
-                                                         (int)ObligacionesPagoObs.SinAlumno,
-                                                         "Obligaciones", "EjecutarValidacion");
-
-            return result_Alumnos;
-        }
-
-        private Response ValidarAnioEnCabeceraObligacion(int procedencia)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Anio = obligacionRepository.ValidarAnioEnCabeceraObligacion(procedencia);
-
-            result_Anio.ReturnViewValidationsMessage($"Observados por año errado en la obligación.",
-                                                       (int)ObligacionesPagoObs.AnioNoValido,
-                                                       "Obligaciones", "EjecutarValidacion");
-
-            return result_Anio;
-        }
-
-        private Response ValidarPeriodoEnCabeceraObligacion(int procedencia, string anio)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Periodo = obligacionRepository.ValidarPeriodoEnCabeceraObligacion(procedencia, anio);
-
-            result_Periodo.ReturnViewValidationsMessage($"Observados por año errado en la obligación.",
-                                                        (int)ObligacionesPagoObs.SinPeriodo,
-                                                        "Obligaciones", "EjecutarValidacion");
-            return result_Periodo;
-        }
-
-        private Response ValidarCabeceraObligacionSinDetalle(int procedencia, string anio)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result = obligacionRepository.ValidarCabeceraObligacionSinDetalle(procedencia, anio);
-
-            result.ReturnViewValidationsMessage($"Año {anio} - Observados por no tener detalle para la obligación.",
-                                                 (int)ObligacionesPagoObs.SinDetalle,
-                                                 "Obligaciones", "EjecutarValidacion");
+            result.Add(_oblPagoService.ValidarCabeceraObligacionObservada(procedencia_id, anio));
+            result.Add(_oblPagoService.ValidarDetalleOblgObservedo(procedencia_id, anio));
+            result.Add(_oblPagoService.ValidarCabeceraObligacionID(procedencia_id, anio));
+            result.Add(_oblPagoService.ValidarMontoPagadoIgualTotalMontoPagado(procedencia_id, anio));
+            result.Add(_oblPagoService.ValidarExisteEnDestinoConOtroBanco(procedencia_id, anio));
 
             return result;
         }
 
-        private Response ValidarDetalleObligacionSinCabeceraID(int procedencia, string anio)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Detalle = obligacionRepository.ValidarDetalleObligacionCabeceraMigrable(procedencia, anio);
-
-            result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Observados por no tener Id de obligacion.",
-                                                         (int)DetalleObligacionObs.SinObligacionMigrada,
-                                                         "Obligaciones", "EjecutarValidacion");
-
-            return result_Detalle;
-        }
 
 
-        private Response ValidarDetalleObligacionConceptoPago(int procedencia, string anio)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Detalle = obligacionRepository.ValidarDetalleExisteConceptoPago(procedencia, anio);
-
-            result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Observados por no existir en cp_pri.",
-                                                         (int)DetalleObligacionObs.ConceptoNoExiste,
-                                                         "Obligaciones", "EjecutarValidacion");
-
-            return result_Detalle;
-        }
-
-        private Response ValidarCabeceraObligacionConceptoPagoMigrado(int procedencia, string anio)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Detalle = obligacionRepository.ValidarCabeceraConceptoPagoMigrado(procedencia, anio);
-
-            result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Cabecera observados por no tener el concepto migrado.",
-                                                         (int)DetalleObligacionObs.SinConceptoMigrado,
-                                                         "Obligaciones", "EjecutarValidacion");
-
-            return result_Detalle;
-        }
-
-
-        private Response ValidarDetalleObligacionConceptoPagoMigrado(int procedencia, string anio)
-        {
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            Response result_Detalle = obligacionRepository.ValidarDetalleConceptoPagoMigrado(procedencia, anio);
-
-            result_Detalle.ReturnViewValidationsMessage($"Año {anio} - Detalle Observados por no tener el concepto migrado.",
-                                                         (int)DetalleObligacionObs.SinConceptoMigrado,
-                                                         "Obligaciones", "EjecutarValidacion");
-
-            return result_Detalle;
-        }
 
 
 
@@ -283,7 +180,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                 case ObligacionesPagoObs.SinPeriodo:
                     result = obligacionRepository.SavePeriodoObligacion(obligacion);
                     break;
-                case ObligacionesPagoObs.FchVencRepetido:
+                case ObligacionesPagoObs.FchVencCuotaPago:
                     result = obligacionRepository.SaveFecVencObligacion(obligacion);
                     break;
                 case ObligacionesPagoObs.ExisteConOtroMonto:
@@ -320,7 +217,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                 case ObligacionesPagoObs.SinPeriodo:
                     componentID = "#I_Periodo";
                     break;
-                case ObligacionesPagoObs.FchVencRepetido:
+                case ObligacionesPagoObs.FchVencCuotaPago:
                     componentID = "#Fch_venc";
                     break;
                 case ObligacionesPagoObs.ExisteConOtroMonto:

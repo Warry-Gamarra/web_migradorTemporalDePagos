@@ -55,7 +55,7 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
             SinAlumno = 24,
             AnioNoValido = 26,
             SinPeriodo = 27,
-            FchVencRepetido = 28,
+            FchVencCuotaPago = 28,
             ExisteConOtroMonto = 29,
             SinCuotaPagoMigrable= 32,
             ProcedenciaNoCoincide = 34,
@@ -73,13 +73,14 @@ namespace WebMigradorCtasPorCobrar.Models.Helpers
 
         public enum DetalleObligacionObs
         {
+            AnioDetalleConcepto = 15,
             PeriodoDetalleConcepto = 17,
-            SinObligacionMigrada = 25,
+            SinObligacionMigrable= 25,
             SinConceptoMigrado = 33,
             ConceptoNoExiste = 35,
             CuotaConceptoNoCoincide = 42,
-            AnioConceptoNoCoincide = 43,
-            PeriodoConceptoNoCoincide = 44,
+            AnioNoValido = 43,
+            PeriodoSinEquivalenciaDtas = 44,
             Removido = 45,
             MontoDetalleMontoCab = 49,
             SinObligacionCabID = 58,

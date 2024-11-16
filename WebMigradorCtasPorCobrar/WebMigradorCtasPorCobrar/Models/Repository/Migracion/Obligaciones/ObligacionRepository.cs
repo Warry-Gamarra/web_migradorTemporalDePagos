@@ -3,9 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Web;
-using System.Web.Helpers;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
 using WebMigradorCtasPorCobrar.Models.Helpers;
 
@@ -119,7 +116,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     commandTimeout: 3600,
                     commandType: CommandType.Text);
                 }
-                
+
                 result.IsDone = true;
                 result.Message = "Ok";
             }

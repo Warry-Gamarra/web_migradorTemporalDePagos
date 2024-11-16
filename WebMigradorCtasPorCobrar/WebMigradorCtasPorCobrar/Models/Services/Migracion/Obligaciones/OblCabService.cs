@@ -1,149 +1,434 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
+using WebMigradorCtasPorCobrar.Models.ViewModels;
+using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
 
 namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
     public class OblCabService
     {
-        private readonly ObligacionRepository _obligacionRepository;
+        public readonly ObligacionRepository _obligacionRepository;
 
-        public OblCabService() { 
+        public OblCabService()
+        {
             _obligacionRepository = new ObligacionRepository();
         }
 
         #region -- copia y equivalencias ---
-            
+
+
+        public Response InicializarEstadosValidacionCabecera(int procedencia, string anio)
+        {
+            return _obligacionRepository.InicializarEstadoValidacionObligacionPago(procedencia, anio);
+        }
+
+        public Response InicializarEstadosValidacionCabecera(int obligacionID)
+        {
+            return _obligacionRepository.InicializarEstadoValidacionObligacionPagoPorOblID(obligacionID);
+        }
+
         #endregion
-        
+
 
         #region -- Valiodaciones --
 
-        private Response ValidarExisteCodigoAlumno (int procedencia, string anio){
-            return new Response();
+        public Response ValidarExisteCodigoAlumno(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarAlumnoCabeceraObligacion(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.CABECERA_SIN_COD_ALU,
+                                                    (int)ObligacionesPagoObs.SinAlumno,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
         }
 
-        private Response ValidarExisteCodigoAlumno (int ObligacionId){
-            return new Response();
-        }
+        public Response ValidarExisteCodigoAlumno(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarAlumnoCabeceraObligacionPorID(obligacionId);
 
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.CABECERA_SIN_COD_ALU,
+                                                    (int)ObligacionesPagoObs.SinAlumno,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
 
-        private Response ValidarAnio (int procedencia, string anio){
-            return new Response();
-        }
-
-        private Response ValidarAnio (int ObligacionId){
-            return new Response();
-        }
-
-
-        private Response ValidarPeriodo (int procedencia, string anio){
-            return new Response();
-        }
-
-        private Response ValidarPeriodo (int ObligacionId){
-            return new Response();
-        }
-
-
-        private Response ValidarFechaVencimiento (int procedencia, string anio){
-            return new Response();
-        }
-
-        private Response ValidarFechaVencimiento (int ObligacionId){
-            return new Response();
+            return result;
         }
 
 
-        private Response ValidarExisteConOtroMontoEnCtasxCobrar (int procedencia, string anio){
-            return new Response();
+        public Response ValidarAnio(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarAnioEnCabeceraObligacion(procedencia);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.ANIO_NO_VALIDO,
+                                                    (int)ObligacionesPagoObs.AnioNoValido,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
         }
 
-        private Response ValidarExisteConOtroMontoEnCtasxCobrar (int ObligacionId){
-            return new Response();
-        }
+        public Response ValidarAnio(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarAnioEnCabeceraObligacionPorID(obligacionId);
 
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.ANIO_NO_VALIDO,
+                                                    (int)ObligacionesPagoObs.AnioNoValido,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
 
-        private Response ValidarCuotaPagoDeObligacionMigrada (int procedencia, string anio){
-            return new Response();
-        }
-
-        private Response ValidarCuotaPagoDeObligacionMigrada (int ObligacionId){
-            return new Response();
-        }
-
-
-        private Response ValidarProcedenciaObligProcecedenciaCuotaPago (int procedencia, string anio){
-            return new Response();
-        }
-
-        private Response ValidarProcedenciaObligProcecedenciaCuotaPago (int ObligacionId){
-            return new Response();
-        }
-
-
-        private Response ValidarObligacionTieneConceptosMigrados (int procedencia, string anio){
-            return new Response();
-        }
-
-        private Response ValidarObligacionTieneConceptosMigrados (int ObligacionId){
-            return new Response();
+            return result;
         }
 
 
-        private Response ValidarSinObservacionesEnDetalle (int procedencia, string anio){
-            return new Response();
+        public Response ValidarPeriodo(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarPeriodoEnCabeceraObligacion(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.SIN_PERIODO,
+                                                    (int)ObligacionesPagoObs.SinPeriodo,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
         }
 
-        private Response ValidarSinObservacionesEnDetalle (int ObligacionId){
-            return new Response();
-        }
+        public Response ValidarPeriodo(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarPeriodoEnCabeceraObligacionPorID(obligacionId);
 
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.SIN_PERIODO,
+                                                    (int)ObligacionesPagoObs.SinPeriodo,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
 
-        private Response ValidarTieneDetallesAsociados (int procedencia, string anio){
-            return new Response();
-        }
-
-        private Response ValidarTieneDetallesAsociados (int ObligacionId){
-            return new Response();
-        }
-
-
-        private Response ValidarNoPagadoConRegistroPago (int procedencia, string anio){
-            return new Response();
-        }
-
-        private Response ValidarNoPagadoConRegistroPago (int ObligacionId){
-            return new Response();
-        }
-
-
-        private Response ValidarCabeceraOligacionRepetida(int procedencia, string anio){
-            return new Response();
-        }
-
-        private Response ValidarCabeceraOligacionRepetida (int ObligacionId){
-            return new Response();
+            return result;
         }
 
 
-        private Response ValidarPagodoTieneRegistroPago (int procedencia, string anio){
-            return new Response();
+        public Response ValidarFechaVencimiento(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarFechaVencimientoCuotaObligacion(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.FEC_VENC_DIF_CUOTA_PAGO,
+                                                    (int)ObligacionesPagoObs.FchVencCuotaPago,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
         }
 
-        private Response ValidarPagodoTieneRegistroPago (int ObligacionId){
-            return new Response();
+        public Response ValidarFechaVencimiento(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarFechaVencimientoCuotaObligacionPorID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.FEC_VENC_DIF_CUOTA_PAGO,
+                                                    (int)ObligacionesPagoObs.FchVencCuotaPago,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
         }
 
 
-        private Response ValidarMigracionDatosMatricula (int procedencia, string anio){
-            return new Response();
+        public Response ValidarExisteConOtroMontoEnCtasxCobrar(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarObligacionExisteCtasxCobrar(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.OBLIG_EXISTE_CON_OTRO_MONTO,
+                                                    (int)ObligacionesPagoObs.ExisteConOtroMonto,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
         }
 
-        private Response ValidarMigracionDatosMatricula (int ObligacionId){
-            return new Response();
+        public Response ValidarExisteConOtroMontoEnCtasxCobrar(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarObligacionExisteCtasxCobrarPorID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.OBLIG_EXISTE_CON_OTRO_MONTO,
+                                                    (int)ObligacionesPagoObs.ExisteConOtroMonto,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarCuotaPagoDeObligacionMigrada(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarObligacionCuotaPagoMigrada(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.SIN_CUOTAPAGO_MIGRADA,
+                                                    (int)ObligacionesPagoObs.SinCuotaPagoMigrable,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarCuotaPagoDeObligacionMigrada(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarObligacionCuotaPagoMigradaPorObligacionID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.SIN_CUOTAPAGO_MIGRADA,
+                                                    (int)ObligacionesPagoObs.SinCuotaPagoMigrable,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarProcedenciaObligProcecedenciaCuotaPago(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarProcedenciaObligacionCuotaPago(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.PROCEDENCIA_DIF_PROC_CUOTA,
+                                                    (int)ObligacionesPagoObs.ProcedenciaNoCoincide,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarProcedenciaObligProcecedenciaCuotaPago(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarProcedenciaObligacionCuotaPagoPorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.PROCEDENCIA_DIF_PROC_CUOTA,
+                                                    (int)ObligacionesPagoObs.ProcedenciaNoCoincide,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarObligacionTieneConceptosMigrados(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarCabeceraConceptoPagoMigrable(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.SIN_DET_CONCEPTOS_MIGRABLES,
+                                                    (int)ObligacionesPagoObs.SinConceptoMigrable,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarObligacionTieneConceptosMigrados(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarCabeceraConceptoPagoMigrablePorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.SIN_DET_CONCEPTOS_MIGRABLES,
+                                                    (int)ObligacionesPagoObs.SinConceptoMigrable,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarSinObservacionesEnDetalle(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarObservacionDetalle(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.CONCEPTOS_DETALLE,
+                                                    (int)ObligacionesPagoObs.ObsConceptoDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarSinObservacionesEnDetalle(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarObservacionDetallePorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.CONCEPTOS_DETALLE,
+                                                    (int)ObligacionesPagoObs.ObsConceptoDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarObservacionesAnioDetalle(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarObservacionAnioDetalle(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.ANIO_DETALLE,
+                                                    (int)ObligacionesPagoObs.ObsAnioDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarObservacionesAnioDetalle(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarObservacionAnioDetallePorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.ANIO_DETALLE,
+                                                    (int)ObligacionesPagoObs.ObsAnioDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarObservacionesPeriodoDetalle(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarObservacionPeriodoDetalle(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.PERIODO_DETALLE,
+                                                    (int)ObligacionesPagoObs.ObsPeriodoDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarObservacionesPeriodoDetalle(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarObservacionPeriodoDetallePorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.PERIODO_DETALLE,
+                                                    (int)ObligacionesPagoObs.ObsPeriodoDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarTieneDetallesAsociados(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarCabeceraObligacionSinDetalle(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.SIN_DETALLES,
+                                                    (int)ObligacionesPagoObs.SinDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarTieneDetallesAsociados(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarCabeceraObligacionSinDetallePorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.SIN_DETALLES,
+                                                    (int)ObligacionesPagoObs.SinDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarNoPagadoConRegistroPago(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarExistePagoParaObligacionNoPagada(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.PAGO_EN_OBLG_NO_PAGADO,
+                                                    (int)ObligacionesPagoObs.PagoEnObligacionNoPagado,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarNoPagadoConRegistroPago(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarExistePagoParaObligacionNoPagadaPorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.PAGO_EN_OBLG_NO_PAGADO,
+                                                    (int)ObligacionesPagoObs.PagoEnObligacionNoPagado,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarCabeceraObligacionRepetida(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarCabeceraObligacionRepetida(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.OBLIGACION_REPETIDA,
+                                                    (int)ObligacionesPagoObs.ObligacionRepetida,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarCabeceraOligacionRepetida(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarCabeceraObligacionRepetidaPorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.OBLIGACION_REPETIDA,
+                                                    (int)ObligacionesPagoObs.ObligacionRepetida,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarNoExistePagoEnObligacionPagada(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarNoExistePagoParaObligacionPagada(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.SIN_PAGO_EN_OBLIG_PAGADO,
+                                                    (int)ObligacionesPagoObs.SinPagoEnObligacioPagada,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarNoExistePagoEnObligacionPagada(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarNoExistePagoParaObligacionPagadaPorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.SIN_PAGO_EN_OBLIG_PAGADO,
+                                                    (int)ObligacionesPagoObs.MigracionMatricula,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarMigracionDatosMatricula(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarAlumnoCabeceraObligacion(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.MIGRACION_MATRICULA,
+                                                    (int)ObligacionesPagoObs.MigracionMatricula,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarMigracionDatosMatricula(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarAlumnoCabeceraObligacionPorID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.MIGRACION_MATRICULA,
+                                                    (int)ObligacionesPagoObs.MigracionMatricula,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
         }
 
 

@@ -24,7 +24,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_TemporalPagos_MigracionTP_IU_CopiarTabla", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_TemporalPagos_MigracionTP_IU_CopiarTabla", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -56,7 +56,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_AsignarObligacionCabID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_AsignarObligacionCabID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -88,7 +88,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacion", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacion", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -105,7 +105,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         }
 
 
-        public Response InicializarEstadoValidacionDetalleObligacionPagoPorOblID(int procedenciaID, int ObligacionID)
+        public Response InicializarEstadoValidacionDetalleObligacionPagoPorOblID(int ObligacionID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -118,7 +118,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacionPorID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_InicializarEstadoValidacionPorID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -150,7 +150,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_15_AnioDetalleAnioConcepto", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_15_AnioDetalleAnioConcepto", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -179,7 +179,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_15_AnioDetalleAnioConceptoPorOblID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_15_AnioDetalleAnioConceptoPorOblID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -210,7 +210,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_17_PeriodoDetallePeriodoConcepto", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_17_PeriodoDetallePeriodoConcepto", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -239,7 +239,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_17_PeriodoDetallePeriodoConceptoPorOblID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_17_PeriodoDetallePeriodoConceptoPorOblID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -270,7 +270,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -299,7 +299,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabIDPorOblID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_25_ObligacionCabIDPorOblID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -330,7 +330,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_ConceptoPagoMigrado", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_ConceptoPagoMigrado", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -359,7 +359,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_ConceptoPagoMigradoPorOblID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_33_ConceptoPagoMigradoPorOblID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -390,7 +390,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_35_ConceptoPago", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_35_ConceptoPago", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -419,7 +419,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_35_ConceptoPagoPorOblID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_35_ConceptoPagoPorOblID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -450,7 +450,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_42_CuotaDetalleCuotaConcepto", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_42_CuotaDetalleCuotaConcepto", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -479,7 +479,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_42_CuotaDetalleCuotaConceptoPorOblID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_42_CuotaDetalleCuotaConceptoPorOblID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -510,7 +510,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_43_AnioDetalleNumerico", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_43_AnioDetalleNumerico", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -539,7 +539,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_43_AnioDetalleNumericoPorOblID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_43_AnioDetalleNumericoPorOblID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -570,7 +570,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_44_PeriodoDetalleEquivPeriodoCtas", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_44_PeriodoDetalleEquivPeriodoCtas", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -599,7 +599,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_44_PeriodoDetalleEquivPeriodoCtasPorOblID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_44_PeriodoDetalleEquivPeriodoCtasPorOblID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -630,7 +630,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_49_MontoDetalleMontoCab", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_49_MontoDetalleMontoCab", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -659,7 +659,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_49_MontoDetalleMontoCabPorOblID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_49_MontoDetalleMontoCabPorOblID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -690,7 +690,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_58_SinObligacionCabID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_58_SinObligacionCabID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -721,7 +721,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_62_MigracionCabecera", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_62_MigracionCabecera", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
@@ -750,7 +750,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_62_MigracionCabeceraPorOblID", parameters, 
+                    connection.Execute("USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_62_MigracionCabeceraPorOblID", parameters,
                                         commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");

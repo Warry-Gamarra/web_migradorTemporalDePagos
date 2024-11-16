@@ -506,7 +506,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         }
 
 
-        public Response ValidarCabeceraConceptoPagoMigrado(int procedenciaID, string anio)
+        public Response ValidarCabeceraConceptoPagoMigrable(int procedenciaID, string anio)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -535,7 +535,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             return result;
         }
 
-        public Response ValidarCabObligacionConceptoPagoMigradoPorOblID(int rowID)
+        public Response ValidarCabeceraConceptoPagoMigrablePorOblID(int rowID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -622,7 +622,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         }
 
 
-        public Response ValidarObservacionPeriodooDetalle(int procedenciaID, string anio)
+        public Response ValidarObservacionPeriodoDetalle(int procedenciaID, string anio)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -912,7 +912,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         }
 
 
-        public Response ValidarNoExistePagoParabligacionPagada(int procedenciaID, string anio)
+        public Response ValidarNoExistePagoParaObligacionPagada(int procedenciaID, string anio)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -941,7 +941,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             return result;
         }
 
-        public Response ValidarNoExistePagoParabligacionPagadaPorOblID(int rowID)
+        public Response ValidarNoExistePagoParaObligacionPagadaPorOblID(int rowID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();

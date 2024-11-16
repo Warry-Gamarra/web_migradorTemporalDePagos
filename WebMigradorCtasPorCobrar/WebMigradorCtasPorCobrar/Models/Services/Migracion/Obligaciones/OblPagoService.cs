@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using WebMigradorCtasPorCobrar.Models.Helpers;
+﻿using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
@@ -11,21 +7,32 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
     public class OblPagoService
     {
-        private readonly PagoObligacionRepository _pagoObligacionRepository;
+        public readonly PagoObligacionRepository _pagoObligacionRepository;
 
-        public OblPagoService() 
-        { 
+        public OblPagoService()
+        {
             _pagoObligacionRepository = new PagoObligacionRepository();
         }
 
         #region -- copia y equivalencias ---
-            
+        public Response InicializarEstadosValidacionCabecera(int procedencia, string anio)
+        {
+            return _pagoObligacionRepository.InicializarEstadoValidacion(procedencia, anio);
+        }
+
+        public Response InicializarEstadosValidacionCabecera(int obligacionID)
+        {
+            return _pagoObligacionRepository.InicializarEstadoValidacionPorOblID(obligacionID);
+        }
+
+
         #endregion
 
 
         #region -- Validaciones --
 
-        private Response ValidarMontoPagadoIgualTotalMontoPagado (int procedencia, string anio){
+        public Response ValidarMontoPagadoIgualTotalMontoPagado(int procedencia, string anio)
+        {
             Response result = _pagoObligacionRepository.ValidarTotalMontoPagadoDetalle(procedencia, anio);
 
             _ = result.ReturnViewValidationsMessage(ObservacionPago.MONTO_PAGO_VS_DETALLE_PAGADO,
@@ -36,8 +43,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result;
         }
 
-        private Response ValidarMontoPagadoIgualTotalMontoPagado (int ObligacionId){
-            Response result = _pagoObligacionRepository.ValidarTotalMontoPagadoDetallePorOblID(ObligacionId);
+        public Response ValidarMontoPagadoIgualTotalMontoPagado(int obligacionId)
+        {
+            Response result = _pagoObligacionRepository.ValidarTotalMontoPagadoDetallePorOblID(obligacionId);
 
             _ = result.ReturnViewValidationsMessage(ObservacionPago.MONTO_PAGO_VS_DETALLE_PAGADO,
                                                     (int)PagoObligacionObs.MontoPagadoDetalle,
@@ -48,7 +56,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
 
-        private Response ValidarExisteEnDestinoConOtroBanco (int procedencia, string anio){
+        public Response ValidarExisteEnDestinoConOtroBanco(int procedencia, string anio)
+        {
             Response result = _pagoObligacionRepository.ValidarPagoExisteEnDestinoConOtroBanco(procedencia, anio);
 
             _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_EXISTE_CTAS_OTRO_BNC,
@@ -59,8 +68,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result;
         }
 
-        private Response ValidarExisteEnDestinoConOtroBanco (int ObligacionId){
-            Response result = _pagoObligacionRepository.ValidarPagoExisteEnDestinoConOtroBancoPorOblID(ObligacionId);
+        public Response ValidarExisteEnDestinoConOtroBanco(int obligacionId)
+        {
+            Response result = _pagoObligacionRepository.ValidarPagoExisteEnDestinoConOtroBancoPorOblID(obligacionId);
 
             _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_EXISTE_CTAS_OTRO_BNC,
                                                     (int)PagoObligacionObs.ExisteEnDestinoConOtroBanco,
@@ -71,57 +81,92 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
 
-        private Response ValidarDetalleOblgObservedo (int procedencia, string anio){
-            Response result = new Response();
+        public Response ValidarDetalleOblgObservedo(int procedencia, string anio)
+        {
+            Response result = _pagoObligacionRepository.ValidarDetalleObligacionObservada(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_CON_OBSERVACION_DETALLE,
+                                                    (int)PagoObligacionObs.DetalleObservado,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
 
             return result;
         }
 
-        private Response ValidarDetalleOblgObservedo (int ObligacionId){
-            Response result = new Response();
+        public Response ValidarDetalleOblgObservedo(int obligacionId)
+        {
+            Response result = _pagoObligacionRepository.ValidarDetalleObligacionObservadaPorOblID(obligacionId);
 
-            return result;
-        }
-
-
-        private Response ValidarCabeceraObligacionObservada (int procedencia, string anio){
-            Response result = new Response();
-
-            return result;
-        }
-
-        private Response ValidarCabeceraObligacionObservada (int ObligacionId){
-            Response result = new Response();
-
-            return result;
-        }
-
-
-        private Response ValidarMigracionCabeceraObligacion (int procedencia, string anio){
-            Response result = new Response();
-
-            return result;
-        }
-
-        private Response ValidarMigracionCabeceraObligacion (int ObligacionId){
-            Response result = new Response();
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_CON_OBSERVACION_DETALLE,
+                                                    (int)PagoObligacionObs.MontoPagadoDetalle,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
 
             return result;
         }
 
 
-        private Response ValidarMigracionDataPagoCtasxCobrar (int procedencia, string anio){
-            Response result = new Response();
+        public Response ValidarCabeceraObligacionObservada(int procedencia, string anio)
+        {
+            Response result = _pagoObligacionRepository.ValidarCabeceraObligacionObservada(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_CON_OBSERVACION_CABECERA,
+                                                    (int)PagoObligacionObs.CabObligacionObservada,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
 
             return result;
         }
 
-        private Response ValidarMigracionDataPagoCtasxCobrar (int ObligacionId){
-            Response result = new Response();
+        public Response ValidarCabeceraObligacionObservada(int obligacionId)
+        {
+            Response result = _pagoObligacionRepository.ValidarCabeceraObligacionObservadaPorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_CON_OBSERVACION_CABECERA,
+                                                    (int)PagoObligacionObs.CabObligacionObservada,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
 
             return result;
         }
 
+
+        public Response ValidarMigracionCabeceraObligacion(int procedencia, string anio)
+        {
+            Response result = _pagoObligacionRepository.ValidarMigracionCabeceraObligacion(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_NO_MIGRADO_CABECERA_SIN_MIGRAR,
+                                                    (int)PagoObligacionObs.MigracionCabecera,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarMigracionCabeceraObligacion(int obligacionId)
+        {
+            Response result = _pagoObligacionRepository.ValidarMigracionCabeceraObligacionPorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_NO_MIGRADO_CABECERA_SIN_MIGRAR,
+                                                    (int)PagoObligacionObs.MigracionCabecera,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarCabeceraObligacionID(int procedencia, string anio)
+        {
+            Response result = _pagoObligacionRepository.ValidarPagoSinObligacionID(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_SIN_CABECERA_OBLIGACION_ID,
+                                                    (int)PagoObligacionObs.SinObligacionId,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
 
         #endregion
     }
