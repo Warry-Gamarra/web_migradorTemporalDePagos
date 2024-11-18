@@ -15,6 +15,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
         #region -- copia y equivalencias ---
+
+        
         public Response InicializarEstadosValidacionCabecera(int procedencia, string anio)
         {
             return _obligacionRepository.InicializarEstadoValidacionDetalleObligacion(procedencia, anio);

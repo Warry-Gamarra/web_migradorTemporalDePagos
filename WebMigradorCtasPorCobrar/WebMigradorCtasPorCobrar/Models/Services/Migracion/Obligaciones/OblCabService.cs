@@ -16,6 +16,24 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
         #region -- copia y equivalencias ---
 
+        public Lst<Response> CopiarObligacionesPorAnio(int procedencia, string schema, string anio)
+        {
+            List<Response> result = new List<Response>();
+
+            Response response_obl = _oblCabService.CopiarRegistrosCabecera(procedencia, schema, anio);
+            Response response_det = _oblDetService.CopiarRegistrosDetalle(procedencia, schema, anio);
+
+            Response response_obl = _oblCabService.VincularCabeceraDetalle(procedencia, anio);
+
+            response_obl = response_obl.IsDone ? response_obl.Success(false) : response_obl.Error(false);
+            response_det = response_det.IsDone ? response_det.Success(false) : response_det.Error(false);
+
+            result.Add(response_obl);
+            result.Add(response_det);
+
+            return result;
+        }
+
 
         public Response InicializarEstadosValidacionCabecera(int procedencia, string anio)
         {

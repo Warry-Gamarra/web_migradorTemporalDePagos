@@ -15,6 +15,23 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
         #region -- copia y equivalencias ---
+
+        public List<Response> CopiarPagoObligacionesPorAnio(int procedencia, string schema, string anio){
+
+            List<Response> result = new List<Response>();
+
+            Response result_copia = _pagoObligacionRepository.CopiarRegistrosPago(procedencia, schema, anio);
+            Response result_vincular = _pagoObligacionRepository.VincularCabeceraPago(procedencia, schema, anio);
+
+            result_copia = result_copia.IsDone ? result_copia.Success(false) : result_copia.Error(false);
+            result_vincular = result_vincular.IsDone ? result_vincular.Success(false) : result_vincular.Error(false);
+
+            result.Add(result_copia);
+            result.Add(result_vincular);
+
+            return result; 
+        }
+
         public Response InicializarEstadosValidacionCabecera(int procedencia, string anio)
         {
             return _pagoObligacionRepository.InicializarEstadoValidacion(procedencia, anio);

@@ -14,12 +14,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private readonly OblDetService _oblDetService;
         private readonly OblCabService _oblCabService;
         private readonly OblPagoService _oblPagoService;
+        
         public ObligacionService()
         {
             _oblCabService = new OblCabService();
             _oblDetService = new OblDetService();
             _oblPagoService = new OblPagoService();
         }
+
+
         public IEnumerable<Response> CopiarRegistrosDesdeTemporalPagos(Procedencia procedencia, string anio)
         {
             List<Response> result = new List<Response>();
@@ -28,40 +31,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             if (!string.IsNullOrEmpty(anio))
             {
-                result = this.CopiarRegistrosPorAnio((int)procedencia, schemaDb, anio);
+                result = _oblCabService.CopiarRegistrosPorAnio((int)procedencia, schemaDb, anio);
             }
             else
             {
-                foreach (var itemAnio in Temporal.ObtenerAnios(schemaDb))
+                foreach (var tempAnio in Temporal.ObtenerAnios(schemaDb))
                 {
-                    result.AddRange(this.CopiarRegistrosPorAnio((int)procedencia, schemaDb, itemAnio));
+                    result.AddRange(_oblCabService.CopiarRegistrosPorAnio((int)procedencia, schemaDb, tempAnio));
                 }
             }
-
-            return result;
-        }
-
-
-        private List<Response> CopiarRegistrosPorAnio(int procedencia, string schema, string anio)
-        {
-            List<Response> result = new List<Response>();
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
-
-            Response result_Cabecera = obligacionRepository.CopiarRegistrosCabecera(procedencia, schema, anio);
-            Response result_Detalle = obligacionRepository.CopiarRegistrosDetalle(procedencia, schema, anio);
-            Response result_Pago = pagoObligacionRepository.CopiarRegistrosPago(procedencia, schema, anio);
-
-            Response _ = obligacionRepository.VincularCabeceraDetalle(procedencia, anio);
-            Response _p = pagoObligacionRepository.VincularCabeceraPago(procedencia, anio);
-
-            result_Cabecera = result_Cabecera.IsDone ? result_Cabecera.Success(false) : result_Cabecera.Error(false);
-            result_Detalle = result_Detalle.IsDone ? result_Detalle.Success(false) : result_Detalle.Error(false);
-            result_Pago = result_Pago.IsDone ? result_Pago.Success(false) : result_Pago.Error(false);
-
-            result.Add(result_Cabecera);
-            result.Add(result_Detalle);
-            result.Add(result_Pago);
 
             return result;
         }
@@ -158,10 +136,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             return result;
         }
-
-
-
-
 
 
         public Response Save(Obligacion obligacion, int tipoObserv)
