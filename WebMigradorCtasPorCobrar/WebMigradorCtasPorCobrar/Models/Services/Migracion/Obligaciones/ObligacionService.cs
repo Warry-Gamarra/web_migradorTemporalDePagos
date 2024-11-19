@@ -31,13 +31,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             if (!string.IsNullOrEmpty(anio))
             {
-                result = _oblCabService.CopiarRegistrosPorAnio((int)procedencia, schemaDb, anio);
+                result = _oblCabService.CopiarObligacionesPorAnio((int)procedencia, schemaDb, anio);
             }
             else
             {
                 foreach (var tempAnio in Temporal.ObtenerAnios(schemaDb))
                 {
-                    result.AddRange(_oblCabService.CopiarRegistrosPorAnio((int)procedencia, schemaDb, tempAnio));
+                    result.AddRange(_oblCabService.CopiarObligacionesPorAnio((int)procedencia, schemaDb, tempAnio));
                 }
             }
 
@@ -51,7 +51,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             int procedencia_id = (int)procedencia;
             var pagosService = new PagoOblService();
 
-            result.Add(ValidarAnioEnCabeceraObligacion(procedencia_id));
 
             if (!string.IsNullOrEmpty(anioValidacion))
             {

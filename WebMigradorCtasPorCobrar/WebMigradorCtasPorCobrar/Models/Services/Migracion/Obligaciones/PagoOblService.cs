@@ -114,7 +114,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             _ = pagoObligacionRepository.InicializarEstadoValidacion(procedencia_id, anio);
 
             result.Add(ValidarObligacionIdEnPagoObligacion(procedencia_id, anio));
-            result.Add(ValidarDetallesEnPagoObligacion(procedencia_id, anio));
             result.Add(ValidarCabObligacionObservada(procedencia_id, anio));
 
 
@@ -135,17 +134,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
 
-        private Response ValidarDetallesEnPagoObligacion(int procedencia, string anio)
-        {
-            PagoObligacionRepository pagoObligacionRepository = new PagoObligacionRepository();
-            Response result = pagoObligacionRepository.ValidarDetalleObligacionObservada(procedencia, anio);
-
-            result.ReturnViewValidationsMessage($"Año {anio} - Observado por error en detalle",
-                                                (int)PagoObligacionObs.ErrorDetalleOblig,
-                                                "Obligaciones", "EjecutarValidacion");
-
-            return result;
-        }
 
         private Response ValidarCabObligacionObservada(int procedencia, string anio)
         {

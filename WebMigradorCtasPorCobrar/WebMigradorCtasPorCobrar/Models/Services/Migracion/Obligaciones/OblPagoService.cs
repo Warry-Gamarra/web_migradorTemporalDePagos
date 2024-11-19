@@ -1,4 +1,5 @@
-﻿using WebMigradorCtasPorCobrar.Models.Helpers;
+﻿using System.Collections.Generic;
+using WebMigradorCtasPorCobrar.Models.Helpers;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
@@ -21,7 +22,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             List<Response> result = new List<Response>();
 
             Response result_copia = _pagoObligacionRepository.CopiarRegistrosPago(procedencia, schema, anio);
-            Response result_vincular = _pagoObligacionRepository.VincularCabeceraPago(procedencia, schema, anio);
+            Response result_vincular = _pagoObligacionRepository.VincularCabeceraPago(procedencia, anio);
 
             result_copia = result_copia.IsDone ? result_copia.Success(false) : result_copia.Error(false);
             result_vincular = result_vincular.IsDone ? result_vincular.Success(false) : result_vincular.Error(false);
