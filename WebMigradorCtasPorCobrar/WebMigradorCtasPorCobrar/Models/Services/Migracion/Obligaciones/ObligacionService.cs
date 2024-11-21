@@ -35,15 +35,16 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             int procedenciaId = (int)procedencia;
             if (!string.IsNullOrEmpty(anio))
             {
-                result.AddRange(_oblCabService.CopiarObligacionesPorAnio(procedenciaId, schemaDb, anio));
-                result.AddRange(_oblPagoService.CopiarPagoObligacionesPorAnio(procedenciaId, schemaDb, anio));
+                result.Add(_oblCabService.CopiarObligacionesPorAnio(procedenciaId, schemaDb, anio));
+                result.Add(_oblDetService.CopiarObligacionesPorAnio(procedenciaId, schemaDb, anio));
+                result.Add(_oblPagoService.CopiarPagoObligacionesPorAnio(procedenciaId, schemaDb, anio));
             }
             else
             {
                 foreach (var tempAnio in Temporal.ObtenerAnios(schemaDb))
                 {
-                    result.AddRange(_oblCabService.CopiarObligacionesPorAnio(procedenciaId, schemaDb, tempAnio));
-                    result.AddRange(_oblPagoService.CopiarPagoObligacionesPorAnio(procedenciaId, schemaDb, anio));
+                    result.Add(_oblCabService.CopiarObligacionesPorAnio(procedenciaId, schemaDb, tempAnio));
+                    result.Add(_oblPagoService.CopiarPagoObligacionesPorAnio(procedenciaId, schemaDb, anio));
                 }
             }
 
@@ -154,7 +155,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
         public IEnumerable<ResponseObligacion> MigrarDatosTemporalPagosObligacion(Procedencia procedencia, string anio)
         {
-            List<ResponseObligacion> result = new List<ResponseObligacion>();
+            var result = _oblCabService.MigrarObligacionesPorAnio(procedencia, anio);
+
 
 
             return result;

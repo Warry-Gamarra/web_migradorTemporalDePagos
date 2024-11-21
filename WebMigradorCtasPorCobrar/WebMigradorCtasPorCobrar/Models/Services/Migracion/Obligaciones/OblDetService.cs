@@ -16,6 +16,27 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
         #region -- copia y equivalencias ---
 
+        public Response CopiarObligacionesPorAnio(int procedencia, string schema, string anio)
+        {
+
+            Response response_det = _obligacionRepository.CopiarRegistrosDetalle(procedencia, schema, anio);
+            Response _ = _obligacionRepository.VincularCabeceraDetalle(procedencia, anio);
+
+            response_det = response_det.IsDone ? response_det.Success(false) : response_det.Error(false);
+
+            response_det.DeserializeJsonListMessage("Copia TR_Ec_Det");
+            if (response_det.IsDone && response_det.ListObjMessage.Count == 4)
+            {
+                int total_det = int.Parse(response_det.ListObjMessage[0].Value);
+                int insertados_det = int.Parse(response_det.ListObjMessage[1].Value);
+                int actualizados_det = int.Parse(response_det.ListObjMessage[2].Value);
+
+                _controlRepository.RegistrarProcesoCopia(Tablas.TR_Ec_Det, procedencia, anio, total_det, insertados_det + actualizados_det, 0);
+            }
+
+            return response_det;
+        }
+
         
         public Response InicializarEstadosValidacionCabecera(int procedencia, string anio)
         {
@@ -269,6 +290,32 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             return result;
         }
+
+
+        #endregion
+
+
+        #region -- Migracion --
+
+        public Response MigrarObligacionesPorAnio(Procedencia procedencia, string anio, Response result_cab)
+        {
+            int procedencia_id = (int)procedencia;
+
+            Response response_det = result_cab.IsDone ? result_cab.Success(false) : result_cab.Error(false);
+
+            if (response_det.IsDone && response_det.ListObjMessage.Count == 6)
+            {
+                int total_det = int.parse(response_det.ListObjMessage[3].Value)
+                int insertados_det = int.Parse(response_det.ListObjMessage[4].Value);
+                int actualizados_det = int.Parse(response_det.ListObjMessage[5].Value);
+
+                _controlRepository.RegistrarProcesoMigracion(Tablas.TR_Ec_Det, procedencia, anio, total_det, insertados_det + actualizados_det,
+                                                              total_det - (insertados_det + actualizados_det));
+            }
+
+            return response_det;
+        }
+            
 
 
         #endregion

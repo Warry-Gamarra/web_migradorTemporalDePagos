@@ -20,23 +20,20 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
         #region -- copia y equivalencias ---
 
-        public List<Response> CopiarPagoObligacionesPorAnio(int procedencia, string schema, string anio){
+        public Response CopiarPagoObligacionesPorAnio(int procedencia, string schema, string anio){
 
-            List<Response> result = new List<Response>();
 
-            Response result_copia = _pagoObligacionRepository.CopiarRegistrosPago(procedencia, schema, anio);
+            Response response_pago = _pagoObligacionRepository.CopiarRegistrosPago(procedencia, schema, anio);
             Response _ = _pagoObligacionRepository.VincularCabeceraPago(procedencia, anio);
 
-            result_copia = result_copia.IsDone ? result_copia.Success(false) : result_copia.Error(false);
+            response_pago = response_pago.IsDone ? response_pago.Success(false) : response_pago.Error(false);
 
-            result.Add(result_copia);
-
-            result_copia.DeserializeJsonListMessage("Copia TR_Ec_Det_Pagos");
-            if (result_copia.IsDone && result_copia.ListObjMessage.Count == 4)
+            response_pago.DeserializeJsonListMessage("Copia TR_Ec_Det_Pagos");
+            if (response_pago.IsDone && response_pago.ListObjMessage.Count == 4)
             {
-                int Total_pag = int.Parse(result_copia.ListObjMessage[0].Value);
-                int insertados_pag = int.Parse(result_copia.ListObjMessage[1].Value);
-                int actualizados_pag = int.Parse(result_copia.ListObjMessage[2].Value);
+                int Total_pag = int.Parse(response_pago.ListObjMessage[0].Value);
+                int insertados_pag = int.Parse(response_pago.ListObjMessage[1].Value);
+                int actualizados_pag = int.Parse(response_pago.ListObjMessage[2].Value);
 
                 _controlRepository.RegistrarProcesoCopia(Tablas.TR_Ec_Det_Pagos, procedencia, anio, Total_pag, insertados_pag + actualizados_pag, 0);
             }
@@ -198,5 +195,33 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
         #endregion
+
+        #region -- Migracion --
+
+        public Response MigrarObligacionesPorAnio(Procedencia procedencia, string anio)
+        {
+            int procedencia_id = (int)procedencia;
+
+            Response response_pago = _obligacionRepository.MigrarDataObligacionesCtasPorCobrar(procedencia_id, anio);
+
+            response_pago = response_pago.IsDone ? response_pago.Success(false) : response_pago.Error(false);
+
+            response_pago.DeserializeJsonListMessage("Migracion TR_Ec_Obl");
+            if (response_pago.IsDone && response_pago.ListObjMessage.Count == 6)
+            {
+                int total_pag = int.Parse(response_pago.ListObjMessage[0].Value);
+                int insertados_pag = int.Parse(response_pago.ListObjMessage[1].Value);
+                int actualizados_pag = int.Parse(response_pago.ListObjMessage[2].Value);
+
+                _controlRepository.RegistrarProcesoMigracion(Tablas.TR_Ec_Det_Pagos, procedencia, anio, total_pag, insertados_pag + actualizados_pag,
+                                                              total_pag - (insertados_pag + actualizados_pag));
+            }
+
+            return result;
+        }
+            
+        #endregion
+    }
+}
     }
 }

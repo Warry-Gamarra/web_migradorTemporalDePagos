@@ -7027,6 +7027,8 @@ BEGIN
 	DECLARE @I_CtasDetObl_RowID  int
 	DECLARE @T_Moneda varchar(3) = 'PEN'
 	
+	DECLARE @I_Obl_Migrables int = 0
+	DECLARE @I_Det_Migrables int = 0
 	DECLARE @I_Obl_Actualizados int = 0
 	DECLARE @I_Obl_Insertados int = 0
 
@@ -7091,7 +7093,7 @@ BEGIN
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab AS TRG
 		USING (SELECT * FROM #temp_obl_migrable_anio 
 				WHERE I_CtasMatTableRowID IS NOT NULL) AS SRC
-		ON TRG.I_MigracionRowID = SRC.I_RowID AND
+		ON TRG.I_MigrctualizadosacionRowID = SRC.I_RowID AND
 		   TRG.I_MigracionTablaID = SRC.I_MigracionTablaID
 		WHEN MATCHED AND TRG.B_Migrado = 1 THEN
 			UPDATE SET TRG.I_ProcesoID = SRC.Cuota_pago, 
@@ -7190,27 +7192,39 @@ BEGIN
 		SET @I_Det_Insertados = (SELECT COUNT(*) FROM @Tbl_outputDet WHERE T_Action = 'INSERT')
 		SET @I_Det_Actualizados = (SELECT COUNT(*) FROM @Tbl_outputDet WHERE T_Action = 'UPDATE')
 
+		SET @I_Obl_Migrables = (SELECT COUNT(*) FROM temp_obl_migrable_anio)
+		SET @I_Det_Migrables = (SELECT COUNT(*) FROM temp_det_migrable_anio)
 
 		COMMIT TRANSACTION;
 
 		SET @B_Resultado = 1
 		SET @T_Message = '[{ ' +
 							 'Type: "summary", ' + 
+							 'Title: "Total Cabecera Obligacion", ' + 
+							 'Value: ' + CAST(@I_Obl_Migrables AS varchar) +
+						  '},
+						  { ' +
+							 'Type: "detail", ' + 
 							 'Title: "Insertados Cabecera Obligacion", ' + 
 							 'Value: ' + CAST(@I_Obl_Insertados AS varchar) +
 						  '},
 						  { ' +
-							 'Type: "summary", ' + 
+							 'Type: "detail", ' + 
 							 'Title: "Actualizados Cabecera Obligacion", ' + 
 							 'Value: ' + CAST(@I_Obl_Actualizados AS varchar) +
 						  '},
 						  { ' +
 							 'Type: "summary", ' + 
+							 'Title: "Total Detalle Obligacion", ' + 
+							 'Value: ' + CAST(@I_Det_Migrables AS varchar) +
+						  '},
+						  { ' +
+							 'Type: "detail", ' + 
 							 'Title: "Insertados Detalle Obligacion", ' + 
 							 'Value: ' + CAST(@I_Det_Insertados AS varchar) +
 						  '},
 						  { ' +
-							 'Type: "summary", ' + 
+							 'Type: "detail", ' + 
 							 'Title: "Actualizados Detalle Obligacion", ' + 
 							 'Value: ' + CAST(@I_Det_Actualizados AS varchar) +
 						  '}]' 

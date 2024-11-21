@@ -20,19 +20,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
         #region -- copia y equivalencias ---
 
-        public List<Response> CopiarObligacionesPorAnio(int procedencia, string schema, string anio)
+        public Response CopiarObligacionesPorAnio(int procedencia, string schema, string anio)
         {
-            List<Response> result = new List<Response>();
 
             Response response_obl = _obligacionRepository.CopiarRegistrosCabecera(procedencia, schema, anio);
-            Response response_det = _obligacionRepository.CopiarRegistrosDetalle(procedencia, schema, anio);
-            Response _ = _obligacionRepository.VincularCabeceraDetalle(procedencia, anio);
 
             response_obl = response_obl.IsDone ? response_obl.Success(false) : response_obl.Error(false);
-            response_det = response_det.IsDone ? response_det.Success(false) : response_det.Error(false);
-
-            result.Add(response_obl);
-            result.Add(response_det);
 
             response_obl.DeserializeJsonListMessage("Copia TR_Ec_Obl");
             if (response_obl.IsDone && response_obl.ListObjMessage.Count == 4)
@@ -42,16 +35,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                 int actualizados_obl = int.Parse(response_obl.ListObjMessage[2].Value);
 
                 _controlRepository.RegistrarProcesoCopia(Tablas.TR_Ec_Obl, procedencia, anio, Total_obl, insertados_obl + actualizados_obl, 0);
-            }
-
-            response_det.DeserializeJsonListMessage("Copia TR_Ec_Det");
-            if (response_det.IsDone && response_det.ListObjMessage.Count == 4)
-            {
-                int total_det = int.Parse(response_det.ListObjMessage[0].Value);
-                int insertados_det = int.Parse(response_det.ListObjMessage[1].Value);
-                int actualizados_det = int.Parse(response_det.ListObjMessage[2].Value);
-
-                _controlRepository.RegistrarProcesoCopia(Tablas.TR_Ec_Det, procedencia, anio, total_det, insertados_det + actualizados_det, 0);
             }
 
             return result;
@@ -473,6 +456,32 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
 
+        #endregion
+    
+        #region -- Migracion --
+
+        public Response MigrarObligacionesPorAnio(Procedencia procedencia, string anio)
+        {
+            int procedencia_id = (int)procedencia;
+
+            Response response_obl = _obligacionRepository.MigrarDataObligacionesCtasPorCobrar(procedencia_id, anio);
+
+            response_obl = response_obl.IsDone ? response_obl.Success(false) : response_obl.Error(false);
+
+            response_obl.DeserializeJsonListMessage("Migracion TR_Ec_Obl");
+            if (response_obl.IsDone && response_obl.ListObjMessage.Count == 6)
+            {
+                int total_obl = int.Parse(response_obl.ListObjMessage[0].Value);
+                int insertados_obl = int.Parse(response_obl.ListObjMessage[1].Value);
+                int actualizados_obl = int.Parse(response_obl.ListObjMessage[2].Value);
+
+                _controlRepository.RegistrarProcesoMigracion(Tablas.TR_Ec_Obl, procedencia, anio, total_obl, insertados_obl + actualizados_obl,
+                                                              total_obl - (insertados_obl + actualizados_obl));
+            }
+
+            return response_obl;
+        }
+            
         #endregion
     }
 }
