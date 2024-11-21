@@ -1,5 +1,6 @@
 ﻿using Antlr.Runtime.Misc;
 using System;
+using System.Collections.Generic;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
@@ -108,6 +109,37 @@ namespace WebMigradorCtasPorCobrar.Models.ViewModels
 
             return response;
         }
+
+        public static Response DeserializeJsonListMessage(this Response response, string title)
+        {
+            try
+            {
+                if (response.IsDone)
+                {
+                    var result = Json.Decode<IList<ObjResult>>(response.Message);
+
+                    response.ListObjMessage = result;
+                }
+                else
+                {
+                    var result = Json.Decode<ObjResult>(response.Message);
+
+                    response.ObjMessage = result;
+                }
+            }
+            catch (Exception)
+            {
+                response.ObjMessage = new ObjResult()
+                {
+                    Type = "Error",
+                    Title = title,
+                    Value = response.Message
+                };
+            }
+
+            return response;
+        }
+
 
 
         public static Response ReturnViewValidationsMessage(this Response response, string headerText, int observacionID, string controller = "", string action = "")

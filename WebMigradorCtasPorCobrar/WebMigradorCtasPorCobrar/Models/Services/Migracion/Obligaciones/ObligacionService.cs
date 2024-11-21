@@ -14,12 +14,16 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         private readonly OblDetService _oblDetService;
         private readonly OblCabService _oblCabService;
         private readonly OblPagoService _oblPagoService;
-        
+        private readonly CrossRepo.ControlRepository _controlRepository;
+        private readonly CrossRepo.ObligacionRepository _obligacionRepositoryCross;
+
         public ObligacionService()
         {
             _oblCabService = new OblCabService();
             _oblDetService = new OblDetService();
             _oblPagoService = new OblPagoService();
+            _controlRepository = new CrossRepo.ControlRepository();
+            _obligacionRepositoryCross = new CrossRepo.ObligacionRepository();
         }
 
 
@@ -28,16 +32,18 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             List<Response> result = new List<Response>();
 
             string schemaDb = Schema.SetSchema(procedencia);
-
+            int procedenciaId = (int)procedencia;
             if (!string.IsNullOrEmpty(anio))
             {
-                result = _oblCabService.CopiarObligacionesPorAnio((int)procedencia, schemaDb, anio);
+                result.AddRange(_oblCabService.CopiarObligacionesPorAnio(procedenciaId, schemaDb, anio));
+                result.AddRange(_oblPagoService.CopiarPagoObligacionesPorAnio(procedenciaId, schemaDb, anio));
             }
             else
             {
                 foreach (var tempAnio in Temporal.ObtenerAnios(schemaDb))
                 {
-                    result.AddRange(_oblCabService.CopiarObligacionesPorAnio((int)procedencia, schemaDb, tempAnio));
+                    result.AddRange(_oblCabService.CopiarObligacionesPorAnio(procedenciaId, schemaDb, tempAnio));
+                    result.AddRange(_oblPagoService.CopiarPagoObligacionesPorAnio(procedenciaId, schemaDb, anio));
                 }
             }
 
@@ -49,8 +55,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         {
             List<Response> result = new List<Response>();
             int procedencia_id = (int)procedencia;
-            var pagosService = new PagoOblService();
-
 
             if (!string.IsNullOrEmpty(anioValidacion))
             {
@@ -64,29 +68,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                 }
             }
 
-            result.AddRange(pagosService.EjecutarValidaciones(procedencia, anioValidacion));
-
             return result;
-        }
-
-
-        public IEnumerable<Response> EjecutarValidacionesPorObligacionID(int obligacionID)
-        {
-            List<Response> result = new List<Response>();
-            ObligacionRepository obligacionRepository = new ObligacionRepository();
-            var pagosSetvice = new PagoOblService();
-
-
-
-            return new List<Response>();
-        }
-
-
-        public Response EjecutarValidacionPorObaservacion(Procedencia procedencia, int observacionId)
-        {
-
-
-            return new Response();
         }
 
 
@@ -132,6 +114,56 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             result.Add(_oblPagoService.ValidarCabeceraObligacionID(procedencia_id, anio));
             result.Add(_oblPagoService.ValidarMontoPagadoIgualTotalMontoPagado(procedencia_id, anio));
             result.Add(_oblPagoService.ValidarExisteEnDestinoConOtroBanco(procedencia_id, anio));
+
+
+            int totalObl = _obligacionRepositoryCross.Obtener(procedencia_id, anio).Count;
+            int evaluadosObl = totalObl;
+
+            int totalDet = _obligacionRepositoryCross.ObtenerDetallePorAnio(procedencia_id, anio).Count;
+            int evaluadosDet = totalDet;
+
+            int totalDetPagos = _obligacionRepositoryCross.Obtener(procedencia_id, anio).Count;
+            int evaluadosDetPagos = totalDetPagos;
+
+            int sinEvaluar = 0;
+
+            _controlRepository.RegistrarProcesoValidacion(Tablas.TR_Ec_Obl, procedencia_id, anio, totalObl, evaluadosObl, sinEvaluar);
+            _controlRepository.RegistrarProcesoValidacion(Tablas.TR_Ec_Det, procedencia_id, anio, totalDet, evaluadosDet, sinEvaluar);
+            _controlRepository.RegistrarProcesoValidacion(Tablas.TR_Ec_Det_Pagos, procedencia_id, anio, totalDetPagos, evaluadosDetPagos, sinEvaluar);
+
+            return result;
+        }
+
+        public IEnumerable<Response> EjecutarValidacionesPorObligacionID(int obligacionID)
+        {
+            List<Response> result = new List<Response>();
+
+
+
+            return new List<Response>();
+        }
+
+
+        public Response EjecutarValidacionPorObaservacion(Procedencia procedencia, int observacionId)
+        {
+
+
+            return new Response();
+        }
+
+
+        public IEnumerable<ResponseObligacion> MigrarDatosTemporalPagosObligacion(Procedencia procedencia, string anio)
+        {
+            List<ResponseObligacion> result = new List<ResponseObligacion>();
+
+
+            return result;
+        }
+
+        public IEnumerable<Response> MigrarDatosTemporalPagosObligacionID(int obl_rowId)
+        {
+            List<Response> result = new List<Response>();
+
 
             return result;
         }

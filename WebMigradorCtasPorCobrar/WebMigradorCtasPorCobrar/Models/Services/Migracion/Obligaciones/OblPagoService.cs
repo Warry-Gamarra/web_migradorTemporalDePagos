@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using WebMigradorCtasPorCobrar.Models.Helpers;
+using CrossRepo = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
@@ -8,11 +9,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
     public class OblPagoService
     {
-        public readonly PagoObligacionRepository _pagoObligacionRepository;
+        private readonly OblPagoRepository _pagoObligacionRepository;
+        private readonly CrossRepo.ControlRepository _controlRepository;
 
         public OblPagoService()
         {
-            _pagoObligacionRepository = new PagoObligacionRepository();
+            _pagoObligacionRepository = new OblPagoRepository();
+            _controlRepository = new CrossRepo.ControlRepository();
         }
 
         #region -- copia y equivalencias ---
@@ -22,13 +25,21 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             List<Response> result = new List<Response>();
 
             Response result_copia = _pagoObligacionRepository.CopiarRegistrosPago(procedencia, schema, anio);
-            Response result_vincular = _pagoObligacionRepository.VincularCabeceraPago(procedencia, anio);
+            Response _ = _pagoObligacionRepository.VincularCabeceraPago(procedencia, anio);
 
             result_copia = result_copia.IsDone ? result_copia.Success(false) : result_copia.Error(false);
-            result_vincular = result_vincular.IsDone ? result_vincular.Success(false) : result_vincular.Error(false);
 
             result.Add(result_copia);
-            result.Add(result_vincular);
+
+            result_copia.DeserializeJsonListMessage("Copia TR_Ec_Det_Pagos");
+            if (result_copia.IsDone && result_copia.ListObjMessage.Count == 4)
+            {
+                int Total_pag = int.Parse(result_copia.ListObjMessage[0].Value);
+                int insertados_pag = int.Parse(result_copia.ListObjMessage[1].Value);
+                int actualizados_pag = int.Parse(result_copia.ListObjMessage[2].Value);
+
+                _controlRepository.RegistrarProcesoCopia(Tablas.TR_Ec_Det_Pagos, procedencia, anio, Total_pag, insertados_pag + actualizados_pag, 0);
+            }
 
             return result; 
         }

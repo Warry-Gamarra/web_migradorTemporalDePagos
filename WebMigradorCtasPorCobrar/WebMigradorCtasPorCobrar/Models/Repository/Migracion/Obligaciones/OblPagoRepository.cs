@@ -1,17 +1,13 @@
 ﻿using Dapper;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Data;
 using System.Data.SqlClient;
-using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
-using WebMigradorCtasPorCobrar.Models.Helpers;
 using System.Web.Helpers;
+using WebMigradorCtasPorCobrar.Models.Helpers;
 
 namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
 {
-    public class PagoObligacionRepository
+    public class OblPagoRepository
     {
         public Response CopiarRegistrosPago(int procedenciaID, string schemaDB, string anio)
         {

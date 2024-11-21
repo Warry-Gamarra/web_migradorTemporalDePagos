@@ -24,7 +24,7 @@ CREATE PROCEDURE dbo.USP_Shared_ControlTabla_MigracionTP_IU_RegistrarCopiados
 /*
 	DECLARE @I_TablaID		  tinyint = 2,
 			@I_ProcedenciaID  tinyint = 1,
-			@I_Anio			  smallint = 0,
+			@I_Anio			  smallint = 2010,
 			@I_ValueToDo	  int = 500,
 			@I_ValueDone	  int = 450,
 			@I_ValueProgress  int = 50,
@@ -37,14 +37,15 @@ BEGIN
 	/*
 		1	Copia de datos
 		2	Validacion de consistencia
-		3	Migracion a Recaudaci�n de Ingresos
+		3	Migracion a Recaudación de Ingresos
 	*/
 
 	DECLARE @I_CurrentEtapaID tinyint = 1
 	DECLARE @I_ControlID int 
 	SET @I_ControlID = (SELECT I_ControlID FROM TR_ControlTablas 
 						 WHERE I_TablaID = @I_TablaID 
-							   AND I_ProcedenciaID = @I_ProcedenciaID 
+							   AND I_ProcedenciaID = @I_ProcedenciaID
+							   AND I_Anio = @I_Anio 
 							   AND B_Habilitado = 1
 					   )
 
@@ -71,6 +72,7 @@ CREATE PROCEDURE dbo.USP_Shared_ControlTabla_MigracionTP_IU_RegistrarValidacion
 (
 	@I_TablaID		  tinyint,
 	@I_ProcedenciaID  tinyint,
+	@I_Anio			  smallint,
 	@I_ValueToDo	  int,
 	@I_ValueDone	  int,
 	@I_ValueProgress  int,
@@ -79,11 +81,12 @@ CREATE PROCEDURE dbo.USP_Shared_ControlTabla_MigracionTP_IU_RegistrarValidacion
 /*
 	DECLARE @I_TablaID		  tinyint = 2,
 			@I_ProcedenciaID  tinyint = 1,
+			@I_Anio			  smallint = 2010,
 			@I_ValueToDo	  int = 450,
 			@I_ValueDone	  int = 420,
 			@I_ValueProgress  int = 30,
 			@D_FecProceso	  datetime = GETDATE()
-	EXEC USP_Shared_ControlTabla_MigracionTP_IU_RegistrarValidacion @I_TablaID, @I_ProcedenciaID, @I_ValueToDo, @I_ValueDone, @I_ValueProgress, @D_FecProceso
+	EXEC USP_Shared_ControlTabla_MigracionTP_IU_RegistrarValidacion @I_TablaID, @I_ProcedenciaID, @I_Anio, @I_ValueToDo, @I_ValueDone, @I_ValueProgress, @D_FecProceso
 	SELECT * FROM TR_ControlTablas WHERE I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND I_CurrentEtapaID = 2 AND B_Habilitado = 1
 */
 AS
@@ -91,7 +94,7 @@ BEGIN
 	/*
 		1	Copia de datos
 		2	Validacion de consistencia
-		3	Migracion a Recaudaci�n de Ingresos
+		3	Migracion a Recaudación de Ingresos
 	*/
 
 	DECLARE @I_CurrentEtapaID tinyint = 2
@@ -102,6 +105,7 @@ BEGIN
 						 WHERE I_TablaID = @I_TablaID 
 							   AND I_ProcedenciaID = @I_ProcedenciaID 
 							   AND I_CurrentEtapaID = @I_OldEtapaID
+							   AND I_Anio = @I_Anio 
 							   AND B_Habilitado = 1
 						)
 
@@ -125,6 +129,7 @@ CREATE PROCEDURE dbo.USP_Shared_ControlTabla_MigracionTP_IU_RegistrarMigracion
 (
 	@I_TablaID		  tinyint,
 	@I_ProcedenciaID  tinyint,
+	@I_Anio			  smallint,
 	@I_ValueToDo	  int,
 	@I_ValueDone	  int,
 	@I_ValueProgress  int,
@@ -133,11 +138,12 @@ CREATE PROCEDURE dbo.USP_Shared_ControlTabla_MigracionTP_IU_RegistrarMigracion
 /*
 	DECLARE @I_TablaID		  tinyint = 2,
 			@I_ProcedenciaID  tinyint = 1,
+			@I_Anio			  smallint = 2010,
 			@I_ValueToDo	  int = 420,
 			@I_ValueDone	  int = 400,
 			@I_ValueProgress  int = 20,
 			@D_FecProceso	  datetime = GETDATE()
-	EXEC USP_Shared_ControlTabla_MigracionTP_IU_RegistrarMigracion @I_TablaID, @I_ProcedenciaID, @I_ValueToDo, @I_ValueDone, @I_ValueProgress, @D_FecProceso
+	EXEC USP_Shared_ControlTabla_MigracionTP_IU_RegistrarMigracion @I_TablaID, @I_ProcedenciaID, @I_Anio, @I_ValueToDo, @I_ValueDone, @I_ValueProgress, @D_FecProceso
 	SELECT * FROM TR_ControlTablas WHERE I_TablaID = @I_TablaID AND I_ProcedenciaID = @I_ProcedenciaID AND I_CurrentEtapaID = 3 AND B_Habilitado = 1
 */
 AS
@@ -145,7 +151,7 @@ BEGIN
 	/*
 		1	Copia de datos
 		2	Validacion de consistencia
-		3	Migracion a Recaudaci�n de Ingresos
+		3	Migracion a Recaudación de Ingresos
 	*/
 
 	DECLARE @I_CurrentEtapaID tinyint = 3
@@ -156,6 +162,7 @@ BEGIN
 						 WHERE I_TablaID = @I_TablaID 
 							   AND I_ProcedenciaID = @I_ProcedenciaID 
 							   AND I_CurrentEtapaID = @I_OldEtapaID
+							   AND I_Anio = @I_Anio 
 							   AND B_Habilitado = 1
 						)
 

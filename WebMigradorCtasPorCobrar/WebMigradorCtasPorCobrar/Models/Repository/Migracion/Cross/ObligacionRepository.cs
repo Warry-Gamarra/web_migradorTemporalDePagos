@@ -1,12 +1,10 @@
 ﻿using Dapper;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
-using WebMigradorCtasPorCobrar.Models.Helpers;
+
 
 namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
 {
@@ -45,6 +43,24 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         }
 
 
+        public List<Obligacion> Obtener(int procedenciaID, string anio)
+        {
+            IEnumerable<Obligacion> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<Obligacion>("SELECT ec_obl.* " +
+                                                        "FROM TR_Ec_obl ec_obl " +
+                                                      "WHERE ec_obl.I_ProcedenciaID = @I_ProcedenciaID " +
+                                                             "AND Ano = @T_Anio",
+                                                        new { I_ProcedenciaID = procedenciaID, T_Anio = anio },
+                                                        commandType: CommandType.Text, commandTimeout: 1200);
+            }
+
+            return result.ToList();
+        }
+
+
         public static Obligacion ObtenerPorID(int obligacionID)
         {
             Obligacion result;
@@ -61,6 +77,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
 
             return result;
         }
+
 
         public static IEnumerable<Obligacion> ObtenerObservados(int procedenciaID, int observacionID, int tablaID)
         {
@@ -172,7 +189,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
         {
             IEnumerable<DetalleObligacion> result;
 
-            using (var connection = new SqlConnection(Databases.TemporalPagoConnectionString))
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
             {
                 result = connection.Query<DetalleObligacion>("SELECT * FROM TR_Ec_det WHERE I_OblRowID = @I_OblRowID AND Cod_alu = @Cod_alu AND Cod_RC = @Cod_RC",
                                                               new { I_OblRowID = ObligacionID, Cod_alu = CodAlu, Cod_Rc = CodRc },
@@ -181,6 +198,22 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross
 
             return result;
         }
+
+
+        public List<DetalleObligacion> ObtenerDetallePorAnio(int procedencia, string anio)
+        {
+            IEnumerable<DetalleObligacion> result;
+
+            using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+            {
+                result = connection.Query<DetalleObligacion>("SELECT * FROM TR_Ec_det WHERE I_ProcedenciaID = @I_ProcedenciaID AND Ano = @T_Anio;",
+                                                              new { I_ProcedenciaID = procedencia, T_Anio = anio },
+                                                              commandType: CommandType.Text, commandTimeout: 1200);
+            }
+
+            return result.ToList();
+        }
+
 
     }
 }

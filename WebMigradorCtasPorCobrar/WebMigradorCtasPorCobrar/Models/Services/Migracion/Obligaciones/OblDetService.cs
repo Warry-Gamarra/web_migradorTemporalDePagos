@@ -7,7 +7,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 {
     public class OblDetService
     {
-        public readonly ObligacionRepository _obligacionRepository;
+        private readonly ObligacionRepository _obligacionRepository;
 
         public OblDetService()
         {

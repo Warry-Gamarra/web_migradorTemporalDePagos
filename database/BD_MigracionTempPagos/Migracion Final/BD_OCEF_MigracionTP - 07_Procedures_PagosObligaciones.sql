@@ -350,7 +350,8 @@ BEGIN
 
 		SET @B_Resultado = 1
 		SET @T_Message =  '{' +
-							 'Type: "sEstado validación actualizados", ' + 
+							 'Type: "summary", ' + 
+							 'Type: "Estado validación actualizados", ' + 
 							 'Value: ' + CAST(@Row_count AS varchar) +  
 						  '}'
 
@@ -1000,7 +1001,7 @@ BEGIN
 			   INNER JOIN #temp_pago_det_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_OblRowID 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Det_Pagos Det_Pagos
 				      INNER JOIN #temp_pago_det_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_OblRowID 
 			  ) AS SRC
@@ -1111,7 +1112,7 @@ BEGIN
 			   INNER JOIN #temp_obl_det_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_OblRowID 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, 
 				      @D_FecProceso AS D_FecRegistro, Det_Pagos.I_ProcedenciaID 
 				 FROM TR_Ec_Det_Pagos Det_Pagos
 				      INNER JOIN #temp_obl_det_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_OblRowID 
@@ -1220,9 +1221,9 @@ BEGIN
 			   INNER JOIN #temp_pago_cab_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_RowID 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Det_Pagos Det_Pagos
-				      INNER JOIN #temp_pago_cab_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_RowID 
+				      INNER JOIN #temp_pago_cab_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_RowID
 			  ) AS SRC
 		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
 		WHEN MATCHED AND TRG.I_FilaTablaID = SRC.I_FilaTablaID THEN
@@ -1332,7 +1333,7 @@ BEGIN
 			   INNER JOIN #temp_obl_cab_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_RowID 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det_Pagos.I_RowID AS I_FilaTablaID, 
 				      @D_FecProceso AS D_FecRegistro, Det_Pagos.I_ProcedenciaID 
 				 FROM TR_Ec_Det_Pagos Det_Pagos
 				      INNER JOIN #temp_obl_cab_observada tmp ON Det_Pagos.I_OblRowID = tmp.I_RowID 

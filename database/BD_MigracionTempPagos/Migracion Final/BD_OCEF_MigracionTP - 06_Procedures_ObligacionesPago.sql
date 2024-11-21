@@ -164,6 +164,117 @@ END
 GO
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_IU_CopiarTablaDetalleObligacionesPago')
+	DROP PROCEDURE [dbo].[USP_IU_CopiarTablaDetalleObligacionesPago]
+GO
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_TemporalPagos_MigracionTP_IU_CopiarTabla')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_TemporalPagos_MigracionTP_IU_CopiarTabla]
+GO
+
+CREATE PROCEDURE USP_Obligaciones_ObligacionDet_TemporalPagos_MigracionTP_IU_CopiarTabla 
+	@I_ProcedenciaID tinyint,
+	@T_SchemaDB	  varchar(20),
+	@T_Anio		  varchar(4),
+	@B_Resultado  bit output,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	declare @I_ProcedenciaID	tinyint = 1,
+			@T_SchemaDB   varchar(20) = 'pregrado',
+			@T_Anio	  varchar(4) = '2010',
+	 		@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	exec USP_Obligaciones_ObligacionDet_TemporalPagos_MigracionTP_IU_CopiarTabla @I_ProcedenciaID, @T_SchemaDB, @T_Anio, @B_Resultado output, @T_Message output
+	select @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_EcDet int = 0
+	DECLARE @I_Removidos int = 0
+	DECLARE @I_Actualizados int = 0
+	DECLARE @I_Insertados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @T_SQL nvarchar(max)
+
+	BEGIN TRANSACTION
+	BEGIN TRY 	
+
+		SET @T_SQL = 'DELETE TR_Ec_Det ' +
+					  'WHERE I_ProcedenciaID = '+ CAST(@I_ProcedenciaID as varchar(3)) + 
+							'AND B_Migrado = 0 ' +
+							'AND Ano = ''' + @T_Anio + '''; '						
+
+		PRINT @T_SQL
+		EXEC sp_executesql @T_SQL
+		SET @I_Removidos = @@ROWCOUNT
+
+
+		SET @T_SQL = 'DECLARE @D_FecProceso datetime = GETDATE() ' + 
+
+					 'INSERT INTO TR_Ec_Det (Cod_alu, Cod_rc, Cuota_pago, Ano, P, Tipo_oblig, Concepto, Fch_venc, Nro_recibo, Fch_pago, ' + 
+											'Id_lug_pag, Cantidad, Monto, Documento, Pagado, Concepto_f, Fch_elimin, Nro_ec, Fch_ec, ' +
+											'Eliminado, Pag_demas, Cod_cajero, Tipo_pago, No_banco, Cod_dep, D_FecCarga, B_Migrable, ' +
+											'B_Migrado, D_FecMigrado, I_ProcedenciaID, B_Obligacion) ' +
+									'SELECT  cod_alu, cod_rc, cuota_pago, ano, p, tipo_oblig, concepto, fch_venc, nro_recibo, fch_pago, ' + 
+										    'id_lug_pag, cantidad, monto, CAST(documento as nvarchar(max)), pagado, concepto_f, fch_elimin, nro_ec, fch_ec, ' + 
+										    'eliminado, pag_demas, cod_cajero, tipo_pago, no_banco, cod_dep, @D_FecProceso as D_FecCarga, 1 as B_Migrable, ' + 
+										    '0 as B_Migrado,  NULL as D_FecMigrado, ' + CAST(@I_ProcedenciaID as varchar(3)) + ' as I_ProcedenciaID, 1 as B_Obligacion ' +
+									  'FROM BD_OCEF_TemporalPagos.' + @T_SchemaDB + '.ec_det ' +
+									 'WHERE Concepto_f = 0' +
+										   'AND Ano = ''' + @T_Anio + '''; '
+
+		print @T_SQL
+		Exec sp_executesql @T_SQL
+
+		SET @I_EcDet = @@ROWCOUNT
+
+		IF(@I_Removidos > 0)
+		BEGIN
+			SET @I_Insertados = @I_EcDet - @I_Removidos
+			SET @I_Actualizados =   @I_EcDet - @I_Insertados
+		END
+		ELSE
+		BEGIN
+			SET @I_Insertados = @I_EcDet
+			SET @I_Actualizados =  @I_EcDet - @I_Insertados
+		END
+
+		SELECT @I_EcDet AS tot_obligaciones, @I_Insertados AS cant_inserted, @I_Actualizados as cant_updated, @I_Removidos as cant_removed, @D_FecProceso as fec_proceso
+		
+		COMMIT TRANSACTION
+		SET @B_Resultado = 1
+		SET @T_Message =  '[{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "EC_DET Total ' + @T_Anio + ':", ' +
+							 'Value: ' + CAST(@I_EcDet AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Insertados ' + @T_Anio + ':", ' +
+							 'Value: ' + CAST(@I_Insertados AS varchar) +
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Actualizados ' + @T_Anio + ':", ' + 
+							 'Value: ' + CAST(@I_Actualizados AS varchar) +  
+						  '}, ' +
+						  '{ ' +
+							 'Type: "detail", ' + 
+							 'Title: "Removidos ' + @T_Anio + ':", ' +
+							 'Value: ' + CAST(@I_Removidos AS varchar)+ 
+						  '}]'
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Error", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
 
 /*	
 	===============================================================================================

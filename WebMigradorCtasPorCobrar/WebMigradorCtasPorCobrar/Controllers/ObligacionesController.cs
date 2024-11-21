@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using WebMigradorCtasPorCobrar.Models.Helpers;
-using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
-using Oblig = WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones;
-using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
 using WebMigradorCtasPorCobrar.Models.Entities.Migracion;
+using WebMigradorCtasPorCobrar.Models.Helpers;
+using WebMigradorCtasPorCobrar.Models.Services.CtasPorCobrar;
+using WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
-using WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
+using Cross = WebMigradorCtasPorCobrar.Models.Services.Migracion.Cross;
+using TemporalPagos = WebMigradorCtasPorCobrar.Models.Services.TemporalPagos;
 
 namespace WebMigradorCtasPorCobrar.Controllers
 {
@@ -17,19 +15,17 @@ namespace WebMigradorCtasPorCobrar.Controllers
     public class ObligacionesController : Controller
     {
         private readonly TemporalPagos.ObligacionService _obligacionServiceTemporalPagos;
-        private readonly ObligacionService _obligacionCrossServiceMigracion;
-        private readonly Oblig.PagoOblService _pagoObligacionCrossServiceMigracion;
-        private readonly Oblig.ObligacionService _obligacionServiceMigracion;
+        private readonly ObligacionService _obligacionServiceMigracion;
         private readonly EquivalenciasServices _equivalenciasServices;
-        private readonly ObservacionService _observacionService;
+        private readonly Cross.ObservacionService _observacionService;
+        private readonly Cross.ObligacionService _obligacionCrossServiceMigracion;
 
         public ObligacionesController()
         {
             _obligacionServiceTemporalPagos = new TemporalPagos.ObligacionService();
-            _obligacionCrossServiceMigracion = new ObligacionService();
-            _obligacionServiceMigracion = new Oblig.ObligacionService();
-            _pagoObligacionCrossServiceMigracion = new Oblig.PagoOblService();
-            _observacionService = new ObservacionService();
+            _obligacionCrossServiceMigracion = new Cross.ObligacionService();
+            _obligacionServiceMigracion = new ObligacionService();
+            _observacionService = new Cross.ObservacionService();
             _equivalenciasServices = new EquivalenciasServices();
         }
 
@@ -171,7 +167,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
         [HttpPost]
         public ActionResult MigrarDatosTemporalPagos(Procedencia procedencia, string periodo)
         {
-            IEnumerable<ResponseObligacion> result = _pagoObligacionCrossServiceMigracion.MigrarDatosPagoTemporalPagos(procedencia, periodo);
+            IEnumerable<ResponseObligacion> result = _obligacionServiceMigracion.MigrarDatosTemporalPagosObligacion(procedencia, periodo);
 
             return PartialView("_ResultadoMigrarRegistrosObligacion", result);
         }
@@ -179,7 +175,7 @@ namespace WebMigradorCtasPorCobrar.Controllers
 
         public ActionResult MigrarObligacion(int id)
         {
-            IEnumerable<Response> result = _pagoObligacionCrossServiceMigracion.MigrarDatosTemporalPagosObligacionID(id);
+            IEnumerable<Response> result = _obligacionServiceMigracion.MigrarDatosTemporalPagosObligacionID(id);
 
             return PartialView("_ResultadoListMigrarRegistrosModal", result);
         }
