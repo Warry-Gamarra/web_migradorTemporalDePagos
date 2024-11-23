@@ -1,4 +1,5 @@
 ﻿using WebMigradorCtasPorCobrar.Models.Helpers;
+using CrossRepo = WebMigradorCtasPorCobrar.Models.Repository.Migracion.Cross;
 using WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones;
 using WebMigradorCtasPorCobrar.Models.ViewModels;
 using static WebMigradorCtasPorCobrar.Models.Helpers.Observaciones;
@@ -8,10 +9,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
     public class OblDetService
     {
         private readonly ObligacionRepository _obligacionRepository;
+        private readonly CrossRepo.ControlRepository _controlRepository;
 
         public OblDetService()
         {
             _obligacionRepository = new ObligacionRepository();
+            _controlRepository = new CrossRepo.ControlRepository();
         }
 
         #region -- copia y equivalencias ---
@@ -38,12 +41,12 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
         
-        public Response InicializarEstadosValidacionCabecera(int procedencia, string anio)
+        public Response InicializarEstadosValidacion(int procedencia, string anio)
         {
             return _obligacionRepository.InicializarEstadoValidacionDetalleObligacion(procedencia, anio);
         }
 
-        public Response InicializarEstadosValidacionCabecera(int obligacionID)
+        public Response InicializarEstadosValidacion(int obligacionID)
         {
             return _obligacionRepository.InicializarEstadoValidacionDetalleObligacionPagoPorOblID(obligacionID);
         }
@@ -305,11 +308,11 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             if (response_det.IsDone && response_det.ListObjMessage.Count == 6)
             {
-                int total_det = int.parse(response_det.ListObjMessage[3].Value)
+                int total_det = int.Parse(response_det.ListObjMessage[3].Value);
                 int insertados_det = int.Parse(response_det.ListObjMessage[4].Value);
                 int actualizados_det = int.Parse(response_det.ListObjMessage[5].Value);
 
-                _controlRepository.RegistrarProcesoMigracion(Tablas.TR_Ec_Det, procedencia, anio, total_det, insertados_det + actualizados_det,
+                _controlRepository.RegistrarProcesoMigracion(Tablas.TR_Ec_Det, procedencia_id, anio, total_det, insertados_det + actualizados_det,
                                                               total_det - (insertados_det + actualizados_det));
             }
 

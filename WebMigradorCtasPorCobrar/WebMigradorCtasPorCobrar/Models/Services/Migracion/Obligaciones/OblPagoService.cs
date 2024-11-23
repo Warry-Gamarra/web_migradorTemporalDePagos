@@ -38,15 +38,15 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                 _controlRepository.RegistrarProcesoCopia(Tablas.TR_Ec_Det_Pagos, procedencia, anio, Total_pag, insertados_pag + actualizados_pag, 0);
             }
 
-            return result; 
+            return response_pago; 
         }
 
-        public Response InicializarEstadosValidacionCabecera(int procedencia, string anio)
+        public Response InicializarEstadosValidacion(int procedencia, string anio)
         {
             return _pagoObligacionRepository.InicializarEstadoValidacion(procedencia, anio);
         }
 
-        public Response InicializarEstadosValidacionCabecera(int obligacionID)
+        public Response InicializarEstadosValidacion(int obligacionID)
         {
             return _pagoObligacionRepository.InicializarEstadoValidacionPorOblID(obligacionID);
         }
@@ -202,7 +202,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         {
             int procedencia_id = (int)procedencia;
 
-            Response response_pago = _obligacionRepository.MigrarDataObligacionesCtasPorCobrar(procedencia_id, anio);
+            Response response_pago = _pagoObligacionRepository.MigrarDataPagoObligacionesCtasPorCobrarPorAnio(procedencia_id, anio);
 
             response_pago = response_pago.IsDone ? response_pago.Success(false) : response_pago.Error(false);
 
@@ -213,15 +213,13 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                 int insertados_pag = int.Parse(response_pago.ListObjMessage[1].Value);
                 int actualizados_pag = int.Parse(response_pago.ListObjMessage[2].Value);
 
-                _controlRepository.RegistrarProcesoMigracion(Tablas.TR_Ec_Det_Pagos, procedencia, anio, total_pag, insertados_pag + actualizados_pag,
+                _controlRepository.RegistrarProcesoMigracion(Tablas.TR_Ec_Det_Pagos, procedencia_id, anio, total_pag, insertados_pag + actualizados_pag,
                                                               total_pag - (insertados_pag + actualizados_pag));
             }
 
-            return result;
+            return response_pago;
         }
             
         #endregion
-    }
-}
     }
 }

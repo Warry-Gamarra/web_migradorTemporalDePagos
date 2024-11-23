@@ -77,14 +77,14 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         {
             List<Response> result = new List<Response>();
 
-            _ = _oblCabService.InicializarEstadosValidacionCabecera(procedencia_id, anio);
-            _ = _oblDetService.InicializarEstadosValidacionCabecera(procedencia_id, anio);
-            _ = _oblPagoService.InicializarEstadosValidacionCabecera(procedencia_id, anio);
+            _ = _oblCabService.InicializarEstadosValidacion(procedencia_id, anio);
+            _ = _oblDetService.InicializarEstadosValidacion(procedencia_id, anio);
+            _ = _oblPagoService.InicializarEstadosValidacion(procedencia_id, anio);
 
             result.Add(_oblCabService.ValidarExisteCodigoAlumno(procedencia_id, anio));
             result.Add(_oblCabService.ValidarAnio(procedencia_id, anio));
             result.Add(_oblCabService.ValidarPeriodo(procedencia_id, anio));
-            result.Add(_oblCabService.ValidarFechaVencimiento(procedencia_id, anio));
+            //result.Add(_oblCabService.ValidarFechaVencimiento(procedencia_id, anio));
             result.Add(_oblCabService.ValidarCuotaPagoDeObligacionMigrada(procedencia_id, anio));
             result.Add(_oblCabService.ValidarProcedenciaObligProcecedenciaCuotaPago(procedencia_id, anio));
             result.Add(_oblCabService.ValidarTieneDetallesAsociados(procedencia_id, anio));
@@ -107,8 +107,6 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             result.Add(_oblCabService.ValidarSinObservacionesEnDetalle(procedencia_id, anio));
             result.Add(_oblCabService.ValidarObservacionesAnioDetalle(procedencia_id, anio));
             result.Add(_oblCabService.ValidarObservacionesPeriodoDetalle(procedencia_id, anio));
-
-            result.Add(_oblDetService.ValidarMigracionCabecera(procedencia_id, anio));
 
             result.Add(_oblPagoService.ValidarCabeceraObligacionObservada(procedencia_id, anio));
             result.Add(_oblPagoService.ValidarDetalleOblgObservedo(procedencia_id, anio));
@@ -155,9 +153,22 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
         public IEnumerable<ResponseObligacion> MigrarDatosTemporalPagosObligacion(Procedencia procedencia, string anio)
         {
-            var result = _oblCabService.MigrarObligacionesPorAnio(procedencia, anio);
+            var result = new List<ResponseObligacion>();
+            int procedenciaID = (int)procedencia;
 
+            var resultCab = _oblCabService.MigrarObligacionesPorAnio(procedencia, anio);
+            var resultDet = _oblDetService.MigrarObligacionesPorAnio(procedencia, anio, resultCab);
+            var resultPag = _oblPagoService.MigrarObligacionesPorAnio(procedencia, anio);
 
+            _oblCabService.ValidarMigracionDatosMatricula(procedenciaID, anio);
+            _oblDetService.ValidarMigracionCabecera(procedenciaID, anio);
+            _oblPagoService.ValidarMigracionCabeceraObligacion(procedenciaID, anio);
+
+            result.Add(new ResponseObligacion()
+            {
+                Obligacion = resultCab,
+                DetalleObligacion = new List<Response>() { resultDet }
+            });
 
             return result;
         }

@@ -37,16 +37,16 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                 _controlRepository.RegistrarProcesoCopia(Tablas.TR_Ec_Obl, procedencia, anio, Total_obl, insertados_obl + actualizados_obl, 0);
             }
 
-            return result;
+            return response_obl;
         }
 
 
-        public Response InicializarEstadosValidacionCabecera(int procedencia, string anio)
+        public Response InicializarEstadosValidacion(int procedencia, string anio)
         {
             return _obligacionRepository.InicializarEstadoValidacionObligacionPago(procedencia, anio);
         }
 
-        public Response InicializarEstadosValidacionCabecera(int obligacionID)
+        public Response InicializarEstadosValidacion(int obligacionID)
         {
             return _obligacionRepository.InicializarEstadoValidacionObligacionPagoPorOblID(obligacionID);
         }
@@ -475,7 +475,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
                 int insertados_obl = int.Parse(response_obl.ListObjMessage[1].Value);
                 int actualizados_obl = int.Parse(response_obl.ListObjMessage[2].Value);
 
-                _controlRepository.RegistrarProcesoMigracion(Tablas.TR_Ec_Obl, procedencia, anio, total_obl, insertados_obl + actualizados_obl,
+                _controlRepository.RegistrarProcesoMigracion(Tablas.TR_Ec_Obl, procedencia_id, anio, total_obl, insertados_obl + actualizados_obl,
                                                               total_obl - (insertados_obl + actualizados_obl));
             }
 

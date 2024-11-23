@@ -2,7 +2,9 @@ select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' order
 
 /*
 
-
+ACCIONES: 
+    Agregar validacion de fecha de pago valida date a datetime
+    Cambiar orden de validaciones, validar migracion cabecera antes de iniciar migracion de pagos
 
 --PROCESO DE COPIA DE TABLAS---
 USP_Obligaciones_ObligacionCab_TemporalPagos_MigracionTP_IU_CopiarTabla
@@ -54,12 +56,12 @@ USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBanco
 
 --PROCESO DE MIGRAGION--
 USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio
-USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio
 
 USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_61_MigracionMatricula
 USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_62_MigracionCabecera
 USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabecera
 
+USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio
 
 
 
@@ -103,12 +105,12 @@ USP_Obligaciones_Pagos_MigracionTP_U_Validar_55_ExisteEnDestinoConOtroBancoPorID
 
 --PROCESO DE MIGRAGION POR ID--
 USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID
-USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID
 
 USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_61_MigracionMatriculaPorOblID
 USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_62_MigracionCabeceraPorOblID
 USP_Obligaciones_Pagos_MigracionTP_U_Validar_63_MigracionCabeceraPorOblID
 
+USP_Obligaciones_Pagos_MigracionTP_CtasPorCobrar_IU_MigrarDataPorID
 
 
 

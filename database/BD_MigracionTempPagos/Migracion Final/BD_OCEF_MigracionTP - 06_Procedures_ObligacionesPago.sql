@@ -549,8 +549,8 @@ BEGIN
 		AS ( 
 			SELECT I_RowID, Cod_alu, Cod_rc, Cuota_pago, P, Fch_venc, Pagado, Monto
 			  FROM TR_Ec_Obl 
-			 WHERE I_ProcedenciaID = 1
-				   AND Ano = '2010'
+			 WHERE I_ProcedenciaID = @I_ProcedenciaID
+				   AND Ano = @T_Anio
 		)
 
 		UPDATE	det
@@ -2769,7 +2769,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT Obl.*
+		SELECT DISTINCT Obl.*
 		  INTO #temp_observados_detalle_periodo_cuota_concepto
 		  FROM TR_Ec_Obl Obl
 			   INNER JOIN TR_Ec_Det Det ON Obl.I_RowID = Det.I_OblRowID
@@ -2892,7 +2892,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT Obl.*
+		SELECT DISTINCT Obl.*
 		  INTO #temp_observados_detalle_periodo_cuota_concepto
 		  FROM TR_Ec_Obl Obl
 			   INNER JOIN TR_Ec_Det Det ON Obl.I_RowID = Det.I_OblRowID
@@ -3010,7 +3010,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT Obl.*
+		SELECT DISTINCT Obl.*
 		  INTO #temp_observados_detalle
 		  FROM TR_Ec_Obl Obl
 		  	   INNER JOIN TR_Ec_Det Det ON Obl.I_RowID = Det.I_OblRowID
@@ -3125,7 +3125,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT Obl.*
+		SELECT DISTINCT Obl.*
 		  INTO #temp_observados_detalle
 		  FROM TR_Ec_Obl Obl
 		  	   INNER JOIN TR_Ec_Det Det ON Obl.I_RowID = Det.I_OblRowID
@@ -6414,7 +6414,7 @@ BEGIN
 			   B_Resuelto = 1
 		  FROM TI_ObservacionRegistroTabla OBS
 			   INNER JOIN (SELECT I_RowID, I_ProcedenciaID FROM TR_Ec_Det 
-							WHERE I_OblRowID IS NULL
+							WHERE I_OblRowID IS NOT NULL
 								  AND Ano = @T_Anio 
 								  AND I_ProcedenciaID = @I_ProcedenciaID) DET
 						   ON OBS.I_FilaTablaID = DET.I_RowID
@@ -6522,7 +6522,7 @@ BEGIN
 		  	   INNER JOIN (SELECT Det.I_RowID, Det.I_ProcedenciaID, tmp.I_OblRowID as TempOblRowID
 			   				 FROM TR_Ec_Det Det
 								  LEFT JOIN #temp_det_migrable_obl_no_migrado tmp ON tmp.I_OblRowID = Det.I_OblRowID
-							WHERE tmp.I_OblRowID IS NULL
+							WHERE tmp.I_OblRowID IS NOT NULL
 								  AND Det.Ano = @T_Anio
 								  AND Det.I_ProcedenciaID = @I_ProcedenciaID
 			   			  ) DET ON OBS.I_FilaTablaID = DET.I_RowID
@@ -7011,8 +7011,8 @@ CREATE PROCEDURE [dbo].[USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarData
 	@T_Message			nvarchar(4000) OUTPUT	
 AS
 /*
-	DECLARE @I_ProcedenciaID tinyint = 2,
-			@T_Anio		  varchar(4) = '2008', 
+	DECLARE @I_ProcedenciaID tinyint = 3,
+			@T_Anio		  varchar(4) = '2006', 
 			@B_Resultado  bit, 
 			@T_Message	  nvarchar(4000)
 	EXEC USP_Obligaciones_MigracionTP_CtasPorCobrar_IU_MigrarDataPorAnio @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
@@ -7093,7 +7093,7 @@ BEGIN
 		MERGE INTO BD_OCEF_CtasPorCobrar.dbo.TR_ObligacionAluCab AS TRG
 		USING (SELECT * FROM #temp_obl_migrable_anio 
 				WHERE I_CtasMatTableRowID IS NOT NULL) AS SRC
-		ON TRG.I_MigrctualizadosacionRowID = SRC.I_RowID AND
+		ON TRG.I_MigracionRowID = SRC.I_RowID AND
 		   TRG.I_MigracionTablaID = SRC.I_MigracionTablaID
 		WHEN MATCHED AND TRG.B_Migrado = 1 THEN
 			UPDATE SET TRG.I_ProcesoID = SRC.Cuota_pago, 
@@ -7192,8 +7192,8 @@ BEGIN
 		SET @I_Det_Insertados = (SELECT COUNT(*) FROM @Tbl_outputDet WHERE T_Action = 'INSERT')
 		SET @I_Det_Actualizados = (SELECT COUNT(*) FROM @Tbl_outputDet WHERE T_Action = 'UPDATE')
 
-		SET @I_Obl_Migrables = (SELECT COUNT(*) FROM temp_obl_migrable_anio)
-		SET @I_Det_Migrables = (SELECT COUNT(*) FROM temp_det_migrable_anio)
+		SET @I_Obl_Migrables = (SELECT COUNT(*) FROM #temp_obl_migrable_anio)
+		SET @I_Det_Migrables = (SELECT COUNT(*) FROM #temp_det_migrable_anio)
 
 		COMMIT TRANSACTION;
 
