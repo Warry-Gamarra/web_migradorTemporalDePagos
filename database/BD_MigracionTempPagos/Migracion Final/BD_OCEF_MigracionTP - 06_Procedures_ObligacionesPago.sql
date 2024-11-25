@@ -363,7 +363,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Obl Asignados", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -404,7 +404,7 @@ AS
 */
 BEGIN
 	DECLARE @I_TablaID INT = 5
-	DECLARE @I_FilaTablaID INT = (SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla)
+	DECLARE @I_FilaTablaID INT = ISNULL((SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla), 0)
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
@@ -441,7 +441,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Estados de validación de cabecera actualizados", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -467,7 +467,7 @@ AS
 */
 BEGIN
 	DECLARE @I_TablaID INT = 5
-	DECLARE @I_FilaTablaID INT = (SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla)
+	DECLARE @I_FilaTablaID INT = ISNULL((SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla), 0)
 	BEGIN TRANSACTION
 	BEGIN TRY 
 		DELETE TI_ObservacionRegistroTabla
@@ -497,7 +497,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Estados de validación de cabecera actualizados", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -530,7 +530,7 @@ AS
 */
 BEGIN
 	DECLARE @I_TablaID INT = 4
-	DECLARE @I_FilaTablaID INT = (SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla)
+	DECLARE @I_FilaTablaID INT = ISNULL((SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla), 0)
 
 	BEGIN TRANSACTION
 	BEGIN TRY
@@ -575,7 +575,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Estados de validación de detalle actualizados", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -600,7 +600,7 @@ AS
 */
 BEGIN
 	DECLARE @I_TablaID INT = 5
-	DECLARE @I_FilaTablaID INT = (SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla)
+	DECLARE @I_FilaTablaID INT = ISNULL((SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla), 0)
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
@@ -633,7 +633,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Estados de validación de detalle actualizados", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -756,7 +756,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_24_ExisteAlumno", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -863,7 +863,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_24_ExisteAlumnoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -963,7 +963,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_26_AnioNumerico", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -1050,7 +1050,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_26_AnioNumericoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -1162,7 +1162,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_27_Periodo", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -1260,7 +1260,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_27_PeriodoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -1277,20 +1277,24 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoCuota]
 GO
 
-CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoCuota]	
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimiento')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimiento]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimiento]	
 	@I_ProcedenciaID tinyint,
 	@T_Anio			 varchar(4) = NULL,
 	@B_Resultado  bit OUTPUT,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la fecha de vencimiento es diferente a la fecha de vencimiento de la cuota de pago para el año y procedencia
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la fecha de vencimiento no es un datetime válido
 
-	DECLARE	@I_ProcedenciaID	tinyint = 1, 
-			@T_Anio				varchar(4) = 2010,
+	DECLARE	@I_ProcedenciaID	tinyint = 3, 
+			@T_Anio				varchar(4) = 2007,
 			@B_Resultado		bit,
 			@T_Message			nvarchar(4000)
-	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoCuota @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimiento @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
 	SELECT @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -1303,29 +1307,24 @@ BEGIN
 	BEGIN TRY
 
 		SELECT Ano, P, Cod_alu, Cod_rc, obl.Cuota_pago, obl.Fch_venc, Tipo_oblig, Monto, obl.I_RowID
-		INTO  #temp_obl_fecVenc_dif_cuota_anio
-		FROM  TR_Ec_Obl obl
-			  LEFT JOIN TR_Cp_Des cp ON obl.Cuota_pago = cp.Cuota_pago 
-										AND obl.I_ProcedenciaID = cp.I_ProcedenciaID
-										AND cp.Eliminado = 0
-		WHERE obl.I_ProcedenciaID = @I_ProcedenciaID
-			  AND Ano = @T_Anio
-			  AND obl.Fch_venc <> cp.Fch_venc
-
+		  INTO #temp_obl_fecVenc
+		  FROM TR_Ec_Obl obl
+		 WHERE obl.I_ProcedenciaID = @I_ProcedenciaID
+		 	   AND Ano = @T_Anio
+		 	   AND ISDATE(CONVERT(VARCHAR, obl.Fch_venc, 112)) = 0
 
 		UPDATE	TRG_1
-		SET		B_Migrable = 0,
+		   SET	B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
-		FROM	TR_Ec_Obl TRG_1
-				INNER JOIN #temp_obl_fecVenc_dif_cuota_anio SRC_1 
-				ON TRG_1.I_RowID = SRC_1.I_RowID
-		WHERE	ISNULL(TRG_1.B_Correcto, 0) = 0
+		  FROM	TR_Ec_Obl TRG_1
+				INNER JOIN #temp_obl_fecVenc SRC_1 ON TRG_1.I_RowID = SRC_1.I_RowID
+		 WHERE	ISNULL(TRG_1.B_Correcto, 0) = 1
 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
 		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Obl TRG_1
-					  INNER JOIN #temp_obl_fecVenc_dif_cuota_anio SRC_1 
+					  INNER JOIN #temp_obl_fecVenc SRC_1 
 								ON TRG_1.I_RowID = SRC_1.I_RowID
 				 WHERE	TRG_1.Ano = @T_Anio
 						AND ISNULL(TRG_1.B_Correcto, 0) = 0
@@ -1345,7 +1344,7 @@ BEGIN
 		  FROM TI_ObservacionRegistroTabla OBS
 			   INNER JOIN (SELECT ec_obl.I_RowID, ec_obl.Ano, ec_obl.Cod_alu, ec_obl.Cod_rc, ec_obl.I_ProcedenciaID
 							 FROM TR_Ec_Obl ec_obl
-								  LEFT JOIN #temp_obl_fecVenc_dif_cuota_anio SRC_1 ON ec_obl.I_RowID = SRC_1.I_RowID
+								  LEFT JOIN #temp_obl_fecVenc SRC_1 ON ec_obl.I_RowID = SRC_1.I_RowID
 							WHERE SRC_1.I_RowID IS NULL) OBL 
 						  ON OBS.I_FilaTablaID = OBL.I_RowID
 							 AND OBS.I_ProcedenciaID = OBL.I_ProcedenciaID
@@ -1367,7 +1366,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Validar_28_FechaVencimientoCuota ", ' + 
+							 'Title: "Validar_28_FechaVencimiento", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -1376,7 +1375,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_28_FechaVencimiento", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -1389,18 +1388,22 @@ IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCE
 	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoCuotaPorOblID]
 GO
 
-CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoCuotaPorOblID]	
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoPorOblID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoPorOblID]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoPorOblID]	
 	@I_RowID	  int,
 	@B_Resultado  bit OUTPUT,
 	@T_Message	  nvarchar(4000) OUTPUT	
 AS
 /*
-	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la fecha de vencimiento es diferente a la fecha de vencimiento de la cuota de pago de la oblID
+	DESCRIPCION: Marcar TR_Ec_Obl con B_Migrable = 0 cuando la fecha de vencimiento es un datetime válido para la oblID
 
 	DECLARE	@I_RowID	  int,
 			@B_Resultado  bit,
 			@T_Message	  nvarchar(4000)
-	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoCuotaPorOblID @I_RowID, @B_Resultado output, @T_Message output
+	EXEC USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoPorOblID @I_RowID, @B_Resultado output, @T_Message output
 	SELECT @B_Resultado as resultado, @T_Message as mensaje
 */
 BEGIN
@@ -1413,20 +1416,17 @@ BEGIN
 	BEGIN TRY
 
 		SELECT Ano, P, Cod_alu, Cod_rc, obl.Cuota_pago, obl.Fch_venc, Tipo_oblig, Monto, obl.I_RowID
-		INTO  #temp_obl_fecVenc_dif_cuota_anio
+		INTO  #temp_obl_fecVenc
 		FROM  TR_Ec_Obl obl
-			  LEFT JOIN TR_Cp_Des cp ON obl.Cuota_pago = cp.Cuota_pago 
-										AND obl.I_ProcedenciaID = cp.I_ProcedenciaID
-										AND cp.Eliminado = 0
 		WHERE obl.I_RowID = @I_RowID
-			  AND obl.Fch_venc <> cp.Fch_venc
+			  AND ISDATE(CONVERT(VARCHAR, obl.Fch_venc, 112)) = 0
 
 
 		UPDATE	TRG_1
 		SET		B_Migrable = 0,
 				D_FecEvalua = @D_FecProceso
 		FROM	TR_Ec_Obl TRG_1
-				INNER JOIN #temp_obl_fecVenc_dif_cuota_anio SRC_1 
+				INNER JOIN #temp_obl_fecVenc SRC_1 
 							ON TRG_1.I_RowID = SRC_1.I_RowID
 		WHERE	ISNULL(TRG_1.B_Correcto, 0) = 0
 
@@ -1435,7 +1435,7 @@ BEGIN
 		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, 
 					  @D_FecProceso AS D_FecRegistro, TRG_1.I_ProcedenciaID, SRC_1.I_RowID
 				 FROM TR_Ec_Obl TRG_1
-					  LEFT JOIN #temp_obl_fecVenc_dif_cuota_anio SRC_1 
+					  LEFT JOIN #temp_obl_fecVenc SRC_1 
 								 ON TRG_1.I_RowID = SRC_1.I_RowID
 				WHERE ISNULL(TRG_1.B_Correcto, 0) = 0
 					  AND TRG_1.I_RowID = @I_RowID
@@ -1455,7 +1455,7 @@ BEGIN
 		  FROM TI_ObservacionRegistroTabla OBS
 			   INNER JOIN (SELECT ec_obl.I_RowID, ec_obl.Ano, ec_obl.Cod_alu, ec_obl.Cod_rc, ec_obl.I_ProcedenciaID 
 							 FROM TR_Ec_Obl ec_obl
-								  LEFT JOIN #temp_obl_fecVenc_dif_cuota_anio SRC_1 ON ec_obl.I_RowID = SRC_1.I_RowID
+								  LEFT JOIN #temp_obl_fecVenc SRC_1 ON ec_obl.I_RowID = SRC_1.I_RowID
 							WHERE ec_obl.I_RowID = @I_RowID
 								  AND SRC_1.I_RowID IS NULL
 						  ) OBL 
@@ -1479,7 +1479,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Validar_28_FechaVencimientoCuotaPorOblID ", ' + 
+							 'Title: "Validar_28_FechaVencimientoPorOblID ", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -1492,7 +1492,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_28_FechaVencimientoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -1624,7 +1624,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_29_ExisteEnDestino", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -1755,7 +1755,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_29_ExisteEnDestinoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -1882,7 +1882,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_32_ObligacionCuotaPagoMigrada", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -1995,7 +1995,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_32_ObligacionCuotaPagoMigradaPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -2123,7 +2123,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_34_ProcedenciaCuotaPago", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(10)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -2237,7 +2237,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_34_ProcedenciaCuotaPagoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -2361,7 +2361,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_36_ConceptoPagoMigrado", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -2483,7 +2483,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_36_ConceptoPagoMigradoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -2609,7 +2609,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_37_ObservacionAnioDetalle", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -2729,7 +2729,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_37_ObservacionAnioDetallePorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -2852,7 +2852,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_38_ObservacionPeriodoDetalle", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -2972,7 +2972,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_38_ObservacionPeriodoDetallePorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -3089,7 +3089,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_39_DetalleObservado", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -3185,7 +3185,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "Validar_39_DetalleObservadoPorOblID ", ' + 
+							 'Title: "Validar_39_DetalleObservadoPorOblID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 	END TRY
@@ -3198,7 +3198,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_39_DetalleObservadoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -3318,7 +3318,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_40_ObligacionSinDetalle", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -3432,7 +3432,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_40_ObligacionSinDetallePorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -3546,7 +3546,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_54_PagoEnObligacionNoPagado", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -3656,7 +3656,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_54_PagoEnObligacionNoPagadoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -3781,7 +3781,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_59_ObligacionRepetida", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -3902,7 +3902,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_59_ObligacionRepetidaPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -4017,7 +4017,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_60_SinPagoEnObligacioPagada", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -4130,7 +4130,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_60_SinPagoEnObligacioPagadaPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -4241,7 +4241,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_61_MigracionMatricula", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -4348,7 +4348,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_61_MigracionMatriculaPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -4473,7 +4473,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_15_AnioDetalleAnioConcepto", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -4579,7 +4579,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_15_AnioDetalleAnioConceptoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -4695,7 +4695,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_17_PeriodoDetallePeriodoConcepto", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -4801,7 +4801,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_17_PeriodoDetallePeriodoConceptoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -4905,7 +4905,7 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '{ ' +
 							 'Type: "summary", ' + 
-							 'Title: "alidar_25_ObligacionCabID", ' + 
+							 'Title: "Validar_25_ObligacionCabID", ' + 
 							 'Value: ' + CAST(@I_Observados AS varchar) +
 						 '}' 
 
@@ -4919,7 +4919,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_25_ObligacionCabID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -5026,7 +5026,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_25_ObligacionCabIDPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -5144,7 +5144,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_33_ConceptoPagoMigrado", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -5255,7 +5255,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_33_ConceptoPagoMigradoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -5368,7 +5368,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_35_ConceptoPago", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -5472,7 +5472,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_35_ConceptoPagoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -5588,7 +5588,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_42_CuotaDetalleCuotaConcepto", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -5697,7 +5697,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_42_CuotaDetalleCuotaConceptoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -5796,7 +5796,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_43_AnioDetalleNumerico", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -5891,7 +5891,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_43_AnioDetalleNumericoPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -6008,7 +6008,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_44_PeriodoDetalleEquivPeriodoCtas", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -6118,7 +6118,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_44_PeriodoDetalleEquivPeriodoCtasPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -6237,7 +6237,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_49_MontoDetalleMontoCab", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -6345,7 +6345,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_49_MontoDetalleMontoCabPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -6445,7 +6445,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_58_SinObligacionCabID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -6561,7 +6561,7 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_62_MigracionCabecera", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
@@ -6665,13 +6665,230 @@ BEGIN
 		SET @B_Resultado = 0
 		SET @T_Message = '[{ ' +
 							 'Type: "error", ' + 
-							 'Title: "Error", ' + 
+							 'Title: "Validar_62_MigracionCabeceraPorOblID", ' + 
 							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
 						  '}]' 
 	END CATCH
 END
 GO
 
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_64_FechaVencimiento')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_64_FechaVencimiento]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_64_FechaVencimiento]	
+	@I_ProcedenciaID tinyint,
+	@T_Anio			 varchar(4) = NULL,
+	@B_Resultado  bit OUTPUT,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Det con B_Migrable = 0 cuando la fecha de vencimiento no es un datetime válido
+
+	DECLARE	@I_ProcedenciaID	tinyint = 3, 
+			@T_Anio				varchar(4) = 2007,
+			@B_Resultado		bit,
+			@T_Message			nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_64_FechaVencimiento @I_ProcedenciaID, @T_Anio, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 64
+	DECLARE @I_TablaID int = 4
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+
+		SELECT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Tipo_oblig, Monto, I_RowID, I_OblRowID
+		  INTO #temp_det_fecVenc
+		  FROM TR_Ec_Det det
+		 WHERE I_ProcedenciaID = @I_ProcedenciaID
+		 	   AND Ano = @T_Anio
+		 	   AND ISDATE(CONVERT(VARCHAR, det.Fch_venc, 112)) = 0
+
+		UPDATE	TRG_1
+		   SET	B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		  FROM	TR_Ec_Det TRG_1
+				INNER JOIN #temp_det_fecVenc SRC_1 ON TRG_1.I_RowID = SRC_1.I_RowID
+		 WHERE	ISNULL(TRG_1.B_Correcto, 0) = 0
+
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+				 FROM TR_Ec_Det TRG_1
+					  INNER JOIN #temp_det_fecVenc SRC_1 
+								ON TRG_1.I_RowID = SRC_1.I_RowID
+				 WHERE	TRG_1.Ano = @T_Anio
+						AND ISNULL(TRG_1.B_Correcto, 0) = 0
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, @I_ProcedenciaID, 1);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT ec_det.I_RowID, ec_det.Ano, ec_det.Cod_alu, ec_det.Cod_rc, ec_det.I_ProcedenciaID
+							 FROM TR_Ec_Det ec_det
+								  LEFT JOIN #temp_det_fecVenc SRC_1 ON ec_det.I_RowID = SRC_1.I_RowID
+							WHERE SRC_1.I_RowID IS NULL) DET 
+						  ON OBS.I_FilaTablaID = DET.I_RowID
+							 AND OBS.I_ProcedenciaID = DET.I_ProcedenciaID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla OBS INNER JOIN 
+												  TR_Ec_Det DET ON OBS.I_FilaTablaID = DET.I_RowID 
+																	AND DET.I_ProcedenciaID = OBS.I_ProcedenciaID
+																	AND OBS.I_TablaID = @I_TablaID 
+							  WHERE I_ObservID = @I_ObservID AND
+									DET.Ano = @T_Anio AND
+									OBS.I_ProcedenciaID = @I_ProcedenciaID AND 
+									B_Resuelto = 0)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
+
+		COMMIT TRANSACTION				
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Validar_64_FechaVencimiento", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Validar_64_FechaVencimiento", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
+
+
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_64_FechaVencimientoPorOblID')
+	DROP PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_64_FechaVencimientoPorOblID]
+GO
+
+CREATE PROCEDURE [dbo].[USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_64_FechaVencimientoPorOblID]	
+	@I_RowID	  int,
+	@B_Resultado  bit OUTPUT,
+	@T_Message	  nvarchar(4000) OUTPUT	
+AS
+/*
+	DESCRIPCION: Marcar TR_Ec_Det con B_Migrable = 0 cuando la fecha de vencimiento es un datetime válido para la oblID
+
+	DECLARE	@I_RowID	  int,
+			@B_Resultado  bit,
+			@T_Message	  nvarchar(4000)
+	EXEC USP_Obligaciones_ObligacionDet_MigracionTP_U_Validar_64_FechaVencimientoPorOblID @I_RowID, @B_Resultado output, @T_Message output
+	SELECT @B_Resultado as resultado, @T_Message as mensaje
+*/
+BEGIN
+	DECLARE @I_Observados int = 0
+	DECLARE @D_FecProceso datetime = GETDATE() 
+	DECLARE @I_ObservID int = 64
+	DECLARE @I_TablaID int = 4
+
+	BEGIN TRANSACTION
+	BEGIN TRY
+
+		SELECT Ano, P, Cod_alu, Cod_rc, det.Cuota_pago, det.Fch_venc, Tipo_oblig, Monto, det.I_RowID
+		INTO  #temp_det_fecVenc
+		FROM  TR_Ec_Det det
+		WHERE det.I_RowID = @I_RowID
+			  AND ISDATE(CONVERT(VARCHAR, det.Fch_venc, 112)) = 0
+
+
+		UPDATE	TRG_1
+		SET		B_Migrable = 0,
+				D_FecEvalua = @D_FecProceso
+		FROM	TR_Ec_Det TRG_1
+				INNER JOIN #temp_det_fecVenc SRC_1 
+							ON TRG_1.I_RowID = SRC_1.I_RowID
+		WHERE	ISNULL(TRG_1.B_Correcto, 0) = 0
+
+
+		MERGE TI_ObservacionRegistroTabla AS TRG
+		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, 
+					  @D_FecProceso AS D_FecRegistro, TRG_1.I_ProcedenciaID, SRC_1.I_RowID
+				 FROM TR_Ec_Det TRG_1
+					  LEFT JOIN #temp_det_fecVenc SRC_1 
+								 ON TRG_1.I_RowID = SRC_1.I_RowID
+				WHERE ISNULL(TRG_1.B_Correcto, 0) = 0
+					  AND TRG_1.I_RowID = @I_RowID
+			  ) AS SRC
+		ON TRG.I_ObservID = SRC.I_ObservID AND TRG.I_TablaID = SRC.I_TablaID AND TRG.I_FilaTablaID = SRC.I_FilaTablaID
+		WHEN MATCHED AND SRC.I_RowID IS NOT NULL THEN
+			UPDATE SET D_FecRegistro = SRC.D_FecRegistro, 
+					   B_Resuelto = 0
+		WHEN NOT MATCHED BY TARGET THEN
+			INSERT (I_ObservID, I_TablaID, I_FilaTablaID, D_FecRegistro, I_ProcedenciaID, B_ObligProc)
+			VALUES (SRC.I_ObservID, SRC.I_TablaID, SRC.I_FilaTablaID, SRC.D_FecRegistro, SRC.I_ProcedenciaID, 1);
+
+
+		UPDATE OBS
+		   SET D_FecResuelto = @D_FecProceso,
+			   B_Resuelto = 1
+		  FROM TI_ObservacionRegistroTabla OBS
+			   INNER JOIN (SELECT ec_det.I_RowID, ec_det.Ano, ec_det.Cod_alu, ec_det.Cod_rc, ec_det.I_ProcedenciaID 
+							 FROM TR_Ec_Det ec_det
+								  LEFT JOIN #temp_det_fecVenc SRC_1 ON ec_det.I_RowID = SRC_1.I_RowID
+							WHERE ec_det.I_RowID = @I_RowID
+								  AND SRC_1.I_RowID IS NULL
+						  ) OBL 
+						  ON OBS.I_FilaTablaID = OBL.I_RowID
+							 AND OBS.I_ProcedenciaID = OBL.I_ProcedenciaID
+		 WHERE OBS.I_ObservID = @I_ObservID 
+			   AND OBS.I_TablaID = @I_TablaID
+			   AND OBS.I_FilaTablaID = @I_RowID
+
+		SET @I_Observados = (SELECT COUNT(*) FROM TI_ObservacionRegistroTabla OBS INNER JOIN 
+												  TR_Ec_Det DET ON OBS.I_FilaTablaID = DET.I_RowID 
+																	AND DET.I_ProcedenciaID = OBS.I_ProcedenciaID
+																	AND OBS.I_TablaID = @I_TablaID 
+							  WHERE I_ObservID = @I_ObservID
+									AND B_Resuelto = 0
+									AND DET.I_RowID = @I_RowID)
+
+		SELECT @I_Observados as cant_obs, @D_FecProceso as fec_proceso
+
+		COMMIT TRANSACTION				
+		SET @B_Resultado = 1
+		SET @T_Message = '{ ' +
+							 'Type: "summary", ' + 
+							 'Title: "Validar_64_FechaVencimientoPorOblID ", ' + 
+							 'Value: ' + CAST(@I_Observados AS varchar) +
+						 '}' 
+	END TRY
+	BEGIN CATCH
+		IF (@@TRANCOUNT > 0) 
+		BEGIN
+			ROLLBACK TRANSACTION
+		END
+
+		SET @B_Resultado = 0
+		SET @T_Message = '[{ ' +
+							 'Type: "error", ' + 
+							 'Title: "Validar_64_FechaVencimientoPorOblID", ' + 
+							 'Value: "' + ERROR_MESSAGE() + ' (Linea: ' + CAST(ERROR_LINE() AS varchar(11)) + ')."'  +
+						  '}]' 
+	END CATCH
+END
+GO
 
 
 IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.ROUTINES WHERE ROUTINE_TYPE = 'PROCEDURE' AND ROUTINE_NAME = 'USP_CtasPorCobrar_U_GrabarMatriculaPorObligacionID')

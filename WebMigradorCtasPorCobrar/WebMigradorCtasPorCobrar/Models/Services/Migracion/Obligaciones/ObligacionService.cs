@@ -84,7 +84,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             result.Add(_oblCabService.ValidarExisteCodigoAlumno(procedencia_id, anio));
             result.Add(_oblCabService.ValidarAnio(procedencia_id, anio));
             result.Add(_oblCabService.ValidarPeriodo(procedencia_id, anio));
-            //result.Add(_oblCabService.ValidarFechaVencimiento(procedencia_id, anio));
+            result.Add(_oblCabService.ValidarFechaVencimiento(procedencia_id, anio));
             result.Add(_oblCabService.ValidarCuotaPagoDeObligacionMigrada(procedencia_id, anio));
             result.Add(_oblCabService.ValidarProcedenciaObligProcecedenciaCuotaPago(procedencia_id, anio));
             result.Add(_oblCabService.ValidarTieneDetallesAsociados(procedencia_id, anio));
@@ -97,6 +97,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             result.Add(_oblDetService.ValidarSinObligacionID(procedencia_id, anio));
             result.Add(_oblDetService.ValidarConceptoExisteEnCatalogo(procedencia_id, anio));
             result.Add(_oblDetService.ValidarAnioEsUnNumero(procedencia_id, anio));
+            result.Add(_oblDetService.ValidarFechaVencimiento(procedencia_id, anio));
             result.Add(_oblDetService.ValidarTieneConceptoPagoMigrado(procedencia_id, anio));
             result.Add(_oblDetService.ValidarAnioIgualAnioConcepto(procedencia_id, anio));
             result.Add(_oblDetService.ValidarPeriodoIgualPeriodoConcepto(procedencia_id, anio));
@@ -108,8 +109,9 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             result.Add(_oblCabService.ValidarObservacionesAnioDetalle(procedencia_id, anio));
             result.Add(_oblCabService.ValidarObservacionesPeriodoDetalle(procedencia_id, anio));
 
+            result.Add(_oblPagoService.ValidarFechaPago(procedencia_id, anio));
             result.Add(_oblPagoService.ValidarCabeceraObligacionObservada(procedencia_id, anio));
-            result.Add(_oblPagoService.ValidarDetalleOblgObservedo(procedencia_id, anio));
+            result.Add(_oblPagoService.ValidarDetalleObligObservado(procedencia_id, anio));
             result.Add(_oblPagoService.ValidarCabeceraObligacionID(procedencia_id, anio));
             result.Add(_oblPagoService.ValidarMontoPagadoIgualTotalMontoPagado(procedencia_id, anio));
             result.Add(_oblPagoService.ValidarExisteEnDestinoConOtroBanco(procedencia_id, anio));
@@ -137,9 +139,44 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         {
             List<Response> result = new List<Response>();
 
+            _ = _oblCabService.InicializarEstadosValidacion(obligacionID);
+            _ = _oblDetService.InicializarEstadosValidacion(obligacionID);
+            _ = _oblPagoService.InicializarEstadosValidacion(obligacionID);
 
+            result.Add(_oblCabService.ValidarExisteCodigoAlumno(obligacionID));
+            result.Add(_oblCabService.ValidarAnio(obligacionID));
+            result.Add(_oblCabService.ValidarPeriodo(obligacionID));
+            result.Add(_oblCabService.ValidarFechaVencimiento(obligacionID));
+            result.Add(_oblCabService.ValidarCuotaPagoDeObligacionMigrada(obligacionID));
+            result.Add(_oblCabService.ValidarProcedenciaObligProcecedenciaCuotaPago(obligacionID));
+            result.Add(_oblCabService.ValidarTieneDetallesAsociados(obligacionID));
+            result.Add(_oblCabService.ValidarCabeceraObligacionRepetida(obligacionID));
+            result.Add(_oblCabService.ValidarObligacionTieneConceptosMigrados(obligacionID));
+            result.Add(_oblCabService.ValidarNoExistePagoEnObligacionPagada(obligacionID));
+            result.Add(_oblCabService.ValidarNoExistePagoEnObligacionPagada(obligacionID));
+            result.Add(_oblCabService.ValidarExisteConOtroMontoEnCtasxCobrar(obligacionID));
 
-            return new List<Response>();
+            result.Add(_oblDetService.ValidarConceptoExisteEnCatalogo(obligacionID));
+            result.Add(_oblDetService.ValidarAnioEsUnNumero(obligacionID));
+            result.Add(_oblDetService.ValidarFechaVencimiento(obligacionID));
+            result.Add(_oblDetService.ValidarTieneConceptoPagoMigrado(obligacionID));
+            result.Add(_oblDetService.ValidarAnioIgualAnioConcepto(obligacionID));
+            result.Add(_oblDetService.ValidarPeriodoIgualPeriodoConcepto(obligacionID));
+            result.Add(_oblDetService.ValidarPeriodoExisteCatologoCtas(obligacionID));
+            result.Add(_oblDetService.ValidarCuotaPagoIgualCuotaPagoConcepto(obligacionID));
+            result.Add(_oblDetService.ValidarTotalMontoIgualMontoCabecera(obligacionID));
+
+            result.Add(_oblCabService.ValidarSinObservacionesEnDetalle(obligacionID));
+            result.Add(_oblCabService.ValidarObservacionesAnioDetalle(obligacionID));
+            result.Add(_oblCabService.ValidarObservacionesPeriodoDetalle(obligacionID));
+
+            result.Add(_oblPagoService.ValidarFechaPago(obligacionID));
+            result.Add(_oblPagoService.ValidarCabeceraObligacionObservada(obligacionID));
+            result.Add(_oblPagoService.ValidarDetalleObligObservado(obligacionID));
+            result.Add(_oblPagoService.ValidarMontoPagadoIgualTotalMontoPagado(obligacionID));
+            result.Add(_oblPagoService.ValidarExisteEnDestinoConOtroBanco(obligacionID));
+
+            return result;
         }
 
 
@@ -178,7 +215,8 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             List<Response> result = new List<Response>();
 
 
-            return result;
+    
+        return result;
         }
 
 

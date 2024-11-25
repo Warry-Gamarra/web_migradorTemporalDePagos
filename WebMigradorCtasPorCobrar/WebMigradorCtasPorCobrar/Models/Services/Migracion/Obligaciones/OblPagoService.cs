@@ -107,7 +107,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
         }
 
 
-        public Response ValidarDetalleOblgObservedo(int procedencia, string anio)
+        public Response ValidarDetalleObligObservado(int procedencia, string anio)
         {
             Response result = _pagoObligacionRepository.ValidarDetalleObligacionObservada(procedencia, anio);
 
@@ -119,7 +119,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result;
         }
 
-        public Response ValidarDetalleOblgObservedo(int obligacionId)
+        public Response ValidarDetalleObligObservado(int obligacionId)
         {
             Response result = _pagoObligacionRepository.ValidarDetalleObligacionObservadaPorOblID(obligacionId);
 
@@ -188,6 +188,31 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             _ = result.ReturnViewValidationsMessage(ObservacionPago.PAGO_SIN_CABECERA_OBLIGACION_ID,
                                                     (int)PagoObligacionObs.SinObligacionId,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
+        public Response ValidarFechaPago(int procedencia, string anio)
+        {
+            Response result = _pagoObligacionRepository.ValidarFechaPago(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.FECHA_PAGO_ERROR,
+                                                    (int)PagoObligacionObs.MigracionCabecera,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarFechaPago(int obligacionId)
+        {
+            Response result = _pagoObligacionRepository.ValidarFechaPago(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionPago.FECHA_PAGO_ERROR,
+                                                    (int)PagoObligacionObs.MigracionCabecera,
                                                     "Obligaciones",
                                                     "EjecutarValidacion");
 

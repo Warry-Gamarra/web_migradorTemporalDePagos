@@ -20,6 +20,7 @@
         public static readonly string PAGO_CON_OBSERVACION_DETALLE = "El pago tiene observaciones de conceptos en el detalle.";
         public static readonly string PAGO_CON_OBSERVACION_CABECERA = "El pago tiene observaciones en la cabecera de la obligacion.";
         public static readonly string PAGO_NO_MIGRADO_CABECERA_SIN_MIGRAR = "El pago de la obligación no pudo migrarse por no tener cabecera migrada.";
+        public static readonly string FECHA_PAGO_ERROR = "La columna fch_pago no tiene un valor de fecha válido.";
     }
 
 
@@ -28,7 +29,7 @@
         public static readonly string CABECERA_SIN_COD_ALU = "No se encontró un alumno para el codigo de alumno y carrera de la obligación.";
         public static readonly string ANIO_NO_VALIDO = "El AÑO de la obligacion no es un valor válido.";
         public static readonly string SIN_PERIODO = "El PERIODO de la obligación no tiene equivalencia en base de datos de Ctas por cobrar.";
-        public static readonly string FEC_VENC_DIF_CUOTA_PAGO = "La fecha de vencimiento se no coincide con la fecha en la cuota de pago.";
+        public static readonly string FEC_VENC_ERROR = "La fecha de vencimiento no es un valor de fecha válido.";
         public static readonly string OBLIG_EXISTE_CON_OTRO_MONTO = "La obligación ya existe en la base de datos de destino con otro monto.";
         public static readonly string SIN_CUOTAPAGO_MIGRADA = "La obligación tiene una cuota de pago sin migrar.";
         public static readonly string PROCEDENCIA_DIF_PROC_CUOTA = "La procedencia de la obligación no coincide con la procedencia de la cuota de pago.";
@@ -58,6 +59,7 @@
         public static readonly string TOTAL_MONTO_DETALLE_MONTO_CAB = "El monto acumulado de los conceptos en el detalle no corresponde con el monto indicado en la obligación";
         public static readonly string SIN_CABECERA_ID = "El detalle de la obligacion no tiene asociado un ID de la obligacion.";
         public static readonly string CABECERA_NO_MIGRADA = "El detalle de la obligación asociada no pudo migrarse por no tener cabecera migrada.";
+        public static readonly string FEC_VENC_ERROR = "La columna fch_venc no tiene un valor de fecha válido.";
     }
 
 }

@@ -28,8 +28,8 @@ GO
 
 
 UPDATE TC_CatalogoObservacion
-   SET T_ObservDesc = 'La fecha de vencimiento se no coincide con la fecha en la cuota de pago.',
-   	   T_ObservCod = 'FEC VENC CP_DES'
+   SET T_ObservDesc = 'La fecha de vencimiento no es un valor de fecha válido.',
+   	   T_ObservCod = 'FEC VENC ERROR'
  WHERE I_ObservID = 28
 GO
 
@@ -118,6 +118,22 @@ IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 63)
 BEGIN
 	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
 								VALUES (63, 'La pago de la obligación no pudo migrarse por no tener cabecera migrada.', 'MIGRACION', NULL, 7)
+END
+GO
+
+
+IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 64)
+BEGIN
+	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
+								VALUES (64, 'La columna fch_venc no tiene un valor de fecha válido.', 'FCH_VENC ERROR', NULL, 4)
+END
+GO
+
+
+IF NOT EXISTS (SELECT * FROM TC_CatalogoObservacion WHERE I_ObservID = 65)
+BEGIN
+	INSERT INTO TC_CatalogoObservacion (I_ObservID, T_ObservDesc, T_ObservCod, I_Severidad, I_TablaID) 
+								VALUES (65, 'La columna fch_pago no tiene un valor de fecha válido.', 'FCH_PAGO ERROR', NULL, 7)
 END
 GO
 

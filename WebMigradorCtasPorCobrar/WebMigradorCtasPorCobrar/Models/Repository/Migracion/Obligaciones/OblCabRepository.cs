@@ -272,7 +272,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         }
 
 
-        public Response ValidarFechaVencimientoCuotaObligacion(int procedenciaID, string anio)
+        public Response ValidarFechaVencimiento(int procedenciaID, string anio)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -286,7 +286,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoCuota", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimiento", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -302,7 +302,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
         }
 
 
-        public Response ValidarFechaVencimientoCuotaObligacionPorID(int rowID)
+        public Response ValidarFechaVencimientoPorID(int rowID)
         {
             Response result = new Response();
             DynamicParameters parameters = new DynamicParameters();
@@ -315,7 +315,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoCuotaPorOblID", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimientoPorOblID", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
