@@ -145,7 +145,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
         public Response ValidarFechaVencimiento(int obligacionId)
         {
-            Response result = _obligacionRepository.ValidarFechaVencimientoCuotaObligacionPorID(obligacionId);
+            Response result = _obligacionRepository.ValidarFechaVencimientoPorID(obligacionId);
 
             _ = result.ReturnViewValidationsMessage(ObservacionOblCab.FEC_VENC_ERROR,
                                                     (int)ObligacionesPagoObs.FchVencCuotaPago,
@@ -393,7 +393,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result;
         }
 
-        public Response ValidarCabeceraOligacionRepetida(int obligacionId)
+        public Response ValidarCabeceraObligacionRepetida(int obligacionId)
         {
             Response result = _obligacionRepository.ValidarCabeceraObligacionRepetidaPorOblID(obligacionId);
 

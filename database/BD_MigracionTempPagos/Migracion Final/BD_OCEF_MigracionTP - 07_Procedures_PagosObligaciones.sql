@@ -329,17 +329,19 @@ BEGIN
 	BEGIN TRY
 		DECLARE @Row_count int;
 		DECLARE @I_TablaID INT = 7
-		DECLARE @I_FilaTablaID INT = ISNULL((SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla), 0)
+		DECLARE @I_ObsTablaID INT 
 
 		DELETE TI_ObservacionRegistroTabla
 		 WHERE I_TablaID = @I_TablaID
 		 	   AND I_ProcedenciaID = @I_ProcedenciaID
-		 	   AND EXISTS (SELECT I_RowID FROM TR_Ec_Det DET
+		 	   AND EXISTS (SELECT I_RowID FROM TR_Tasas_Ec_Det_Pagos DET
 							WHERE DET.I_ProcedenciaID = TI_ObservacionRegistroTabla.I_ProcedenciaID
 								  AND DET.I_RowID = TI_ObservacionRegistroTabla.I_FilaTablaID
 								  AND Ano = @T_Anio)
 
-		DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_FilaTablaID);
+		SET @I_ObsTablaID = ISNULL((SELECT MAX(I_ObsTablaID) FROM TI_ObservacionRegistroTabla), 0)
+
+		DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_ObsTablaID);
 
 		WITH cte_obl_anio (I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, P, Fch_venc, Pagado, Monto)
 		AS ( 
@@ -400,7 +402,7 @@ AS
 */
 BEGIN
 	DECLARE @I_TablaID INT = 7
-	DECLARE @I_FilaTablaID INT = ISNULL((SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla), 0)
+	DECLARE @I_ObsTablaID INT
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
@@ -410,7 +412,8 @@ BEGIN
 							WHERE Det.I_ProcedenciaID = TI_ObservacionRegistroTabla.I_ProcedenciaID
 								  AND Det.I_RowID = TI_ObservacionRegistroTabla.I_FilaTablaID
 								  AND Det.I_OblRowID = @I_OblRowID)
-
+		
+		SET @I_ObsTablaID = ISNULL((SELECT MAX(I_ObsTablaID) FROM TI_ObservacionRegistroTabla), 0)
 
 		UPDATE	TR_Ec_Det
 		   SET	B_Actualizado = IIF(B_Actualizado = 1, B_Actualizado, 0), 
@@ -491,7 +494,7 @@ BEGIN
 			   AND Ano = @T_Anio
 	 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Det_Pagos 
 				WHERE I_OblRowID IS NULL
 					  AND I_ProcedenciaID = @I_ProcedenciaID
@@ -1275,7 +1278,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 		
-		SELECT Obl.*
+		SELECT DISTINCT Obl.*
 		  INTO #temp_pago_cab_observada
 		  FROM TR_Ec_Obl Obl 
 			   INNER JOIN TI_ObservacionRegistroTabla Obs ON Obl.I_RowID = Obs.I_FilaTablaID
@@ -1719,7 +1722,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Fch_pago, Tipo_oblig, Monto, I_RowID, I_OblRowID
+		SELECT DISTINCT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Fch_pago, Tipo_oblig, Monto, I_RowID, I_OblRowID
 		  INTO #temp_det_fecPago
 		  FROM TR_Ec_Det_Pagos det
 		 WHERE I_ProcedenciaID = @I_ProcedenciaID
@@ -1735,7 +1738,7 @@ BEGIN
 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Det_Pagos TRG_1
 					  INNER JOIN #temp_det_fecPago SRC_1 
 								ON TRG_1.I_RowID = SRC_1.I_RowID
@@ -2218,6 +2221,7 @@ BEGIN
 
 	DECLARE @I_Det_Actualizados int = 0
 	DECLARE @I_Det_Insertados int = 0
+	DECLARE @I_Total_pagos int = 0
 
 	BEGIN TRANSACTION;
 	BEGIN TRY 
@@ -2256,7 +2260,7 @@ BEGIN
 			   AND B_Migrable = 1
 			   AND Eliminado = 0;
 
-
+		SET @I_Total_pagos = (SELECT COUNT(*) FROM #temp_det_pago)
 		/*
 			uptdate if exists pago banco in ctas x cobrar
 		*/	
@@ -2403,16 +2407,21 @@ BEGIN
 		SET @B_Resultado = 1
 		SET @T_Message = '[{ ' +
 							 'Type: "summary", ' + 
+							 'Title: "Total pagos", ' + 
+							 'Value: ' + CAST(@I_Total_pagos AS varchar) +
+						  '}, ' + 
+						  '{ ' +
+							 'Type: "detail", ' + 
 							 'Title: "Pagos Banco Insertados", ' + 
 							 'Value: ' + CAST(@I_Pagos_Insertados AS varchar) +
 						  '}, ' + 
 						  '{ ' +
-							 'Type: "summary", ' + 
+							 'Type: "detail", ' + 
 							 'Title: "Pagos Procesados Insertados", ' + 
 							 'Value: ' + CAST(@I_Det_Insertados AS varchar) +
 						  '}, ' + 
 						  '{ ' +
-							 'Type: "summary", ' + 
+							 'Type: "detail", ' + 
 							 'Title: "Pagos Banco Actualizados", ' + 
 							 'Value: ' + CAST(@I_Pagos_Actualizados AS varchar) +
 						  '}, ' + 

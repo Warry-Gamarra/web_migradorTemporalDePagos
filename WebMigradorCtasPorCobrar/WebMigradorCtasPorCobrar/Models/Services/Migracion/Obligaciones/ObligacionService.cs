@@ -250,7 +250,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             obligacionRepository.ValidarAlumnoCabeceraObligacionPorID(obligacion.I_RowID);
             obligacionRepository.ValidarAnioEnCabeceraObligacionPorID(obligacion.I_RowID);
             obligacionRepository.ValidarPeriodoEnCabeceraObligacionPorID(obligacion.I_RowID);
-            obligacionRepository.ValidarFechaVencimientoCuotaObligacionPorID(obligacion.I_RowID);
+            obligacionRepository.ValidarFechaVencimientoPorID(obligacion.I_RowID);
             obligacionRepository.ValidarObligacionCuotaPagoMigradaPorObligacionID(obligacion.I_RowID);
             obligacionRepository.ValidarProcedenciaObligacionCuotaPagoPorOblID(obligacion.I_RowID);
 

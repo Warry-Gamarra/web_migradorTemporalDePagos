@@ -404,7 +404,7 @@ AS
 */
 BEGIN
 	DECLARE @I_TablaID INT = 5
-	DECLARE @I_FilaTablaID INT = ISNULL((SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla), 0)
+	DECLARE @I_ObsTablaID INT
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
@@ -416,7 +416,9 @@ BEGIN
 								  AND OBL.I_RowID = TI_ObservacionRegistroTabla.I_FilaTablaID
 								  AND Ano = @T_Anio)
 
-		DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_FilaTablaID)
+		SET @I_ObsTablaID = ISNULL((SELECT MAX(I_ObsTablaID) FROM TI_ObservacionRegistroTabla), 0)
+
+		DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_ObsTablaID)
 
 		UPDATE	TR_Ec_Obl 
 		   SET	B_Actualizado = 0,
@@ -467,7 +469,7 @@ AS
 */
 BEGIN
 	DECLARE @I_TablaID INT = 5
-	DECLARE @I_FilaTablaID INT = ISNULL((SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla), 0)
+	DECLARE @I_ObsTablaID INT = ISNULL((SELECT MAX(I_ObsTablaID) FROM TI_ObservacionRegistroTabla), 0)
 	BEGIN TRANSACTION
 	BEGIN TRY 
 		DELETE TI_ObservacionRegistroTabla
@@ -530,7 +532,7 @@ AS
 */
 BEGIN
 	DECLARE @I_TablaID INT = 4
-	DECLARE @I_FilaTablaID INT = ISNULL((SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla), 0)
+	DECLARE @I_ObsTablaID INT
 
 	BEGIN TRANSACTION
 	BEGIN TRY
@@ -542,7 +544,9 @@ BEGIN
 								  AND DET.I_RowID = TI_ObservacionRegistroTabla.I_FilaTablaID
 								  AND Ano = @T_Anio)
 
-		DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_FilaTablaID);
+		SET @I_ObsTablaID = ISNULL((SELECT MAX(I_ObsTablaID) FROM TI_ObservacionRegistroTabla), 0)
+
+		DBCC CHECKIDENT('TI_ObservacionRegistroTabla', 'RESEED', @I_ObsTablaID);
 
 
 		WITH cte_obl_anio (I_OblRowID, Cod_alu, Cod_rc, Cuota_pago, P, Fch_venc, Pagado, Monto)
@@ -600,8 +604,8 @@ AS
 */
 BEGIN
 	DECLARE @I_TablaID INT = 5
-	DECLARE @I_FilaTablaID INT = ISNULL((SELECT MAX(I_FilaTablaID) FROM TI_ObservacionRegistroTabla), 0)
-
+	DECLARE @I_ObsTablaID INT
+	
 	BEGIN TRANSACTION
 	BEGIN TRY 
 		DELETE TI_ObservacionRegistroTabla
@@ -611,6 +615,7 @@ BEGIN
 								  AND Det.I_RowID = TI_ObservacionRegistroTabla.I_FilaTablaID
 								  AND Det.I_OblRowID = @I_OblRowID)
 
+		SET @I_ObsTablaID = ISNULL((SELECT MAX(I_ObsTablaID) FROM TI_ObservacionRegistroTabla), 0)
 
 		UPDATE	TR_Ec_Det
 		   SET	B_Actualizado = IIF(B_Actualizado = 1, B_Actualizado, 0), 
@@ -4396,7 +4401,7 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		SELECT	Det.I_RowID 
+		SELECT	DISTINCT Det.I_RowID 
 		INTO	#temp_detalle_anio_no_anio_concepto
 		FROM	TR_Ec_Det Det
 				INNER JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
@@ -4411,7 +4416,7 @@ BEGIN
 			  AND I_ProcedenciaID = @I_ProcedenciaID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Det Det
 					  INNER JOIN #temp_detalle_anio_no_anio_concepto tmp ON tmp.I_RowID = Det.I_RowID
 				WHERE Ano = @T_Anio
@@ -4507,7 +4512,7 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY
-		SELECT	Det.I_RowID 
+		SELECT	DISTINCT Det.I_RowID 
 		INTO	#temp_detalle_anio_no_anio_concepto
 		FROM	TR_Ec_Det Det
 				INNER JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
@@ -4521,7 +4526,7 @@ BEGIN
 		WHERE I_OblRowID = @I_OblRowID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
 					  @D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID  
 				 FROM TR_Ec_Det Det
 					  INNER JOIN #temp_detalle_anio_no_anio_concepto tmp ON tmp.I_RowID = Det.I_RowID
@@ -4618,7 +4623,7 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		SELECT	Det.I_RowID 
+		SELECT	DISTINCT Det.I_RowID 
 		INTO	#temp_detalle_periodo_no_periodo_concepto
 		FROM	TR_Ec_Det Det
 				INNER JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
@@ -4633,7 +4638,7 @@ BEGIN
 			  AND I_ProcedenciaID = @I_ProcedenciaID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Det Det
 					  INNER JOIN #temp_detalle_periodo_no_periodo_concepto tmp ON tmp.I_RowID = Det.I_RowID
 				WHERE Ano = @T_Anio
@@ -4729,7 +4734,7 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY
-		SELECT	Det.I_RowID 
+		SELECT	DISTINCT Det.I_RowID 
 		INTO	#temp_detalle_periodo_no_periodo_concepto
 		FROM	TR_Ec_Det Det
 				INNER JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
@@ -4743,7 +4748,7 @@ BEGIN
 		WHERE I_OblRowID = @I_OblRowID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
 					  @D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID  
 				 FROM TR_Ec_Det Det
 					  INNER JOIN #temp_detalle_periodo_no_periodo_concepto tmp ON tmp.I_RowID = Det.I_RowID
@@ -5068,7 +5073,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT Det.I_RowID, Det.I_OblRowID, Det.Concepto, Pri.Id_cp, Pri.I_RowID AS I_PriRowID
+		SELECT DISTINCT Det.I_RowID, Det.I_OblRowID, Det.Concepto, Pri.Id_cp, Pri.I_RowID AS I_PriRowID
 		  INTO #temp_detalle_conceptos_sin_migrar
 		  FROM TR_Ec_Det Det
 			   INNER JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
@@ -5083,7 +5088,7 @@ BEGIN
 				INNER JOIN #temp_detalle_conceptos_sin_migrar tmp ON Det.I_RowID = tmp.I_RowID
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+		USING 	(SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
 						@D_FecProceso AS D_FecRegistro 
 				   FROM TR_Ec_Det Det
 						INNER JOIN #temp_detalle_conceptos_sin_migrar tmp ON Det.I_RowID = tmp.I_RowID
@@ -5181,7 +5186,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT Det.I_RowID, Det.I_OblRowID, Det.Concepto, Pri.Id_cp, Pri.I_RowID AS I_PriRowID
+		SELECT DISTINCT Det.I_RowID, Det.I_OblRowID, Det.Concepto, Pri.Id_cp, Pri.I_RowID AS I_PriRowID
 		  INTO #temp_detalle_conceptos_sin_migrar
 		  FROM TR_Ec_Det Det
 			   INNER JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
@@ -5196,7 +5201,7 @@ BEGIN
 
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+		USING 	(SELECT	DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
 						@D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID 
 				   FROM TR_Ec_Det Det
 						INNER JOIN #temp_detalle_conceptos_sin_migrar tmp ON Det.I_RowID = tmp.I_RowID
@@ -5296,7 +5301,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY 
 
-		SELECT Det.I_RowID, Det.Concepto, Pri.Id_cp, Det.I_ProcedenciaID, Pri.I_ProcedenciaID AS I_ProcedenciaPriID
+		SELECT DISTINCT Det.I_RowID, Det.Concepto, Pri.Id_cp, Det.I_ProcedenciaID, Pri.I_ProcedenciaID AS I_ProcedenciaPriID
 		  INTO #temp_detalle_concepto_no_existe
 		  FROM TR_Ec_Det Det
 			   LEFT JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
@@ -5312,7 +5317,7 @@ BEGIN
 
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		USING 	(SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				   FROM TR_Ec_Det Det
 						INNER JOIN #temp_detalle_concepto_no_existe tmp ON Det.I_RowID = tmp.I_RowID
 				 ) AS SRC
@@ -5403,7 +5408,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT Det.I_RowID, Det.Concepto, Pri.Id_cp, Det.I_ProcedenciaID, Pri.I_ProcedenciaID AS I_ProcedenciaPriID
+		SELECT DISTINCT Det.I_RowID, Det.Concepto, Pri.Id_cp, Det.I_ProcedenciaID, Pri.I_ProcedenciaID AS I_ProcedenciaPriID
 		  INTO #temp_detalle_concepto_no_existe
 		  FROM TR_Ec_Det Det
 			   LEFT JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
@@ -5418,7 +5423,7 @@ BEGIN
 
 					
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING 	(SELECT	@I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+		USING 	(SELECT	DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
 						@D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID
 				  FROM  TR_Ec_Det Det
 						INNER JOIN #temp_detalle_concepto_no_existe tmp ON Det.I_RowID = tmp.I_RowID
@@ -5512,7 +5517,7 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		SELECT  Det.I_RowID, I_OblRowID, Det.Cuota_pago, Concepto
+		SELECT  DISTINCT Det.I_RowID, I_OblRowID, Det.Cuota_pago, Concepto
 		  INTO	#temp_detalle_cuota_concepto_cuota
 		  FROM	TR_Ec_Det Det 
 				INNER JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
@@ -5527,7 +5532,7 @@ BEGIN
 			   INNER JOIN #temp_detalle_cuota_concepto_cuota tmp ON tmp.I_RowID = Det.I_RowID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
 					  @D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID 
 				 FROM TR_Ec_Det Det
 					  INNER JOIN #temp_detalle_cuota_concepto_cuota tmp ON Det.I_RowID = tmp.I_RowID
@@ -5624,7 +5629,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT  Det.I_RowID, I_OblRowID, Det.Cuota_pago, Concepto
+		SELECT  DISTINCT Det.I_RowID, I_OblRowID, Det.Cuota_pago, Concepto
 		  INTO	#temp_detalle_cuota_concepto_cuota
 		  FROM	TR_Ec_Det Det 
 				INNER JOIN TR_Cp_Pri Pri ON Det.Concepto = Pri.Id_cp
@@ -5638,7 +5643,7 @@ BEGIN
 		 WHERE Det.I_OblRowID = @I_OblRowID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
 					  @D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID 
 				 FROM TR_Ec_Det Det
 					  INNER JOIN #temp_detalle_cuota_concepto_cuota tmp ON Det.I_RowID = tmp.I_RowID
@@ -6157,7 +6162,7 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY 
-		SELECT I_OblRowID, SUM(Monto) Monto
+		SELECT DISTINCT I_OblRowID, SUM(Monto) Monto
 		  INTO #temp_detalle_monto_sum
 		  FROM TR_Ec_Det
 		 WHERE Ano = @T_Anio
@@ -6178,7 +6183,7 @@ BEGIN
 			   INNER JOIN #temp_detalle_monto_cabecera_monto tmp ON Det.I_OblRowID = tmp.I_OblRowID
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
 					  @D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID 
 				 FROM TR_Ec_Det Det 
 					  INNER JOIN #temp_detalle_monto_cabecera_monto tmp ON Det.I_OblRowID = tmp.I_OblRowID
@@ -6271,7 +6276,7 @@ BEGIN
 
 	BEGIN TRANSACTION
 	BEGIN TRY
-		SELECT I_OblRowID, SUM(Monto) Monto
+		SELECT DISTINCT I_OblRowID, SUM(Monto) Monto
 		  INTO #temp_detalle_monto_sum
 		  FROM TR_Ec_Det
 		 WHERE Eliminado = 0
@@ -6292,7 +6297,7 @@ BEGIN
 		 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, Det.I_RowID AS I_FilaTablaID, 
 					  @D_FecProceso AS D_FecRegistro, Det.I_ProcedenciaID 
 				 FROM TR_Ec_Det Det 
 					  INNER JOIN #temp_detalle_monto_cabecera_monto tmp ON Det.I_OblRowID = tmp.I_OblRowID
@@ -6702,7 +6707,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Tipo_oblig, Monto, I_RowID, I_OblRowID
+		SELECT DISTINCT Ano, P, Cod_alu, Cod_rc, Cuota_pago, Fch_venc, Tipo_oblig, Monto, I_RowID, I_OblRowID
 		  INTO #temp_det_fecVenc
 		  FROM TR_Ec_Det det
 		 WHERE I_ProcedenciaID = @I_ProcedenciaID
@@ -6718,7 +6723,7 @@ BEGIN
 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, @D_FecProceso AS D_FecRegistro 
 				 FROM TR_Ec_Det TRG_1
 					  INNER JOIN #temp_det_fecVenc SRC_1 
 								ON TRG_1.I_RowID = SRC_1.I_RowID
@@ -6806,7 +6811,7 @@ BEGIN
 	BEGIN TRANSACTION
 	BEGIN TRY
 
-		SELECT Ano, P, Cod_alu, Cod_rc, det.Cuota_pago, det.Fch_venc, Tipo_oblig, Monto, det.I_RowID
+		SELECT DISTINCT Ano, P, Cod_alu, Cod_rc, det.Cuota_pago, det.Fch_venc, Tipo_oblig, Monto, det.I_RowID
 		INTO  #temp_det_fecVenc
 		FROM  TR_Ec_Det det
 		WHERE det.I_RowID = @I_RowID
@@ -6823,7 +6828,7 @@ BEGIN
 
 
 		MERGE TI_ObservacionRegistroTabla AS TRG
-		USING (SELECT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, 
+		USING (SELECT DISTINCT @I_ObservID AS I_ObservID, @I_TablaID AS I_TablaID, TRG_1.I_RowID AS I_FilaTablaID, 
 					  @D_FecProceso AS D_FecRegistro, TRG_1.I_ProcedenciaID, SRC_1.I_RowID
 				 FROM TR_Ec_Det TRG_1
 					  LEFT JOIN #temp_det_fecVenc SRC_1 

@@ -209,7 +209,7 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
         public Response ValidarFechaPago(int obligacionId)
         {
-            Response result = _pagoObligacionRepository.ValidarFechaPago(obligacionId);
+            Response result = _pagoObligacionRepository.ValidarFechaPagoPorOblID(obligacionId);
 
             _ = result.ReturnViewValidationsMessage(ObservacionPago.FECHA_PAGO_ERROR,
                                                     (int)PagoObligacionObs.MigracionCabecera,
@@ -231,12 +231,14 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
 
             response_pago = response_pago.IsDone ? response_pago.Success(false) : response_pago.Error(false);
 
-            response_pago.DeserializeJsonListMessage("Migracion TR_Ec_Obl");
-            if (response_pago.IsDone && response_pago.ListObjMessage.Count == 6)
+            response_pago.DeserializeJsonListMessage("Migracion TR_Ec_Det_Pago");
+            if (response_pago.IsDone && response_pago.ListObjMessage.Count == 5)
             {
                 int total_pag = int.Parse(response_pago.ListObjMessage[0].Value);
                 int insertados_pag = int.Parse(response_pago.ListObjMessage[1].Value);
-                int actualizados_pag = int.Parse(response_pago.ListObjMessage[2].Value);
+                int insertados_det = int.Parse(response_pago.ListObjMessage[2].Value);
+                int actualizados_pag = int.Parse(response_pago.ListObjMessage[3].Value);
+                int actualizados_det = int.Parse(response_pago.ListObjMessage[4].Value);
 
                 _controlRepository.RegistrarProcesoMigracion(Tablas.TR_Ec_Det_Pagos, procedencia_id, anio, total_pag, insertados_pag + actualizados_pag,
                                                               total_pag - (insertados_pag + actualizados_pag));

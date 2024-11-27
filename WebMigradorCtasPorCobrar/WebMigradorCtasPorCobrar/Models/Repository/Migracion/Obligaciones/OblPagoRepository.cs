@@ -466,7 +466,7 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
                     parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
                     parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
 
-                    connection.Execute("USP_Obligaciones_ObligacionCab_MigracionTP_U_Validar_28_FechaVencimiento", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+                    connection.Execute("USP_Obligaciones_Pagos_MigracionTP_U_Validar_65_FechaPago", parameters, commandTimeout: 3600, commandType: CommandType.StoredProcedure);
 
                     result.IsDone = parameters.Get<bool>("B_Resultado");
                     result.Message = parameters.Get<string>("T_Message");
@@ -481,7 +481,34 @@ namespace WebMigradorCtasPorCobrar.Models.Repository.Migracion.Obligaciones
             return result;
         }
 
-        public Response ValidarFechaPagoPorID(int rowID)
+
+        public Response ValidarFechaPagoPorOblID(int rowID)
+        {
+            Response result = new Response();
+            DynamicParameters parameters = new DynamicParameters();
+
+            try
+            {
+                using (var connection = new SqlConnection(Databases.MigracionTPConnectionString))
+                {
+                    parameters.Add(name: "I_OblRowID", dbType: DbType.Int32, value: rowID);
+                    parameters.Add(name: "B_Resultado", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add(name: "T_Message", dbType: DbType.String, size: 4000, direction: ParameterDirection.Output);
+
+                    connection.Execute("USP_Obligaciones_Pagos_MigracionTP_U_Validar_65_FechaPagoPorOblID", parameters,
+                                        commandTimeout: 3600, commandType: CommandType.StoredProcedure);
+
+                    result.IsDone = parameters.Get<bool>("B_Resultado");
+                    result.Message = parameters.Get<string>("T_Message");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.IsDone = false;
+                result.Message = ex.Message;
+            }
+            return result;
+        }
 
 
         public Response MigrarDataPagoObligacionesCtasPorCobrarPorAnio(int procedenciaID, string anio)

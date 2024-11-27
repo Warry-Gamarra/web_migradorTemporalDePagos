@@ -294,6 +294,31 @@ namespace WebMigradorCtasPorCobrar.Models.Services.Migracion.Obligaciones
             return result;
         }
 
+        public Response ValidarFechaVencimiento(int procedencia, string anio)
+        {
+            Response result = _obligacionRepository.ValidarFechaVencimientoDetalle(procedencia, anio);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.FEC_VENC_ERROR,
+                                                    (int)ObligacionesPagoObs.FchVencCuotaPago,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+        public Response ValidarFechaVencimiento(int obligacionId)
+        {
+            Response result = _obligacionRepository.ValidarFechaVencimientoDetallePorOblID(obligacionId);
+
+            _ = result.ReturnViewValidationsMessage(ObservacionOblCab.FEC_VENC_ERROR,
+                                                    (int)ObligacionesPagoObs.FchVencCuotaPago,
+                                                    "Obligaciones",
+                                                    "EjecutarValidacion");
+
+            return result;
+        }
+
+
 
         #endregion
 
