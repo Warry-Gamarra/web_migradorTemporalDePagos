@@ -7306,6 +7306,17 @@ BEGIN
 		  FROM TR_Ec_Obl Obl
 			   INNER JOIN BD_OCEF_CtasPorCobrar.dbo.TC_MatriculaAlumno Mat ON Mat.I_MigracionRowID = Obl.I_RowID
 
+		UPDATE Obl
+		SET I_CtasMatTableRowID = obl_mat.I_CtasMatTableRowID
+			FROM TR_Ec_Obl Obl
+				INNER JOIN (SELECT I_CtasMatTableRowID, Ano, P, I_Periodo, Cod_alu, Cod_rc
+							FROM TR_Ec_Obl WHERE I_CtasMatTableRowID IS NOT NULL) obl_mat 
+							ON obl.Ano = obl_mat.Ano 
+							AND Obl.P = obl_mat.P 
+							AND Obl.Cod_alu = obl_mat.Cod_alu 
+							AND Obl.Cod_rc = obl_mat.Cod_rc
+		WHERE Obl.I_CtasMatTableRowID IS NULL
+
 		UPDATE temp_obl
 		   SET I_CtasMatTableRowID = Obl.I_CtasMatTableRowID
 		  FROM TR_Ec_Obl Obl
@@ -7391,7 +7402,7 @@ BEGIN
 					B_Habilitado, B_Eliminado, I_UsuarioCre, D_FecCre, B_Mora, B_Migrado, I_MigracionTablaID, I_MigracionRowID)
 			VALUES (SRC.I_ObligacionAluID, SRC.Concepto, SRC.Monto, SRC.Pagado, SRC.Fch_venc, SRC.I_TipoDocumento, SRC.T_DescDocumento, 
 					SRC.Habilitado, SRC.Eliminado, @I_UsuarioID, @D_FecProceso, SRC.Mora, 1, I_MigracionTablaID, SRC.I_RowID)
-		OUTPUT $action, SRC.I_ObligacionAluID, inserted.I_ObligacionAluDetID, deleted.I_ObligacionAluDetID INTO @Tbl_outputDet;
+		OUTPUT $action, SRC.I_RowID, inserted.I_ObligacionAluDetID, deleted.I_ObligacionAluDetID INTO @Tbl_outputDet;
 
 
 		UPDATE DET
