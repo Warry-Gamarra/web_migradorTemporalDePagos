@@ -2345,7 +2345,8 @@ BEGIN
 			   D_FecMod = @D_FecProceso,
 			   I_MontoPagado = tmp_det.Monto,						   
 			   B_Migrado = 1,
-			   I_MigracionTablaID = @I_TablaID_Det
+			   I_MigracionTablaID = @I_TablaID_Det,
+			   I_ObligacionAluDetID = tmp_det.I_CtasDetTableRowID
 		  FROM BD_OCEF_CtasPorCobrar.dbo.TRI_PagoProcesadoUnfv pago_proc
 			   INNER JOIN #temp_det_obl tmp_det ON pago_proc.I_MigracionRowID = tmp_det.I_RowID
 			   INNER JOIN #temp_det_pago temp_det_pagos ON tmp_det.I_OblRowID = temp_det_pagos.I_OblRowID
