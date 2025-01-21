@@ -259,8 +259,25 @@ BEGIN
 										   AND det_pg.P = obl.P
 										   AND det_pg.Fch_venc = obl.Fch_venc
 										   AND det_pg.Monto = obl.Monto
+										   AND det_pg.Pagado = obl.Pagado
 		 WHERE det_pg.Ano = @T_Anio
 			   AND det_pg.I_ProcedenciaID = @I_ProcedenciaID
+
+		UPDATE det_pg
+		   SET I_OblRowID = obl.I_RowID
+		  FROM TR_Ec_Det_Pagos det_pg
+			   INNER JOIN #temp_obl_pagados_sin_repetir_anio_procedencia obl 
+											ON det_pg.I_ProcedenciaID = obl.I_ProcedenciaID
+										   AND det_pg.Cuota_pago = obl.Cuota_pago
+										   AND det_pg.Cod_alu = obl.Cod_alu
+										   AND det_pg.Cod_rc = obl.Cod_rc
+										   AND det_pg.P = obl.P
+										   AND det_pg.Fch_venc = obl.Fch_venc
+										   AND det_pg.Monto = obl.Monto
+		 WHERE det_pg.Ano = @T_Anio
+			   AND det_pg.I_ProcedenciaID = @I_ProcedenciaID 
+               AND det_pg.I_OblRowID IS NULL
+               
 
 		SET @I_Actualizados = @@ROWCOUNT
 		--2. Se actualiza pagos por mora con ID de obligación pagada con el mismo número de recibo
@@ -273,6 +290,7 @@ BEGIN
 													AND pg_morA.Fch_pago = det_pg.Fch_pago
 		 WHERE det_pg.Ano = @T_Anio
 			   AND det_pg.I_ProcedenciaID = @I_ProcedenciaID
+
 
 		SET @I_Actualizados = @I_Actualizados + @@ROWCOUNT
 
@@ -1759,7 +1777,7 @@ BEGIN
 			   B_Resuelto = 1
 		  FROM TI_ObservacionRegistroTabla OBS
 			   INNER JOIN (SELECT ec_det.I_RowID, ec_det.Ano, ec_det.Cod_alu, ec_det.Cod_rc, ec_det.I_ProcedenciaID
-							 FROM TR_Ec_Det_Pagos ec_det
+							 FROM TR_Ec_Det_Pagos USP_Obligaciones_Pagos_MigracionTP_U_AsignarObligacionID
 								  LEFT JOIN #temp_det_fecPago SRC_1 ON ec_det.I_RowID = SRC_1.I_RowID
 							WHERE SRC_1.I_RowID IS NULL) DET 
 						  ON OBS.I_FilaTablaID = DET.I_RowID

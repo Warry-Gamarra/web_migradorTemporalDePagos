@@ -345,8 +345,24 @@ BEGIN
 																		AND det.Cod_alu = obl.Cod_alu
 																		AND det.Cod_rc = obl.Cod_rc
 																		AND det.Fch_venc = obl.Fch_venc
+                                                                        AND det.Pagado = obl.Pagado                                                                                                                                                                                                                                                                                                                                                                                                                                      
 		 WHERE det.Ano = @T_Anio
 			   AND det.I_ProcedenciaID = @I_ProcedenciaID
+
+
+		UPDATE det
+		   SET I_OblRowID = obl.I_RowID
+		  FROM TR_Ec_Det det
+			   INNER JOIN #temp_obl_sin_repetir_anio_procedencia obl ON det.I_ProcedenciaID = obl.I_ProcedenciaID
+																		AND det.Cuota_pago = obl.Cuota_pago
+																		AND det.Ano = obl.Ano
+																		AND det.P = obl.P
+																		AND det.Cod_alu = obl.Cod_alu
+																		AND det.Cod_rc = obl.Cod_rc
+																		AND det.Fch_venc = obl.Fch_venc
+		 WHERE det.Ano = @T_Anio
+			   AND det.I_ProcedenciaID = @I_ProcedenciaID
+               AND det.I_OblRowID IS NULL
 
 		SET @I_Actualizados = @@ROWCOUNT
 
